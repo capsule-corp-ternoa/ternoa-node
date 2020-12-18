@@ -7,6 +7,7 @@
 #![recursion_limit = "256"]
 
 use frame_support::{construct_runtime, traits::Randomness};
+use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use sp_api::impl_runtime_apis;
 use sp_core::OpaqueMetadata;
 use sp_inherents::{CheckInherentsResult, InherentData};
@@ -18,9 +19,11 @@ use sp_runtime::{
 };
 use sp_std::prelude::*; // Stuff like Vec<> and Box<>
 use sp_version::RuntimeVersion;
-use ternoa_primitives::{AccountId, BlockNumber, Index, Signature};
+use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 
+mod constants;
 mod pallets_core;
+mod pallets_economy;
 mod version;
 
 pub use version::VERSION;
@@ -45,8 +48,10 @@ construct_runtime!(
         NodeBlock = ternoa_primitives::Block,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
+        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        TransactionPayment: pallet_transaction_payment::{Module, Storage},
     }
 );
 
@@ -72,7 +77,7 @@ pub type SignedExtra = (
     frame_system::CheckEra<Runtime>,
     frame_system::CheckNonce<Runtime>,
     frame_system::CheckWeight<Runtime>,
-    //pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
+    pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
@@ -150,6 +155,15 @@ impl_runtime_apis! {
     impl frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Index> for Runtime {
         fn account_nonce(account: AccountId) -> Index {
             System::account_nonce(account)
+        }
+    }
+
+    impl pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<
+        Block,
+        Balance,
+    > for Runtime {
+        fn query_info(uxt: <Block as BlockT>::Extrinsic, len: u32) -> RuntimeDispatchInfo<Balance> {
+            TransactionPayment::query_info(uxt, len)
         }
     }
 }

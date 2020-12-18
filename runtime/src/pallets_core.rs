@@ -1,6 +1,10 @@
-use crate::{Call, Event, Origin, PalletInfo, Runtime, VERSION};
+use crate::{
+    pallets_economy::NegativeImbalance, Authorship, Balances, Call, Event, Origin, PalletInfo,
+    Runtime, VERSION,
+};
 use frame_support::{
     parameter_types,
+    traits::{Currency, OnUnbalanced},
     weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
         Weight,
@@ -58,4 +62,12 @@ impl frame_system::Trait for Runtime {
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
+}
+
+/// Helper struct to identify the author of a block and reward them with some funds.
+pub struct Author;
+impl OnUnbalanced<NegativeImbalance> for Author {
+    fn on_nonzero_unbalanced(amount: NegativeImbalance) {
+        Balances::resolve_creating(&Authorship::author(), amount);
+    }
 }
