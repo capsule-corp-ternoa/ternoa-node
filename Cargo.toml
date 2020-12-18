@@ -7,5 +7,5 @@ members = [
     #'pallets/nft',
     #'pallets/timed-escrow',
     'primitives',
-    #'runtime',
+    'runtime',
 ]
