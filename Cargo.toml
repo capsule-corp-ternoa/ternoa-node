@@ -6,6 +6,6 @@ members = [
     #'node',
     #'pallets/nft',
     #'pallets/timed-escrow',
-    #'primitives',
+    'primitives',
     #'runtime',
 ]
