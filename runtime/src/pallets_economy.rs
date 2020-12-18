@@ -21,7 +21,8 @@ impl OnUnbalanced<NegativeImbalance> for DealWithFees {
     fn on_unbalanceds<B>(mut fees_then_tips: impl Iterator<Item = NegativeImbalance>) {
         if let Some(mut fees) = fees_then_tips.next() {
             if let Some(tips) = fees_then_tips.next() {
-                fees.merge(tips); // Think of it as an addition
+                // Think of it as an addition
+                tips.merge_into(&mut fees);
             }
             Author::on_unbalanced(fees);
         }

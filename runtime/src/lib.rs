@@ -6,14 +6,22 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
-use frame_support::{construct_runtime, traits::Randomness};
+use frame_support::{
+    construct_runtime,
+    traits::{KeyOwnerProofSystem, Randomness},
+};
+use pallet_grandpa::{
+    fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
+};
+use pallet_session::historical as pallet_session_historical;
 use pallet_transaction_payment_rpc_runtime_api::RuntimeDispatchInfo;
 use sp_api::impl_runtime_apis;
-use sp_core::OpaqueMetadata;
+use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::{
     generic,
-    traits::{BlakeTwo256, Block as BlockT},
+    traits::{BlakeTwo256, Block as BlockT, NumberFor},
     transaction_validity::{TransactionSource, TransactionValidity},
     ApplyExtrinsicResult,
 };
@@ -24,8 +32,12 @@ use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 mod constants;
 mod pallets_core;
 mod pallets_economy;
+mod pallets_time;
+mod pallets_validators;
 mod version;
 
+use constants::time::PRIMARY_PROBABILITY;
+use pallets_validators::{EpochDuration, SessionKeys};
 pub use version::VERSION;
 
 // Make the WASM binary available.
@@ -37,8 +49,8 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 pub fn wasm_binary_unwrap() -> &'static [u8] {
     WASM_BINARY.expect(
         "Development wasm binary is not available. This means the client is \
-						built with `SKIP_WASM_BUILD` flag and it is only usable for \
-						production chains. Please rebuild with the flag disabled.",
+		built with `SKIP_WASM_BUILD` flag and it is only usable for \
+		production chains. Please rebuild with the flag disabled.",
     )
 }
 
@@ -48,9 +60,19 @@ construct_runtime!(
         NodeBlock = ternoa_primitives::Block,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
+        AuthorityDiscovery: pallet_authority_discovery::{Module, Call, Config},
+        Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
+        Babe: pallet_babe::{Module, Call, Storage, Config, Inherent, ValidateUnsigned},
         Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
+        Historical: pallet_session_historical::{Module},
+        ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
+        Offences: pallet_offences::{Module, Call, Storage, Event},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
+        Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
+        Staking: pallet_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
     }
 );
@@ -164,6 +186,101 @@ impl_runtime_apis! {
     > for Runtime {
         fn query_info(uxt: <Block as BlockT>::Extrinsic, len: u32) -> RuntimeDispatchInfo<Balance> {
             TransactionPayment::query_info(uxt, len)
+        }
+    }
+
+    impl fg_primitives::GrandpaApi<Block> for Runtime {
+        fn grandpa_authorities() -> GrandpaAuthorityList {
+            Grandpa::grandpa_authorities()
+        }
+
+        fn submit_report_equivocation_unsigned_extrinsic(
+            equivocation_proof: fg_primitives::EquivocationProof<
+                <Block as BlockT>::Hash,
+                NumberFor<Block>,
+            >,
+            key_owner_proof: fg_primitives::OpaqueKeyOwnershipProof,
+        ) -> Option<()> {
+            let key_owner_proof = key_owner_proof.decode()?;
+
+            Grandpa::submit_unsigned_equivocation_report(
+                equivocation_proof,
+                key_owner_proof,
+            )
+        }
+
+        fn generate_key_ownership_proof(
+            _set_id: fg_primitives::SetId,
+            authority_id: GrandpaId,
+        ) -> Option<fg_primitives::OpaqueKeyOwnershipProof> {
+            use codec::Encode;
+
+            Historical::prove((fg_primitives::KEY_TYPE, authority_id))
+                .map(|p| p.encode())
+                .map(fg_primitives::OpaqueKeyOwnershipProof::new)
+        }
+    }
+
+    impl sp_consensus_babe::BabeApi<Block> for Runtime {
+        fn configuration() -> sp_consensus_babe::BabeGenesisConfiguration {
+            // The choice of `c` parameter (where `1 - c` represents the
+            // probability of a slot being empty), is done in accordance to the
+            // slot duration and expected target block time, for safely
+            // resisting network delays of maximum two seconds.
+            // <https://research.web3.foundation/en/latest/polkadot/BABE/Babe/#6-practical-results>
+            sp_consensus_babe::BabeGenesisConfiguration {
+                slot_duration: Babe::slot_duration(),
+                epoch_length: EpochDuration::get(),
+                c: PRIMARY_PROBABILITY,
+                genesis_authorities: Babe::authorities(),
+                randomness: Babe::randomness(),
+                allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryPlainSlots,
+            }
+        }
+
+        fn current_epoch_start() -> sp_consensus_babe::SlotNumber {
+            Babe::current_epoch_start()
+        }
+
+        fn generate_key_ownership_proof(
+            _slot_number: sp_consensus_babe::SlotNumber,
+            authority_id: sp_consensus_babe::AuthorityId,
+        ) -> Option<sp_consensus_babe::OpaqueKeyOwnershipProof> {
+            use codec::Encode;
+
+            Historical::prove((sp_consensus_babe::KEY_TYPE, authority_id))
+                .map(|p| p.encode())
+                .map(sp_consensus_babe::OpaqueKeyOwnershipProof::new)
+        }
+
+        fn submit_report_equivocation_unsigned_extrinsic(
+            equivocation_proof: sp_consensus_babe::EquivocationProof<<Block as BlockT>::Header>,
+            key_owner_proof: sp_consensus_babe::OpaqueKeyOwnershipProof,
+        ) -> Option<()> {
+            let key_owner_proof = key_owner_proof.decode()?;
+
+            Babe::submit_unsigned_equivocation_report(
+                equivocation_proof,
+                key_owner_proof,
+            )
+        }
+    }
+
+    impl sp_authority_discovery::AuthorityDiscoveryApi<Block> for Runtime {
+        fn authorities() -> Vec<AuthorityDiscoveryId> {
+            AuthorityDiscovery::authorities()
+        }
+    }
+
+    impl sp_session::SessionKeys<Block> for Runtime {
+        fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
+            SessionKeys::generate(seed)
+        }
+
+        fn decode_session_keys(
+            encoded: Vec<u8>,
+        ) -> Option<Vec<(Vec<u8>, KeyTypeId)>> {
+            SessionKeys::decode_into_raw_public_keys(&encoded)
         }
     }
 }
