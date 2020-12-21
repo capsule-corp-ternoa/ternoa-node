@@ -1,5 +1,5 @@
 use crate::{
-    constants::currency::{DOLLARS, MILLICENTS},
+    constants::currency::{MILLICENTS, UNIT},
     pallets_core::Author,
     Balances, Event, Runtime,
 };
@@ -46,7 +46,7 @@ impl pallet_transaction_payment::Trait for Runtime {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: Balance = 1 * DOLLARS;
+    pub const ExistentialDeposit: Balance = 1 * UNIT;
     // For weight estimation, we assume that the most locks on an individual account will be 50.
     // This number may need to be adjusted in the future if this assumption no longer holds true.
     pub const MaxLocks: u32 = 50;

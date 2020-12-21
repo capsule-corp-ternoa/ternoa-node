@@ -29,7 +29,7 @@ use sp_std::prelude::*; // Stuff like Vec<> and Box<>
 use sp_version::RuntimeVersion;
 use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 
-mod constants;
+pub mod constants;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_time;
@@ -37,7 +37,10 @@ mod pallets_validators;
 mod version;
 
 use constants::time::PRIMARY_PROBABILITY;
-use pallets_validators::{EpochDuration, SessionKeys};
+use pallets_validators::EpochDuration;
+pub use pallets_validators::SessionKeys;
+#[cfg(any(feature = "std", test))]
+pub use pallets_validators::StakerStatus;
 #[cfg(feature = "std")]
 pub use version::native_version;
 pub use version::VERSION;

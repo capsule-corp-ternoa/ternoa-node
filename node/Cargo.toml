@@ -1,0 +1,74 @@
+[package]
+build = "build.rs"
+edition = "2018"
+name = "ternoa"
+version = "0.1.0"
+
+[[bin]]
+name = "ternoa"
+path = "src/main.rs"
+
+[features]
+default = [ "cli" ]
+# runtime-benchmarks = [
+# 	"ternoa-runtime/runtime-benchmarks",
+# ]
+cli = [
+	"ternoa-executor/wasmi-errno",
+]
+
+[package.metadata.wasm-pack.profile.release]
+# `wasm-opt` has some problems on linux, see
+# https://github.com/rustwasm/wasm-pack/issues/781 etc.
+wasm-opt = false
+
+[target.'cfg(target_arch="x86_64")'.dependencies]
+ternoa-executor = { path = "../executor", features = [ "wasmtime" ] }
+sc-cli = { version = "0.8.0", features = [ "wasmtime" ] }
+sc-service = { version = "0.8.0", default-features = false, features = [ "wasmtime" ] }
+sp-trie = { version = "2.0.0", default-features = false, features = ["memory-tracker"] }
+
+[dependencies]
+frame-benchmarking = { version = "2.0.0", default-features = false }
+frame-benchmarking-cli = { version = "2.0.0", default-features = false }
+futures = { version = "0.3.1", features = ["compat"] }
+jsonrpc-core = "15.0.0"
+jsonrpc-pubsub = "15.0.0"
+ternoa-executor = { path = "../executor" }
+ternoa-primitives = { path = "../primitives" }
+ternoa-runtime = { path = "../runtime" }
+pallet-im-online = { version = "2.0.0", default-features = false }
+pallet-transaction-payment-rpc = "2.0.0"
+sc-authority-discovery = "0.8.0"
+sc-basic-authorship = "0.8.0"
+sc-cli = "0.8.0"
+sc-client-api = "2.0.0"
+sc-consensus = "0.8.0"
+sc-consensus-babe = "0.8.0"
+sc-consensus-babe-rpc = "0.8.0"
+sc-consensus-epochs = "0.8.0"
+sc-finality-grandpa = "0.8.0"
+sc-finality-grandpa-rpc = "0.8.0"
+sc-keystore = "2.0.0"
+sc-network = "0.8.0"
+sc-rpc = "2.0.0"
+sc-rpc-api = "0.8.0"
+sc-service = "0.8.0"
+sc-transaction-pool = "2.0.0"
+sp-api = "2.0.0"
+sp-authority-discovery = "2.0.0"
+sp-blockchain = "2.0.0"
+sp-block-builder = "2.0.0"
+sp-consensus = "0.8.0"
+sp-consensus-babe = "0.8.0"
+sp-core = "2.0.0"
+sp-finality-grandpa = "2.0.0"
+sp-inherents = "2.0.0"
+sp-runtime = "2.0.0"
+sp-transaction-pool = "2.0.0"
+structopt = "0.3.14"
+substrate-frame-rpc-system = "2.0.0"
+
+[build-dependencies]
+vergen = "3.0.4"
+substrate-build-script-utils = "2.0.0"
