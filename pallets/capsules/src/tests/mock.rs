@@ -1,5 +1,6 @@
-use crate::{Module, Trait};
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
+use crate::{types::CapsuleData, Module, Trait};
+use frame_support::{assert_ok, impl_outer_origin, parameter_types, weights::Weight};
+use frame_system::RawOrigin;
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
@@ -54,6 +55,7 @@ impl Trait for Test {
 // Do not use the `0` account id since this would be the default value
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
+pub const BOB: u64 = 2;
 pub type Capsules = Module<Test>;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
@@ -61,4 +63,15 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .build_storage::<Test>()
         .unwrap()
         .into()
+}
+
+pub fn create_one_capsule() {
+    assert_ok!(Capsules::create(
+        RawOrigin::Signed(ALICE).into(),
+        CapsuleData {
+            owner: ALICE,
+            creator: ALICE,
+            ..Default::default()
+        }
+    ));
 }

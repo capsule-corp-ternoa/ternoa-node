@@ -1,5 +1,6 @@
 use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure};
 use frame_system::ensure_signed;
+use sp_runtime::traits::StaticLookup;
 
 #[cfg(test)]
 mod tests;
@@ -67,6 +68,21 @@ decl_module! {
             Total::put(capsule_id);
 
             Self::deposit_event(RawEvent::CapsuleCreated(capsule_id, who, data))
+        }
+
+        /// Transfer a capsule to another account. This would mutate the `owner` value of
+        /// the metadata.
+        #[weight = 0]
+        fn transfer(origin, to: <T::Lookup as StaticLookup>::Source, capsule_id: CapsuleID) {
+            let who = ensure_signed(origin)?;
+            let mut capsule = Self::metadata(capsule_id);
+            ensure!(capsule.owner == who, Error::<T>::NotCapsuleOwner);
+
+            let to_unlookup = T::Lookup::lookup(to)?;
+            capsule.owner = to_unlookup.clone();
+            Metadata::<T>::insert(capsule_id, capsule);
+
+            Self::deposit_event(RawEvent::CapsuleTransferred(capsule_id, to_unlookup))
         }
     }
 }
