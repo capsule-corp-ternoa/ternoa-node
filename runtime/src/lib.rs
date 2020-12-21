@@ -38,6 +38,8 @@ mod version;
 
 use constants::time::PRIMARY_PROBABILITY;
 use pallets_validators::{EpochDuration, SessionKeys};
+#[cfg(feature = "std")]
+pub use version::native_version;
 pub use version::VERSION;
 
 // Make the WASM binary available.

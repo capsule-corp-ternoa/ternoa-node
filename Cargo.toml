@@ -3,6 +3,7 @@ panic = 'unwind'
 
 [workspace]
 members = [
+    'executor',
     #'node',
     #'pallets/nft',
     #'pallets/timed-escrow',
