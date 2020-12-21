@@ -88,3 +88,70 @@ fn transfer_fail_if_capsule_does_not_exists() {
         );
     })
 }
+
+#[test]
+fn mutate_fails_if_not_owner() {
+    new_test_ext().execute_with(|| {
+        assert_noop!(
+            Capsules::mutate(RawOrigin::Signed(BOB).into(), 1, CapsuleData::default()),
+            Error::<Test>::NotCapsuleOwner
+        );
+    })
+}
+
+#[test]
+fn mutate_fails_if_owner_change() {
+    new_test_ext().execute_with(|| {
+        create_one_capsule();
+        assert_noop!(
+            Capsules::mutate(
+                RawOrigin::Signed(ALICE).into(),
+                1,
+                CapsuleData {
+                    owner: BOB,
+                    creator: ALICE,
+                    ..Default::default()
+                }
+            ),
+            Error::<Test>::MalformedMetadata
+        );
+    })
+}
+
+#[test]
+fn mutate_fails_if_creator_change() {
+    new_test_ext().execute_with(|| {
+        create_one_capsule();
+        assert_noop!(
+            Capsules::mutate(
+                RawOrigin::Signed(ALICE).into(),
+                1,
+                CapsuleData {
+                    owner: ALICE,
+                    creator: BOB,
+                    ..Default::default()
+                }
+            ),
+            Error::<Test>::MalformedMetadata
+        );
+    })
+}
+
+#[test]
+fn mutate() {
+    new_test_ext().execute_with(|| {
+        create_one_capsule();
+        let marker = vec![1, 2, 3, 4, 5];
+        assert_ok!(Capsules::mutate(
+            RawOrigin::Signed(ALICE).into(),
+            1,
+            CapsuleData {
+                owner: ALICE,
+                creator: ALICE,
+                offchain_uri: marker.clone(),
+                ..Default::default()
+            }
+        ));
+        assert_eq!(Capsules::metadata(1).offchain_uri, marker);
+    })
+}

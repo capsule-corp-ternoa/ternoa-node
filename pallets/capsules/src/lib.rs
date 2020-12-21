@@ -67,7 +67,7 @@ decl_module! {
             Metadata::<T>::insert(capsule_id, data.clone());
             Total::put(capsule_id);
 
-            Self::deposit_event(RawEvent::CapsuleCreated(capsule_id, who, data))
+            Self::deposit_event(RawEvent::CapsuleCreated(capsule_id, who, data));
         }
 
         /// Transfer a capsule to another account. This would mutate the `owner` value of
@@ -82,7 +82,21 @@ decl_module! {
             capsule.owner = to_unlookup.clone();
             Metadata::<T>::insert(capsule_id, capsule);
 
-            Self::deposit_event(RawEvent::CapsuleTransferred(capsule_id, to_unlookup))
+            Self::deposit_event(RawEvent::CapsuleTransferred(capsule_id, to_unlookup));
+        }
+
+        /// Modify a capsule's attached data. Make sure `owner` and `creator` are not modified.
+        #[weight = 0]
+        fn mutate(origin, capsule_id: CapsuleID, data: CapsuleData<T::AccountId, T::Hash>) {
+            let who = ensure_signed(origin)?;
+            let capsule = Self::metadata(capsule_id);
+            ensure!(capsule.owner == who, Error::<T>::NotCapsuleOwner);
+            ensure!(capsule.owner == data.owner, Error::<T>::MalformedMetadata);
+            ensure!(capsule.creator == data.creator, Error::<T>::MalformedMetadata);
+
+            Metadata::<T>::insert(capsule_id, data.clone());
+
+            Self::deposit_event(RawEvent::CapsuleUpdated(capsule_id, data));
         }
     }
 }
