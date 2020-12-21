@@ -2,9 +2,6 @@
 
 use crate::rpc::{self, DenyUnsafe, IoHandler};
 use futures::prelude::*;
-use ternoa_executor::Executor;
-use ternoa_primitives::Block;
-use ternoa_runtime::RuntimeApi;
 use sc_client_api::{ExecutorProvider, RemoteBackend};
 use sc_consensus_babe;
 use sc_finality_grandpa::{self, FinalityProofProvider as GrandpaFinalityProofProvider};
@@ -18,6 +15,9 @@ use sp_core::traits::BareCryptoStorePtr;
 use sp_inherents::InherentDataProviders;
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
+use ternoa_executor::Executor;
+use ternoa_primitives::Block;
+use ternoa_runtime::RuntimeApi;
 
 type FullClient = sc_service::TFullClient<Block, RuntimeApi, Executor>;
 type FullBackend = sc_service::TFullBackend<Block>;
