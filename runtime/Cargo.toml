@@ -31,7 +31,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 # pallet-session-benchmarking = { version = "2.0.0", path = "../../../frame/session/benchmarking", default-features = false, optional = true }
 # pallet-scheduler = { version = "2.0.0", default-features = false, path = "../../../frame/scheduler" }
 # pallet-society = { version = "2.0.0", default-features = false, path = "../../../frame/society" }
-# pallet-sudo = { version = "2.0.0", default-features = false, path = "../../../frame/sudo" }
 # pallet-tips = { version = "2.0.0", default-features = false, path = "../../../frame/tips" }
 # pallet-treasury = { version = "2.0.0", default-features = false, path = "../../../frame/treasury" }
 # pallet-utility = { version = "2.0.0", default-features = false, path = "../../../frame/utility" }
@@ -52,6 +51,7 @@ pallet-randomness-collective-flip = { version = "2.0.0", default-features = fals
 pallet-session = { version = "2.0.0", features = ["historical"], default-features = false }
 pallet-staking = { version = "2.0.0", default-features = false }
 pallet-staking-reward-curve = { version = "2.0.0", default-features = false }
+pallet-sudo = { version = "2.0.0", default-features = false }
 pallet-timestamp = { version = "2.0.0", default-features = false }
 pallet-transaction-payment = { version = "2.0.0", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { version = "2.0.0", default-features = false }
@@ -94,7 +94,6 @@ std = [
 # 	"pallet-scheduler/std",
 # 	"pallet-proxy/std",
 # 	"sp-keyring",
-# 	"pallet-sudo/std",
 # 	"frame-benchmarking/std",
 # 	"pallet-tips/std",
 # 	"pallet-treasury/std",
@@ -117,6 +116,7 @@ std = [
 	"pallet-randomness-collective-flip/std",
 	"pallet-session/std",
 	"pallet-staking/std",
+	"pallet-sudo/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
