@@ -7,3 +7,4 @@ Ternoa's Blockchain to support the secure creation and transfer of Capsules.
 - Staking slashes and remainders are burned, you may want to send them to a treasury later
 - There are no collectives, treasuries or democracy pallets
 - We kept the runtime slim and did not include less core pallets such as `recovery`, `utility` or `vesting`
+- In local and dev chains we have configured `Alice` to have access to the `sudo` pallet which we added to test runtime migrations and upgrades

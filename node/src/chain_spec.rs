@@ -12,7 +12,7 @@ use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::{
     constants::currency::UNIT, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-    StakerStatus, StakingConfig, SystemConfig,
+    StakerStatus, StakingConfig, SudoConfig, SystemConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -79,6 +79,7 @@ pub fn testnet_genesis(
         AuthorityDiscoveryId,
     )>,
     endowed_accounts: Option<Vec<AccountId>>,
+    root: Option<AccountId>,
 ) -> GenesisConfig {
     let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(|| {
         vec![
@@ -144,11 +145,16 @@ pub fn testnet_genesis(
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         }),
+
+        // Governance
+        pallet_sudo: Some(SudoConfig {
+            key: root.unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice")),
+        }),
     }
 }
 
 fn development_config_genesis() -> GenesisConfig {
-    testnet_genesis(vec![get_authority_keys_from_seed("Alice")], None)
+    testnet_genesis(vec![get_authority_keys_from_seed("Alice")], None, None)
 }
 
 /// Development config (single validator Alice)
@@ -172,6 +178,7 @@ fn local_testnet_genesis() -> GenesisConfig {
             get_authority_keys_from_seed("Alice"),
             get_authority_keys_from_seed("Bob"),
         ],
+        None,
         None,
     )
 }

@@ -32,6 +32,7 @@ use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 pub mod constants;
 mod pallets_core;
 mod pallets_economy;
+mod pallets_governance;
 mod pallets_time;
 mod pallets_validators;
 mod version;
@@ -76,6 +77,7 @@ construct_runtime!(
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
         Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
         Staking: pallet_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
+        Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
