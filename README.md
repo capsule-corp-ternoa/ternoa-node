@@ -8,3 +8,7 @@ Ternoa's Blockchain to support the secure creation and transfer of Capsules.
 - There are no collectives, treasuries or democracy pallets
 - We kept the runtime slim and did not include less core pallets such as `recovery`, `utility` or `vesting`
 - In local and dev chains we have configured `Alice` to have access to the `sudo` pallet which we added to test runtime migrations and upgrades
+
+### Capsules
+- IDs are represented with a u32, we have a maximum number of capsules of u32 MAX
+- For now we do not charge for capsule creation, we may want to change this in the future

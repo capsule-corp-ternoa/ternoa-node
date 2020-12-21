@@ -5,7 +5,7 @@ panic = 'unwind'
 members = [
     'executor',
     'node',
-    #'pallets/nft',
+    'pallets/capsules',
     #'pallets/timed-escrow',
     'primitives',
     'runtime',
