@@ -10,7 +10,7 @@ use crate::{
 use codec::Encode;
 use frame_support::{debug, parameter_types, traits::KeyOwnerProofSystem, weights::Weight};
 use frame_system::EnsureRoot;
-use pallet_grandpa::{AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList};
+use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
