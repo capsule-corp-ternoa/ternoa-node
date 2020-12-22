@@ -52,7 +52,7 @@ decl_error! {
     pub enum Error for Module<T: Trait> {
         /// This function is reserved to the owner of a capsule.
         NotCapsuleOwner,
-        /// An unknown error happened which made the `schedule_named` call fail.
+        /// An unknown error happened which made the scheduling call fail.
         SchedulingFailed,
     }
 }
@@ -82,6 +82,18 @@ decl_module! {
             ).is_ok(), Error::<T>::SchedulingFailed);
 
             Self::deposit_event(RawEvent::TransferScheduled(capsule_id, to_unlookup, at));
+        }
+
+        /// Cancel a transfer that was previously created and unlocks the capsule.
+        #[weight = 0]
+        fn cancel(origin, capsule_id: CapsuleIDOf<T>) {
+            let who = ensure_signed(origin)?;
+            Self::ensure_capsule_owner(who.clone(), capsule_id)?;
+
+            ensure!(T::Scheduler::cancel_named((ESCROW_ID, capsule_id).encode()).is_ok(), Error::<T>::SchedulingFailed);
+            T::Capsules::unlock(capsule_id)?;
+
+            Self::deposit_event(RawEvent::TransferCanceled(capsule_id));
         }
 
         /// System only. Execute a transfer, called by the scheduler.
