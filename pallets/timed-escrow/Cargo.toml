@@ -1,7 +1,7 @@
 [package]
 edition = '2018'
 license = 'Apache 2.0'
-name = 'ternoa-capsules'
+name = 'ternoa-timed-escrow'
 version = '0.1.0'
 
 [package.metadata.docs.rs]
@@ -17,8 +17,10 @@ sp-std = { default-features = false, version = "2.0.0" }
 ternoa-common = { default-features = false, path = "../../common" }
 
 [dev-dependencies]
+pallet-scheduler = '2.0.0'
 sp-core = '2.0.0'
 sp-io = '2.0.0'
+ternoa-capsules = { path = "../capsules" }
 
 [features]
 default = ['std']
@@ -29,5 +31,4 @@ std = [
     'serde',
     'sp-runtime/std',
     'sp-std/std',
-    "ternoa-common/std",
 ]

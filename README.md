@@ -12,3 +12,6 @@ Ternoa's Blockchain to support the secure creation and transfer of Capsules.
 ### Capsules
 - IDs are represented with a u32, we have a maximum number of capsules of u32 MAX
 - For now we do not charge for capsule creation, we may want to change this in the future
+
+### Timed Escrow
+- capsule locking
