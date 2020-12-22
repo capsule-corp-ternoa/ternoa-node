@@ -1,5 +1,6 @@
 //! Shared traits.
 
+use frame_support::Parameter;
 use sp_runtime::DispatchResult;
 
 /// Implemented by a pallet that supports the transfers of capsules.
@@ -7,7 +8,7 @@ pub trait CapsuleTransferEnabled {
     /// Underlying runtime's account ids.
     type AccountId;
     /// How capsules are represented in the underlying pallet.
-    type CapsuleID;
+    type CapsuleID: Parameter + Copy;
 
     /// Transfer a capsule `capsule_id` from `from` to `to`. This should
     /// perform a sanity check to make sure that `from` is still the owner

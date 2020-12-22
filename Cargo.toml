@@ -7,7 +7,7 @@ members = [
     'executor',
     'node',
     'pallets/capsules',
-    #'pallets/timed-escrow',
+    'pallets/timed-escrow',
     'primitives',
     'runtime',
 ]

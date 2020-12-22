@@ -7,7 +7,7 @@ use ternoa_common::traits::CapsuleTransferEnabled;
 mod tests;
 mod types;
 
-use types::{CapsuleData, CapsuleID};
+pub use types::{CapsuleData, CapsuleID};
 
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
@@ -67,7 +67,7 @@ decl_module! {
         /// the capsule id. Make sure that the `owner` field in the `data` is set to the
         /// correct account.
         #[weight = 0]
-        fn create(origin, data: CapsuleData<T::AccountId, T::Hash>) {
+        pub fn create(origin, data: CapsuleData<T::AccountId, T::Hash>) {
             let who = ensure_signed(origin)?;
             ensure!(data.creator == who, Error::<T>::MalformedMetadata);
             ensure!(data.owner == who, Error::<T>::MalformedMetadata);
