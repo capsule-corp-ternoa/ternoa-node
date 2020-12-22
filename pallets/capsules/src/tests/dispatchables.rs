@@ -2,6 +2,7 @@ use super::mock::{create_one_capsule, new_test_ext, Capsules, Test, ALICE, BOB};
 use crate::{types::CapsuleData, Error};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
+use ternoa_common::traits::CapsuleTransferEnabled;
 
 #[test]
 fn create_increments_counter() {
@@ -49,6 +50,20 @@ fn create_rejects_malformed_metadata() {
                 RawOrigin::Signed(ALICE).into(),
                 CapsuleData {
                     creator: ALICE,
+                    ..Default::default()
+                }
+            ),
+            Error::<Test>::MalformedMetadata
+        );
+
+        // Would be locked
+        assert_noop!(
+            Capsules::create(
+                RawOrigin::Signed(ALICE).into(),
+                CapsuleData {
+                    creator: ALICE,
+                    owner: ALICE,
+                    locked: true,
                     ..Default::default()
                 }
             ),
@@ -129,6 +144,41 @@ fn mutate_fails_if_creator_change() {
                 CapsuleData {
                     owner: ALICE,
                     creator: BOB,
+                    ..Default::default()
+                }
+            ),
+            Error::<Test>::MalformedMetadata
+        );
+    })
+}
+
+#[test]
+fn mutate_fails_if_lock_change() {
+    new_test_ext().execute_with(|| {
+        create_one_capsule();
+        assert_noop!(
+            Capsules::mutate(
+                RawOrigin::Signed(ALICE).into(),
+                1,
+                CapsuleData {
+                    owner: ALICE,
+                    creator: ALICE,
+                    locked: true,
+                    ..Default::default()
+                }
+            ),
+            Error::<Test>::MalformedMetadata
+        );
+
+        assert_ok!(Capsules::lock(1));
+        assert_noop!(
+            Capsules::mutate(
+                RawOrigin::Signed(ALICE).into(),
+                1,
+                CapsuleData {
+                    owner: ALICE,
+                    creator: ALICE,
+                    locked: false,
                     ..Default::default()
                 }
             ),

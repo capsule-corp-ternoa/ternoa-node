@@ -15,9 +15,11 @@ pub struct CapsuleData<AccountId, Hash> {
     /// linked to which capsule without having to fetch the offcahin
     /// document.
     pub pk_hash: Hash,
+    /// Address of who created the token, should not be updated over time.
+    pub creator: AccountId,
     /// Address of the owner of the token, can be updated by transferring
     /// it to a new owner.
     pub owner: AccountId,
-    /// Address of who created the token, should not be updated over time.
-    pub creator: AccountId,
+    /// Wether this capsule is locked by another pallet or not.
+    pub locked: bool,
 }

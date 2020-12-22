@@ -1,0 +1,14 @@
+[package]
+name = "ternoa-common"
+version = "0.1.0"
+edition = "2018"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+sp-runtime = { default-features = false, version = '2.0.0' }
+
+[features]
+default = ["std"]
+std = [ "sp-runtime/std" ]
