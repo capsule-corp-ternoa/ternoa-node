@@ -7,22 +7,43 @@ use frame_support::{
         schedule::{DispatchTime, Named as ScheduleNamed},
         LockIdentifier,
     },
+    weights::Weight,
+    Parameter,
 };
 use frame_system::{ensure_root, ensure_signed, RawOrigin};
 use sp_runtime::{traits::Dispatchable, traits::StaticLookup, DispatchResult};
-use ternoa_common::traits::CapsuleTransferEnabled;
+use ternoa_common::traits::{
+    CapsuleCreationEnabled, CapsuleDefaultBuilder, CapsuleTransferEnabled,
+};
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+mod default_weights;
 #[cfg(test)]
 mod tests;
 
 /// Used for derivating scheduled tasks IDs
 const ESCROW_ID: LockIdentifier = *b"escrow  ";
 
+pub trait WeightInfo {
+    fn create() -> Weight;
+    fn cancel() -> Weight;
+    fn complete_transfer() -> Weight;
+}
+
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
     /// Pallet managing capsules.
-    type Capsules: CapsuleTransferEnabled<AccountId = Self::AccountId>;
+    type Capsules: CapsuleTransferEnabled<AccountId = Self::AccountId>
+        + CapsuleCreationEnabled<
+            AccountId = Self::AccountId,
+            CapsuleID = CapsuleIDOf<Self>,
+            CapsuleData = Self::CapsuleData,
+        >;
+    /// How a capsule's data is represented. Mostly used for benchmarks when passed to the
+    /// `CapsuleCreationEnabled` trait.
+    type CapsuleData: Parameter + CapsuleDefaultBuilder<Self::AccountId>;
     /// Scheduler instance which we use to schedule actual transfer calls. This way, we have
     /// all scheduled calls accross all pallets in one place.
     type Scheduler: ScheduleNamed<Self::BlockNumber, Self::PalletsCall, Self::PalletsOrigin>;
@@ -30,6 +51,8 @@ pub trait Trait: frame_system::Trait {
     type PalletsOrigin: From<RawOrigin<Self::AccountId>>;
     /// Overarching type of all pallets calls. Used by the scheduler.
     type PalletsCall: Dispatchable<Origin = Self::Origin> + From<Call<Self>>;
+    /// Weight values for this pallet
+    type WeightInfo: WeightInfo;
 }
 
 type CapsuleIDOf<T> = <<T as Trait>::Capsules as CapsuleTransferEnabled>::CapsuleID;
@@ -65,7 +88,7 @@ decl_module! {
 
         /// Create a timed transfer. This will lock the associated capsule until it gets
         /// transferred or canceled.
-        #[weight = 0]
+        #[weight = T::WeightInfo::create()]
         fn create(origin, capsule_id: CapsuleIDOf<T>, to: <T::Lookup as StaticLookup>::Source, at: T::BlockNumber) {
             let who = ensure_signed(origin)?;
             Self::ensure_capsule_owner(who.clone(), capsule_id)?;
@@ -87,7 +110,7 @@ decl_module! {
         }
 
         /// Cancel a transfer that was previously created and unlocks the capsule.
-        #[weight = 0]
+        #[weight = T::WeightInfo::cancel()]
         fn cancel(origin, capsule_id: CapsuleIDOf<T>) {
             let who = ensure_signed(origin)?;
             Self::ensure_capsule_owner(who.clone(), capsule_id)?;
@@ -99,7 +122,7 @@ decl_module! {
         }
 
         /// System only. Execute a transfer, called by the scheduler.
-        #[weight = 0]
+        #[weight = T::WeightInfo::complete_transfer()]
         fn complete_transfer(origin, from: T::AccountId, to: T::AccountId, capsule_id: CapsuleIDOf<T>) {
             ensure_root(origin)?;
             T::Capsules::unlock(capsule_id)?;

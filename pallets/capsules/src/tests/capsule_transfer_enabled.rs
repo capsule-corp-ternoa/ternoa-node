@@ -52,6 +52,16 @@ fn transfer_from() {
 }
 
 #[test]
+fn is_locked() {
+    new_test_ext().execute_with(|| {
+        create_one_capsule();
+        assert!(!Capsules::is_locked(1));
+        assert_ok!(Capsules::lock(1));
+        assert!(Capsules::is_locked(1));
+    })
+}
+
+#[test]
 fn is_owner() {
     new_test_ext().execute_with(|| {
         create_one_capsule();

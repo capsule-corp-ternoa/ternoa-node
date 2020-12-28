@@ -1,19 +1,30 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure};
+use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure, weights::Weight};
 use frame_system::ensure_signed;
-use sp_runtime::{traits::StaticLookup, DispatchResult};
-use ternoa_common::traits::CapsuleTransferEnabled;
+use sp_runtime::{traits::StaticLookup, DispatchError, DispatchResult};
+use ternoa_common::traits::{CapsuleCreationEnabled, CapsuleTransferEnabled};
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+mod default_weights;
 #[cfg(test)]
 mod tests;
 mod types;
 
 pub use types::{CapsuleData, CapsuleID};
 
+pub trait WeightInfo {
+    fn create() -> Weight;
+    fn mutate() -> Weight;
+    fn transfer() -> Weight;
+}
+
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+    /// Weight values for this pallet
+    type WeightInfo: WeightInfo;
 }
 
 decl_storage! {
@@ -68,23 +79,16 @@ decl_module! {
         /// Create a new capsule with the given metadata. An event will be triggered with
         /// the capsule id. Make sure that the `owner` field in the `data` is set to the
         /// correct account.
-        #[weight = 0]
+        #[weight = T::WeightInfo::create()]
         pub fn create(origin, data: CapsuleData<T::AccountId, T::Hash>) {
             let who = ensure_signed(origin)?;
-            ensure!(data.creator == who, Error::<T>::MalformedMetadata);
-            ensure!(data.owner == who, Error::<T>::MalformedMetadata);
-            ensure!(data.locked == false, Error::<T>::MalformedMetadata);
-
-            let capsule_id = Self::total().checked_add(1).ok_or(Error::<T>::OutOfCapsuleIDs)?;
-            Metadata::<T>::insert(capsule_id, data.clone());
-            Total::put(capsule_id);
-
+            let capsule_id = <Self as CapsuleCreationEnabled>::create(&who, data.clone())?;
             Self::deposit_event(RawEvent::CapsuleCreated(capsule_id, who, data));
         }
 
         /// Transfer a capsule to another account. This would mutate the `owner` value of
         /// the metadata.
-        #[weight = 0]
+        #[weight = T::WeightInfo::transfer()]
         fn transfer(origin, to: <T::Lookup as StaticLookup>::Source, capsule_id: CapsuleID) {
             let who = ensure_signed(origin)?;
             let to_unlookup = T::Lookup::lookup(to)?;
@@ -92,7 +96,7 @@ decl_module! {
         }
 
         /// Modify a capsule's attached data. Make sure `owner` and `creator` are not modified.
-        #[weight = 0]
+        #[weight = T::WeightInfo::mutate()]
         fn mutate(origin, capsule_id: CapsuleID, data: CapsuleData<T::AccountId, T::Hash>) {
             let who = ensure_signed(origin)?;
             let capsule = Self::metadata(capsule_id);
@@ -139,7 +143,34 @@ impl<T: Trait> CapsuleTransferEnabled for Module<T> {
         Ok(())
     }
 
+    fn is_locked(capsule_id: Self::CapsuleID) -> bool {
+        Self::metadata(capsule_id).locked
+    }
+
     fn is_owner(maybe_owner: Self::AccountId, capsule_id: Self::CapsuleID) -> bool {
         Self::metadata(capsule_id).owner == maybe_owner
+    }
+}
+
+impl<T: Trait> CapsuleCreationEnabled for Module<T> {
+    type AccountId = T::AccountId;
+    type CapsuleID = CapsuleID;
+    type CapsuleData = CapsuleData<T::AccountId, T::Hash>;
+
+    fn create(
+        owner: &Self::AccountId,
+        data: Self::CapsuleData,
+    ) -> Result<Self::CapsuleID, DispatchError> {
+        ensure!(&data.creator == owner, Error::<T>::MalformedMetadata);
+        ensure!(&data.owner == owner, Error::<T>::MalformedMetadata);
+        ensure!(data.locked == false, Error::<T>::MalformedMetadata);
+
+        let capsule_id = Self::total()
+            .checked_add(1)
+            .ok_or(Error::<T>::OutOfCapsuleIDs)?;
+        Metadata::<T>::insert(capsule_id, data.clone());
+        Total::put(capsule_id);
+
+        Ok(capsule_id)
     }
 }

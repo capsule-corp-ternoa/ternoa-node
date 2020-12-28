@@ -10,9 +10,9 @@ path = "src/main.rs"
 
 [features]
 default = [ "cli" ]
-# runtime-benchmarks = [
-# 	"ternoa-runtime/runtime-benchmarks",
-# ]
+runtime-benchmarks = [
+	"ternoa-runtime/runtime-benchmarks",
+]
 cli = [
 	"ternoa-executor/wasmi-errno",
 ]
