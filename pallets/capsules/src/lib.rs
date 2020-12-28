@@ -2,8 +2,8 @@
 
 use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure};
 use frame_system::ensure_signed;
-use sp_runtime::{traits::StaticLookup, DispatchResult};
-use ternoa_common::traits::CapsuleTransferEnabled;
+use sp_runtime::{traits::StaticLookup, DispatchError, DispatchResult};
+use ternoa_common::traits::{CapsuleCreationEnabled, CapsuleTransferEnabled};
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
@@ -73,14 +73,7 @@ decl_module! {
         #[weight = 0]
         pub fn create(origin, data: CapsuleData<T::AccountId, T::Hash>) {
             let who = ensure_signed(origin)?;
-            ensure!(data.creator == who, Error::<T>::MalformedMetadata);
-            ensure!(data.owner == who, Error::<T>::MalformedMetadata);
-            ensure!(data.locked == false, Error::<T>::MalformedMetadata);
-
-            let capsule_id = Self::total().checked_add(1).ok_or(Error::<T>::OutOfCapsuleIDs)?;
-            Metadata::<T>::insert(capsule_id, data.clone());
-            Total::put(capsule_id);
-
+            let capsule_id = <Self as CapsuleCreationEnabled>::create(&who, data.clone())?;
             Self::deposit_event(RawEvent::CapsuleCreated(capsule_id, who, data));
         }
 
@@ -143,5 +136,28 @@ impl<T: Trait> CapsuleTransferEnabled for Module<T> {
 
     fn is_owner(maybe_owner: Self::AccountId, capsule_id: Self::CapsuleID) -> bool {
         Self::metadata(capsule_id).owner == maybe_owner
+    }
+}
+
+impl<T: Trait> CapsuleCreationEnabled for Module<T> {
+    type AccountId = T::AccountId;
+    type CapsuleID = CapsuleID;
+    type CapsuleData = CapsuleData<T::AccountId, T::Hash>;
+
+    fn create(
+        owner: &Self::AccountId,
+        data: Self::CapsuleData,
+    ) -> Result<Self::CapsuleID, DispatchError> {
+        ensure!(&data.creator == owner, Error::<T>::MalformedMetadata);
+        ensure!(&data.owner == owner, Error::<T>::MalformedMetadata);
+        ensure!(data.locked == false, Error::<T>::MalformedMetadata);
+
+        let capsule_id = Self::total()
+            .checked_add(1)
+            .ok_or(Error::<T>::OutOfCapsuleIDs)?;
+        Metadata::<T>::insert(capsule_id, data.clone());
+        Total::put(capsule_id);
+
+        Ok(capsule_id)
     }
 }
