@@ -5,6 +5,8 @@ use frame_system::ensure_signed;
 use sp_runtime::{traits::StaticLookup, DispatchResult};
 use ternoa_common::traits::CapsuleTransferEnabled;
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 #[cfg(test)]
 mod tests;
 mod types;
