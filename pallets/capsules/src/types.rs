@@ -3,6 +3,7 @@ use codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use sp_runtime::RuntimeDebug;
 use sp_std::prelude::Vec;
+use ternoa_common::traits::CapsuleDefaultBuilder;
 
 pub type CapsuleID = u32;
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
@@ -22,4 +23,19 @@ pub struct CapsuleData<AccountId, Hash> {
     pub owner: AccountId,
     /// Wether this capsule is locked by another pallet or not.
     pub locked: bool,
+}
+impl<AccountId, Hash> CapsuleDefaultBuilder<AccountId> for CapsuleData<AccountId, Hash>
+where
+    Hash: Default,
+    AccountId: Clone,
+{
+    fn new_with_owner(owner: &AccountId) -> Self {
+        Self {
+            offchain_uri: Vec::new(),
+            pk_hash: Default::default(),
+            creator: owner.clone(),
+            owner: owner.clone(),
+            locked: false,
+        }
+    }
 }

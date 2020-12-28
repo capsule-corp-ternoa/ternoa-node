@@ -39,7 +39,7 @@ pub trait CapsuleCreationEnabled {
     /// How capsules are represented in the underlying pallet.
     type CapsuleID: Parameter + Copy;
     /// Data the represents a capsule.
-    type CapsuleData: Parameter + Default;
+    type CapsuleData: Parameter;
 
     /// Create a capsule owned by `owner` with data `data` and return its ID
     /// or an error.
@@ -47,4 +47,11 @@ pub trait CapsuleCreationEnabled {
         owner: &Self::AccountId,
         data: Self::CapsuleData,
     ) -> Result<Self::CapsuleID, DispatchError>;
+}
+
+/// Implemented by whatever struct represents a capsule's data. Used during benchmarks
+/// and eventual tests to generate a valid capsule.
+pub trait CapsuleDefaultBuilder<AccountId> {
+    /// Create a mock capsulel with the owner set to `owner`.
+    fn new_with_owner(owner: &AccountId) -> Self;
 }

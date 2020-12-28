@@ -7,11 +7,16 @@ use frame_support::{
         schedule::{DispatchTime, Named as ScheduleNamed},
         LockIdentifier,
     },
+    Parameter,
 };
 use frame_system::{ensure_root, ensure_signed, RawOrigin};
 use sp_runtime::{traits::Dispatchable, traits::StaticLookup, DispatchResult};
-use ternoa_common::traits::CapsuleTransferEnabled;
+use ternoa_common::traits::{
+    CapsuleCreationEnabled, CapsuleDefaultBuilder, CapsuleTransferEnabled,
+};
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 #[cfg(test)]
 mod tests;
 
@@ -22,7 +27,15 @@ pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
     /// Pallet managing capsules.
-    type Capsules: CapsuleTransferEnabled<AccountId = Self::AccountId>;
+    type Capsules: CapsuleTransferEnabled<AccountId = Self::AccountId>
+        + CapsuleCreationEnabled<
+            AccountId = Self::AccountId,
+            CapsuleID = CapsuleIDOf<Self>,
+            CapsuleData = Self::CapsuleData,
+        >;
+    /// How a capsule's data is represented. Mostly used for benchmarks when passed to the
+    /// `CapsuleCreationEnabled` trait.
+    type CapsuleData: Parameter + CapsuleDefaultBuilder<Self::AccountId>;
     /// Scheduler instance which we use to schedule actual transfer calls. This way, we have
     /// all scheduled calls accross all pallets in one place.
     type Scheduler: ScheduleNamed<Self::BlockNumber, Self::PalletsCall, Self::PalletsOrigin>;

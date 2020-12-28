@@ -77,6 +77,7 @@ impl ternoa_capsules::Trait for Test {
 impl Trait for Test {
     type Event = ();
     type Capsules = Capsules;
+    type CapsuleData = ternoa_capsules::CapsuleData<u64, H256>;
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
     type PalletsCall = Call;
