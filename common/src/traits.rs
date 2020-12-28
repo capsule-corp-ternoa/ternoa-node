@@ -25,6 +25,9 @@ pub trait CapsuleTransferEnabled {
     /// Unlock a capsule for transfers.
     fn unlock(capsule_id: Self::CapsuleID) -> DispatchResult;
 
+    /// Indicates wether a capsule `capsule_id` is locked or not.
+    fn is_locked(capsule_id: Self::CapsuleID) -> bool;
+
     /// Returns true if `maybe_owner` owns `capsule_id`.
     fn is_owner(maybe_owner: Self::AccountId, capsule_id: Self::CapsuleID) -> bool;
 }

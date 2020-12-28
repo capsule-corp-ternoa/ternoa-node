@@ -134,6 +134,10 @@ impl<T: Trait> CapsuleTransferEnabled for Module<T> {
         Ok(())
     }
 
+    fn is_locked(capsule_id: Self::CapsuleID) -> bool {
+        Self::metadata(capsule_id).locked
+    }
+
     fn is_owner(maybe_owner: Self::AccountId, capsule_id: Self::CapsuleID) -> bool {
         Self::metadata(capsule_id).owner == maybe_owner
     }
