@@ -1,6 +1,6 @@
 use crate::{
-    pallets_economy::NegativeImbalance, Authorship, Balances, Call, Event, Origin, PalletInfo,
-    Runtime, VERSION,
+    pallets_economy::NegativeImbalance, Authorship, Balances, Call, Event, Origin, OriginCaller,
+    PalletInfo, Runtime, VERSION,
 };
 use frame_support::{
     parameter_types,
@@ -10,6 +10,7 @@ use frame_support::{
         Weight,
     },
 };
+use frame_system::EnsureRoot;
 use sp_runtime::{
     generic,
     traits::{BlakeTwo256, IdentityLookup, Saturating},
@@ -62,6 +63,22 @@ impl frame_system::Trait for Runtime {
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
+}
+
+parameter_types! {
+    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * MaximumBlockWeight::get();
+    pub const MaxScheduledPerBlock: u32 = 50;
+}
+
+impl pallet_scheduler::Trait for Runtime {
+    type Event = Event;
+    type Origin = Origin;
+    type PalletsOrigin = OriginCaller;
+    type Call = Call;
+    type MaximumWeight = MaximumSchedulerWeight;
+    type ScheduleOrigin = EnsureRoot<AccountId>;
+    type MaxScheduledPerBlock = MaxScheduledPerBlock;
+    type WeightInfo = ();
 }
 
 /// Helper struct to identify the author of a block and reward them with some funds.
