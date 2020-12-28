@@ -15,6 +15,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libssl-dev \
     pkg-config
 
+ADD . .
+
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
     export PATH=$PATH:$HOME/.cargo/bin && \
     ./scripts/init.sh && \
