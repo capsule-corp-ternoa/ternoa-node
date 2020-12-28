@@ -15,3 +15,7 @@ Ternoa's Blockchain to support the secure creation and transfer of Capsules.
 
 ### Timed Escrow
 - capsule locking
+
+### Testing
+- test --all for tests
+- test --all --all-features for benches, cannot be individual
