@@ -33,6 +33,7 @@ pub mod constants;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
+mod pallets_ternoa;
 mod pallets_time;
 mod pallets_validators;
 mod version;
@@ -75,12 +76,16 @@ construct_runtime!(
         ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
         Offences: pallet_offences::{Module, Call, Storage, Event},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
+        Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
         Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
         Staking: pallet_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
+
+        Capsules: ternoa_capsules::{Module, Call, Storage, Event<T>},
+        TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }
 );
 

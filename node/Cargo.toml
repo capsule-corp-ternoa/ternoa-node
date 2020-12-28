@@ -34,9 +34,6 @@ frame-benchmarking-cli = { version = "2.0.0", default-features = false }
 futures = { version = "0.3.1", features = ["compat"] }
 jsonrpc-core = "15.0.0"
 jsonrpc-pubsub = "15.0.0"
-ternoa-executor = { path = "../executor" }
-ternoa-primitives = { path = "../primitives" }
-ternoa-runtime = { path = "../runtime" }
 pallet-im-online = { version = "2.0.0", default-features = false }
 pallet-transaction-payment-rpc = "2.0.0"
 sc-authority-discovery = "0.8.0"
@@ -68,6 +65,9 @@ sp-runtime = "2.0.0"
 sp-transaction-pool = "2.0.0"
 structopt = "0.3.14"
 substrate-frame-rpc-system = "2.0.0"
+ternoa-executor = { path = "../executor" }
+ternoa-primitives = { path = "../primitives" }
+ternoa-runtime = { path = "../runtime" }
 
 [build-dependencies]
 vergen = "3.0.4"

@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure};
 use frame_system::ensure_signed;
 use sp_runtime::{traits::StaticLookup, DispatchResult};
