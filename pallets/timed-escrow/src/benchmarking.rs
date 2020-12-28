@@ -2,7 +2,7 @@ use crate::{Call, CapsuleIDOf, Module, Trait};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::{Module as SystemModule, RawOrigin};
 use sp_runtime::traits::StaticLookup;
-use sp_std::prelude::Vec;
+use sp_std::{boxed::Box, prelude::*};
 use ternoa_common::traits::{
     CapsuleCreationEnabled, CapsuleDefaultBuilder, CapsuleTransferEnabled,
 };

@@ -2,7 +2,7 @@ use crate::{Call, CapsuleData, Module, Trait};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
-use sp_std::prelude::Vec;
+use sp_std::{boxed::Box, prelude::*};
 
 fn mock_capsule_data<T: Trait>(owner: T::AccountId) -> CapsuleData<T::AccountId, T::Hash> {
     CapsuleData {
