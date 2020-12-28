@@ -1,6 +1,7 @@
 FROM ubuntu as builder
 
-LABEL maintainer="eliott@nuclei.studio"
+LABEL org.opencontainers.image.source http://github.com/capsule-corp-ternoa/chain
+LABEL org.opencontainers.image.authors ["eliott@nuclei.studio"]
 
 ARG PROFILE=release
 ARG BINARY_NAME=ternoa
