@@ -7,6 +7,7 @@ use frame_support::{
         schedule::{DispatchTime, Named as ScheduleNamed},
         LockIdentifier,
     },
+    weights::Weight,
     Parameter,
 };
 use frame_system::{ensure_root, ensure_signed, RawOrigin};
@@ -17,11 +18,18 @@ use ternoa_common::traits::{
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+mod default_weights;
 #[cfg(test)]
 mod tests;
 
 /// Used for derivating scheduled tasks IDs
 const ESCROW_ID: LockIdentifier = *b"escrow  ";
+
+pub trait WeightInfo {
+    fn create() -> Weight;
+    fn cancel() -> Weight;
+    fn complete_transfer() -> Weight;
+}
 
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
@@ -43,6 +51,8 @@ pub trait Trait: frame_system::Trait {
     type PalletsOrigin: From<RawOrigin<Self::AccountId>>;
     /// Overarching type of all pallets calls. Used by the scheduler.
     type PalletsCall: Dispatchable<Origin = Self::Origin> + From<Call<Self>>;
+    /// Weight values for this pallet
+    type WeightInfo: WeightInfo;
 }
 
 type CapsuleIDOf<T> = <<T as Trait>::Capsules as CapsuleTransferEnabled>::CapsuleID;
@@ -78,7 +88,7 @@ decl_module! {
 
         /// Create a timed transfer. This will lock the associated capsule until it gets
         /// transferred or canceled.
-        #[weight = 0]
+        #[weight = T::WeightInfo::create()]
         fn create(origin, capsule_id: CapsuleIDOf<T>, to: <T::Lookup as StaticLookup>::Source, at: T::BlockNumber) {
             let who = ensure_signed(origin)?;
             Self::ensure_capsule_owner(who.clone(), capsule_id)?;
@@ -100,7 +110,7 @@ decl_module! {
         }
 
         /// Cancel a transfer that was previously created and unlocks the capsule.
-        #[weight = 0]
+        #[weight = T::WeightInfo::cancel()]
         fn cancel(origin, capsule_id: CapsuleIDOf<T>) {
             let who = ensure_signed(origin)?;
             Self::ensure_capsule_owner(who.clone(), capsule_id)?;
@@ -112,7 +122,7 @@ decl_module! {
         }
 
         /// System only. Execute a transfer, called by the scheduler.
-        #[weight = 0]
+        #[weight = T::WeightInfo::complete_transfer()]
         fn complete_transfer(origin, from: T::AccountId, to: T::AccountId, capsule_id: CapsuleIDOf<T>) {
             ensure_root(origin)?;
             T::Capsules::unlock(capsule_id)?;

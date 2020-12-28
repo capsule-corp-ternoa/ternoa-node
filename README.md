@@ -19,3 +19,7 @@ Ternoa's Blockchain to support the secure creation and transfer of Capsules.
 ### Testing
 - test --all for tests
 - test --all --all-features for benches, cannot be individual
+
+### Weights / Benchmarking
+- done on Apple M1
+- may need to recomputing when defining the validator grade hardware (provide instructions)

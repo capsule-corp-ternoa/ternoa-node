@@ -50,6 +50,7 @@ impl frame_system::Trait for Test {
 }
 impl Trait for Test {
     type Event = ();
+    type WeightInfo = ();
 }
 
 // Do not use the `0` account id since this would be the default value

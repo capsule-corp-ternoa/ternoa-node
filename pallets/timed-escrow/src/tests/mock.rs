@@ -73,6 +73,7 @@ impl pallet_scheduler::Trait for Test {
 }
 impl ternoa_capsules::Trait for Test {
     type Event = ();
+    type WeightInfo = ();
 }
 impl Trait for Test {
     type Event = ();
@@ -81,6 +82,7 @@ impl Trait for Test {
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
     type PalletsCall = Call;
+    type WeightInfo = ();
 }
 
 // Do not use the `0` account id since this would be the default value
