@@ -31,6 +31,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/capsule-corp-ternoa/chain:latest
+          tags: |
+            ghcr.io/capsule-corp-ternoa/chain:latest
+            ghcr.io/capsule-corp-ternoa/chain:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
