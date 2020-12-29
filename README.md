@@ -22,6 +22,9 @@ After those steps you can use either of `cargo run`, `cargo run --release`, `./t
 ### Unit tests
 We provide a battery of unit tests which you can run via `cargo test --all --all-features` (omitting `--all-features` would not run a few tests related to benchmarking).
 
+### Documentation
+You can generate the rust developer documentation via `cargo doc --open`.
+
 ### With docker 🐳
 Just run `docker build -t ternoa/chain .` and then use `docker run --rm -p 9944:9944 -it ternoa/chain` to build and use a containerized node (built with all the optimizations).
 
