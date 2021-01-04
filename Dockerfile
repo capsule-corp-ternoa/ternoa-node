@@ -21,17 +21,17 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
     export PATH=$PATH:$HOME/.cargo/bin && \
     ./scripts/init.sh && \
     cargo build -p ${PACKAGE_NAME} --${PROFILE} && \
-    cp target/${PROFILE}/${BINARY_NAME} /node
+    cp target/${PROFILE}/${BINARY_NAME} /${BINARY_NAME}
 
 # ===== SECOND STAGE ======
 
 FROM ubuntu
 
-COPY --from=builder /node /usr/local/bin
+COPY --from=builder /${BINARY_NAME} /usr/local/bin/${BINARY_NAME}
 
 RUN useradd --create-home runner
 
 USER runner
 EXPOSE 30333 9933 9944
 
-ENTRYPOINT ["node"]
+ENTRYPOINT ["${BINARY_NAME}"]
