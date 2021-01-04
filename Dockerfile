@@ -27,11 +27,11 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
 
 FROM ubuntu
 
-COPY --from=builder /${BINARY_NAME} /usr/local/bin/${BINARY_NAME}
+COPY --from=builder /${BINARY_NAME} /usr/local/bin/chain-node
 
 RUN useradd --create-home runner
 
 USER runner
 EXPOSE 30333 9933 9944
 
-ENTRYPOINT ${BINARY_NAME}
+ENTRYPOINT ["chain-node"]
