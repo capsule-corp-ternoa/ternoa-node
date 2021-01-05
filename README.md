@@ -26,9 +26,11 @@ We provide a battery of unit tests which you can run via `cargo test --all --all
 You can generate the rust developer documentation via `cargo doc --open`.
 
 ### With docker 🐳
-Just run `docker build -t ternoa/chain .` and then use `docker run --rm -p 9944:9944 -it ternoa/chain` to build and use a containerized node (built with all the optimizations).
+Just run `docker build -t netickfr/ternoa-chain .` and then use `docker run --rm -p 9944:9944 -it ternoa/chain` to build and use a containerized node (built with all the optimizations).
 
-Alternatively, you can fetch a prebuilt, bleeding edge container on the [Github Container Registry of the organization](), you may need to login with your Github account though []().
+Alternatively, you can fetch a prebuilt, bleeding edge container on the [Docker Hub](https://hub.docker.com/r/netickfr/ternoa-chain).
+
+This is how you'd start a local node with docker: `docker run --rm -p 9944:9944 -p 9933:9933 -it netickfr/ternoa-chain --tmp --dev --ws-external --rpc-cors all`.
 
 ### Usage and testing
 First, you need to run a node:
