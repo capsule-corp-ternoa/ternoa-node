@@ -32,6 +32,7 @@ sp-trie = { version = "2.0.0", default-features = false, features = ["memory-tra
 frame-benchmarking = { version = "2.0.0", default-features = false }
 frame-benchmarking-cli = { version = "2.0.0", default-features = false }
 futures = { version = "0.3.1", features = ["compat"] }
+hex-literal = { version = "0.3.1" }
 jsonrpc-core = "15.0.0"
 jsonrpc-pubsub = "15.0.0"
 pallet-im-online = { version = "2.0.0", default-features = false }
