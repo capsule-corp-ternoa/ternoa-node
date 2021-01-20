@@ -1,6 +1,5 @@
-use jsonrpc_core::serde_json::{json, map::Map as SerdeMap};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use sc_service::{config::TelemetryEndpoints, ChainType};
+use sc_service::ChainType;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, Pair, Public};
@@ -154,76 +153,8 @@ pub fn testnet_genesis(
     }
 }
 
-fn chaos_config_genesis() -> GenesisConfig {
-    let root: AccountId =
-        hex_literal::hex!["d8f50455fa71e47aa6ed41670393ebba9f7083cd1d90f3f9f3f7a6bf921b6209"]
-            .into();
-    let authority_1: AccountId =
-        hex_literal::hex!["cec787c2835cdb1b300fbce578368f052c0c68a546061cd3526d82ae6dccd772"]
-            .into();
-    let authority_1_ed25519 =
-        hex_literal::hex!("0b8dd85cb7cfad9957c7b065ced7d9b332ce4e893041bf43cb68eb03f7081c52")
-            .to_vec();
-    let authority_1_sr25519 =
-        hex_literal::hex!("b6eeee5ff904f44f0de4c1ba0e82ea6bbd0780f98eb8ccd45e142f8a2754ec32")
-            .to_vec();
-    let authority_2: AccountId =
-        hex_literal::hex!["e4b0d5b34be3a82fdc643eb94085cbf8bd5c3280c7d55ff2a203aee6ab464745"]
-            .into();
-    let authority_2_ed25519 =
-        hex_literal::hex!("300456bdf5e461ed39c76f9df8ccabf9a17f4f7d15dd458e66050610502c40e4")
-            .to_vec();
-    let authority_2_sr25519 =
-        hex_literal::hex!("dac6ac8217639698d807b519f5d946ecc8d0323c6d956f336259b7e06e907304")
-            .to_vec();
-
-    testnet_genesis(
-        vec![
-            (
-                authority_1.clone(),
-                authority_1.clone(),
-                GrandpaId::from_slice(authority_1_ed25519.as_slice()),
-                BabeId::from_slice(authority_1_sr25519.as_slice()),
-                ImOnlineId::from_slice(authority_1_sr25519.as_slice()),
-                AuthorityDiscoveryId::from_slice(authority_1_sr25519.as_slice()),
-            ),
-            (
-                authority_2.clone(),
-                authority_2.clone(),
-                GrandpaId::from_slice(authority_2_ed25519.as_slice()),
-                BabeId::from_slice(authority_2_sr25519.as_slice()),
-                ImOnlineId::from_slice(authority_2_sr25519.as_slice()),
-                AuthorityDiscoveryId::from_slice(authority_2_sr25519.as_slice()),
-            ),
-        ],
-        Some(vec![root.clone(), authority_1, authority_2]),
-        Some(root),
-    )
-}
-
-/// Chaos config (single validator Alice)
 pub fn chaos_config() -> ChainSpec {
-    let mut properties = SerdeMap::new();
-    properties.insert(String::from("tokenSymbol"), json!("CACO"));
-    properties.insert(String::from("tokenDecimals"), json!(18));
-
-    ChainSpec::from_genesis(
-        "Ternoa Chaos Net",
-        "ternoa_chaos",
-        ChainType::Live,
-        chaos_config_genesis,
-        vec![],
-        Some(
-            TelemetryEndpoints::new(vec![(
-                String::from("/dns/telemetry.polkadot.io/tcp/443/x-parity-wss/%2Fsubmit%2F"),
-                0,
-            )])
-            .unwrap(),
-        ),
-        Some("ternoa"),
-        Some(properties),
-        Default::default(),
-    )
+    ChainSpec::from_json_bytes(&include_bytes!("../res/chaos.json")[..]).unwrap()
 }
 
 fn development_config_genesis() -> GenesisConfig {
@@ -278,7 +209,7 @@ pub(crate) mod tests {
 
     #[test]
     fn create_chain_specs() {
-        let configs = vec![development_config(), local_testnet_config()];
+        let configs = vec![development_config(), local_testnet_config(), chaos_config()];
         for conf in configs {
             assert!(conf.build_storage().is_ok());
         }
