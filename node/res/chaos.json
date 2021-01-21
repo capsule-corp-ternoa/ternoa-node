@@ -3,7 +3,8 @@
   "id": "ternoa_chaos",
   "chainType": "Live",
   "bootNodes": [
-    "/ip4/127.0.0.1/tcp/30333/p2p/12D3KooWP4PomDfVPqY3iEtme97i1KnjC8TYJx6JCezsekrkk7Uk"
+    "/dns/boot1.chaos.ternoa.com/tcp/30333/p2p/12D3KooWRKt7qwGK3XZ3jQGbr9PRL4J1Cv5Fho5sPNZaZ6KvSMJs",
+    "/dns/boot2.chaos.ternoa.com/tcp/30333/p2p/12D3KooWQFhfXnAGRBSivKpu3aaZPjxqLoUnB1krYHnkYVSooSAp"
   ],
   "telemetryEndpoints": [
     [
