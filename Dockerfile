@@ -23,6 +23,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
 
 FROM ubuntu
 
+# curl is used when injecting validator keys
+RUN apt-get update && apt-get install -y curl
 COPY --from=builder /ternoa /usr/local/bin/ternoa
 
 RUN useradd --create-home runner
