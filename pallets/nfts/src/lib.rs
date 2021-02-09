@@ -108,8 +108,11 @@ decl_module! {
             Self::deposit_event(RawEvent::Mutated(id));
         }
 
-        // mutate(origin, id: NFTId, details: NFTDetails)
         // transfer(origin, id: NFTId, who: <T::Lookup as StaticLookup>::Source)
         // seal(origin, id: NFTId)
     }
 }
+
+impl<T: Trait> NFTs for Module<T> {}
+
+impl<T: Trait> LockableNFTs for Module<T> {}
