@@ -7,6 +7,7 @@ members = [
     'executor',
     'node',
     'pallets/capsules',
+    'pallets/nfts',
     'pallets/timed-escrow',
     'primitives',
     'runtime',

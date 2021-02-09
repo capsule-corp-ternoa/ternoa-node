@@ -3,6 +3,8 @@
 use frame_support::Parameter;
 use sp_runtime::{DispatchError, DispatchResult};
 
+pub use crate::nfts::{LockableNFTs, NFTs};
+
 /// Implemented by a pallet that supports the transfers of capsules.
 pub trait CapsuleTransferEnabled {
     /// Underlying runtime's account ids.
