@@ -1,8 +1,10 @@
 use crate::{Module, Trait};
+use codec::{Decode, Encode};
 use frame_support::{
     assert_ok, impl_outer_dispatch, impl_outer_origin, parameter_types, weights::Weight,
 };
 use frame_system::{EnsureRoot, RawOrigin};
+use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
@@ -53,9 +55,16 @@ impl frame_system::Trait for Test {
 parameter_types! {
     pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * MaximumBlockWeight::get();
 }
+#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum MockNFTDetails {
     Empty,
     WithU8(u8),
+}
+impl Default for MockNFTDetails {
+    fn default() -> Self {
+        Self::Empty
+    }
 }
 impl Trait for Test {
     type Event = ();
