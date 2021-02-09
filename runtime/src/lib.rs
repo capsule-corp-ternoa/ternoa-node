@@ -342,6 +342,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
 
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
+            add_benchmark!(params, batches, ternoa_nfts, NFTs);
             add_benchmark!(params, batches, ternoa_timed_escrow, TimedEscrow);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }

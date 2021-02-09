@@ -67,6 +67,7 @@ impl Trait for Test {
     type Event = ();
     type NFTId = u32;
     type NFTDetails = MockNFTDetails;
+    type WeightInfo = ();
 }
 
 // Do not use the `0` account id since this would be the default value

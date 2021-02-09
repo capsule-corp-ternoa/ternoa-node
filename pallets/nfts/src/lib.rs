@@ -1,7 +1,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, Encode};
-use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure, Parameter};
+use frame_support::{
+    decl_error, decl_event, decl_module, decl_storage, ensure, weights::Weight, Parameter,
+};
 use frame_system::ensure_signed;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
@@ -11,6 +13,9 @@ use sp_runtime::{
 };
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+mod default_weights;
 #[cfg(test)]
 mod tests;
 
@@ -24,6 +29,13 @@ pub struct NFTData<AccountId, NFTDetails> {
     pub sealed: bool,
 }
 
+pub trait WeightInfo {
+    fn create() -> Weight;
+    fn mutate() -> Weight;
+    fn seal() -> Weight;
+    fn transfer() -> Weight;
+}
+
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
     type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
@@ -31,6 +43,8 @@ pub trait Trait: frame_system::Trait {
     type NFTId: Parameter + Default + CheckedAdd + Copy + Member + From<u8>;
     /// How NFT details are represented
     type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
+
+    type WeightInfo: WeightInfo;
 }
 
 decl_storage! {

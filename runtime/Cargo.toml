@@ -116,5 +116,6 @@ runtime-benchmarks = [
 	"pallet-timestamp/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"ternoa-capsules/runtime-benchmarks",
+	"ternoa-nfts/runtime-benchmarks",
 	"ternoa-timed-escrow/runtime-benchmarks",
 ]
