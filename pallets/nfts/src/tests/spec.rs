@@ -98,3 +98,29 @@ fn mutate_sealed() {
         );
     })
 }
+
+#[test]
+fn transfer_update_owner() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+        assert_ok!(NFTs::transfer(RawOrigin::Signed(ALICE).into(), 0, BOB));
+        assert_eq!(NFTs::data(0).owner, BOB);
+    })
+}
+
+#[test]
+fn transfer_not_the_owner() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+        assert_noop!(
+            NFTs::transfer(RawOrigin::Signed(BOB).into(), 0, BOB),
+            Error::<Test>::NotOwner
+        );
+    })
+}

@@ -6,7 +6,7 @@ use frame_system::ensure_signed;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
-    traits::{CheckedAdd, MaybeSerializeDeserialize, Member},
+    traits::{CheckedAdd, MaybeSerializeDeserialize, Member, StaticLookup},
     RuntimeDebug,
 };
 use ternoa_common::traits::{LockableNFTs, NFTs};
@@ -108,7 +108,22 @@ decl_module! {
             Self::deposit_event(RawEvent::Mutated(id));
         }
 
-        // transfer(origin, id: NFTId, who: <T::Lookup as StaticLookup>::Source)
+        /// Transfer an NFT from an account to another one. Must be called by the
+        /// actual owner of the NFT.
+        #[weight = 0]
+        fn transfer(origin, id: T::NFTId, to: <T::Lookup as StaticLookup>::Source) {
+            let who = ensure_signed(origin)?;
+            let to_unlookup = T::Lookup::lookup(to)?;
+            let mut data = Data::<T>::get(id);
+
+            ensure!(data.owner == who, Error::<T>::NotOwner);
+
+            data.owner = to_unlookup.clone();
+            Data::<T>::insert(id, data);
+
+            Self::deposit_event(RawEvent::Transfer(id, who, to_unlookup));
+        }
+
         // seal(origin, id: NFTId)
     }
 }
