@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, Encode};
-use frame_support::{decl_error, decl_event, decl_module, decl_storage, Parameter};
+use frame_support::{decl_error, decl_event, decl_module, decl_storage, ensure, Parameter};
 use frame_system::ensure_signed;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
@@ -63,6 +63,10 @@ decl_error! {
     pub enum Error for Module<T: Trait> {
         /// We do not have any NFT id left, a runtime upgrade is necessary.
         NFTIdOverflow,
+        /// This function can only be called by the owner of the nft.
+        NotOwner,
+        /// NFT is sealed and no longer accepts mutations.
+        Sealed,
     }
 }
 
@@ -86,6 +90,22 @@ decl_module! {
             });
 
             Self::deposit_event(RawEvent::Created(id, who));
+        }
+
+        /// Update the details included in an NFT. Must be called by the owner of
+        /// the NFT and while the NFT is not sealed.
+        #[weight = 0]
+        fn mutate(origin, id: T::NFTId, details: T::NFTDetails) {
+            let who = ensure_signed(origin)?;
+            let mut data = Data::<T>::get(id);
+
+            ensure!(!data.sealed, Error::<T>::Sealed);
+            ensure!(data.owner == who, Error::<T>::NotOwner);
+
+            data.details = details;
+            Data::<T>::insert(id, data);
+
+            Self::deposit_event(RawEvent::Mutated(id));
         }
 
         // mutate(origin, id: NFTId, details: NFTDetails)

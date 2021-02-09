@@ -1,7 +1,7 @@
-use frame_support::assert_ok;
-use frame_system::RawOrigin;
-
 use super::mock::*;
+use crate::{Data, Error};
+use frame_support::{assert_noop, assert_ok, StorageMap};
+use frame_system::RawOrigin;
 
 #[test]
 fn create_increment_id() {
@@ -46,5 +46,55 @@ fn create_is_unsealed() {
             MockNFTDetails::Empty
         ));
         assert_eq!(NFTs::data(0).sealed, false);
+    })
+}
+
+#[test]
+fn mutate_update_details() {
+    new_test_ext().execute_with(|| {
+        let mock_details = MockNFTDetails::WithU8(42);
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+        assert_ok!(NFTs::mutate(
+            RawOrigin::Signed(ALICE).into(),
+            0,
+            mock_details.clone(),
+        ));
+        assert_eq!(NFTs::data(0).details, mock_details);
+    })
+}
+
+#[test]
+fn mutate_not_the_owner() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+        assert_noop!(
+            NFTs::mutate(RawOrigin::Signed(BOB).into(), 0, MockNFTDetails::WithU8(42),),
+            Error::<Test>::NotOwner
+        );
+    })
+}
+
+#[test]
+fn mutate_sealed() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+        Data::<Test>::mutate(0, |d| d.sealed = true);
+        assert_noop!(
+            NFTs::mutate(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                MockNFTDetails::WithU8(42),
+            ),
+            Error::<Test>::Sealed
+        );
     })
 }
