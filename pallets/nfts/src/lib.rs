@@ -246,5 +246,9 @@ impl<T: Trait> LockableNFTs for Module<T> {
 
     fn locked(id: Self::NFTId) -> bool {
         Data::<T>::get(id).locked
+        // create(origin, category: CategoryId, details: NFTDetails)
+        // mutate(origin, id: NFTId, details: NFTDetails)
+        // transfer(origin, id: NFTId, who: T::AccountId)
+        // seal(origin, id: NFTId)
     }
 }
