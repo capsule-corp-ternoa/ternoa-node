@@ -124,7 +124,21 @@ decl_module! {
             Self::deposit_event(RawEvent::Transfer(id, who, to_unlookup));
         }
 
-        // seal(origin, id: NFTId)
+        /// Mark an NFT as sealed, thus disabling further details modifications (but
+        /// not preventing future transfers). Must be called by the owner of the NFT.
+        #[weight = 0]
+        fn seal(origin, id: T::NFTId) {
+            let who = ensure_signed(origin)?;
+            let mut data = Data::<T>::get(id);
+
+            ensure!(!data.sealed, Error::<T>::Sealed);
+            ensure!(data.owner == who, Error::<T>::NotOwner);
+
+            data.sealed = true;
+            Data::<T>::insert(id, data);
+
+            Self::deposit_event(RawEvent::Sealed(id));
+        }
     }
 }
 
