@@ -1,9 +1,6 @@
 use crate::{Module, Trait};
 use codec::{Decode, Encode};
-use frame_support::{
-    assert_ok, impl_outer_dispatch, impl_outer_origin, parameter_types, weights::Weight,
-};
-use frame_system::{EnsureRoot, RawOrigin};
+use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
 use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
@@ -77,7 +74,6 @@ impl Trait for Test {
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 pub type NFTs = Module<Test>;
-pub type System = frame_system::Module<Test>;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
     frame_system::GenesisConfig::default()

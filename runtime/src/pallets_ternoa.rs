@@ -1,9 +1,15 @@
 use crate::{Call, Capsules, Event, OriginCaller, Runtime, Scheduler};
-use ternoa_primitives::{AccountId, Hash};
+use ternoa_primitives::{AccountId, Hash, NFTDetails};
 
 impl ternoa_capsules::Trait for Runtime {
     type Event = Event;
     type WeightInfo = ();
+}
+
+impl ternoa_nfts::Trait for Runtime {
+    type Event = Event;
+    type NFTId = u32;
+    type NFTDetails = NFTDetails;
 }
 
 impl ternoa_timed_escrow::Trait for Runtime {
