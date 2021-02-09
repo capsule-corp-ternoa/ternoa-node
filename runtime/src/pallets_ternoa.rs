@@ -8,6 +8,12 @@ impl ternoa_nfts::Trait for Runtime {
     type WeightInfo = ();
 }
 
+impl ternoa_nfts::Trait for Runtime {
+    type Event = Event;
+    type NFTId = u32;
+    type NFTDetails = NFTDetails;
+}
+
 impl ternoa_timed_escrow::Trait for Runtime {
     type Event = Event;
     type NFTs = Nfts;
