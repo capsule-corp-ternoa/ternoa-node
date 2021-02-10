@@ -28,6 +28,8 @@ pub struct NFTData<AccountId, NFTDetails> {
     pub details: NFTDetails,
     /// Set to true to prevent further modifications to the details struct
     pub sealed: bool,
+    /// Set to true to prevent changes to the owner variable
+    pub locked: bool,
 }
 
 pub trait WeightInfo {
@@ -71,6 +73,11 @@ decl_event!(
         Mutated(NFTId),
         /// An NFT was sealed, preventing any new mutations. \[nft id\]
         Sealed(NFTId),
+        /// An NFT has been locked, preventing transfers until it is unlocked.
+        /// \[nft id\]
+        Locked(NFTId),
+        /// A locked NFT has been unlocked. \[nft id\]
+        Unlocked(NFTId),
     }
 );
 
@@ -82,6 +89,9 @@ decl_error! {
         NotOwner,
         /// NFT is sealed and no longer accepts mutations.
         Sealed,
+        /// NFT is locked and thus its owner cannot be changed until it
+        /// is unlocked.
+        Locked,
     }
 }
 
@@ -121,6 +131,7 @@ decl_module! {
             let mut data = Data::<T>::get(id);
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
+            ensure!(!data.locked, Error::<T>::Locked);
 
             data.owner = to_unlookup.clone();
             Data::<T>::insert(id, data);
@@ -163,6 +174,7 @@ impl<T: Trait> NFTs for Module<T> {
                 owner: owner.clone(),
                 details,
                 sealed: false,
+                locked: false,
             },
         );
 
@@ -188,7 +200,11 @@ impl<T: Trait> NFTs for Module<T> {
     }
 
     fn set_owner(id: Self::NFTId, owner: &Self::AccountId) -> DispatchResult {
-        Data::<T>::mutate(id, |data| (*data).owner = owner.clone());
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
+            ensure!(!data.locked, Error::<T>::Locked);
+            (*data).owner = owner.clone();
+            Ok(())
+        })?;
 
         Ok(())
     }
@@ -212,4 +228,19 @@ impl<T: Trait> NFTs for Module<T> {
     }
 }
 
-impl<T: Trait> LockableNFTs for Module<T> {}
+impl<T: Trait> LockableNFTs for Module<T> {
+    type AccountId = T::AccountId;
+    type NFTId = T::NFTId;
+
+    fn lock(id: Self::NFTId) {
+        Data::<T>::mutate(id, |d| (*d).locked = true);
+    }
+
+    fn unlock(id: Self::NFTId) {
+        Data::<T>::mutate(id, |d| (*d).locked = false);
+    }
+
+    fn locked(id: Self::NFTId) -> bool {
+        Data::<T>::get(id).locked
+    }
+}

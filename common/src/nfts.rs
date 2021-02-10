@@ -43,4 +43,20 @@ pub trait NFTs {
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.
-pub trait LockableNFTs {}
+pub trait LockableNFTs {
+    type AccountId;
+
+    /// How NFTs are represented internally.
+    type NFTId;
+
+    /// Mark an NFT as locked thus preventing further owner changes or transfers.
+    /// Note that this doesn't mark the token as sealed and thus it could still has
+    /// its metadata changed by its actual owner.
+    fn lock(id: Self::NFTId);
+
+    /// Unlock a locked NFT.
+    fn unlock(id: Self::NFTId);
+
+    /// Return the lock status of an NFT.
+    fn locked(id: Self::NFTId) -> bool;
+}
