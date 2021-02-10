@@ -1,4 +1,4 @@
-use crate::{Call, Event, NFTs, OriginCaller, Runtime, Scheduler};
+use crate::{Call, Event, Nfts, OriginCaller, Runtime, Scheduler};
 use ternoa_primitives::NFTDetails;
 
 impl ternoa_nfts::Trait for Runtime {
@@ -10,7 +10,7 @@ impl ternoa_nfts::Trait for Runtime {
 
 impl ternoa_timed_escrow::Trait for Runtime {
     type Event = Event;
-    type NFTs = NFTs;
+    type NFTs = Nfts;
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
     type PalletsCall = Call;
