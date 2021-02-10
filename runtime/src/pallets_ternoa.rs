@@ -1,5 +1,5 @@
-use crate::{Call, NFTs, Event, OriginCaller, Runtime, Scheduler};
-use ternoa_primitives::{AccountId, Hash, NFTDetails};
+use crate::{Call, Event, NFTs, OriginCaller, Runtime, Scheduler};
+use ternoa_primitives::NFTDetails;
 
 impl ternoa_nfts::Trait for Runtime {
     type Event = Event;
