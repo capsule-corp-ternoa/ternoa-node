@@ -84,11 +84,7 @@ construct_runtime!(
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
 
-<<<<<<< HEAD
         Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>},
-=======
-        NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>},
->>>>>>> fd63d91... drop capsules pallet
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }
 );
