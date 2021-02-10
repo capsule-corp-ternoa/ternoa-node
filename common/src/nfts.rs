@@ -1,6 +1,6 @@
 //! Common NFT specific traits
 
-use frame_support::dispatch::DispatchResult;
+use frame_support::{dispatch::DispatchResult, Parameter};
 use sp_runtime::DispatchError;
 use sp_std::result;
 
@@ -12,7 +12,7 @@ pub trait NFTs {
     type NFTDetails;
 
     /// How NFTs are represented internally.
-    type NFTId;
+    type NFTId: Parameter + Copy;
 
     /// Create a new NFT with the specified details and return its ID or an error.
     fn create(
@@ -47,12 +47,12 @@ pub trait LockableNFTs {
     type AccountId;
 
     /// How NFTs are represented internally.
-    type NFTId;
+    type NFTId: Parameter + Copy;
 
     /// Mark an NFT as locked thus preventing further owner changes or transfers.
     /// Note that this doesn't mark the token as sealed and thus it could still has
     /// its metadata changed by its actual owner.
-    fn lock(id: Self::NFTId);
+    fn lock(id: Self::NFTId) -> DispatchResult;
 
     /// Unlock a locked NFT.
     fn unlock(id: Self::NFTId);

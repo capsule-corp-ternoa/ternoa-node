@@ -36,7 +36,7 @@ fn lock_and_unlock() {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty).expect("creation failed");
 
-        <NFTs as traits::LockableNFTs>::lock(id);
+        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_eq!(<NFTs as traits::LockableNFTs>::locked(id), true);
 
         <NFTs as traits::LockableNFTs>::unlock(id);
@@ -50,7 +50,7 @@ fn lock_prevent_transfers() {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty).expect("creation failed");
 
-        <NFTs as traits::LockableNFTs>::lock(id);
+        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_noop!(
             NFTs::transfer(RawOrigin::Signed(ALICE).into(), id, BOB),
             Error::<Test>::Locked
@@ -64,9 +64,23 @@ fn lock_prevent_set_owner() {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty).expect("creation failed");
 
-        <NFTs as traits::LockableNFTs>::lock(id);
+        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_noop!(
             <NFTs as traits::NFTs>::set_owner(id, &BOB),
+            Error::<Test>::Locked
+        );
+    })
+}
+
+#[test]
+fn lock_double_fail() {
+    new_test_ext().execute_with(|| {
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty).expect("creation failed");
+
+        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
+        assert_noop!(
+            <NFTs as traits::LockableNFTs>::lock(id),
             Error::<Test>::Locked
         );
     })

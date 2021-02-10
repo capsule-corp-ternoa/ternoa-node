@@ -232,8 +232,12 @@ impl<T: Trait> LockableNFTs for Module<T> {
     type AccountId = T::AccountId;
     type NFTId = T::NFTId;
 
-    fn lock(id: Self::NFTId) {
-        Data::<T>::mutate(id, |d| (*d).locked = true);
+    fn lock(id: Self::NFTId) -> DispatchResult {
+        Data::<T>::try_mutate(id, |d| -> DispatchResult {
+            ensure!(!d.locked, Error::<T>::Locked);
+            (*d).locked = true;
+            Ok(())
+        })
     }
 
     fn unlock(id: Self::NFTId) {
