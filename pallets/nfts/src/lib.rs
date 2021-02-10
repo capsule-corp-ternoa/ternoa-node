@@ -9,8 +9,9 @@ use frame_system::ensure_signed;
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
     traits::{CheckedAdd, MaybeSerializeDeserialize, Member, StaticLookup},
-    RuntimeDebug,
+    DispatchError, DispatchResult, RuntimeDebug,
 };
+use sp_std::result;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
 #[cfg(feature = "runtime-benchmarks")]
@@ -94,16 +95,7 @@ decl_module! {
         #[weight = 0]
         fn create(origin, details: T::NFTDetails) {
             let who = ensure_signed(origin)?;
-            let id = Total::<T>::get();
-            Total::<T>::put(id.checked_add(&1.into()).ok_or(Error::<T>::NFTIdOverflow)?);
-
-            Data::<T>::insert(id, NFTData {
-                owner: who.clone(),
-                details,
-                sealed: false,
-            });
-
-            Self::deposit_event(RawEvent::Created(id, who));
+            let _id = <Self as NFTs>::create(&who, details)?;
         }
 
         /// Update the details included in an NFT. Must be called by the owner of
@@ -111,15 +103,13 @@ decl_module! {
         #[weight = 0]
         fn mutate(origin, id: T::NFTId, details: T::NFTDetails) {
             let who = ensure_signed(origin)?;
-            let mut data = Data::<T>::get(id);
+            <Self as NFTs>::mutate(id, |owner, dets| -> DispatchResult {
+                ensure!(owner == &who, Error::<T>::NotOwner);
 
-            ensure!(!data.sealed, Error::<T>::Sealed);
-            ensure!(data.owner == who, Error::<T>::NotOwner);
+                *dets = details;
 
-            data.details = details;
-            Data::<T>::insert(id, data);
-
-            Self::deposit_event(RawEvent::Mutated(id));
+                Ok(())
+            })?;
         }
 
         /// Transfer an NFT from an account to another one. Must be called by the
@@ -156,6 +146,70 @@ decl_module! {
     }
 }
 
-impl<T: Trait> NFTs for Module<T> {}
+impl<T: Trait> NFTs for Module<T> {
+    type AccountId = T::AccountId;
+    type NFTDetails = T::NFTDetails;
+    type NFTId = T::NFTId;
+
+    fn create(
+        owner: &Self::AccountId,
+        details: Self::NFTDetails,
+    ) -> result::Result<Self::NFTId, DispatchError> {
+        let id = Total::<T>::get();
+        Total::<T>::put(id.checked_add(&1.into()).ok_or(Error::<T>::NFTIdOverflow)?);
+        Data::<T>::insert(
+            id,
+            NFTData {
+                owner: owner.clone(),
+                details,
+                sealed: false,
+            },
+        );
+
+        Self::deposit_event(RawEvent::Created(id, owner.clone()));
+        Ok(id)
+    }
+
+    fn mutate<F: FnOnce(&Self::AccountId, &mut Self::NFTDetails) -> DispatchResult>(
+        id: Self::NFTId,
+        f: F,
+    ) -> DispatchResult {
+        let mut data = Data::<T>::get(id);
+        let mut details = data.details;
+
+        ensure!(!data.sealed, Error::<T>::Sealed);
+        f(&data.owner, &mut details)?;
+
+        data.details = details;
+        Data::<T>::insert(id, data);
+
+        Self::deposit_event(RawEvent::Mutated(id));
+        Ok(())
+    }
+
+    fn set_owner(id: Self::NFTId, owner: &Self::AccountId) -> DispatchResult {
+        Data::<T>::mutate(id, |data| (*data).owner = owner.clone());
+
+        Ok(())
+    }
+
+    fn details(id: Self::NFTId) -> Self::NFTDetails {
+        Data::<T>::get(id).details
+    }
+
+    fn owner(id: Self::NFTId) -> Self::AccountId {
+        Data::<T>::get(id).owner
+    }
+
+    fn seal(id: Self::NFTId) -> DispatchResult {
+        Data::<T>::mutate(id, |d| (*d).sealed = true);
+        Self::deposit_event(RawEvent::Sealed(id));
+        Ok(())
+    }
+
+    fn sealed(id: Self::NFTId) -> bool {
+        Data::<T>::get(id).sealed
+    }
+}
 
 impl<T: Trait> LockableNFTs for Module<T> {}
