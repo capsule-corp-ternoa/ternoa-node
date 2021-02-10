@@ -92,7 +92,7 @@ decl_module! {
         /// Create a new NFT with the provided details. An ID will be auto
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
-        #[weight = 0]
+        #[weight = T::WeightInfo::create()]
         fn create(origin, details: T::NFTDetails) {
             let who = ensure_signed(origin)?;
             let _id = <Self as NFTs>::create(&who, details)?;
@@ -100,7 +100,7 @@ decl_module! {
 
         /// Update the details included in an NFT. Must be called by the owner of
         /// the NFT and while the NFT is not sealed.
-        #[weight = 0]
+        #[weight = T::WeightInfo::mutate()]
         fn mutate(origin, id: T::NFTId, details: T::NFTDetails) {
             let who = ensure_signed(origin)?;
             <Self as NFTs>::mutate(id, |owner, dets| -> DispatchResult {
@@ -114,7 +114,7 @@ decl_module! {
 
         /// Transfer an NFT from an account to another one. Must be called by the
         /// actual owner of the NFT.
-        #[weight = 0]
+        #[weight = T::WeightInfo::transfer()]
         fn transfer(origin, id: T::NFTId, to: <T::Lookup as StaticLookup>::Source) {
             let who = ensure_signed(origin)?;
             let to_unlookup = T::Lookup::lookup(to)?;
@@ -130,7 +130,7 @@ decl_module! {
 
         /// Mark an NFT as sealed, thus disabling further details modifications (but
         /// not preventing future transfers). Must be called by the owner of the NFT.
-        #[weight = 0]
+        #[weight = T::WeightInfo::seal()]
         fn seal(origin, id: T::NFTId) {
             let who = ensure_signed(origin)?;
             let mut data = Data::<T>::get(id);
