@@ -84,7 +84,6 @@ construct_runtime!(
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
 
-        Capsules: ternoa_capsules::{Module, Call, Storage, Event<T>},
         NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }
@@ -341,7 +340,6 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
 
-            add_benchmark!(params, batches, ternoa_capsules, Capsules);
             add_benchmark!(params, batches, ternoa_nfts, NFTs);
             add_benchmark!(params, batches, ternoa_timed_escrow, TimedEscrow);
 

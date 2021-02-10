@@ -6,7 +6,6 @@ members = [
     'common',
     'executor',
     'node',
-    'pallets/capsules',
     'pallets/nfts',
     'pallets/timed-escrow',
     'primitives',
