@@ -2,11 +2,15 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use codec::{Decode, Encode};
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
 use sp_runtime::{
     generic,
     traits::{BlakeTwo256, IdentifyAccount, Verify},
     MultiSignature, OpaqueExtrinsic,
 };
+use sp_std::prelude::Vec;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -34,3 +38,11 @@ pub type Hash = sp_core::H256;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type.
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
+
+/// Data related to NFTs on the Ternoa Chain.
+#[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub struct NFTDetails {
+    /// ASCII encoded URI to fetch additional metadata
+    pub offchain_uri: Vec<u8>,
+}

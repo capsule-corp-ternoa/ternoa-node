@@ -49,7 +49,7 @@ sp-std = { version = "2.0.0", default-features = false }
 sp-transaction-pool = { version = "2.0.0", default-features = false }
 sp-version = { version = "2.0.0", default-features = false }
 static_assertions = "1.1.0"
-ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
+ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
 ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
 
@@ -93,7 +93,7 @@ std = [
 	"sp-std/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
-	"ternoa-capsules/std",
+	"ternoa-nfts/std",
 	"ternoa-primitives/std",
 	"ternoa-timed-escrow/std"
 ]
@@ -113,6 +113,6 @@ runtime-benchmarks = [
 	"pallet-staking/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
-	"ternoa-capsules/runtime-benchmarks",
+	"ternoa-nfts/runtime-benchmarks",
 	"ternoa-timed-escrow/runtime-benchmarks",
 ]

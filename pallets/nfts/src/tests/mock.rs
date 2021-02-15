@@ -1,6 +1,7 @@
-use crate::{types::CapsuleData, Module, Trait};
-use frame_support::{assert_ok, impl_outer_origin, parameter_types, weights::Weight};
-use frame_system::RawOrigin;
+use crate::{Module, Trait};
+use codec::{Decode, Encode};
+use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
+use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
@@ -48,8 +49,24 @@ impl frame_system::Trait for Test {
     type BaseCallFilter = ();
     type SystemWeightInfo = ();
 }
+parameter_types! {
+    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * MaximumBlockWeight::get();
+}
+#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub enum MockNFTDetails {
+    Empty,
+    WithU8(u8),
+}
+impl Default for MockNFTDetails {
+    fn default() -> Self {
+        Self::Empty
+    }
+}
 impl Trait for Test {
     type Event = ();
+    type NFTId = u32;
+    type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
 }
 
@@ -57,22 +74,11 @@ impl Trait for Test {
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
-pub type Capsules = Module<Test>;
+pub type NFTs = Module<Test>;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
     frame_system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap()
         .into()
-}
-
-pub fn create_one_capsule() {
-    assert_ok!(Capsules::create(
-        RawOrigin::Signed(ALICE).into(),
-        CapsuleData {
-            owner: ALICE,
-            creator: ALICE,
-            ..Default::default()
-        }
-    ));
 }

@@ -2,14 +2,13 @@ use crate::{Module, Trait};
 use frame_support::{
     assert_ok, impl_outer_dispatch, impl_outer_origin, parameter_types, weights::Weight,
 };
-use frame_system::{EnsureRoot, RawOrigin};
+use frame_system::EnsureRoot;
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
     Perbill,
 };
-use ternoa_capsules::CapsuleData;
 
 impl_outer_origin! {
     pub enum Origin for Test  where system = frame_system {}
@@ -71,14 +70,15 @@ impl pallet_scheduler::Trait for Test {
     type MaxScheduledPerBlock = ();
     type WeightInfo = ();
 }
-impl ternoa_capsules::Trait for Test {
+impl ternoa_nfts::Trait for Test {
     type Event = ();
+    type NFTId = u8;
+    type NFTDetails = ();
     type WeightInfo = ();
 }
 impl Trait for Test {
     type Event = ();
-    type Capsules = Capsules;
-    type CapsuleData = ternoa_capsules::CapsuleData<u64, H256>;
+    type NFTs = NFTs;
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
     type PalletsCall = Call;
@@ -89,7 +89,7 @@ impl Trait for Test {
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
-pub type Capsules = ternoa_capsules::Module<Test>;
+pub type NFTs = ternoa_nfts::Module<Test>;
 pub type Scheduler = pallet_scheduler::Module<Test>;
 pub type System = frame_system::Module<Test>;
 pub type TimedEscrow = Module<Test>;
@@ -102,12 +102,5 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 }
 
 pub fn create_one_capsule() {
-    assert_ok!(Capsules::create(
-        RawOrigin::Signed(ALICE).into(),
-        CapsuleData {
-            owner: ALICE,
-            creator: ALICE,
-            ..Default::default()
-        }
-    ));
+    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(&ALICE, ()));
 }
