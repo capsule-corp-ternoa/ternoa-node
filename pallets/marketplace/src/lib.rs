@@ -42,7 +42,7 @@ decl_event!(
 decl_storage! {
     trait Store for Module<T: Trait> as Marketplace {
         /// Nfts listed on the marketplace
-        pub NftsForSale get(fn nft_for_sale): map hasher(blake2_128_concat) NftIDOf<T> => (T::AccountId, BalanceOf<T>);
+        pub NFTsForSale get(fn nft_for_sale): map hasher(blake2_128_concat) NftIDOf<T> => (T::AccountId, BalanceOf<T>);
     }
 }
 
