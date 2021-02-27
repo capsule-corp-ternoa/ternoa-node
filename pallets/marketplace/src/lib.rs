@@ -14,33 +14,35 @@ pub trait Trait: frame_system::Trait {
     type Currency: Currency<Self::AccountId>;
     /// Pallet managing nfts.
     type NFTs: LockableNFTs<AccountId = Self::AccountId>
-    + NFTs<AccountId = Self::AccountId>;
+    + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
 }
 
 type BalanceOf<T> =
     <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
-type NftIDOf<T> = <<T as Trait>::NFTs as LockableNFTs>::NFTId;
+
+type NFTIdOf<T> = <<T as Trait>::NFTs as LockableNFTs>::NFTId;
+
 
 decl_event!(
     pub enum Event<T>
     where
         AccountId = <T as frame_system::Trait>::AccountId,
         BNftsalance = BalanceOf<T>,
-        NftID = NftIDOf<T>,
+        NFTId = NFTIdOf<T>,
     {
         /// A nft has been listed for sale. \[nft id, price\]
-        NftListed(NftID, Balance),
+        NftListed(NFTId, BNftsalance),
         /// A nft is removed from the marketplace by its owner. \[nft id\]
-        NftUnlisted(NftID),
+        NftUnlisted(NFTId),
         /// A nft has been sold. \[nft id, new owner\]
-        NftSold(NftID, AccountId),
+        NftSold(NFTId, AccountId),
     }
 );
 
 decl_storage! {
     trait Store for Module<T: Trait> as Marketplace {
         /// Nfts listed on the marketplace
-        pub NFTsForSale get(fn nft_for_sale): map hasher(blake2_128_concat) NftIDOf<T> => (T::AccountId, BalanceOf<T>);
+        pub NFTsForSale get(fn nft_for_sale): map hasher(blake2_128_concat) NFTIdOf<T> => (T::AccountId, BalanceOf<T>);
     }
 }
 
@@ -59,11 +61,9 @@ decl_module! {
 
         /// Deposit a nft and list it on the marketplace
         #[weight = 0]
-        fn list(origin, nft_id: NftIDOf<T>, price: BalanceOf<T>) {
+        fn list(origin, nft_id: NFTIdOf<T>, price: BalanceOf<T>) {
             let who = ensure_signed(origin)?;
-            let mut data = NFTs::Data::<T>::NFTDetails(nft_id);
-
-            ensure!(data.owner == &who, Error::<T>::NotNftOwner);
+            ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNftOwner);
 
             T::NFTs::lock(nft_id)?;
             NFTsForSale::<T>::insert(nft_id, (who.clone(), price));
@@ -73,14 +73,13 @@ decl_module! {
 
         /// Owner unlist the nfts
         #[weight = 0]
-        fn unlist(origin, nft_id: NftIDOf<T>) {
+        fn unlist(origin, nft_id: NFTIdOf<T>) {
             let who = ensure_signed(origin)?;
-            let mut data = NFTs::Data::<T>::NFTDetails(nft_id);
 
-            ensure!(data.owner == &who, Error::<T>::NotNftOwner);
-            ensure!(NFTsForSale::<T>::contains_key(nft_id), Error::<T>::NFTNotForSale);
+            ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNftOwner);
+            ensure!(NFTsForSale::<T>::contains_key(nft_id), Error::<T>::NftNotForSale);
 
-            T::NFTs::unlock(nft_id)?;
+            T::NFTs::unlock(nft_id);
             NFTsForSale::<T>::remove(nft_id);
 
             Self::deposit_event(RawEvent::NftUnlisted(nft_id));
@@ -88,14 +87,14 @@ decl_module! {
 
         /// Buy a listed nft
         #[weight = 0]
-        fn buy(origin, nft_id: NftIDOf<T>) {
+        fn buy(origin, nft_id: NFTIdOf<T>) {
             let who = ensure_signed(origin)?;
             ensure!(NFTsForSale::<T>::contains_key(nft_id), Error::<T>::NftNotForSale);
 
             let (owner, price) = NFTsForSale::<T>::get(nft_id);
             // KeepAlive because they need to be able to use the NFT later on
             T::Currency::transfer(&who, &owner, price, ExistenceRequirement::KeepAlive)?;
-            T::NFTs::transfer(owner.clone(), nft_id, who.clone())?;
+            T::NFTs::set_owner(nft_id, &who)?;
 
             Self::deposit_event(RawEvent::NftSold(nft_id, who));
         }
