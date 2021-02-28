@@ -6,6 +6,16 @@ use frame_support::{
 };
 use frame_system::ensure_signed;
 use ternoa_common::traits::{LockableNFTs, NFTs};
+use frame_support::weights::Weight;
+
+#[cfg(test)]
+mod tests;
+
+pub trait WeightInfo {
+    fn list() -> Weight;
+    fn unlist() -> Weight;
+    fn buy() -> Weight;
+}
 
 pub trait Trait: frame_system::Trait {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
@@ -15,6 +25,9 @@ pub trait Trait: frame_system::Trait {
     /// Pallet managing nfts.
     type NFTs: LockableNFTs<AccountId = Self::AccountId>
     + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
+    /// Weight values for this pallet
+    type WeightInfo: WeightInfo;
+
 }
 
 type BalanceOf<T> =
@@ -60,7 +73,7 @@ decl_module! {
         fn deposit_event() = default;
 
         /// Deposit a nft and list it on the marketplace
-        #[weight = 0]
+        #[weight = T::WeightInfo::list()]
         fn list(origin, nft_id: NFTIdOf<T>, price: BalanceOf<T>) {
             let who = ensure_signed(origin)?;
             ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNftOwner);
@@ -72,7 +85,7 @@ decl_module! {
         }
 
         /// Owner unlist the nfts
-        #[weight = 0]
+        #[weight = T::WeightInfo::unlist()]
         fn unlist(origin, nft_id: NFTIdOf<T>) {
             let who = ensure_signed(origin)?;
 
@@ -86,7 +99,7 @@ decl_module! {
         }
 
         /// Buy a listed nft
-        #[weight = 0]
+        #[weight = T::WeightInfo::buy()]
         fn buy(origin, nft_id: NFTIdOf<T>) {
             let who = ensure_signed(origin)?;
             ensure!(NFTsForSale::<T>::contains_key(nft_id), Error::<T>::NftNotForSale);
