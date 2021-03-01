@@ -1,12 +1,12 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use frame_support::weights::Weight;
 use frame_support::{
     decl_error, decl_event, decl_module, decl_storage, ensure,
     traits::{Currency, ExistenceRequirement},
 };
 use frame_system::ensure_signed;
 use ternoa_common::traits::{LockableNFTs, NFTs};
-use frame_support::weights::Weight;
 
 #[cfg(test)]
 mod tests;
@@ -24,17 +24,15 @@ pub trait Trait: frame_system::Trait {
     type Currency: Currency<Self::AccountId>;
     /// Pallet managing nfts.
     type NFTs: LockableNFTs<AccountId = Self::AccountId>
-    + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
+        + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
     /// Weight values for this pallet
     type WeightInfo: WeightInfo;
-
 }
 
 type BalanceOf<T> =
     <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
 
 type NFTIdOf<T> = <<T as Trait>::NFTs as LockableNFTs>::NFTId;
-
 
 decl_event!(
     pub enum Event<T>

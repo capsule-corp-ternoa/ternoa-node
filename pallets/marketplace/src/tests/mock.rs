@@ -2,9 +2,7 @@ use crate::{Module, Trait};
 use codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 
-use frame_support::{
-    assert_ok
-};
+use frame_support::assert_ok;
 #[derive(Clone, Eq, PartialEq)]
 pub struct Test;
 
@@ -27,7 +25,6 @@ impl Default for MockNFTDetails {
     }
 }
 
-
 // Do not use the `0` account id since this would be the default value
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
@@ -37,7 +34,6 @@ pub type Currency = ternoa_nfts::Module<Test>;
 pub type Scheduler = pallet_scheduler::Module<Test>;
 pub type System = frame_system::Module<Test>;
 pub type Marketplace = Module<Test>;
-
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
     frame_system::GenesisConfig::default()
