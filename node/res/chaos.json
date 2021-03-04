@@ -15,7 +15,7 @@
   "protocolId": "ternoa",
   "properties": {
     "tokenDecimals": 18,
-    "tokenSymbol": "CACO"
+    "tokenSymbol": "CAPS"
   },
   "consensusEngine": null,
   "lightSyncState": null,
