@@ -16,3 +16,10 @@ impl ternoa_timed_escrow::Trait for Runtime {
     type PalletsCall = Call;
     type WeightInfo = ();
 }
+
+impl ternoa_marketplace::Trait for Runtime {
+    type Event = Event;
+    type NFTId = u32;
+    type NFTDetails = NFTDetails;
+    type WeightInfo = ();
+}

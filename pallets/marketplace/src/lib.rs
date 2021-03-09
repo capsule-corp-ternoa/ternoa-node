@@ -8,6 +8,10 @@ use frame_support::{
 use frame_system::ensure_signed;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+mod default_weights;
+
 #[cfg(test)]
 mod tests;
 
