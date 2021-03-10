@@ -1,6 +1,6 @@
 use super::mock::*;
-use crate::Error;
-use frame_support::{assert_noop, assert_ok};
+use crate::{Error, NFTsForSale};
+use frame_support::{assert_noop, assert_ok, StorageMap};
 use frame_system::RawOrigin;
 
 #[test]
@@ -105,5 +105,58 @@ fn buy_unlock_nft() {
             assert_ok!(Marketplace::buy(RawOrigin::Signed(BOB).into(), 0));
 
             assert_eq!(NFTs::data(0).locked, false);
+        })
+}
+
+#[test]
+fn cannot_unlist_if_not_listed() {
+    ExtBuilder::default()
+        .one_nft_for_alice()
+        .build()
+        .execute_with(|| {
+            assert_noop!(
+                Marketplace::unlist(RawOrigin::Signed(ALICE).into(), 0),
+                Error::<Test>::NftNotForSale
+            );
+        })
+}
+
+#[test]
+fn cannot_unlist_if_not_owner() {
+    ExtBuilder::default()
+        .one_nft_for_alice()
+        .build()
+        .execute_with(|| {
+            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
+            assert_noop!(
+                Marketplace::unlist(RawOrigin::Signed(BOB).into(), 0),
+                Error::<Test>::NotNftOwner
+            );
+        })
+}
+
+#[test]
+fn unlist_unlocks_nft() {
+    ExtBuilder::default()
+        .one_nft_for_alice()
+        .build()
+        .execute_with(|| {
+            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
+            assert_ok!(Marketplace::unlist(RawOrigin::Signed(ALICE).into(), 0));
+
+            assert_eq!(NFTs::data(0).locked, false);
+        })
+}
+
+#[test]
+fn unlist_remove_from_for_sale() {
+    ExtBuilder::default()
+        .one_nft_for_alice()
+        .build()
+        .execute_with(|| {
+            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
+            assert_ok!(Marketplace::unlist(RawOrigin::Signed(ALICE).into(), 0));
+
+            assert_eq!(NFTsForSale::<Test>::contains_key(0), false);
         })
 }
