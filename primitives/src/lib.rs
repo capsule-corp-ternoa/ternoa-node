@@ -46,3 +46,6 @@ pub struct NFTDetails {
     /// ASCII encoded URI to fetch additional metadata
     pub offchain_uri: Vec<u8>,
 }
+
+/// How NFT IDs are encoded.
+pub type NFTId = u32;

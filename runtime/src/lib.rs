@@ -84,6 +84,7 @@ construct_runtime!(
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
 
+        Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
         Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }

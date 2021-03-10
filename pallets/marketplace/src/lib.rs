@@ -42,11 +42,11 @@ decl_event!(
     pub enum Event<T>
     where
         AccountId = <T as frame_system::Trait>::AccountId,
-        BNftsalance = BalanceOf<T>,
+        Balance = BalanceOf<T>,
         NFTId = NFTIdOf<T>,
     {
         /// A nft has been listed for sale. \[nft id, price\]
-        NftListed(NFTId, BNftsalance),
+        NftListed(NFTId, Balance),
         /// A nft is removed from the marketplace by its owner. \[nft id\]
         NftUnlisted(NFTId),
         /// A nft has been sold. \[nft id, new owner\]

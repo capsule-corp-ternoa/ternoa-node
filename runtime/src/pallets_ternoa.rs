@@ -1,9 +1,9 @@
-use crate::{Call, Event, Nfts, OriginCaller, Runtime, Scheduler};
-use ternoa_primitives::NFTDetails;
+use crate::{Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler};
+use ternoa_primitives::{NFTDetails, NFTId};
 
 impl ternoa_nfts::Trait for Runtime {
     type Event = Event;
-    type NFTId = u32;
+    type NFTId = NFTId;
     type NFTDetails = NFTDetails;
     type WeightInfo = ();
 }
@@ -19,7 +19,7 @@ impl ternoa_timed_escrow::Trait for Runtime {
 
 impl ternoa_marketplace::Trait for Runtime {
     type Event = Event;
-    type NFTId = u32;
-    type NFTDetails = NFTDetails;
+    type Currency = Balances;
+    type NFTs = Nfts;
     type WeightInfo = ();
 }
