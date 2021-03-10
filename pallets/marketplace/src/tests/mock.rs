@@ -1,6 +1,6 @@
 use crate::{Module, Trait};
 use codec::{Decode, Encode};
-use frame_support::{assert_ok, impl_outer_origin, parameter_types, weights::Weight};
+use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
 use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
@@ -100,16 +100,49 @@ pub type Balances = pallet_balances::Module<Test>;
 pub type System = frame_system::Module<Test>;
 pub type Marketplace = Module<Test>;
 
-pub fn new_test_ext() -> sp_io::TestExternalities {
-    frame_system::GenesisConfig::default()
-        .build_storage::<Test>()
-        .unwrap()
-        .into()
+pub struct ExtBuilder {
+    nfts: Vec<(u64, MockNFTDetails)>,
+    endowed_accounts: Vec<(u64, u64)>,
 }
 
-pub fn create_one_capsule() {
-    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
-        &ALICE,
-        Default::default()
-    ));
+impl Default for ExtBuilder {
+    fn default() -> Self {
+        ExtBuilder {
+            nfts: Vec::new(),
+            endowed_accounts: Vec::new(),
+        }
+    }
+}
+
+impl ExtBuilder {
+    pub fn one_nft_for_alice(mut self) -> Self {
+        self.nfts.push((ALICE, Default::default()));
+        self
+    }
+
+    pub fn one_hundred_for_alice_n_bob(mut self) -> Self {
+        self.endowed_accounts.push((ALICE, 100));
+        self.endowed_accounts.push((BOB, 100));
+        self
+    }
+
+    pub fn build(self) -> sp_io::TestExternalities {
+        let mut t = frame_system::GenesisConfig::default()
+            .build_storage::<Test>()
+            .unwrap();
+
+        pallet_balances::GenesisConfig::<Test> {
+            balances: self.endowed_accounts,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        ternoa_nfts::GenesisConfig::<Test> { nfts: self.nfts }
+            .assimilate_storage(&mut t)
+            .unwrap();
+
+        let mut ext = sp_io::TestExternalities::new(t);
+        ext.execute_with(|| System::set_block_number(1));
+        ext
+    }
 }
