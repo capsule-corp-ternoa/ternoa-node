@@ -1,20 +1,13 @@
 use crate::{Module, Trait};
 use codec::{Decode, Encode};
+use frame_support::{assert_ok, impl_outer_origin, parameter_types, weights::Weight};
 use serde::{Deserialize, Serialize};
+use sp_core::H256;
 use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
     Perbill,
 };
-use sp_core::H256;
-
-use frame_system::EnsureRoot;
-
-use frame_support::{
-    assert_ok, impl_outer_origin, parameter_types, weights::Weight,
-    Currency,
-};
-
 
 impl_outer_origin! {
     pub enum Origin for Test  where system = frame_system {}
@@ -32,7 +25,7 @@ parameter_types! {
 
 impl frame_system::Trait for Test {
     type Origin = Origin;
-    type Call = Call;
+    type Call = ();
     type Index = u64;
     type BlockNumber = u64;
     type Hash = H256;
@@ -47,7 +40,7 @@ impl frame_system::Trait for Test {
     type AvailableBlockRatio = AvailableBlockRatio;
     type Version = ();
     type PalletInfo = ();
-    type AccountData = ();
+    type AccountData = pallet_balances::AccountData<u64>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type DbWeight = ();
@@ -57,31 +50,32 @@ impl frame_system::Trait for Test {
     type BaseCallFilter = ();
     type SystemWeightInfo = ();
 }
+
 parameter_types! {
-    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * MaximumBlockWeight::get();
+    pub const ExistentialDeposit: u64 = 0;
+    pub const MaxLocks: u32 = 50;
 }
 
-impl pallet_scheduler::Trait for Test {
+impl pallet_balances::Trait for Test {
+    type Balance = u64;
+    type DustRemoval = ();
     type Event = ();
-    type Origin = Origin;
-    type PalletsOrigin = OriginCaller;
-    type Call = Call;
-    type MaximumWeight = MaximumSchedulerWeight;
-    type ScheduleOrigin = EnsureRoot<u64>;
-    type MaxScheduledPerBlock = ();
+    type ExistentialDeposit = ExistentialDeposit;
+    type AccountStore = frame_system::Module<Test>;
     type WeightInfo = ();
+    type MaxLocks = MaxLocks;
 }
 
 impl ternoa_nfts::Trait for Test {
     type Event = ();
     type NFTId = u8;
-    type NFTDetails = ();
+    type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
 }
 
 impl Trait for Test {
     type Event = ();
-    type Currency = ();
+    type Currency = Balances;
     type NFTs = NFTs;
     type WeightInfo = ();
 }
@@ -102,8 +96,7 @@ impl Default for MockNFTDetails {
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 pub type NFTs = ternoa_nfts::Module<Test>;
-pub type Currency = ternoa_nfts::Module<Test>;
-pub type Scheduler = pallet_scheduler::Module<Test>;
+pub type Balances = pallet_balances::Module<Test>;
 pub type System = frame_system::Module<Test>;
 pub type Marketplace = Module<Test>;
 
@@ -115,5 +108,8 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 }
 
 pub fn create_one_capsule() {
-    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(&ALICE, ()));
+    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
+        &ALICE,
+        Default::default()
+    ));
 }
