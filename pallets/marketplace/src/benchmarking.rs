@@ -30,5 +30,4 @@ mod tests {
             assert_ok!(test_benchmark_unlist::<Test>());
         });
     }
-
 }
