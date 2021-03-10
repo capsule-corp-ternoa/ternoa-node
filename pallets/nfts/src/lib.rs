@@ -57,6 +57,16 @@ decl_storage! {
         /// Data related to NFTs.
         pub Data get(fn data): map hasher(blake2_128_concat) T::NFTId => NFTData<T::AccountId, T::NFTDetails>;
     }
+    add_extra_genesis {
+        config(nfts): Vec<(T::AccountId, T::NFTDetails)>;
+        // ^^ begin, length, amount liquid at genesis
+        build(|config: &GenesisConfig<T>| {
+            &config.nfts
+                .clone()
+                .into_iter()
+                .for_each(|(account, details)| drop(<Module<T> as NFTs>::create(&account, details)));
+        });
+    }
 }
 
 decl_event!(

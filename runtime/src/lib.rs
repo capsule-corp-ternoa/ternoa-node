@@ -85,7 +85,7 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
 
         Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
-        Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>},
+        Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }
 );
