@@ -109,6 +109,7 @@ decl_module! {
             let (owner, price) = NFTsForSale::<T>::get(nft_id);
             // KeepAlive because they need to be able to use the NFT later on
             T::Currency::transfer(&who, &owner, price, ExistenceRequirement::KeepAlive)?;
+            T::NFTs::unlock(nft_id);
             T::NFTs::set_owner(nft_id, &who)?;
 
             Self::deposit_event(RawEvent::NftSold(nft_id, who));
