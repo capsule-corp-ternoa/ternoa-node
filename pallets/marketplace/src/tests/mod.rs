@@ -1,2 +1,2 @@
 mod dispatchables;
-mod mock;
+pub mod mock;

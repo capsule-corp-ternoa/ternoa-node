@@ -121,7 +121,6 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .into()
 }
 
-
 impl ExtBuilder {
     pub fn one_nft_for_alice(mut self) -> Self {
         self.nfts.push((ALICE, Default::default()));
