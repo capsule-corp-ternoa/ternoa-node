@@ -150,6 +150,9 @@ pub fn testnet_genesis(
         pallet_sudo: Some(SudoConfig {
             key: root.unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice")),
         }),
+
+        // Ternoa
+        ternoa_nfts: Some(Default::default()),
     }
 }
 

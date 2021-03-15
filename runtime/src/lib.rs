@@ -84,7 +84,8 @@ construct_runtime!(
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
 
-        Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>},
+        Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
+        Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }
 );
@@ -342,6 +343,7 @@ impl_runtime_apis! {
 
             add_benchmark!(params, batches, ternoa_nfts, Nfts);
             add_benchmark!(params, batches, ternoa_timed_escrow, TimedEscrow);
+            add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)
