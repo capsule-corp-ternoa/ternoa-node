@@ -81,6 +81,12 @@ impl pallet_scheduler::Trait for Runtime {
     type WeightInfo = ();
 }
 
+impl pallet_utility::Trait for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type WeightInfo = ();
+}
+
 /// Helper struct to identify the author of a block and reward them with some funds.
 pub struct Author;
 impl OnUnbalanced<NegativeImbalance> for Author {
