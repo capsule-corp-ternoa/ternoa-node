@@ -83,6 +83,7 @@ construct_runtime!(
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
+        Utility: pallet_utility::{Module, Call, Storage, Event},
 
         Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
         Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},

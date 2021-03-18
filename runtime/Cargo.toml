@@ -34,6 +34,7 @@ pallet-sudo = { version = "2.0.0", default-features = false }
 pallet-timestamp = { version = "2.0.0", default-features = false }
 pallet-transaction-payment = { version = "2.0.0", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { version = "2.0.0", default-features = false }
+pallet-utility = { version = "2.0.0", default-features = false }
 serde = { version = "1.0.102", optional = true }
 sp-api = { version = "2.0.0", default-features = false }
 sp-authority-discovery = { version = "2.0.0", default-features = false }
@@ -80,6 +81,7 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
+	"pallet-utility/std",
 	"serde",
 	"sp-api/std",
 	"sp-authority-discovery/std",
@@ -114,6 +116,7 @@ runtime-benchmarks = [
 	"pallet-session-benchmarking",
 	"pallet-staking/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
+	"pallet-utility/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"ternoa-nfts/runtime-benchmarks",
 	"ternoa-timed-escrow/runtime-benchmarks",
