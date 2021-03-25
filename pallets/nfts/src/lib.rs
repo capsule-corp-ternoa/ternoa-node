@@ -39,9 +39,9 @@ pub trait WeightInfo {
     fn transfer() -> Weight;
 }
 
-pub trait Trait: frame_system::Trait {
+pub trait Config: frame_system::Config {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+    type Event: From<Event<Self>> + Into<<Self as frame_system::Config>::Event>;
     /// How NFTs are represented
     type NFTId: Parameter + Default + CheckedAdd + Copy + Member + From<u8>;
     /// How NFT details are represented
@@ -51,7 +51,7 @@ pub trait Trait: frame_system::Trait {
 }
 
 decl_storage! {
-    trait Store for Module<T: Trait> as NFTs {
+    trait Store for Module<T: Config> as NFTs {
         /// The number of NFTs managed by this pallet
         pub Total get(fn total): T::NFTId;
         /// Data related to NFTs.
@@ -72,8 +72,8 @@ decl_storage! {
 decl_event!(
     pub enum Event<T>
     where
-        AccountId = <T as frame_system::Trait>::AccountId,
-        NFTId = <T as Trait>::NFTId,
+        AccountId = <T as frame_system::Config>::AccountId,
+        NFTId = <T as Config>::NFTId,
     {
         /// A new NFT was created. \[nft id, owner\]
         Created(NFTId, AccountId),
@@ -92,7 +92,7 @@ decl_event!(
 );
 
 decl_error! {
-    pub enum Error for Module<T: Trait> {
+    pub enum Error for Module<T: Config> {
         /// We do not have any NFT id left, a runtime upgrade is necessary.
         NFTIdOverflow,
         /// This function can only be called by the owner of the nft.
@@ -106,7 +106,7 @@ decl_error! {
 }
 
 decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+    pub struct Module<T: Config> for enum Call where origin: T::Origin {
         fn deposit_event() = default;
 
         /// Create a new NFT with the provided details. An ID will be auto
@@ -167,7 +167,7 @@ decl_module! {
     }
 }
 
-impl<T: Trait> NFTs for Module<T> {
+impl<T: Config> NFTs for Module<T> {
     type AccountId = T::AccountId;
     type NFTDetails = T::NFTDetails;
     type NFTId = T::NFTId;
@@ -238,7 +238,7 @@ impl<T: Trait> NFTs for Module<T> {
     }
 }
 
-impl<T: Trait> LockableNFTs for Module<T> {
+impl<T: Config> LockableNFTs for Module<T> {
     type AccountId = T::AccountId;
     type NFTId = T::NFTId;
 
