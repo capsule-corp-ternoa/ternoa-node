@@ -1,54 +1,57 @@
-use crate::{Module, Trait};
+use crate::{self as ternoa_marketplace, Config};
 use codec::{Decode, Encode};
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight};
+use frame_support::parameter_types;
 use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
-    Perbill,
 };
 
-impl_outer_origin! {
-    pub enum Origin for Test  where system = frame_system {}
-}
+type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
+type Block = frame_system::mocking::MockBlock<Test>;
 
-#[derive(Clone, Eq, PartialEq)]
-pub struct Test;
+frame_support::construct_runtime!(
+    pub enum Test where
+        Block = Block,
+        NodeBlock = Block,
+        UncheckedExtrinsic = UncheckedExtrinsic,
+    {
+        System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Balances: pallet_balances::{Module, Call, Storage, Event<T>},
+        NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
+        Marketplace: ternoa_marketplace::{Module, Call, Event<T>},
+    }
+);
 
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
-    pub const MaximumBlockWeight: Weight = 1024;
-    pub const MaximumBlockLength: u32 = 2 * 1024;
-    pub const AvailableBlockRatio: Perbill = Perbill::from_percent(75);
+    pub BlockWeights: frame_system::limits::BlockWeights =
+        frame_system::limits::BlockWeights::simple_max(1024);
 }
-
-impl frame_system::Trait for Test {
+impl frame_system::Config for Test {
+    type BaseCallFilter = ();
+    type BlockWeights = ();
+    type BlockLength = ();
+    type DbWeight = ();
     type Origin = Origin;
-    type Call = ();
     type Index = u64;
     type BlockNumber = u64;
+    type Call = Call;
     type Hash = H256;
     type Hashing = BlakeTwo256;
     type AccountId = u64;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
-    type Event = ();
+    type Event = Event;
     type BlockHashCount = BlockHashCount;
-    type MaximumBlockWeight = MaximumBlockWeight;
-    type MaximumBlockLength = MaximumBlockLength;
-    type AvailableBlockRatio = AvailableBlockRatio;
     type Version = ();
-    type PalletInfo = ();
+    type PalletInfo = PalletInfo;
     type AccountData = pallet_balances::AccountData<u64>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
-    type DbWeight = ();
-    type BlockExecutionWeight = ();
-    type ExtrinsicBaseWeight = ();
-    type MaximumExtrinsicWeight = MaximumBlockWeight;
-    type BaseCallFilter = ();
     type SystemWeightInfo = ();
+    type SS58Prefix = ();
 }
 
 parameter_types! {
@@ -56,25 +59,25 @@ parameter_types! {
     pub const MaxLocks: u32 = 50;
 }
 
-impl pallet_balances::Trait for Test {
+impl pallet_balances::Config for Test {
     type Balance = u64;
     type DustRemoval = ();
-    type Event = ();
+    type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
-    type AccountStore = frame_system::Module<Test>;
+    type AccountStore = System;
     type WeightInfo = ();
     type MaxLocks = MaxLocks;
 }
 
-impl ternoa_nfts::Trait for Test {
-    type Event = ();
+impl ternoa_nfts::Config for Test {
+    type Event = Event;
     type NFTId = u8;
     type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
 }
 
-impl Trait for Test {
-    type Event = ();
+impl Config for Test {
+    type Event = Event;
     type Currency = Balances;
     type NFTs = NFTs;
     type WeightInfo = ();
@@ -95,10 +98,6 @@ impl Default for MockNFTDetails {
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
-pub type NFTs = ternoa_nfts::Module<Test>;
-pub type Balances = pallet_balances::Module<Test>;
-pub type System = frame_system::Module<Test>;
-pub type Marketplace = Module<Test>;
 
 pub struct ExtBuilder {
     nfts: Vec<(u64, MockNFTDetails)>,

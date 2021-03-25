@@ -21,9 +21,9 @@ pub trait WeightInfo {
     fn buy() -> Weight;
 }
 
-pub trait Trait: frame_system::Trait {
+pub trait Config: frame_system::Config {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+    type Event: From<Event<Self>> + Into<<Self as frame_system::Config>::Event>;
     /// Currency used to handle transactions and pay for the nfts.
     type Currency: Currency<Self::AccountId>;
     /// Pallet managing nfts.
@@ -34,14 +34,14 @@ pub trait Trait: frame_system::Trait {
 }
 
 type BalanceOf<T> =
-    <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
+    <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
-type NFTIdOf<T> = <<T as Trait>::NFTs as LockableNFTs>::NFTId;
+type NFTIdOf<T> = <<T as Config>::NFTs as LockableNFTs>::NFTId;
 
 decl_event!(
     pub enum Event<T>
     where
-        AccountId = <T as frame_system::Trait>::AccountId,
+        AccountId = <T as frame_system::Config>::AccountId,
         Balance = BalanceOf<T>,
         NFTId = NFTIdOf<T>,
     {
@@ -55,14 +55,14 @@ decl_event!(
 );
 
 decl_storage! {
-    trait Store for Module<T: Trait> as Marketplace {
+    trait Store for Module<T: Config> as Marketplace {
         /// Nfts listed on the marketplace
         pub NFTsForSale get(fn nft_for_sale): map hasher(blake2_128_concat) NFTIdOf<T> => (T::AccountId, BalanceOf<T>);
     }
 }
 
 decl_error! {
-    pub enum Error for Module<T: Trait> {
+    pub enum Error for Module<T: Config> {
         /// This function is reserved to the owner of a nft.
         NotNftOwner,
         /// Nft is not present on the marketplace
@@ -71,7 +71,7 @@ decl_error! {
 }
 
 decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+    pub struct Module<T: Config> for enum Call where origin: T::Origin {
         fn deposit_event() = default;
 
         /// Deposit a nft and list it on the marketplace
