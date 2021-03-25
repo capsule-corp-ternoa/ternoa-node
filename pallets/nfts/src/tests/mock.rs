@@ -1,4 +1,4 @@
-use crate::{self as pallet_nfts, Config};
+use crate::{self as ternoa_nfts, Config};
 use codec::{Decode, Encode};
 use frame_support::parameter_types;
 use serde::{Deserialize, Serialize};
@@ -18,7 +18,7 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        NFTs: pallet_nfts::{Module, Call, Storage, Event<T>, Config<T>},
+        NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
     }
 );
 
