@@ -23,7 +23,7 @@ pallet-balances = { version = "3.0.0", default-features = false }
 pallet-grandpa = { version = "3.0.0", default-features = false }
 pallet-im-online = { version = "3.0.0", default-features = false }
 pallet-offences = { version = "3.0.0", default-features = false }
-pallet-offences-benchmarking = { version = "3.0.0", default-features = false, optional = true }
+#pallet-offences-benchmarking = { version = "3.0.0", default-features = false, optional = true }
 pallet-randomness-collective-flip = { version = "3.0.0", default-features = false }
 pallet-scheduler = { version = "3.0.0", default-features = false }
 pallet-session = { version = "3.0.0", features = ["historical"], default-features = false }
@@ -111,7 +111,7 @@ runtime-benchmarks = [
 	"pallet-balances/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
-	"pallet-offences-benchmarking",
+	#"pallet-offences-benchmarking",
 	"pallet-scheduler/runtime-benchmarks",
 	"pallet-session-benchmarking",
 	"pallet-staking/runtime-benchmarks",

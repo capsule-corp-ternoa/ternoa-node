@@ -203,8 +203,8 @@ impl_runtime_apis! {
         }
 
         fn query_fee_details(uxt: <Block as BlockT>::Extrinsic, len: u32) -> FeeDetails<Balance> {
-			TransactionPayment::query_fee_details(uxt, len)
-		}
+            TransactionPayment::query_fee_details(uxt, len)
+        }
     }
 
     impl fg_primitives::GrandpaApi<Block> for Runtime {
@@ -257,16 +257,16 @@ impl_runtime_apis! {
         }
 
         fn current_epoch_start() -> sp_consensus_babe::Slot {
-			Babe::current_epoch_start()
-		}
+            Babe::current_epoch_start()
+        }
 
-		fn current_epoch() -> sp_consensus_babe::Epoch {
-			Babe::current_epoch()
-		}
+        fn current_epoch() -> sp_consensus_babe::Epoch {
+            Babe::current_epoch()
+        }
 
-		fn next_epoch() -> sp_consensus_babe::Epoch {
-			Babe::next_epoch()
-		}
+        fn next_epoch() -> sp_consensus_babe::Epoch {
+            Babe::next_epoch()
+        }
 
         fn generate_key_ownership_proof(
             _slot_number: sp_consensus_babe::Slot,
@@ -317,12 +317,12 @@ impl_runtime_apis! {
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
             use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
             use pallet_session_benchmarking::Module as SessionBench;
-            use pallet_offences_benchmarking::Module as OffencesBench;
+            //use pallet_offences_benchmarking::Module as OffencesBench;
             use frame_system_benchmarking::Module as SystemBench;
 
-            impl pallet_session_benchmarking::Trait for Runtime {}
-            impl pallet_offences_benchmarking::Trait for Runtime {}
-            impl frame_system_benchmarking::Trait for Runtime {}
+            impl pallet_session_benchmarking::Config for Runtime {}
+            //impl pallet_offences_benchmarking::Config for Runtime {}
+            impl frame_system_benchmarking::Config for Runtime {}
 
             // We took this from the substrate examples as the configurations are pretty close.
             let whitelist: Vec<TrackedStorageKey> = vec![
@@ -345,10 +345,9 @@ impl_runtime_apis! {
 
             add_benchmark!(params, batches, pallet_babe, Babe);
             add_benchmark!(params, batches, pallet_balances, Balances);
-            add_benchmark!(params, batches, pallet_elections_phragmen, Elections);
             add_benchmark!(params, batches, pallet_grandpa, Grandpa);
             add_benchmark!(params, batches, pallet_im_online, ImOnline);
-            add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
+            //add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
             add_benchmark!(params, batches, pallet_scheduler, Scheduler);
             add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
             add_benchmark!(params, batches, pallet_staking, Staking);
