@@ -2,7 +2,7 @@
 build = "build.rs"
 edition = "2018"
 name = "ternoa"
-version = "0.1.0"
+version = "0.2.0"
 
 [[bin]]
 name = "ternoa"
@@ -24,52 +24,55 @@ wasm-opt = false
 
 [target.'cfg(target_arch="x86_64")'.dependencies]
 ternoa-executor = { path = "../executor", features = [ "wasmtime" ] }
-sc-cli = { version = "0.8.0", features = [ "wasmtime" ] }
-sc-service = { version = "0.8.0", default-features = false, features = [ "wasmtime" ] }
-sp-trie = { version = "2.0.0", default-features = false, features = ["memory-tracker"] }
+sc-cli = { version = "0.9.0", features = [ "wasmtime" ] }
+sc-service = { version = "0.9.0", default-features = false, features = [ "wasmtime" ] }
+sp-trie = { version = "3.0.0", default-features = false, features = ["memory-tracker"] }
 
 [dependencies]
-frame-benchmarking = { version = "2.0.0", default-features = false }
-frame-benchmarking-cli = { version = "2.0.0", default-features = false }
-futures = { version = "0.3.1", features = ["compat"] }
+frame-benchmarking = { version = "3.1.0", default-features = false }
+frame-benchmarking-cli = { version = "3.0.0", default-features = false }
+futures = { version = "0.3.13", features = ["compat"] }
 hex-literal = { version = "0.3.1" }
-jsonrpc-core = "15.0.0"
-jsonrpc-pubsub = "15.0.0"
-pallet-im-online = { version = "2.0.0", default-features = false }
-pallet-transaction-payment-rpc = "2.0.0"
-sc-authority-discovery = "0.8.0"
-sc-basic-authorship = "0.8.0"
-sc-cli = "0.8.0"
-sc-client-api = "2.0.0"
-sc-consensus = "0.8.0"
-sc-consensus-babe = "0.8.0"
-sc-consensus-babe-rpc = "0.8.0"
-sc-consensus-epochs = "0.8.0"
-sc-finality-grandpa = "0.8.0"
-sc-finality-grandpa-rpc = "0.8.0"
-sc-keystore = "2.0.0"
-sc-network = "0.8.0"
-sc-rpc = "2.0.0"
-sc-rpc-api = "0.8.0"
-sc-service = "0.8.0"
-sc-transaction-pool = "2.0.0"
-sp-api = "2.0.0"
-sp-authority-discovery = "2.0.0"
-sp-blockchain = "2.0.0"
-sp-block-builder = "2.0.0"
-sp-consensus = "0.8.0"
-sp-consensus-babe = "0.8.0"
-sp-core = "2.0.0"
-sp-finality-grandpa = "2.0.0"
-sp-inherents = "2.0.0"
-sp-runtime = "2.0.0"
-sp-transaction-pool = "2.0.0"
-structopt = "0.3.14"
-substrate-frame-rpc-system = "2.0.0"
+jsonrpc-core = "15.0.1"
+jsonrpc-pubsub = "15.0.1"
+pallet-im-online = { version = "3.0.0", default-features = false }
+pallet-transaction-payment-rpc = "3.0.0"
+sc-authority-discovery = "0.9.0"
+sc-basic-authorship = "0.9.0"
+sc-cli = "0.9.0"
+sc-client-api = "3.0.0"
+sc-consensus = "0.9.0"
+sc-consensus-babe = "0.9.0"
+sc-consensus-babe-rpc = "0.9.0"
+sc-consensus-epochs = "0.9.0"
+sc-consensus-slots = "0.9.0"
+sc-finality-grandpa = "0.9.0"
+sc-finality-grandpa-rpc = "0.9.0"
+sc-finality-grandpa-warp-sync = "0.9.0"
+sc-network = "0.9.0"
+sc-rpc = "3.0.0"
+sc-rpc-api = "0.9.0"
+sc-service = "0.9.0"
+sc-telemetry = "3.0.0"
+sc-transaction-pool = "3.0.0"
+sp-api = "3.0.0"
+sp-authority-discovery = "3.0.0"
+sp-blockchain = "3.0.0"
+sp-block-builder = "3.0.0"
+sp-consensus = "0.9.0"
+sp-consensus-babe = "0.9.0"
+sp-core = "3.0.0"
+sp-finality-grandpa = "3.0.0"
+sp-inherents = "3.0.0"
+sp-keystore = "0.9.0"
+sp-runtime = "3.0.0"
+sp-transaction-pool = "3.0.0"
+structopt = "0.3.21"
+substrate-frame-rpc-system = "3.0.0"
 ternoa-executor = { path = "../executor" }
 ternoa-primitives = { path = "../primitives" }
 ternoa-runtime = { path = "../runtime" }
 
 [build-dependencies]
 vergen = "3.0.4"
-substrate-build-script-utils = "2.0.0"
+substrate-build-script-utils = "3.0.0"

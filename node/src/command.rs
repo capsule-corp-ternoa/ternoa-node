@@ -1,7 +1,7 @@
 use crate::{
     chain_spec,
     cli::{Cli, Subcommand},
-    service::{self, new_full_base, new_partial, NewFullBase},
+    service::{self, new_partial},
 };
 use sc_cli::{ChainSpec, Result, Role, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
@@ -56,9 +56,12 @@ pub fn run() -> Result<()> {
     match &cli.subcommand {
         None => {
             let runner = cli.create_runner(&cli.run)?;
-            runner.run_node_until_exit(|config| match config.role {
-                Role::Light => service::new_light(config),
-                _ => service::new_full(config),
+            runner.run_node_until_exit(|config| async move {
+                match config.role {
+                    Role::Light => service::new_light(config),
+                    _ => service::new_full(config),
+                }
+                .map_err(sc_cli::Error::Service)
             })
         }
         Some(Subcommand::Benchmark(cmd)) => {
@@ -72,31 +75,13 @@ pub fn run() -> Result<()> {
                     .into())
             }
         }
-        Some(Subcommand::Key(cmd)) => cmd.run(),
+        Some(Subcommand::Key(cmd)) => cmd.run(&cli),
         Some(Subcommand::Sign(cmd)) => cmd.run(),
         Some(Subcommand::Verify(cmd)) => cmd.run(),
         Some(Subcommand::Vanity(cmd)) => cmd.run(),
         Some(Subcommand::BuildSpec(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
-        }
-        Some(Subcommand::BuildSyncSpec(cmd)) => {
-            let runner = cli.create_runner(cmd)?;
-            runner.async_run(|config| {
-                let chain_spec = config.chain_spec.cloned_box();
-                let network_config = config.network.clone();
-                let NewFullBase {
-                    task_manager,
-                    client,
-                    network_status_sinks,
-                    ..
-                } = new_full_base(config, |_, _| ())?;
-
-                Ok((
-                    cmd.run(chain_spec, network_config, client, network_status_sinks),
-                    task_manager,
-                ))
-            })
         }
         Some(Subcommand::CheckBlock(cmd)) => {
             let runner = cli.create_runner(cmd)?;

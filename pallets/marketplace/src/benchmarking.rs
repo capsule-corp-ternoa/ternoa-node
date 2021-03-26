@@ -1,12 +1,12 @@
 use crate::NFTsForSale;
-use crate::{Call, Module, NFTIdOf, Trait};
+use crate::{Call, Config, Module, NFTIdOf};
 use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_support::StorageMap;
 use frame_system::RawOrigin;
 use sp_std::{boxed::Box, prelude::*};
 use ternoa_common::traits::NFTs;
 
-fn create_nft<T: Trait>(caller: &T::AccountId) -> NFTIdOf<T> {
+fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
     T::NFTs::create(
         caller,
         <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
@@ -15,8 +15,6 @@ fn create_nft<T: Trait>(caller: &T::AccountId) -> NFTIdOf<T> {
 }
 
 benchmarks! {
-    _ { }
-
     buy {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);

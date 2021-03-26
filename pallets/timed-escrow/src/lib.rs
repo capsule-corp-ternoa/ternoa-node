@@ -28,9 +28,9 @@ pub trait WeightInfo {
     fn complete_transfer() -> Weight;
 }
 
-pub trait Trait: frame_system::Trait {
+pub trait Config: frame_system::Config {
     /// Because this pallet emits events, it depends on the runtime's definition of an event.
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Trait>::Event>;
+    type Event: From<Event<Self>> + Into<<Self as frame_system::Config>::Event>;
     /// Pallet managing NFTs.
     type NFTs: LockableNFTs<AccountId = Self::AccountId>
         + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
@@ -45,14 +45,14 @@ pub trait Trait: frame_system::Trait {
     type WeightInfo: WeightInfo;
 }
 
-type NFTIdOf<T> = <<T as Trait>::NFTs as LockableNFTs>::NFTId;
+type NFTIdOf<T> = <<T as Config>::NFTs as LockableNFTs>::NFTId;
 
 decl_event!(
     pub enum Event<T>
     where
-        AccountId = <T as frame_system::Trait>::AccountId,
+        AccountId = <T as frame_system::Config>::AccountId,
         NFTId = NFTIdOf<T>,
-        BlockNumber = <T as frame_system::Trait>::BlockNumber,
+        BlockNumber = <T as frame_system::Config>::BlockNumber,
     {
         /// A transfer has been scheduled. \[capsule id, destination, block of transfer\]
         TransferScheduled(NFTId, AccountId, BlockNumber),
@@ -64,7 +64,7 @@ decl_event!(
 );
 
 decl_error! {
-    pub enum Error for Module<T: Trait> {
+    pub enum Error for Module<T: Config> {
         /// This function is reserved to the owner of a nft.
         NotNFTOwner,
         /// An unknown error happened which made the scheduling call fail.
@@ -73,7 +73,7 @@ decl_error! {
 }
 
 decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+    pub struct Module<T: Config> for enum Call where origin: T::Origin {
         fn deposit_event() = default;
 
         /// Create a timed transfer. This will lock the associated capsule until it gets

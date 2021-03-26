@@ -1,7 +1,5 @@
-use crate::{Module, Trait};
-use frame_support::{
-    assert_ok, impl_outer_dispatch, impl_outer_origin, parameter_types, weights::Weight,
-};
+use crate::{self as ternoa_timed_escrow, Config};
+use frame_support::{assert_ok, parameter_types, weights::Weight};
 use frame_system::EnsureRoot;
 use sp_core::H256;
 use sp_runtime::{
@@ -10,58 +8,57 @@ use sp_runtime::{
     Perbill,
 };
 
-impl_outer_origin! {
-    pub enum Origin for Test  where system = frame_system {}
-}
+type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
+type Block = frame_system::mocking::MockBlock<Test>;
 
-impl_outer_dispatch! {
-    pub enum Call for Test where origin: Origin {
-        frame_system::System,
-        crate::TimedEscrow,
+frame_support::construct_runtime!(
+    pub enum Test where
+        Block = Block,
+        NodeBlock = Block,
+        UncheckedExtrinsic = UncheckedExtrinsic,
+    {
+        System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
+        NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
+        TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
     }
-}
-
-#[derive(Clone, Eq, PartialEq)]
-pub struct Test;
+);
 
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
-    pub const MaximumBlockWeight: Weight = 1024;
-    pub const MaximumBlockLength: u32 = 2 * 1024;
-    pub const AvailableBlockRatio: Perbill = Perbill::from_percent(75);
+    pub BlockWeights: frame_system::limits::BlockWeights =
+        frame_system::limits::BlockWeights::simple_max(1024);
 }
-impl frame_system::Trait for Test {
+impl frame_system::Config for Test {
+    type BaseCallFilter = ();
+    type BlockWeights = ();
+    type BlockLength = ();
+    type DbWeight = ();
     type Origin = Origin;
-    type Call = Call;
     type Index = u64;
     type BlockNumber = u64;
+    type Call = Call;
     type Hash = H256;
     type Hashing = BlakeTwo256;
     type AccountId = u64;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
-    type Event = ();
+    type Event = Event;
     type BlockHashCount = BlockHashCount;
-    type MaximumBlockWeight = MaximumBlockWeight;
-    type MaximumBlockLength = MaximumBlockLength;
-    type AvailableBlockRatio = AvailableBlockRatio;
     type Version = ();
-    type PalletInfo = ();
+    type PalletInfo = PalletInfo;
     type AccountData = ();
     type OnNewAccount = ();
     type OnKilledAccount = ();
-    type DbWeight = ();
-    type BlockExecutionWeight = ();
-    type ExtrinsicBaseWeight = ();
-    type MaximumExtrinsicWeight = MaximumBlockWeight;
-    type BaseCallFilter = ();
     type SystemWeightInfo = ();
+    type SS58Prefix = ();
 }
+
 parameter_types! {
-    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * MaximumBlockWeight::get();
+    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * BlockWeights::get().max_block;
 }
-impl pallet_scheduler::Trait for Test {
-    type Event = ();
+impl pallet_scheduler::Config for Test {
+    type Event = Event;
     type Origin = Origin;
     type PalletsOrigin = OriginCaller;
     type Call = Call;
@@ -70,14 +67,14 @@ impl pallet_scheduler::Trait for Test {
     type MaxScheduledPerBlock = ();
     type WeightInfo = ();
 }
-impl ternoa_nfts::Trait for Test {
-    type Event = ();
+impl ternoa_nfts::Config for Test {
+    type Event = Event;
     type NFTId = u8;
     type NFTDetails = ();
     type WeightInfo = ();
 }
-impl Trait for Test {
-    type Event = ();
+impl Config for Test {
+    type Event = Event;
     type NFTs = NFTs;
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
@@ -89,10 +86,6 @@ impl Trait for Test {
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
-pub type NFTs = ternoa_nfts::Module<Test>;
-pub type Scheduler = pallet_scheduler::Module<Test>;
-pub type System = frame_system::Module<Test>;
-pub type TimedEscrow = Module<Test>;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
     frame_system::GenesisConfig::default()

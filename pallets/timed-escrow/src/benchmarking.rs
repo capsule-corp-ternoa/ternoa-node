@@ -1,11 +1,11 @@
-use crate::{Call, Module, NFTIdOf, Trait};
+use crate::{Call, Config, Module, NFTIdOf};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::{Module as SystemModule, RawOrigin};
 use sp_runtime::traits::StaticLookup;
 use sp_std::{boxed::Box, prelude::*};
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
-fn create_nft<T: Trait>(caller: &T::AccountId) -> NFTIdOf<T> {
+fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
     T::NFTs::create(
         caller,
         <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
@@ -14,8 +14,6 @@ fn create_nft<T: Trait>(caller: &T::AccountId) -> NFTIdOf<T> {
 }
 
 benchmarks! {
-    _ { }
-
     create {
         let at = SystemModule::<T>::block_number() + 10.into();
         let receiver: T::AccountId = account("receiver", 0, 0);

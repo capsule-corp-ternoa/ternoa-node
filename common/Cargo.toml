@@ -1,15 +1,15 @@
 [package]
 name = "ternoa-common"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-frame-support = { default-features = false, version = "2.0.0" }
-sp-runtime = { default-features = false, version = "2.0.0" }
-sp-std = { default-features = false, version = "2.0.0" }
+frame-support = { default-features = false, version = "3.0.0" }
+sp-runtime = { default-features = false, version = "3.0.0" }
+sp-std = { default-features = false, version = "3.0.0" }
 
 [features]
 default = ["std"]

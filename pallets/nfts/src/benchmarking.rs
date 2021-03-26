@@ -1,12 +1,10 @@
-use crate::{Call, Module, Trait};
+use crate::{Call, Config, Module};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
 use sp_std::{boxed::Box, prelude::*};
 
 benchmarks! {
-    _ { }
-
     create {
         let caller: T::AccountId = whitelisted_caller();
     }: _(RawOrigin::Signed(caller), Default::default())

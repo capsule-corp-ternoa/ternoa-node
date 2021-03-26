@@ -1,19 +1,19 @@
 [package]
 name = "ternoa-executor"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 
 [dependencies]
-parity-scale-codec = "1.3.5"
+parity-scale-codec = "2.0.1"
 ternoa-primitives = { path = "../primitives" }
 ternoa-runtime = { path = "../runtime" }
-sc-executor = "0.8.0"
-sp-core = "2.0.0"
-sp-io = "2.0.0"
-sp-state-machine = "0.8.0"
-sp-trie = "2.0.0"
+sc-executor = "0.9.0"
+sp-core = "3.0.0"
+sp-io = "3.0.0"
+sp-state-machine = "0.9.0"
+sp-trie = "3.0.0"
 trie-root = "0.16.0"
-frame-benchmarking = "2.0.0"
+frame-benchmarking = "3.1.0"
 
 [features]
 wasmtime = [
