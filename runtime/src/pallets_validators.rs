@@ -4,12 +4,15 @@
 use crate::{
     constants::time::{EPOCH_DURATION_IN_BLOCKS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK},
     pallets_core::{BlockHashCount, RuntimeBlockWeights},
-    AuthorityDiscovery, Babe, Balances, Call, Event, Grandpa,
-    Historical, ImOnline, Offences, Runtime, Session, Signature, SignedPayload, Staking, System,
-    Timestamp, UncheckedExtrinsic,
+    AuthorityDiscovery, Babe, Balances, Call, Event, Grandpa, Historical, ImOnline, Offences,
+    Runtime, Session, Signature, SignedPayload, Staking, System, Timestamp, UncheckedExtrinsic,
 };
 use codec::Encode;
-use frame_support::{debug, parameter_types, traits::{KeyOwnerProofSystem, U128CurrencyToVote}, weights::{Weight, constants::BlockExecutionWeight, DispatchClass}};
+use frame_support::{
+    debug, parameter_types,
+    traits::{KeyOwnerProofSystem, U128CurrencyToVote},
+    weights::{constants::BlockExecutionWeight, DispatchClass, Weight},
+};
 use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
@@ -191,13 +194,13 @@ where
 }
 
 impl pallet_im_online::Config for Runtime {
-	type AuthorityId = ImOnlineId;
-	type Event = Event;
-	type ValidatorSet = Historical;
-	type SessionDuration = SessionDuration;
-	type ReportUnresponsiveness = Offences;
-	type UnsignedPriority = ImOnlineUnsignedPriority;
-	type WeightInfo = pallet_im_online::weights::SubstrateWeight<Runtime>;
+    type AuthorityId = ImOnlineId;
+    type Event = Event;
+    type ValidatorSet = Historical;
+    type SessionDuration = SessionDuration;
+    type ReportUnresponsiveness = Offences;
+    type UnsignedPriority = ImOnlineUnsignedPriority;
+    type WeightInfo = pallet_im_online::weights::SubstrateWeight<Runtime>;
 }
 
 parameter_types! {

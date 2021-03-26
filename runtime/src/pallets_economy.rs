@@ -1,10 +1,14 @@
-use crate::{pallets_core::Author, Balances, Event, Runtime, constants::currency::{MILLICENTS, UNIT}};
+use crate::{
+    constants::currency::{MILLICENTS, UNIT},
+    pallets_core::Author,
+    Balances, Event, Runtime,
+};
 use frame_support::{
     parameter_types,
     traits::{Currency, Imbalance, OnUnbalanced},
     weights::IdentityFee,
 };
-use pallet_transaction_payment::{Multiplier, TargetedFeeAdjustment, CurrencyAdapter};
+use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
 use sp_runtime::{FixedPointNumber, Perquintill};
 use ternoa_primitives::{AccountId, Balance};
 
