@@ -1,6 +1,6 @@
 use crate::{
     constants::currency::{MILLICENTS, UNIT},
-    pallets_core::Author,
+    pallets_validators::Author,
     Balances, Event, Runtime,
 };
 use frame_support::{

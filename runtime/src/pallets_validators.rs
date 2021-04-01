@@ -4,13 +4,15 @@
 use crate::{
     constants::time::{EPOCH_DURATION_IN_BLOCKS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK},
     pallets_core::{BlockHashCount, RuntimeBlockWeights},
-    AuthorityDiscovery, Babe, Balances, Call, Event, Grandpa, Historical, ImOnline, Offences,
-    Runtime, Session, Signature, SignedPayload, Staking, System, Timestamp, UncheckedExtrinsic,
+    pallets_economy::NegativeImbalance,
+    AuthorityDiscovery, Authorship, Babe, Balances, Call, Event, Grandpa, Historical, ImOnline,
+    Offences, Runtime, Session, Signature, SignedPayload, Staking, System, Timestamp,
+    UncheckedExtrinsic,
 };
 use codec::Encode;
 use frame_support::{
     debug, parameter_types,
-    traits::{KeyOwnerProofSystem, U128CurrencyToVote},
+    traits::{Currency, KeyOwnerProofSystem, OnUnbalanced, U128CurrencyToVote},
     weights::{constants::BlockExecutionWeight, DispatchClass, Weight},
 };
 use frame_system::EnsureRoot;
@@ -123,6 +125,14 @@ impl pallet_authorship::Config for Runtime {
     type UncleGenerations = UncleGenerations;
     type FilterUncle = ();
     type EventHandler = (Staking, ImOnline);
+}
+
+/// Helper struct to identify the author of a block and reward them with some funds.
+pub struct Author;
+impl OnUnbalanced<NegativeImbalance> for Author {
+    fn on_nonzero_unbalanced(amount: NegativeImbalance) {
+        Balances::resolve_creating(&Authorship::author(), amount);
+    }
 }
 
 impl pallet_authority_discovery::Config for Runtime {}
@@ -248,7 +258,7 @@ impl pallet_staking::Config for Runtime {
     type CurrencyToVote = U128CurrencyToVote;
     type RewardRemainder = ();
     type Event = Event;
-    type Slash = (); // send the slashed funds to the treasury.
+    type Slash = (); // TODO: send the slashed funds to the treasury.
     type Reward = (); // rewards are minted from the void
     type SessionsPerEra = SessionsPerEra;
     type BondingDuration = BondingDuration;
