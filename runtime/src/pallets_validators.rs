@@ -14,10 +14,10 @@ use frame_support::{
     weights::{constants::BlockExecutionWeight, DispatchClass, Weight},
 };
 use frame_system::EnsureRoot;
+#[cfg(any(feature = "std", test))]
+pub use pallet_curveless_staking::StakerStatus;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-#[cfg(any(feature = "std", test))]
-pub use pallet_staking::StakerStatus;
 use sp_core::crypto::KeyTypeId;
 use sp_runtime::{
     generic::Era,
@@ -98,7 +98,7 @@ parameter_types! {
 impl pallet_session::Config for Runtime {
     type Event = Event;
     type ValidatorId = <Self as frame_system::Config>::AccountId;
-    type ValidatorIdOf = pallet_staking::StashOf<Self>;
+    type ValidatorIdOf = pallet_curveless_staking::StashOf<Self>;
     type ShouldEndSession = Babe;
     type NextSessionRotation = Babe;
     type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
@@ -109,8 +109,8 @@ impl pallet_session::Config for Runtime {
 }
 
 impl pallet_session::historical::Config for Runtime {
-    type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
-    type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
+    type FullIdentification = pallet_curveless_staking::Exposure<AccountId, Balance>;
+    type FullIdentificationOf = pallet_curveless_staking::ExposureOf<Runtime>;
 }
 
 parameter_types! {
@@ -216,8 +216,8 @@ impl pallet_offences::Config for Runtime {
 
 parameter_types! {
     pub const SessionsPerEra: sp_staking::SessionIndex = 6;
-    pub const BondingDuration: pallet_staking::EraIndex = 24 * 28;
-    pub const SlashDeferDuration: pallet_staking::EraIndex = 24 * 7; // 1/4 the bonding duration.
+    pub const BondingDuration: pallet_curveless_staking::EraIndex = 24 * 28;
+    pub const SlashDeferDuration: pallet_curveless_staking::EraIndex = 24 * 7; // 1/4 the bonding duration.
     pub const MaxNominatorRewardedPerValidator: u32 = 256;
     pub const ElectionLookahead: BlockNumber = EPOCH_DURATION_IN_BLOCKS / 4;
     pub const MaxIterations: u32 = 10;
@@ -230,7 +230,7 @@ parameter_types! {
     pub const StakingPalletId: ModuleId = ModuleId(*b"mockstak");
 }
 
-impl pallet_staking::Config for Runtime {
+impl pallet_curveless_staking::Config for Runtime {
     type Currency = Balances;
     type UnixTime = Timestamp;
     type CurrencyToVote = U128CurrencyToVote;
@@ -253,6 +253,6 @@ impl pallet_staking::Config for Runtime {
     // The unsigned solution weight targeted by the OCW. We set it to the maximum possible value of
     // a single extrinsic.
     type OffchainSolutionWeightLimit = OffchainSolutionWeightLimit;
-    type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
+    type WeightInfo = pallet_curveless_staking::weights::SubstrateWeight<Runtime>;
     type PalletId = StakingPalletId;
 }
