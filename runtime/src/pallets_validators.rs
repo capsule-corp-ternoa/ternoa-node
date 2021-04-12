@@ -20,11 +20,10 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 pub use pallet_staking::StakerStatus;
 use sp_core::crypto::KeyTypeId;
 use sp_runtime::{
-    curve::PiecewiseLinear,
     generic::Era,
     impl_opaque_keys,
     traits::{self as sp_runtime_traits, OpaqueKeys, StaticLookup},
-    Perbill, SaturatedConversion,
+    ModuleId, Perbill, SaturatedConversion,
 };
 use sp_std::prelude::*; // `impl_opaque_keys` need `Vec`
 use sp_transaction_pool::TransactionPriority;
@@ -215,22 +214,10 @@ impl pallet_offences::Config for Runtime {
     type WeightSoftLimit = OffencesWeightSoftLimit;
 }
 
-pallet_staking_reward_curve::build! {
-    const REWARD_CURVE: PiecewiseLinear<'static> = curve!(
-        min_inflation: 0_025_000,
-        max_inflation: 0_100_000,
-        ideal_stake: 0_500_000,
-        falloff: 0_050_000,
-        max_piece_count: 40,
-        test_precision: 0_005_000,
-    );
-}
-
 parameter_types! {
     pub const SessionsPerEra: sp_staking::SessionIndex = 6;
     pub const BondingDuration: pallet_staking::EraIndex = 24 * 28;
     pub const SlashDeferDuration: pallet_staking::EraIndex = 24 * 7; // 1/4 the bonding duration.
-    pub const RewardCurve: &'static PiecewiseLinear<'static> = &REWARD_CURVE;
     pub const MaxNominatorRewardedPerValidator: u32 = 256;
     pub const ElectionLookahead: BlockNumber = EPOCH_DURATION_IN_BLOCKS / 4;
     pub const MaxIterations: u32 = 10;
@@ -240,6 +227,7 @@ parameter_types! {
         .get(DispatchClass::Normal)
         .max_extrinsic.expect("Normal extrinsics have a weight limit configured; qed")
         .saturating_sub(BlockExecutionWeight::get());
+    pub const StakingPalletId: ModuleId = ModuleId(*b"mockstak");
 }
 
 impl pallet_staking::Config for Runtime {
@@ -249,14 +237,12 @@ impl pallet_staking::Config for Runtime {
     type RewardRemainder = ();
     type Event = Event;
     type Slash = (); // send the slashed funds to the treasury.
-    type Reward = (); // rewards are minted from the void
     type SessionsPerEra = SessionsPerEra;
     type BondingDuration = BondingDuration;
     type SlashDeferDuration = SlashDeferDuration;
     /// A super-majority of the council can cancel the slash.
     type SlashCancelOrigin = EnsureRoot<AccountId>;
     type SessionInterface = Self;
-    type RewardCurve = RewardCurve;
     type NextNewSession = Session;
     type ElectionLookahead = ElectionLookahead;
     type Call = Call;
@@ -268,4 +254,5 @@ impl pallet_staking::Config for Runtime {
     // a single extrinsic.
     type OffchainSolutionWeightLimit = OffchainSolutionWeightLimit;
     type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
+    type PalletId = StakingPalletId;
 }
