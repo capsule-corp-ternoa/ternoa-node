@@ -15,7 +15,7 @@ fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
 
 benchmarks! {
     create {
-        let at = SystemModule::<T>::block_number() + 10.into();
+        let at = SystemModule::<T>::block_number() + 10u32.into();
         let receiver: T::AccountId = account("receiver", 0, 0);
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
@@ -27,7 +27,7 @@ benchmarks! {
     }
 
     cancel {
-        let at = SystemModule::<T>::block_number() + 10.into();
+        let at = SystemModule::<T>::block_number() + 10u32.into();
         let receiver: T::AccountId = account("receiver", 0, 0);
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
@@ -41,7 +41,7 @@ benchmarks! {
     }
 
     complete_transfer {
-        let at = SystemModule::<T>::block_number() + 10.into();
+        let at = SystemModule::<T>::block_number() + 10u32.into();
         let receiver: T::AccountId = account("receiver", 0, 0);
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
