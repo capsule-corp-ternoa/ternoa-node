@@ -1,11 +1,10 @@
 use crate::{
     constants::currency::{MILLICENTS, UNIT},
-    pallets_core::Author,
-    Balances, Event, Runtime,
+    Balances, Event, Runtime, Staking,
 };
 use frame_support::{
     parameter_types,
-    traits::{Currency, Imbalance, OnUnbalanced},
+    traits::{Currency, OnUnbalanced},
     weights::IdentityFee,
 };
 use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
@@ -18,14 +17,11 @@ pub type NegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalanc
 /// case we wire all of them to the block author.
 pub struct DealWithFees;
 impl OnUnbalanced<NegativeImbalance> for DealWithFees {
-    fn on_unbalanceds<B>(mut fees_then_tips: impl Iterator<Item = NegativeImbalance>) {
-        if let Some(mut fees) = fees_then_tips.next() {
-            if let Some(tips) = fees_then_tips.next() {
-                // Think of it as an addition
-                tips.merge_into(&mut fees);
-            }
-            Author::on_unbalanced(fees);
-        }
+    fn on_nonzero_unbalanced(amount: NegativeImbalance) {
+        // rewards are stored in the staking's reward pool for the current era,
+        // they are then dispatched to the validators being rewarded based on
+        // how much work they have performed.
+        Staking::on_unbalanced(amount);
     }
 }
 

@@ -78,7 +78,7 @@ construct_runtime!(
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
         Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
         Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
-        Staking: pallet_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
+        Staking: pallet_curveless_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
@@ -316,11 +316,12 @@ impl_runtime_apis! {
             config: frame_benchmarking::BenchmarkConfig
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
             use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
-            use pallet_session_benchmarking::Module as SessionBench;
+            //use pallet_session_benchmarking::Module as SessionBench;
             //use pallet_offences_benchmarking::Module as OffencesBench;
             use frame_system_benchmarking::Module as SystemBench;
 
-            impl pallet_session_benchmarking::Config for Runtime {}
+            // those two depends on pallets we do not use and pause compile time issues
+            //impl pallet_session_benchmarking::Config for Runtime {}
             //impl pallet_offences_benchmarking::Config for Runtime {}
             impl frame_system_benchmarking::Config for Runtime {}
 
@@ -349,8 +350,8 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_im_online, ImOnline);
             //add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
             add_benchmark!(params, batches, pallet_scheduler, Scheduler);
-            add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
-            add_benchmark!(params, batches, pallet_staking, Staking);
+            //add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
+            add_benchmark!(params, batches, pallet_curveless_staking, Staking);
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
 

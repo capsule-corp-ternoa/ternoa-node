@@ -85,7 +85,7 @@
           ]
         ]
       },
-      "palletStaking": {
+      "palletCurvelessStaking": {
         "historyDepth": 84,
         "validatorCount": 4,
         "minimumValidatorCount": 2,

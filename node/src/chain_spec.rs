@@ -134,7 +134,7 @@ pub fn testnet_genesis(
         pallet_grandpa: Some(GrandpaConfig {
             authorities: vec![],
         }),
-        pallet_staking: Some(StakingConfig {
+        pallet_curveless_staking: Some(StakingConfig {
             validator_count: initial_authorities.len() as u32 * 2,
             minimum_validator_count: initial_authorities.len() as u32,
             stakers: initial_authorities
