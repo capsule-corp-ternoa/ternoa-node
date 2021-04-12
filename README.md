@@ -67,8 +67,6 @@ Now that we have created a capsules let's escrow it to our descendants:
 > the `timedEscrow` pallet will also let you cancel a transfer if it didn't happen yet.
 
 ## Notes
-- Fees and tips are 100% awarded to block authors, later we may want to do a split and send some to a treasury.
-- Staking and block rewards are created from the void, thus creating more coins.
 - Staking slashes and remainders are burned, you may want to send them to a treasury later.
 - There are no collectives, treasuries or democracy pallets.
 - We kept the runtime slim and did not include less core pallets such as `recovery`, `utility` or `vesting`.
