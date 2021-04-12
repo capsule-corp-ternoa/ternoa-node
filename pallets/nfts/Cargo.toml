@@ -25,6 +25,7 @@ sp-io = "3.0.0"
 default = ["std"]
 std = [
     "codec/std",
+    "frame-benchmarking/std",
     "frame-support/std",
     "frame-system/std",
     "serde",

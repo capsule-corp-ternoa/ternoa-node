@@ -27,6 +27,7 @@ ternoa-nfts = { path = "../nfts" }
 default = ["std"]
 std = [
     "codec/std",
+    "frame-benchmarking/std",
     "frame-support/std",
     "frame-system/std",
     "serde",
