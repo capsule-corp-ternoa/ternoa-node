@@ -166,17 +166,17 @@ decl_module! {
             Self::deposit_event(RawEvent::Sealed(id));
         }
 
-        /// Burn an NFT. Must be called by the owner of the NFT.
+        /// Remove an NFT from the stroage. This operation is inversible which means
+        /// once the NFT is removed (burned) from the storage there is no way to
+        /// get it back. 
+        /// Must be called by the owner of  the NFT.
         #[weight = T::WeightInfo::burn()]
         fn burn(origin, id: T::NFTId) {
             let who = ensure_signed(origin)?;
             let data = Data::<T>::get(id);
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
-
-            let success = <Self as NFTs>::burn(id);
-            sp_runtime::print("Successful Burn: ");
-            sp_runtime::print(success);
+            let _result = <Self as NFTs>::burn(id);
         }
     }
 }
@@ -251,9 +251,9 @@ impl<T: Config> NFTs for Module<T> {
         Data::<T>::get(id).sealed
     }
 
-    fn burn(id: Self::NFTId) -> bool {
+    fn burn(id: Self::NFTId) -> DispatchResult {
         Data::<T>::remove(id);
-        true
+        Ok(())
     }
 }
 

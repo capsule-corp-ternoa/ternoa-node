@@ -41,8 +41,8 @@ pub trait NFTs {
     /// Check wether an NFT is sealed.
     fn sealed(id: Self::NFTId) -> bool;
 
-    /// Burn an NFT.
-    fn burn(id: Self::NFTId) -> bool;
+    /// Remove an NFT from the stroage.
+    fn burn(id: Self::NFTId) -> DispatchResult;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.
