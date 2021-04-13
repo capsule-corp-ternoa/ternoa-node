@@ -166,10 +166,10 @@ decl_module! {
             Self::deposit_event(RawEvent::Sealed(id));
         }
 
-        /// Remove an NFT from the stroage. This operation is inversible which means
+        /// Remove an NFT from the storage. This operation is irreversible which means
         /// once the NFT is removed (burned) from the storage there is no way to
         /// get it back.
-        /// Must be called by the owner of  the NFT.
+        /// Must be called by the owner of the NFT.
         #[weight = T::WeightInfo::burn()]
         fn burn(origin, id: T::NFTId) {
             let who = ensure_signed(origin)?;

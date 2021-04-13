@@ -41,7 +41,7 @@ pub trait NFTs {
     /// Check wether an NFT is sealed.
     fn sealed(id: Self::NFTId) -> bool;
 
-    /// Remove an NFT from the stroage.
+    /// Remove an NFT from the storage.
     fn burn(id: Self::NFTId) -> DispatchResult;
 }
 
