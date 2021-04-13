@@ -37,6 +37,7 @@ pub trait WeightInfo {
     fn mutate() -> Weight;
     fn seal() -> Weight;
     fn transfer() -> Weight;
+    fn burn() -> Weight;
 }
 
 pub trait Config: frame_system::Config {
@@ -164,6 +165,19 @@ decl_module! {
 
             Self::deposit_event(RawEvent::Sealed(id));
         }
+
+        /// Burn an NFT. Must be called by the owner of the NFT.
+        #[weight = T::WeightInfo::burn()]
+        fn burn(origin, id: T::NFTId) {
+            let who = ensure_signed(origin)?;
+            let data = Data::<T>::get(id);
+
+            ensure!(data.owner == who, Error::<T>::NotOwner);
+
+            let success = <Self as NFTs>::burn(id);
+            sp_runtime::print("Successful Burn: ");
+            sp_runtime::print(success);
+        }
     }
 }
 
@@ -235,6 +249,11 @@ impl<T: Config> NFTs for Module<T> {
 
     fn sealed(id: Self::NFTId) -> bool {
         Data::<T>::get(id).sealed
+    }
+
+    fn burn(id: Self::NFTId) -> bool {
+        Data::<T>::remove(id);
+        true
     }
 }
 
