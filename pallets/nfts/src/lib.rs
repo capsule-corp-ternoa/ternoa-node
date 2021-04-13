@@ -89,6 +89,8 @@ decl_event!(
         Locked(NFTId),
         /// A locked NFT has been unlocked. \[nft id\]
         Unlocked(NFTId),
+        /// An NFT that was burned. \[nft id\]
+        Burned(NFTId),
     }
 );
 
@@ -176,7 +178,8 @@ decl_module! {
             let data = Data::<T>::get(id);
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
-            let _result = <Self as NFTs>::burn(id);
+
+            <Self as NFTs>::burn(id).expect("Call to Burn function should never fail!");
         }
     }
 }
@@ -253,6 +256,8 @@ impl<T: Config> NFTs for Module<T> {
 
     fn burn(id: Self::NFTId) -> DispatchResult {
         Data::<T>::remove(id);
+        Self::deposit_event(RawEvent::Burned(id));
+
         Ok(())
     }
 }
