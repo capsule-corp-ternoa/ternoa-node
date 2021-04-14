@@ -37,6 +37,7 @@ pub trait WeightInfo {
     fn mutate() -> Weight;
     fn seal() -> Weight;
     fn transfer() -> Weight;
+    fn burn() -> Weight;
 }
 
 pub trait Config: frame_system::Config {
@@ -88,6 +89,8 @@ decl_event!(
         Locked(NFTId),
         /// A locked NFT has been unlocked. \[nft id\]
         Unlocked(NFTId),
+        /// An NFT that was burned. \[nft id\]
+        Burned(NFTId),
     }
 );
 
@@ -164,6 +167,20 @@ decl_module! {
 
             Self::deposit_event(RawEvent::Sealed(id));
         }
+
+        /// Remove an NFT from the storage. This operation is irreversible which means
+        /// once the NFT is removed (burned) from the storage there is no way to
+        /// get it back.
+        /// Must be called by the owner of the NFT.
+        #[weight = T::WeightInfo::burn()]
+        fn burn(origin, id: T::NFTId) {
+            let who = ensure_signed(origin)?;
+            let data = Data::<T>::get(id);
+
+            ensure!(data.owner == who, Error::<T>::NotOwner);
+
+            <Self as NFTs>::burn(id).expect("Call to Burn function should never fail!");
+        }
     }
 }
 
@@ -235,6 +252,13 @@ impl<T: Config> NFTs for Module<T> {
 
     fn sealed(id: Self::NFTId) -> bool {
         Data::<T>::get(id).sealed
+    }
+
+    fn burn(id: Self::NFTId) -> DispatchResult {
+        Data::<T>::remove(id);
+        Self::deposit_event(RawEvent::Burned(id));
+
+        Ok(())
     }
 }
 

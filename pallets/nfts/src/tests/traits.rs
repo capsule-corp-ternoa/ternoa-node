@@ -85,3 +85,15 @@ fn lock_double_fail() {
         );
     })
 }
+
+#[test]
+fn burn_nft() {
+    new_test_ext().execute_with(|| {
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty).expect("creation failed");
+
+        assert_ne!(<NFTs as traits::NFTs>::owner(id), 0);
+        assert_ok!(<NFTs as traits::NFTs>::burn(id));
+        assert_eq!(<NFTs as traits::NFTs>::owner(id), 0);
+    })
+}

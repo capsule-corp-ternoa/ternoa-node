@@ -1,5 +1,5 @@
 use super::mock::*;
-use crate::{Data, Error};
+use crate::{Data, Error, NFTData};
 use frame_support::{assert_noop, assert_ok, StorageMap};
 use frame_system::RawOrigin;
 
@@ -162,6 +162,51 @@ fn seal_already_sealed() {
         assert_noop!(
             NFTs::seal(RawOrigin::Signed(ALICE).into(), 0),
             Error::<Test>::Sealed
+        );
+    })
+}
+
+#[test]
+fn burn_owned_nft() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+
+        let id = NFTs::total() - 1;
+
+        assert_eq!(id, 0);
+        assert_ok!(NFTs::burn(RawOrigin::Signed(ALICE).into(), 0));
+        assert_eq!(NFTs::data(id), NFTData::default());
+    })
+}
+
+#[test]
+fn burn_not_owned_nft() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(NFTs::create(
+            RawOrigin::Signed(ALICE).into(),
+            MockNFTDetails::Empty
+        ));
+
+        let id = NFTs::total() - 1;
+
+        assert_eq!(id, 0);
+        assert_noop!(
+            NFTs::burn(RawOrigin::Signed(BOB).into(), 0),
+            Error::<Test>::NotOwner
+        );
+        assert_eq!(NFTs::data(id).owner, ALICE);
+    })
+}
+
+#[test]
+fn burn_none_existent_nft() {
+    new_test_ext().execute_with(|| {
+        assert_noop!(
+            NFTs::burn(RawOrigin::Signed(ALICE).into(), 100),
+            Error::<Test>::NotOwner
         );
     })
 }
