@@ -1,4 +1,4 @@
-use crate::{Call, Config, Module};
+use crate::{Call, Config, Module, NFTData};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
@@ -45,6 +45,15 @@ benchmarks! {
     verify {
         assert_eq!(Module::<T>::data(T::NFTId::from(0)).owner, receiver);
     }
+
+    burn {
+        let caller: T::AccountId = whitelisted_caller();
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        let id = T::NFTId::from(0);
+    }: _(RawOrigin::Signed(caller), id)
+    verify {
+        assert_eq!(Module::<T>::data(id), NFTData::default());
+    }
 }
 
 #[cfg(test)]
@@ -78,6 +87,13 @@ mod tests {
     fn transfer() {
         new_test_ext().execute_with(|| {
             assert_ok!(test_benchmark_transfer::<Test>());
+        });
+    }
+
+    #[test]
+    fn burn() {
+        new_test_ext().execute_with(|| {
+            assert_ok!(test_benchmark_burn::<Test>());
         });
     }
 }
