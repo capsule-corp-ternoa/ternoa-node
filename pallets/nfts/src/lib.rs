@@ -8,11 +8,16 @@ mod tests;
 
 pub use pallet::*;
 
-use codec::{Decode, Encode};
-use frame_support::weights::Weight;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
-use sp_runtime::RuntimeDebug;
+
+use codec::{Decode, Encode};
+use frame_support::pallet_prelude::{ensure, DispatchError};
+use frame_support::weights::Weight;
+use sp_runtime::traits::CheckedAdd;
+use sp_runtime::{DispatchResult, RuntimeDebug};
+use sp_std::result;
+use ternoa_common::traits::{LockableNFTs, NFTs};
 
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
@@ -36,21 +41,19 @@ pub trait WeightInfo {
 
 #[frame_support::pallet]
 pub mod pallet {
-    use super::{NFTData, WeightInfo};
+    #[cfg(feature = "std")]
+    use frame_support::traits::GenesisBuild;
 
+    use super::{NFTData, WeightInfo};
     use frame_support::pallet_prelude::{
-        ensure, Blake2_128Concat, DispatchError, DispatchResultWithPostInfo, Hooks, IsType,
+        ensure, Blake2_128Concat, DispatchResultWithPostInfo, Hooks, IsType,
         MaybeSerializeDeserialize, Member, Parameter, PhantomData, StorageMap, StorageValue,
         ValueQuery,
     };
     use frame_system::pallet_prelude::{ensure_signed, BlockNumberFor, OriginFor};
     use sp_runtime::traits::{CheckedAdd, StaticLookup};
     use sp_runtime::DispatchResult;
-    use sp_std::result;
-    use ternoa_common::traits::{LockableNFTs, NFTs};
-
-    #[cfg(feature = "std")]
-    use frame_support::traits::GenesisBuild;
+    use ternoa_common::traits::NFTs;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -128,7 +131,7 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, details)| {
-                    drop(<Module<T> as NFTs>::create(&account, details))
+                    drop(<Pallet<T> as NFTs>::create(&account, details))
                 });
         }
     }
@@ -229,103 +232,103 @@ pub mod pallet {
             Ok(().into())
         }
     }
+}
 
-    impl<T: Config> NFTs for Module<T> {
-        type AccountId = T::AccountId;
-        type NFTDetails = T::NFTDetails;
-        type NFTId = T::NFTId;
+impl<T: Config> NFTs for Pallet<T> {
+    type AccountId = T::AccountId;
+    type NFTDetails = T::NFTDetails;
+    type NFTId = T::NFTId;
 
-        fn create(
-            owner: &Self::AccountId,
-            details: Self::NFTDetails,
-        ) -> result::Result<Self::NFTId, DispatchError> {
-            let id = Total::<T>::get();
-            Total::<T>::put(id.checked_add(&1.into()).ok_or(Error::<T>::NFTIdOverflow)?);
-            Data::<T>::insert(
-                id,
-                NFTData {
-                    owner: owner.clone(),
-                    details,
-                    sealed: false,
-                    locked: false,
-                },
-            );
+    fn create(
+        owner: &Self::AccountId,
+        details: Self::NFTDetails,
+    ) -> result::Result<Self::NFTId, DispatchError> {
+        let id = Total::<T>::get();
+        Total::<T>::put(id.checked_add(&1.into()).ok_or(Error::<T>::NFTIdOverflow)?);
+        Data::<T>::insert(
+            id,
+            NFTData {
+                owner: owner.clone(),
+                details,
+                sealed: false,
+                locked: false,
+            },
+        );
 
-            Self::deposit_event(Event::Created(id, owner.clone()));
-            Ok(id)
-        }
-
-        fn mutate<F: FnOnce(&Self::AccountId, &mut Self::NFTDetails) -> DispatchResult>(
-            id: Self::NFTId,
-            f: F,
-        ) -> DispatchResult {
-            let mut data = Data::<T>::get(id);
-            let mut details = data.details;
-
-            ensure!(!data.sealed, Error::<T>::Sealed);
-            f(&data.owner, &mut details)?;
-
-            data.details = details;
-            Data::<T>::insert(id, data);
-
-            Self::deposit_event(Event::Mutated(id));
-            Ok(())
-        }
-
-        fn set_owner(id: Self::NFTId, owner: &Self::AccountId) -> DispatchResult {
-            Data::<T>::try_mutate(id, |data| -> DispatchResult {
-                ensure!(!data.locked, Error::<T>::Locked);
-                (*data).owner = owner.clone();
-                Ok(())
-            })?;
-
-            Ok(())
-        }
-
-        fn details(id: Self::NFTId) -> Self::NFTDetails {
-            Data::<T>::get(id).details
-        }
-
-        fn owner(id: Self::NFTId) -> Self::AccountId {
-            Data::<T>::get(id).owner
-        }
-
-        fn seal(id: Self::NFTId) -> DispatchResult {
-            Data::<T>::mutate(id, |d| (*d).sealed = true);
-            Self::deposit_event(Event::Sealed(id));
-            Ok(())
-        }
-
-        fn sealed(id: Self::NFTId) -> bool {
-            Data::<T>::get(id).sealed
-        }
-
-        fn burn(id: Self::NFTId) -> DispatchResult {
-            Data::<T>::remove(id);
-            Self::deposit_event(Event::Burned(id));
-
-            Ok(())
-        }
+        Self::deposit_event(Event::Created(id, owner.clone()));
+        Ok(id)
     }
 
-    impl<T: Config> LockableNFTs for Module<T> {
-        type AccountId = T::AccountId;
-        type NFTId = T::NFTId;
+    fn mutate<F: FnOnce(&Self::AccountId, &mut Self::NFTDetails) -> DispatchResult>(
+        id: Self::NFTId,
+        f: F,
+    ) -> DispatchResult {
+        let mut data = Data::<T>::get(id);
+        let mut details = data.details;
 
-        fn lock(id: Self::NFTId) -> DispatchResult {
-            Data::<T>::try_mutate(id, |d| -> DispatchResult {
-                ensure!(!d.locked, Error::<T>::Locked);
-                (*d).locked = true;
-                Ok(())
-            })
-        }
+        ensure!(!data.sealed, Error::<T>::Sealed);
+        f(&data.owner, &mut details)?;
 
-        fn unlock(id: Self::NFTId) {
-            Data::<T>::mutate(id, |d| (*d).locked = false);
-        }
+        data.details = details;
+        Data::<T>::insert(id, data);
 
-        fn locked(id: Self::NFTId) -> bool {
-            Data::<T>::get(id).locked
-        }
+        Self::deposit_event(Event::Mutated(id));
+        Ok(())
+    }
+
+    fn set_owner(id: Self::NFTId, owner: &Self::AccountId) -> DispatchResult {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
+            ensure!(!data.locked, Error::<T>::Locked);
+            (*data).owner = owner.clone();
+            Ok(())
+        })?;
+
+        Ok(())
+    }
+
+    fn details(id: Self::NFTId) -> Self::NFTDetails {
+        Data::<T>::get(id).details
+    }
+
+    fn owner(id: Self::NFTId) -> Self::AccountId {
+        Data::<T>::get(id).owner
+    }
+
+    fn seal(id: Self::NFTId) -> DispatchResult {
+        Data::<T>::mutate(id, |d| (*d).sealed = true);
+        Self::deposit_event(Event::Sealed(id));
+        Ok(())
+    }
+
+    fn sealed(id: Self::NFTId) -> bool {
+        Data::<T>::get(id).sealed
+    }
+
+    fn burn(id: Self::NFTId) -> DispatchResult {
+        Data::<T>::remove(id);
+        Self::deposit_event(Event::Burned(id));
+
+        Ok(())
+    }
+}
+
+impl<T: Config> LockableNFTs for Pallet<T> {
+    type AccountId = T::AccountId;
+    type NFTId = T::NFTId;
+
+    fn lock(id: Self::NFTId) -> DispatchResult {
+        Data::<T>::try_mutate(id, |d| -> DispatchResult {
+            ensure!(!d.locked, Error::<T>::Locked);
+            (*d).locked = true;
+            Ok(())
+        })
+    }
+
+    fn unlock(id: Self::NFTId) {
+        Data::<T>::mutate(id, |d| (*d).locked = false);
+    }
+
+    fn locked(id: Self::NFTId) -> bool {
+        Data::<T>::get(id).locked
     }
 }
