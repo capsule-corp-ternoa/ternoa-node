@@ -29,9 +29,9 @@ pub mod pallet {
     use frame_system::pallet_prelude::{ensure_signed, BlockNumberFor, OriginFor};
     use ternoa_common::traits::{LockableNFTs, NFTs};
 
-    type BalanceOf<T> =
+    pub type BalanceOf<T> =
         <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
-    type NFTIdOf<T> = <<T as Config>::NFTs as LockableNFTs>::NFTId;
+    pub type NFTIdOf<T> = <<T as Config>::NFTs as LockableNFTs>::NFTId;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
