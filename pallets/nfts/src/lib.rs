@@ -107,7 +107,6 @@ pub mod pallet {
     pub type Data<T: Config> =
         StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, T::NFTDetails>, ValueQuery>;
 
-    #[cfg(feature = "std")]
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub nfts: Vec<(T::AccountId, T::NFTDetails)>,
@@ -122,7 +121,6 @@ pub mod pallet {
         }
     }
 
-    #[cfg(feature = "std")]
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {

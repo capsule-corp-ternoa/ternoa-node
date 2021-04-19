@@ -1,6 +1,6 @@
 use super::mock::*;
 use crate::{Error, NFTsForSale};
-use frame_support::{assert_noop, assert_ok, StorageMap};
+use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 
 #[test]

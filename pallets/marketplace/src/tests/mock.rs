@@ -1,6 +1,7 @@
 use crate::{self as ternoa_marketplace, Config};
 use codec::{Decode, Encode};
 use frame_support::parameter_types;
+use frame_support::traits::GenesisBuild;
 use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
