@@ -94,10 +94,12 @@ pub mod pallet {
         Locked,
     }
 
+    /// The number of NFTs managed by this pallet
     #[pallet::storage]
     #[pallet::getter(fn total)]
     pub type Total<T: Config> = StorageValue<_, T::NFTId, ValueQuery>;
 
+    /// Data related to NFTs.
     #[pallet::storage]
     #[pallet::getter(fn data)]
     pub type Data<T: Config> =

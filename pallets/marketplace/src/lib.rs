@@ -44,7 +44,7 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", T::NFTId = "NFTId", T::Balance = "Balance")]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", BalanceOf<T> = "Balance")]
     pub enum Event<T: Config> {
         /// A nft has been listed for sale. \[nft id, price\]
         NftListed(NFTIdOf<T>, BalanceOf<T>),
@@ -62,6 +62,7 @@ pub mod pallet {
         NftNotForSale,
     }
 
+    /// Nfts listed on the marketplace
     #[pallet::storage]
     #[pallet::getter(fn nft_for_sale)]
     pub type NFTsForSale<T: Config> =
@@ -76,6 +77,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
+        /// Deposit a nft and list it on the marketplace
         #[pallet::weight(T::WeightInfo::list())]
         pub fn list(
             origin: OriginFor<T>,
