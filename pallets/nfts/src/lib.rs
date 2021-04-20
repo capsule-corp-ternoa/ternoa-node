@@ -41,16 +41,9 @@ pub trait WeightInfo {
 
 #[frame_support::pallet]
 pub mod pallet {
-    #[cfg(feature = "std")]
-    use frame_support::traits::GenesisBuild;
-
-    use super::{NFTData, WeightInfo};
-    use frame_support::pallet_prelude::{
-        ensure, Blake2_128Concat, DispatchResultWithPostInfo, Hooks, IsType,
-        MaybeSerializeDeserialize, Member, Parameter, PhantomData, StorageMap, StorageValue,
-        ValueQuery,
-    };
-    use frame_system::pallet_prelude::{ensure_signed, BlockNumberFor, OriginFor};
+    use super::*;
+    use frame_support::pallet_prelude::*;
+    use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedAdd, StaticLookup};
     use sp_runtime::DispatchResult;
     use ternoa_common::traits::NFTs;

@@ -19,14 +19,10 @@ pub trait WeightInfo {
 
 #[frame_support::pallet]
 pub mod pallet {
-    use super::WeightInfo;
-
-    use frame_support::pallet_prelude::{
-        ensure, Blake2_128Concat, DispatchResultWithPostInfo, Hooks, IsType, PhantomData,
-        StorageMap, ValueQuery,
-    };
+    use super::*;
+    use frame_support::pallet_prelude::*;
     use frame_support::traits::{Currency, ExistenceRequirement};
-    use frame_system::pallet_prelude::{ensure_signed, BlockNumberFor, OriginFor};
+    use frame_system::pallet_prelude::*;
     use ternoa_common::traits::{LockableNFTs, NFTs};
 
     pub type BalanceOf<T> =
