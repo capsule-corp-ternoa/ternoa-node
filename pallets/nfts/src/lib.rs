@@ -60,77 +60,6 @@ pub mod pallet {
         type WeightInfo: WeightInfo;
     }
 
-    #[pallet::event]
-    #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", T::NFTId = "NFTId")]
-    pub enum Event<T: Config> {
-        /// A new NFT was created. \[nft id, owner\]
-        Created(T::NFTId, T::AccountId),
-        /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
-        Transfer(T::NFTId, T::AccountId, T::AccountId),
-        /// An NFT was updated by its owner. \[nft id\]
-        Mutated(T::NFTId),
-        /// An NFT was sealed, preventing any new mutations. \[nft id\]
-        Sealed(T::NFTId),
-        /// An NFT has been locked, preventing transfers until it is unlocked.
-        /// \[nft id\]
-        Locked(T::NFTId),
-        /// A locked NFT has been unlocked. \[nft id\]
-        Unlocked(T::NFTId),
-        /// An NFT that was burned. \[nft id\]
-        Burned(T::NFTId),
-    }
-
-    #[pallet::error]
-    pub enum Error<T> {
-        /// We do not have any NFT id left, a runtime upgrade is necessary.
-        NFTIdOverflow,
-        /// This function can only be called by the owner of the nft.
-        NotOwner,
-        /// NFT is sealed and no longer accepts mutations.
-        Sealed,
-        /// NFT is locked and thus its owner cannot be changed until it
-        /// is unlocked.
-        Locked,
-    }
-
-    /// The number of NFTs managed by this pallet
-    #[pallet::storage]
-    #[pallet::getter(fn total)]
-    pub type Total<T: Config> = StorageValue<_, T::NFTId, ValueQuery>;
-
-    /// Data related to NFTs.
-    #[pallet::storage]
-    #[pallet::getter(fn data)]
-    pub type Data<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, T::NFTDetails>, ValueQuery>;
-
-    #[pallet::genesis_config]
-    pub struct GenesisConfig<T: Config> {
-        pub nfts: Vec<(T::AccountId, T::NFTDetails)>,
-    }
-
-    #[cfg(feature = "std")]
-    impl<T: Config> Default for GenesisConfig<T> {
-        fn default() -> Self {
-            Self {
-                nfts: Default::default(),
-            }
-        }
-    }
-
-    #[pallet::genesis_build]
-    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
-        fn build(&self) {
-            self.nfts
-                .clone()
-                .into_iter()
-                .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details))
-                });
-        }
-    }
-
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(PhantomData<T>);
@@ -225,6 +154,77 @@ pub mod pallet {
             <Self as NFTs>::burn(id).expect("Call to Burn function should never fail!");
 
             Ok(().into())
+        }
+    }
+
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    #[pallet::metadata(T::AccountId = "AccountId", T::NFTId = "NFTId")]
+    pub enum Event<T: Config> {
+        /// A new NFT was created. \[nft id, owner\]
+        Created(T::NFTId, T::AccountId),
+        /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
+        Transfer(T::NFTId, T::AccountId, T::AccountId),
+        /// An NFT was updated by its owner. \[nft id\]
+        Mutated(T::NFTId),
+        /// An NFT was sealed, preventing any new mutations. \[nft id\]
+        Sealed(T::NFTId),
+        /// An NFT has been locked, preventing transfers until it is unlocked.
+        /// \[nft id\]
+        Locked(T::NFTId),
+        /// A locked NFT has been unlocked. \[nft id\]
+        Unlocked(T::NFTId),
+        /// An NFT that was burned. \[nft id\]
+        Burned(T::NFTId),
+    }
+
+    #[pallet::error]
+    pub enum Error<T> {
+        /// We do not have any NFT id left, a runtime upgrade is necessary.
+        NFTIdOverflow,
+        /// This function can only be called by the owner of the nft.
+        NotOwner,
+        /// NFT is sealed and no longer accepts mutations.
+        Sealed,
+        /// NFT is locked and thus its owner cannot be changed until it
+        /// is unlocked.
+        Locked,
+    }
+
+    /// The number of NFTs managed by this pallet
+    #[pallet::storage]
+    #[pallet::getter(fn total)]
+    pub type Total<T: Config> = StorageValue<_, T::NFTId, ValueQuery>;
+
+    /// Data related to NFTs.
+    #[pallet::storage]
+    #[pallet::getter(fn data)]
+    pub type Data<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, T::NFTDetails>, ValueQuery>;
+
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub nfts: Vec<(T::AccountId, T::NFTDetails)>,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self {
+                nfts: Default::default(),
+            }
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            self.nfts
+                .clone()
+                .into_iter()
+                .for_each(|(account, details)| {
+                    drop(<Pallet<T> as NFTs>::create(&account, details))
+                });
         }
     }
 }

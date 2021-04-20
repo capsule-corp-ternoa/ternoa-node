@@ -42,32 +42,6 @@ pub mod pallet {
         type WeightInfo: WeightInfo;
     }
 
-    #[pallet::event]
-    #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", BalanceOf<T> = "Balance")]
-    pub enum Event<T: Config> {
-        /// A nft has been listed for sale. \[nft id, price\]
-        NftListed(NFTIdOf<T>, BalanceOf<T>),
-        /// A nft is removed from the marketplace by its owner. \[nft id\]
-        NftUnlisted(NFTIdOf<T>),
-        /// A nft has been sold. \[nft id, new owner\]
-        NftSold(NFTIdOf<T>, T::AccountId),
-    }
-
-    #[pallet::error]
-    pub enum Error<T> {
-        /// This function is reserved to the owner of a nft.
-        NotNftOwner,
-        /// Nft is not present on the marketplace
-        NftNotForSale,
-    }
-
-    /// Nfts listed on the marketplace
-    #[pallet::storage]
-    #[pallet::getter(fn nft_for_sale)]
-    pub type NFTsForSale<T: Config> =
-        StorageMap<_, Blake2_128Concat, NFTIdOf<T>, (T::AccountId, BalanceOf<T>), ValueQuery>;
-
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(PhantomData<T>);
@@ -134,4 +108,30 @@ pub mod pallet {
             Ok(().into())
         }
     }
+
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", BalanceOf<T> = "Balance")]
+    pub enum Event<T: Config> {
+        /// A nft has been listed for sale. \[nft id, price\]
+        NftListed(NFTIdOf<T>, BalanceOf<T>),
+        /// A nft is removed from the marketplace by its owner. \[nft id\]
+        NftUnlisted(NFTIdOf<T>),
+        /// A nft has been sold. \[nft id, new owner\]
+        NftSold(NFTIdOf<T>, T::AccountId),
+    }
+
+    #[pallet::error]
+    pub enum Error<T> {
+        /// This function is reserved to the owner of a nft.
+        NotNftOwner,
+        /// Nft is not present on the marketplace
+        NftNotForSale,
+    }
+
+    /// Nfts listed on the marketplace
+    #[pallet::storage]
+    #[pallet::getter(fn nft_for_sale)]
+    pub type NFTsForSale<T: Config> =
+        StorageMap<_, Blake2_128Concat, NFTIdOf<T>, (T::AccountId, BalanceOf<T>), ValueQuery>;
 }

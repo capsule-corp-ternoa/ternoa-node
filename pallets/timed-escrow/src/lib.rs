@@ -50,30 +50,6 @@ pub mod pallet {
         type WeightInfo: WeightInfo;
     }
 
-    #[pallet::event]
-    #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(
-        T::AccountId = "AccountId",
-        T::BlockNumber = "BlockNumber",
-        NFTIdOf<T> = "NFTId"
-    )]
-    pub enum Event<T: Config> {
-        /// A transfer has been scheduled. \[capsule id, destination, block of transfer\]
-        TransferScheduled(NFTIdOf<T>, T::AccountId, T::BlockNumber),
-        /// A transfer has been canceled. \[capsule id\]
-        TransferCanceled(NFTIdOf<T>),
-        /// A transfer was executed and finalized. \[capsule id\]
-        TransferCompleted(NFTIdOf<T>),
-    }
-
-    #[pallet::error]
-    pub enum Error<T> {
-        /// This function is reserved to the owner of a nft.
-        NotNFTOwner,
-        /// An unknown error happened which made the scheduling call fail.
-        SchedulingFailed,
-    }
-
     #[pallet::pallet]
     pub struct Pallet<T>(PhantomData<T>);
 
@@ -153,5 +129,29 @@ pub mod pallet {
 
             Ok(().into())
         }
+    }
+
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    #[pallet::metadata(
+        T::AccountId = "AccountId",
+        T::BlockNumber = "BlockNumber",
+        NFTIdOf<T> = "NFTId"
+    )]
+    pub enum Event<T: Config> {
+        /// A transfer has been scheduled. \[capsule id, destination, block of transfer\]
+        TransferScheduled(NFTIdOf<T>, T::AccountId, T::BlockNumber),
+        /// A transfer has been canceled. \[capsule id\]
+        TransferCanceled(NFTIdOf<T>),
+        /// A transfer was executed and finalized. \[capsule id\]
+        TransferCompleted(NFTIdOf<T>),
+    }
+
+    #[pallet::error]
+    pub enum Error<T> {
+        /// This function is reserved to the owner of a nft.
+        NotNFTOwner,
+        /// An unknown error happened which made the scheduling call fail.
+        SchedulingFailed,
     }
 }
