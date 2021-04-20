@@ -1,5 +1,4 @@
-use crate::pallet::NFTIdOf;
-use crate::{Call, Config, Module, NFTsForSale};
+use crate::{Call, Config, Module, NFTIdOf, NFTsForSale};
 use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_std::{boxed::Box, prelude::*};
