@@ -1,6 +1,8 @@
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sc_service::ChainType;
+use serde_json::json;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+use sp_chain_spec::Properties;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
@@ -156,6 +158,14 @@ pub fn testnet_genesis(
     }
 }
 
+fn build_local_properties() -> Properties {
+    let mut props = Properties::new();
+    props.insert("tokenDecimals".to_string(), json!(18));
+    props.insert("tokenSymbol".to_string(), json!("CAPS"));
+
+    props
+}
+
 pub fn chaos_config() -> ChainSpec {
     ChainSpec::from_json_bytes(&include_bytes!("../res/chaos.json")[..]).unwrap()
 }
@@ -173,8 +183,8 @@ pub fn development_config() -> ChainSpec {
         development_config_genesis,
         vec![],
         None,
-        None,
-        None,
+        Some("ternoa"),
+        Some(build_local_properties()),
         Default::default(),
     )
 }
@@ -199,8 +209,8 @@ pub fn local_testnet_config() -> ChainSpec {
         local_testnet_genesis,
         vec![],
         None,
-        None,
-        None,
+        Some("ternoa"),
+        Some(build_local_properties()),
         Default::default(),
     )
 }
