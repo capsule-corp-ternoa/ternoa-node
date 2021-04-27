@@ -20,6 +20,13 @@ pub trait NFTs {
         details: Self::NFTDetails,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
+    /// TODO!
+    fn create_series(
+        owner: &Self::AccountId,
+        details: Self::NFTDetails,
+        quantity: u128,
+    ) -> result::Result<sp_std::vec::Vec<Self::NFTId>, DispatchError>;
+
     /// Change the details related to an NFT.
     fn mutate<F: FnOnce(&Self::AccountId, &mut Self::NFTDetails) -> DispatchResult>(
         id: Self::NFTId,
@@ -43,6 +50,12 @@ pub trait NFTs {
 
     /// Remove an NFT from the storage.
     fn burn(id: Self::NFTId) -> DispatchResult;
+
+    /// TODO!
+    fn series_id(id: Self::NFTId) -> u128;
+
+    /// TODO!
+    fn item_id(id: Self::NFTId) -> u128;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.

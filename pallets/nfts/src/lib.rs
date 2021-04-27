@@ -30,6 +30,10 @@ pub struct NFTData<AccountId, NFTDetails> {
     pub sealed: bool,
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
+    /// TODO!
+    pub series_id: u128,
+    /// TODO!
+    pub item_id: u128,
 }
 
 pub trait WeightInfo {
@@ -57,6 +61,10 @@ decl_storage! {
         pub Total get(fn total): T::NFTId;
         /// Data related to NFTs.
         pub Data get(fn data): map hasher(blake2_128_concat) T::NFTId => NFTData<T::AccountId, T::NFTDetails>;
+        /// TODO!
+        pub TotalSeries get(fn total_series): u128;
+        /// TODO!
+        pub Series get(fn series): map hasher(blake2_128_concat) u128 => sp_std::vec::Vec<T::NFTId>;
     }
     add_extra_genesis {
         config(nfts): Vec<(T::AccountId, T::NFTDetails)>;
@@ -91,6 +99,8 @@ decl_event!(
         Unlocked(NFTId),
         /// An NFT that was burned. \[nft id\]
         Burned(NFTId),
+        /// A new NFT series was created. \[series id, owner, count\]
+        SeriesCreated(u128, AccountId, u128),
     }
 );
 
@@ -105,6 +115,10 @@ decl_error! {
         /// NFT is locked and thus its owner cannot be changed until it
         /// is unlocked.
         Locked,
+        /// TODO
+        SeriesIdOverflow,
+        /// TODO
+        QuantityZero,
     }
 }
 
@@ -119,6 +133,14 @@ decl_module! {
         fn create(origin, details: T::NFTDetails) {
             let who = ensure_signed(origin)?;
             let _id = <Self as NFTs>::create(&who, details)?;
+        }
+
+        /// TODO
+        #[weight = T::WeightInfo::create() * 10]
+        fn create_series(origin, details: T::NFTDetails, quantity: u128) {
+            ensure!(quantity > 0, Error::<T>::QuantityZero);
+            let who = ensure_signed(origin)?;
+            let _ids = <Self as NFTs>::create_series(&who, details, quantity)?;
         }
 
         /// Update the details included in an NFT. Must be called by the owner of
@@ -202,6 +224,8 @@ impl<T: Config> NFTs for Module<T> {
                 details,
                 sealed: false,
                 locked: false,
+                series_id: 0,
+                item_id: 0,
             },
         );
 
@@ -259,6 +283,58 @@ impl<T: Config> NFTs for Module<T> {
         Self::deposit_event(RawEvent::Burned(id));
 
         Ok(())
+    }
+
+    fn series_id(id: Self::NFTId) -> u128 {
+        Data::<T>::get(id).series_id
+    }
+
+    fn item_id(id: Self::NFTId) -> u128 {
+        Data::<T>::get(id).item_id
+    }
+
+    fn create_series(
+        owner: &Self::AccountId,
+        details: Self::NFTDetails,
+        quantity: u128,
+    ) -> Result<sp_std::vec::Vec<Self::NFTId>, DispatchError> {
+        let mut nft_ids = sp_std::vec::Vec::with_capacity(quantity as usize);
+
+        // Create Series
+        let series_id = TotalSeries::get();
+        TotalSeries::put(
+            series_id
+                .checked_add(1)
+                .ok_or(Error::<T>::SeriesIdOverflow)?,
+        );
+
+        let mut data = NFTData {
+            owner: owner.clone(),
+            details,
+            sealed: false,
+            locked: false,
+            series_id,
+            item_id: 0,
+        };
+
+        for i in 0..quantity {
+            let nft_id = Total::<T>::get();
+            Total::<T>::put(
+                nft_id
+                    .checked_add(&1.into())
+                    .ok_or(Error::<T>::NFTIdOverflow)?,
+            );
+
+            data.item_id = i;
+            Data::<T>::insert(nft_id, data.clone());
+            nft_ids.push(nft_id)
+        }
+
+        Series::<T>::insert(series_id, nft_ids.clone());
+
+        Self::deposit_event(RawEvent::SeriesCreated(series_id, owner.clone(), quantity));
+
+        Ok(nft_ids)
     }
 }
 
