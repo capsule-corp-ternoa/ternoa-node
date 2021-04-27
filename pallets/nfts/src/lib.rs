@@ -20,6 +20,9 @@ mod default_weights;
 #[cfg(test)]
 mod tests;
 
+pub type SeriesId = u128;
+pub type ItemId = u128;
+
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -31,9 +34,9 @@ pub struct NFTData<AccountId, NFTDetails> {
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
     /// TODO!
-    pub series_id: u128,
+    pub series_id: SeriesId,
     /// TODO!
-    pub item_id: u128,
+    pub item_id: ItemId,
 }
 
 pub trait WeightInfo {
@@ -62,9 +65,9 @@ decl_storage! {
         /// Data related to NFTs.
         pub Data get(fn data): map hasher(blake2_128_concat) T::NFTId => NFTData<T::AccountId, T::NFTDetails>;
         /// TODO!
-        pub TotalSeries get(fn total_series): u128;
+        pub TotalSeries get(fn total_series): SeriesId;
         /// TODO!
-        pub Series get(fn series): map hasher(blake2_128_concat) u128 => sp_std::vec::Vec<T::NFTId>;
+        pub Series get(fn series): map hasher(blake2_128_concat) SeriesId => sp_std::vec::Vec<T::NFTId>;
     }
     add_extra_genesis {
         config(nfts): Vec<(T::AccountId, T::NFTDetails)>;
@@ -100,7 +103,7 @@ decl_event!(
         /// An NFT that was burned. \[nft id\]
         Burned(NFTId),
         /// A new NFT series was created. \[series id, owner, count\]
-        SeriesCreated(u128, AccountId, u128),
+        SeriesCreated(SeriesId, AccountId, u128),
     }
 );
 
@@ -285,11 +288,11 @@ impl<T: Config> NFTs for Module<T> {
         Ok(())
     }
 
-    fn series_id(id: Self::NFTId) -> u128 {
+    fn series_id(id: Self::NFTId) -> SeriesId {
         Data::<T>::get(id).series_id
     }
 
-    fn item_id(id: Self::NFTId) -> u128 {
+    fn item_id(id: Self::NFTId) -> ItemId {
         Data::<T>::get(id).item_id
     }
 
