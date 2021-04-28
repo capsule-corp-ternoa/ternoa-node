@@ -1,4 +1,6 @@
 use super::mock::*;
+use crate::GenesisConfig;
+use frame_support::traits::GenesisBuild;
 
 #[test]
 fn register_nfts() {
@@ -6,7 +8,7 @@ fn register_nfts() {
         .build_storage::<Test>()
         .unwrap();
 
-    crate::GenesisConfig::<Test> {
+    GenesisConfig::<Test> {
         nfts: vec![(ALICE, MockNFTDetails::WithU8(1))],
     }
     .assimilate_storage(&mut t)
