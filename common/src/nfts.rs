@@ -18,6 +18,8 @@ pub trait NFTs {
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
+        series_id: u128,
+        item_id: u128,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
     /// Change the details related to an NFT.
@@ -43,6 +45,12 @@ pub trait NFTs {
 
     /// Remove an NFT from the storage.
     fn burn(id: Self::NFTId) -> DispatchResult;
+
+    /// TODO!
+    fn series_id(id: Self::NFTId) -> u128;
+
+    /// TODO!
+    fn item_id(id: Self::NFTId) -> u128;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.

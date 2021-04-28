@@ -29,6 +29,10 @@ pub struct NFTData<AccountId, NFTDetails> {
     pub sealed: bool,
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
+    /// TODO!
+    pub series_id: u128,
+    /// TODO!
+    pub item_id: u128,
 }
 
 pub trait WeightInfo {
@@ -73,9 +77,14 @@ pub mod pallet {
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
         #[pallet::weight(T::WeightInfo::create())]
-        pub fn create(origin: OriginFor<T>, details: T::NFTDetails) -> DispatchResultWithPostInfo {
+        pub fn create(
+            origin: OriginFor<T>,
+            details: T::NFTDetails,
+            series_id: u128,
+            item_id: u128,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let _id = <Self as NFTs>::create(&who, details)?;
+            let _id = <Self as NFTs>::create(&who, details, series_id, item_id)?;
 
             Ok(().into())
         }
@@ -202,6 +211,17 @@ pub mod pallet {
     pub type Data<T: Config> =
         StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, T::NFTDetails>, ValueQuery>;
 
+    /// TODO!
+    #[pallet::storage]
+    #[pallet::getter(fn total_series)]
+    pub type TotalSeries<T: Config> = StorageValue<_, u128, ValueQuery>;
+
+    /// TODO!
+    #[pallet::storage]
+    #[pallet::getter(fn series)]
+    pub type Series<T: Config> =
+        StorageMap<_, Blake2_128Concat, u128, sp_std::vec::Vec<T::NFTId>, ValueQuery>;
+
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub nfts: Vec<(T::AccountId, T::NFTDetails)>,
@@ -223,7 +243,7 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details))
+                    drop(<Pallet<T> as NFTs>::create(&account, details, 0, 0))
                 });
         }
     }
@@ -237,21 +257,38 @@ impl<T: Config> NFTs for Pallet<T> {
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
+        series_id: u128,
+        item_id: u128,
     ) -> result::Result<Self::NFTId, DispatchError> {
-        let id = Total::<T>::get();
-        Total::<T>::put(id.checked_add(&1.into()).ok_or(Error::<T>::NFTIdOverflow)?);
+        let nft_id = Total::<T>::get();
+        Total::<T>::put(
+            nft_id
+                .checked_add(&1.into())
+                .ok_or(Error::<T>::NFTIdOverflow)?,
+        );
         Data::<T>::insert(
-            id,
+            nft_id,
             NFTData {
                 owner: owner.clone(),
                 details,
                 sealed: false,
                 locked: false,
+                series_id,
+                item_id,
             },
         );
 
-        Self::deposit_event(Event::Created(id, owner.clone()));
-        Ok(id)
+        let mut array = sp_std::vec![];
+        if Series::<T>::contains_key(series_id) {
+            array = Series::<T>::get(series_id);
+        }
+
+        array.push(nft_id);
+        Series::<T>::insert(series_id, array);
+
+        Self::deposit_event(Event::Created(nft_id, owner.clone()));
+
+        Ok(nft_id)
     }
 
     fn mutate<F: FnOnce(&Self::AccountId, &mut Self::NFTDetails) -> DispatchResult>(
@@ -304,6 +341,14 @@ impl<T: Config> NFTs for Pallet<T> {
         Self::deposit_event(Event::Burned(id));
 
         Ok(())
+    }
+
+    fn series_id(id: Self::NFTId) -> u128 {
+        Data::<T>::get(id).series_id
+    }
+
+    fn item_id(id: Self::NFTId) -> u128 {
+        Data::<T>::get(id).item_id
     }
 }
 
