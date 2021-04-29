@@ -6,7 +6,8 @@
         "owner": "AccountId",
         "details": "NFTDetails",
         "sealed": "bool",
-        "locked": "bool"
+        "locked": "bool",
+        "SeriesDetails": "Option<SeriesDetails>"
     },
     "NFTDetails": {
         "offchain_uri": "Vec<u8>"
