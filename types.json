@@ -11,5 +11,9 @@
     "NFTDetails": {
         "offchain_uri": "Vec<u8>"
     },
+    "SeriesDetails": {
+        "series_id": "u128",
+        "item_id": "u128"
+    },
     "LookupSource": "AccountId"
 }
