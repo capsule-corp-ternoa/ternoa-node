@@ -18,7 +18,7 @@ pub trait NFTs {
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_id: u128,
+        series_id: Option<u128>,
         item_id: u128,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
@@ -47,7 +47,7 @@ pub trait NFTs {
     fn burn(id: Self::NFTId) -> DispatchResult;
 
     /// TODO!
-    fn series_id(id: Self::NFTId) -> u128;
+    fn series_id(id: Self::NFTId) -> Option<u128>;
 
     /// TODO!
     fn item_id(id: Self::NFTId) -> u128;

@@ -30,8 +30,15 @@ pub struct NFTData<AccountId, NFTDetails> {
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
     /// TODO!
-    pub series_id: u128,
+    pub series_id: Option<u128>,
     /// TODO!
+    pub item_id: u128,
+}
+
+#[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub struct SeriesDetails {
+    pub series_id: u128,
     pub item_id: u128,
 }
 
@@ -80,10 +87,17 @@ pub mod pallet {
         pub fn create(
             origin: OriginFor<T>,
             details: T::NFTDetails,
-            series_id: u128,
-            item_id: u128,
+            series_details: Option<SeriesDetails>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+
+            let mut series_id = None;
+            let mut item_id = 0;
+            if let Some(series_details) = series_details {
+                series_id = Some(series_details.series_id);
+                item_id = series_details.item_id;
+            }
+
             let _id = <Self as NFTs>::create(&who, details, series_id, item_id)?;
 
             Ok(().into())
@@ -243,7 +257,7 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details, 0, 0))
+                    drop(<Pallet<T> as NFTs>::create(&account, details, None, 0))
                 });
         }
     }
@@ -257,7 +271,7 @@ impl<T: Config> NFTs for Pallet<T> {
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_id: u128,
+        series_id: Option<u128>,
         item_id: u128,
     ) -> result::Result<Self::NFTId, DispatchError> {
         let nft_id = Total::<T>::get();
@@ -278,13 +292,15 @@ impl<T: Config> NFTs for Pallet<T> {
             },
         );
 
-        let mut array = sp_std::vec![];
-        if Series::<T>::contains_key(series_id) {
-            array = Series::<T>::get(series_id);
-        }
+        if let Some(series_id) = series_id {
+            let mut array = sp_std::vec![];
+            if Series::<T>::contains_key(series_id) {
+                array = Series::<T>::get(series_id);
+            }
 
-        array.push(nft_id);
-        Series::<T>::insert(series_id, array);
+            array.push(nft_id);
+            Series::<T>::insert(series_id, array);
+        }
 
         Self::deposit_event(Event::Created(nft_id, owner.clone()));
 
@@ -343,7 +359,7 @@ impl<T: Config> NFTs for Pallet<T> {
         Ok(())
     }
 
-    fn series_id(id: Self::NFTId) -> u128 {
+    fn series_id(id: Self::NFTId) -> Option<u128> {
         Data::<T>::get(id).series_id
     }
 
