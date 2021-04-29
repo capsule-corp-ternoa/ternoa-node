@@ -19,7 +19,7 @@ pub trait NFTs {
         owner: &Self::AccountId,
         details: Self::NFTDetails,
         series_id: Option<u128>,
-        item_id: u128,
+        item_id: Option<u128>,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
     /// Change the details related to an NFT.
@@ -50,7 +50,7 @@ pub trait NFTs {
     fn series_id(id: Self::NFTId) -> Option<u128>;
 
     /// TODO!
-    fn item_id(id: Self::NFTId) -> u128;
+    fn item_id(id: Self::NFTId) -> Option<u128>;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.

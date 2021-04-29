@@ -19,6 +19,13 @@ use sp_runtime::{DispatchResult, RuntimeDebug};
 use sp_std::result;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
+#[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub struct SeriesDetails {
+    pub series_id: u128,
+    pub item_id: u128,
+}
+
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -30,16 +37,7 @@ pub struct NFTData<AccountId, NFTDetails> {
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
     /// TODO!
-    pub series_id: Option<u128>,
-    /// TODO!
-    pub item_id: u128,
-}
-
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct SeriesDetails {
-    pub series_id: u128,
-    pub item_id: u128,
+    pub series_details: Option<SeriesDetails>,
 }
 
 pub trait WeightInfo {
@@ -92,10 +90,10 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
 
             let mut series_id = None;
-            let mut item_id = 0;
+            let mut item_id = None;
             if let Some(series_details) = series_details {
                 series_id = Some(series_details.series_id);
-                item_id = series_details.item_id;
+                item_id = Some(series_details.item_id);
             }
 
             let _id = <Self as NFTs>::create(&who, details, series_id, item_id)?;
@@ -257,7 +255,7 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details, None, 0))
+                    drop(<Pallet<T> as NFTs>::create(&account, details, None, None))
                 });
         }
     }
@@ -272,7 +270,7 @@ impl<T: Config> NFTs for Pallet<T> {
         owner: &Self::AccountId,
         details: Self::NFTDetails,
         series_id: Option<u128>,
-        item_id: u128,
+        item_id: Option<u128>,
     ) -> result::Result<Self::NFTId, DispatchError> {
         let nft_id = Total::<T>::get();
         Total::<T>::put(
@@ -280,6 +278,16 @@ impl<T: Config> NFTs for Pallet<T> {
                 .checked_add(&1.into())
                 .ok_or(Error::<T>::NFTIdOverflow)?,
         );
+
+        let series_details = if let Some(series_id) = series_id {
+            Some(SeriesDetails {
+                series_id,
+                item_id: item_id.unwrap(),
+            })
+        } else {
+            None
+        };
+
         Data::<T>::insert(
             nft_id,
             NFTData {
@@ -287,8 +295,7 @@ impl<T: Config> NFTs for Pallet<T> {
                 details,
                 sealed: false,
                 locked: false,
-                series_id,
-                item_id,
+                series_details,
             },
         );
 
@@ -360,11 +367,11 @@ impl<T: Config> NFTs for Pallet<T> {
     }
 
     fn series_id(id: Self::NFTId) -> Option<u128> {
-        Data::<T>::get(id).series_id
+        Some(Data::<T>::get(id).series_details?.series_id)
     }
 
-    fn item_id(id: Self::NFTId) -> u128 {
-        Data::<T>::get(id).item_id
+    fn item_id(id: Self::NFTId) -> Option<u128> {
+        Some(Data::<T>::get(id).series_details?.item_id)
     }
 }
 
