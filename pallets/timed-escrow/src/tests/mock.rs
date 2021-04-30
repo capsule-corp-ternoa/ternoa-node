@@ -95,5 +95,9 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 }
 
 pub fn create_one_capsule() {
-    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(&ALICE, ()));
+    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
+        &ALICE,
+        (),
+        None
+    ));
 }

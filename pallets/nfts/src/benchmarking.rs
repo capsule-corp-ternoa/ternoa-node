@@ -7,7 +7,7 @@ use sp_std::{boxed::Box, prelude::*};
 benchmarks! {
     create {
         let caller: T::AccountId = whitelisted_caller();
-    }: _(RawOrigin::Signed(caller), Default::default())
+    }: _(RawOrigin::Signed(caller), Default::default(), None)
     verify {
         assert_eq!(Module::<T>::total(), T::NFTId::from(1));
     }
@@ -19,7 +19,7 @@ benchmarks! {
         // than before so calling mutate with the same values (default) will
         // always do the same work and thus keep the benchmark relevant.
 
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), None));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0), Default::default())
     verify {
         // Absence of error should be enough but we also check the
@@ -29,7 +29,7 @@ benchmarks! {
 
     seal {
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), None));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0))
     verify {
         assert_eq!(Module::<T>::data(T::NFTId::from(0)).sealed, true);
@@ -40,7 +40,7 @@ benchmarks! {
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), None));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0), receiver_lookup)
     verify {
         assert_eq!(Module::<T>::data(T::NFTId::from(0)).owner, receiver);
@@ -48,7 +48,7 @@ benchmarks! {
 
     burn {
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), None));
         let id = T::NFTId::from(0);
     }: _(RawOrigin::Signed(caller), id)
     verify {
