@@ -88,15 +88,7 @@ pub mod pallet {
             series_details: Option<SeriesDetails>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-
-            let mut series_id = None;
-            let mut item_id = None;
-            if let Some(series_details) = series_details {
-                series_id = Some(series_details.series_id);
-                item_id = Some(series_details.item_id);
-            }
-
-            let _id = <Self as NFTs>::create(&who, details, series_id, item_id)?;
+            let _id = <Self as NFTs>::create(&who, details, series_details)?;
 
             Ok(().into())
         }
@@ -255,7 +247,7 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details, None, None))
+                    drop(<Pallet<T> as NFTs>::create(&account, details, None))
                 });
         }
     }
@@ -265,12 +257,12 @@ impl<T: Config> NFTs for Pallet<T> {
     type AccountId = T::AccountId;
     type NFTDetails = T::NFTDetails;
     type NFTId = T::NFTId;
+    type NFTSeriesDetails = SeriesDetails;
 
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_id: Option<u128>,
-        item_id: Option<u128>,
+        series_details: Option<Self::NFTSeriesDetails>,
     ) -> result::Result<Self::NFTId, DispatchError> {
         let nft_id = Total::<T>::get();
         Total::<T>::put(
@@ -279,15 +271,6 @@ impl<T: Config> NFTs for Pallet<T> {
                 .ok_or(Error::<T>::NFTIdOverflow)?,
         );
 
-        let series_details = if let Some(series_id) = series_id {
-            Some(SeriesDetails {
-                series_id,
-                item_id: item_id.unwrap(),
-            })
-        } else {
-            None
-        };
-
         Data::<T>::insert(
             nft_id,
             NFTData {
@@ -295,12 +278,14 @@ impl<T: Config> NFTs for Pallet<T> {
                 details,
                 sealed: false,
                 locked: false,
-                series_details,
+                series_details: series_details.clone(),
             },
         );
 
-        if let Some(series_id) = series_id {
+        if let Some(series_details) = &series_details {
             let mut array = sp_std::vec![];
+            let series_id = series_details.series_id;
+
             if Series::<T>::contains_key(series_id) {
                 array = Series::<T>::get(series_id);
             }

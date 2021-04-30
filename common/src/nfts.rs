@@ -14,12 +14,13 @@ pub trait NFTs {
     /// How NFTs are represented internally.
     type NFTId: Parameter + Copy;
 
+    type NFTSeriesDetails;
+
     /// Create a new NFT with the specified details and return its ID or an error.
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_id: Option<u128>,
-        item_id: Option<u128>,
+        series_details: Option<Self::NFTSeriesDetails>,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
     /// Change the details related to an NFT.
