@@ -48,10 +48,7 @@ pub trait NFTs {
     fn burn(id: Self::NFTId) -> DispatchResult;
 
     /// TODO!
-    fn series_id(id: Self::NFTId) -> Option<u128>;
-
-    /// TODO!
-    fn item_id(id: Self::NFTId) -> Option<u64>;
+    fn series_details(id: Self::NFTId) -> Option<Self::NFTSeriesDetails>;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.
