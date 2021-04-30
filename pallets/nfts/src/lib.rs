@@ -217,11 +217,6 @@ pub mod pallet {
 
     /// TODO!
     #[pallet::storage]
-    #[pallet::getter(fn total_series)]
-    pub type TotalSeries<T: Config> = StorageValue<_, u128, ValueQuery>;
-
-    /// TODO!
-    #[pallet::storage]
     #[pallet::getter(fn series)]
     pub type Series<T: Config> =
         StorageMap<_, Blake2_128Concat, u128, sp_std::vec::Vec<T::NFTId>, ValueQuery>;
@@ -282,7 +277,7 @@ impl<T: Config> NFTs for Pallet<T> {
             },
         );
 
-        if let Some(series_details) = &series_details {
+        if let Some(series_details) = series_details.as_ref() {
             let mut array = sp_std::vec![];
             let series_id = series_details.series_id;
 
