@@ -21,7 +21,7 @@ benchmarks! {
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), caller);
-        assert_eq!(NFTsForSale::<T>::contains_key(nft_id), true);
+        assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);
     }
 
     list {

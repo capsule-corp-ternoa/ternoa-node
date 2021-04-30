@@ -100,8 +100,10 @@ pub mod pallet {
             let (owner, price) = NFTsForSale::<T>::get(nft_id);
             // KeepAlive because they need to be able to use the NFT later on
             T::Currency::transfer(&who, &owner, price, ExistenceRequirement::KeepAlive)?;
+
             T::NFTs::unlock(nft_id);
             T::NFTs::set_owner(nft_id, &who)?;
+            NFTsForSale::<T>::remove(nft_id);
 
             Self::deposit_event(Event::NftSold(nft_id, who));
 
