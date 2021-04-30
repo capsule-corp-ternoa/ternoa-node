@@ -202,6 +202,8 @@ pub mod pallet {
         /// NFT is locked and thus its owner cannot be changed until it
         /// is unlocked.
         Locked,
+        /// TODO!
+        SeriesIdOverflow,
     }
 
     /// The number of NFTs managed by this pallet
@@ -214,6 +216,11 @@ pub mod pallet {
     #[pallet::getter(fn data)]
     pub type Data<T: Config> =
         StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, T::NFTDetails>, ValueQuery>;
+
+    /// TODO!
+    #[pallet::storage]
+    #[pallet::getter(fn total_series)]
+    pub type TotalSeries<T: Config> = StorageValue<_, u128, ValueQuery>;
 
     /// TODO!
     #[pallet::storage]
@@ -278,15 +285,17 @@ impl<T: Config> NFTs for Pallet<T> {
         );
 
         if let Some(series_details) = series_details.as_ref() {
-            let mut array = sp_std::vec![];
             let series_id = series_details.series_id;
 
             if Series::<T>::contains_key(series_id) {
-                array = Series::<T>::get(series_id);
-            }
+                Series::<T>::mutate(series_id, |vec| vec.push(nft_id));
+            } else {
+                Series::<T>::insert(series_id, sp_std::vec![nft_id]);
 
-            array.push(nft_id);
-            Series::<T>::insert(series_id, array);
+                let count = TotalSeries::<T>::get();
+                let count = count.checked_add(1).ok_or(Error::<T>::NFTIdOverflow)?;
+                TotalSeries::<T>::put(count);
+            }
         }
 
         Self::deposit_event(Event::Created(nft_id, owner.clone()));
