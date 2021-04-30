@@ -23,7 +23,7 @@ use ternoa_common::traits::{LockableNFTs, NFTs};
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct SeriesDetails {
     pub series_id: u128,
-    pub item_id: u128,
+    pub item_id: u64,
 }
 
 /// Data related to an NFT, such as who is its owner.
@@ -350,7 +350,7 @@ impl<T: Config> NFTs for Pallet<T> {
         Some(Data::<T>::get(id).series_details?.series_id)
     }
 
-    fn item_id(id: Self::NFTId) -> Option<u128> {
+    fn item_id(id: Self::NFTId) -> Option<u64> {
         Some(Data::<T>::get(id).series_details?.item_id)
     }
 }
