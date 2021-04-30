@@ -14,7 +14,7 @@
     },
     "SeriesDetails": {
         "series_id": "u128",
-        "item_id": "u128"
+        "item_id": "u64"
     },
     "LookupSource": "AccountId"
 }

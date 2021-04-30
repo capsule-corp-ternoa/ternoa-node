@@ -346,12 +346,8 @@ impl<T: Config> NFTs for Pallet<T> {
         Ok(())
     }
 
-    fn series_id(id: Self::NFTId) -> Option<u128> {
-        Some(Data::<T>::get(id).series_details?.series_id)
-    }
-
-    fn item_id(id: Self::NFTId) -> Option<u64> {
-        Some(Data::<T>::get(id).series_details?.item_id)
+    fn series_details(id: Self::NFTId) -> Option<Self::NFTSeriesDetails> {
+        Data::<T>::get(id).series_details
     }
 }
 
