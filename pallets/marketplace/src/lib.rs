@@ -98,6 +98,8 @@ pub mod pallet {
             );
 
             let (owner, price) = NFTsForSale::<T>::get(nft_id);
+            ensure!(owner != who, Error::<T>::NftAlreadyOwned);
+
             // KeepAlive because they need to be able to use the NFT later on
             T::Currency::transfer(&who, &owner, price, ExistenceRequirement::KeepAlive)?;
 
@@ -129,6 +131,8 @@ pub mod pallet {
         NotNftOwner,
         /// Nft is not present on the marketplace
         NftNotForSale,
+        /// Yot cannot buy your own nft
+        NftAlreadyOwned,
     }
 
     /// Nfts listed on the marketplace

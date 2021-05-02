@@ -160,3 +160,44 @@ fn unlist_remove_from_for_sale() {
             assert_eq!(NFTsForSale::<Test>::contains_key(0), false);
         })
 }
+
+#[test]
+fn bought_nft_is_not_listed_anymore() {
+    ExtBuilder::default()
+        .one_nft_for_alice()
+        .one_hundred_for_alice_n_bob()
+        .build()
+        .execute_with(|| {
+            let id = 0;
+            let price = 100;
+
+            let seller = RawOrigin::Signed(ALICE);
+            let buyer = RawOrigin::Signed(BOB);
+
+            assert_ok!(Marketplace::list(seller.into(), id, price));
+            assert_ok!(Marketplace::buy(buyer.clone().into(), id));
+            assert_noop!(
+                Marketplace::buy(buyer.into(), id),
+                Error::<Test>::NftNotForSale,
+            );
+        })
+}
+
+#[test]
+fn cannot_buy_your_own_nft() {
+    ExtBuilder::default()
+        .one_nft_for_alice()
+        .build()
+        .execute_with(|| {
+            let id = 0;
+            let price = 100;
+
+            let caller = RawOrigin::Signed(ALICE);
+
+            assert_ok!(Marketplace::list(caller.clone().into(), id, price));
+            assert_noop!(
+                Marketplace::buy(caller.into(), id),
+                Error::<Test>::NftAlreadyOwned,
+            );
+        })
+}
