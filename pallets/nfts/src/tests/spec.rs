@@ -10,7 +10,7 @@ fn create_increment_id() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_eq!(NFTs::total(), 1);
     })
@@ -23,7 +23,7 @@ fn create_register_details() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             mock_details.clone(),
-            None
+            Default::default(),
         ));
         assert_eq!(NFTs::data(0).details, mock_details);
     })
@@ -35,7 +35,7 @@ fn create_register_owner() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_eq!(NFTs::data(0).owner, ALICE);
     })
@@ -47,7 +47,7 @@ fn create_is_unsealed() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_eq!(NFTs::data(0).sealed, false);
     })
@@ -60,7 +60,7 @@ fn mutate_update_details() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_ok!(NFTs::mutate(
             RawOrigin::Signed(ALICE).into(),
@@ -77,7 +77,7 @@ fn mutate_not_the_owner() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_noop!(
             NFTs::mutate(RawOrigin::Signed(BOB).into(), 0, MockNFTDetails::WithU8(42),),
@@ -92,7 +92,7 @@ fn mutate_sealed() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         Data::<Test>::mutate(0, |d| d.sealed = true);
         assert_noop!(
@@ -112,7 +112,7 @@ fn transfer_update_owner() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_ok!(NFTs::transfer(RawOrigin::Signed(ALICE).into(), 0, BOB));
         assert_eq!(NFTs::data(0).owner, BOB);
@@ -125,7 +125,7 @@ fn transfer_not_the_owner() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_noop!(
             NFTs::transfer(RawOrigin::Signed(BOB).into(), 0, BOB),
@@ -140,7 +140,7 @@ fn seal_mutate_seal_flag() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_ok!(NFTs::seal(RawOrigin::Signed(ALICE).into(), 0));
         assert_eq!(NFTs::data(0).sealed, true);
@@ -153,7 +153,7 @@ fn seal_not_the_owner() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_noop!(
             NFTs::seal(RawOrigin::Signed(BOB).into(), 0),
@@ -168,7 +168,7 @@ fn seal_already_sealed() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
         assert_ok!(NFTs::seal(RawOrigin::Signed(ALICE).into(), 0));
         assert_noop!(
@@ -184,7 +184,7 @@ fn burn_owned_nft() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
 
         let id = NFTs::total() - 1;
@@ -201,7 +201,7 @@ fn burn_not_owned_nft() {
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
             MockNFTDetails::Empty,
-            None
+            Default::default(),
         ));
 
         let id = NFTs::total() - 1;

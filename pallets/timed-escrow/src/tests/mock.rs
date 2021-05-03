@@ -72,6 +72,7 @@ impl ternoa_nfts::Config for Test {
     type NFTId = u8;
     type NFTDetails = ();
     type WeightInfo = ();
+    type NFTSeriesId = u64;
 }
 impl Config for Test {
     type Event = Event;
@@ -98,6 +99,6 @@ pub fn create_one_capsule() {
     assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
         &ALICE,
         (),
-        None
+        Default::default(),
     ));
 }

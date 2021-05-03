@@ -68,6 +68,7 @@ impl Config for Test {
     type NFTId = u32;
     type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
+    type NFTSeriesId = u64;
 }
 
 // Do not use the `0` account id since this would be the default value

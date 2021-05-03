@@ -14,6 +14,7 @@ pub trait NFTs {
     /// How NFTs are represented internally.
     type NFTId: Parameter + Copy;
 
+    /// How NFT Series ids are represented internally.
     type NFTSeriesId: Parameter + Copy + Default;
 
     /// Create a new NFT with the specified details and return its ID or an error.
@@ -47,7 +48,7 @@ pub trait NFTs {
     /// Remove an NFT from the storage.
     fn burn(id: Self::NFTId) -> DispatchResult;
 
-    /// TODO!
+    /// Return the series id of an NFT.
     fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId>;
 }
 
