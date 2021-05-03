@@ -2,6 +2,7 @@
     "Address": "AccountId",
     "NFTId": "u32",
     "NFTIdOf": "NFTId",
+    "NFTSeriesId": "u64",
     "NFTData": {
         "owner": "AccountId",
         "details": "NFTDetails",
@@ -12,6 +13,5 @@
     "NFTDetails": {
         "offchain_uri": "Vec<u8>"
     },
-    "LookupSource": "AccountId",
-    "NFTSeriesId": "u64"
+    "LookupSource": "AccountId"
 }
