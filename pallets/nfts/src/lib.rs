@@ -197,8 +197,8 @@ pub mod pallet {
         /// NFT is locked and thus its owner cannot be changed until it
         /// is unlocked.
         Locked,
-        /// TODO!
-        SeriesIdOverflow,
+        /// We do not have any NFT Series ids left, a runtime upgrade is necessary.
+        NFTSeriesIdOverflow,
     }
 
     /// The number of NFTs managed by this pallet
@@ -220,7 +220,7 @@ pub mod pallet {
     /// TODO!
     #[pallet::storage]
     #[pallet::getter(fn total_series)]
-    pub type TotalSeries<T: Config> = StorageValue<_, u128, ValueQuery>;
+    pub type TotalSeries<T: Config> = StorageValue<_, T::NFTSeriesId, ValueQuery>;
 
     /// TODO!
     #[pallet::storage]
@@ -301,7 +301,9 @@ impl<T: Config> NFTs for Pallet<T> {
                 Series::<T>::insert(series_id, sp_std::vec![nft_id]);
 
                 let count = TotalSeries::<T>::get();
-                let count = count.checked_add(1).ok_or(Error::<T>::NFTIdOverflow)?;
+                let count = count
+                    .checked_add(&1.into())
+                    .ok_or(Error::<T>::NFTSeriesIdOverflow)?;
                 TotalSeries::<T>::put(count);
             }
         }
