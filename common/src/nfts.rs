@@ -14,7 +14,7 @@ pub trait NFTs {
     /// How NFTs are represented internally.
     type NFTId: Parameter + Copy;
 
-    /// How NFT Series ids are represented internally.
+    /// How the NFT series id is represented internally.
     type NFTSeriesId: Parameter + Copy + Default;
 
     /// Create a new NFT with the specified details and return its ID or an error.
@@ -50,6 +50,9 @@ pub trait NFTs {
 
     /// Return the series id of an NFT.
     fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId>;
+
+    /// Return how many nfts belong to the same series.
+    fn series_length(id: Self::NFTSeriesId) -> usize;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.

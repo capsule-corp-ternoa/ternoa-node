@@ -58,9 +58,8 @@ pub mod pallet {
         type NFTId: Parameter + Default + CheckedAdd + Copy + Member + From<u8>;
         /// How NFT details are represented
         type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
-
         type WeightInfo: WeightInfo;
-
+        /// How the NFT series id is represented.
         type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u64>;
     }
 
@@ -197,7 +196,7 @@ pub mod pallet {
         /// NFT is locked and thus its owner cannot be changed until it
         /// is unlocked.
         Locked,
-        /// We do not have any NFT Series ids left, a runtime upgrade is necessary.
+        /// We do not have any NFT series id left, a runtime upgrade is necessary.
         NFTSeriesIdOverflow,
     }
 
@@ -367,6 +366,11 @@ impl<T: Config> NFTs for Pallet<T> {
 
     fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId> {
         Data::<T>::get(id).series_id.clone()
+    }
+
+    fn series_length(id: Self::NFTSeriesId) -> usize {
+        let length = Series::<T>::get(id).len();
+        length
     }
 }
 
