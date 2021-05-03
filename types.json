@@ -7,14 +7,11 @@
         "details": "NFTDetails",
         "sealed": "bool",
         "locked": "bool",
-        "SeriesDetails": "Option<SeriesDetails>"
+        "series_id": "Option<NFTSeriesId>"
     },
     "NFTDetails": {
         "offchain_uri": "Vec<u8>"
     },
-    "SeriesDetails": {
-        "series_id": "u128",
-        "item_id": "u64"
-    },
-    "LookupSource": "AccountId"
+    "LookupSource": "AccountId",
+    "NFTSeriesId": "u64"
 }

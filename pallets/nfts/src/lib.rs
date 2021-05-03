@@ -19,17 +19,10 @@ use sp_runtime::{DispatchResult, RuntimeDebug};
 use sp_std::result;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct SeriesDetails {
-    pub series_id: u128,
-    pub item_id: u64,
-}
-
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct NFTData<AccountId, NFTDetails> {
+pub struct NFTData<AccountId, NFTDetails, NFTSeriesId> {
     pub owner: AccountId,
     pub details: NFTDetails,
     /// Set to true to prevent further modifications to the details struct
@@ -37,7 +30,7 @@ pub struct NFTData<AccountId, NFTDetails> {
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
     /// TODO!
-    pub series_details: Option<SeriesDetails>,
+    pub series_id: Option<NFTSeriesId>,
 }
 
 pub trait WeightInfo {
@@ -67,6 +60,8 @@ pub mod pallet {
         type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
 
         type WeightInfo: WeightInfo;
+
+        type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u64>;
     }
 
     #[pallet::pallet]
@@ -85,10 +80,10 @@ pub mod pallet {
         pub fn create(
             origin: OriginFor<T>,
             details: T::NFTDetails,
-            series_details: Option<SeriesDetails>,
+            series_id: T::NFTSeriesId,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let _id = <Self as NFTs>::create(&who, details, series_details)?;
+            let _id = <Self as NFTs>::create(&who, details, series_id)?;
 
             Ok(().into())
         }
@@ -214,8 +209,13 @@ pub mod pallet {
     /// Data related to NFTs.
     #[pallet::storage]
     #[pallet::getter(fn data)]
-    pub type Data<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, T::NFTDetails>, ValueQuery>;
+    pub type Data<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::NFTId,
+        NFTData<T::AccountId, T::NFTDetails, T::NFTSeriesId>,
+        ValueQuery,
+    >;
 
     /// TODO!
     #[pallet::storage]
@@ -226,7 +226,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn series)]
     pub type Series<T: Config> =
-        StorageMap<_, Blake2_128Concat, u128, sp_std::vec::Vec<T::NFTId>, ValueQuery>;
+        StorageMap<_, Blake2_128Concat, T::NFTSeriesId, sp_std::vec::Vec<T::NFTId>, ValueQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
@@ -249,7 +249,11 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details, None))
+                    drop(<Pallet<T> as NFTs>::create(
+                        &account,
+                        details,
+                        Default::default(),
+                    ))
                 });
         }
     }
@@ -259,12 +263,12 @@ impl<T: Config> NFTs for Pallet<T> {
     type AccountId = T::AccountId;
     type NFTDetails = T::NFTDetails;
     type NFTId = T::NFTId;
-    type NFTSeriesDetails = SeriesDetails;
+    type NFTSeriesId = T::NFTSeriesId;
 
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_details: Option<Self::NFTSeriesDetails>,
+        series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError> {
         let nft_id = Total::<T>::get();
         Total::<T>::put(
@@ -273,6 +277,12 @@ impl<T: Config> NFTs for Pallet<T> {
                 .ok_or(Error::<T>::NFTIdOverflow)?,
         );
 
+        let series_id = if series_id == Default::default() {
+            None
+        } else {
+            Some(series_id)
+        };
+
         Data::<T>::insert(
             nft_id,
             NFTData {
@@ -280,13 +290,11 @@ impl<T: Config> NFTs for Pallet<T> {
                 details,
                 sealed: false,
                 locked: false,
-                series_details: series_details.clone(),
+                series_id: series_id.clone(),
             },
         );
 
-        if let Some(series_details) = series_details.as_ref() {
-            let series_id = series_details.series_id;
-
+        if let Some(series_id) = series_id {
             if Series::<T>::contains_key(series_id) {
                 Series::<T>::mutate(series_id, |vec| vec.push(nft_id));
             } else {
@@ -355,8 +363,8 @@ impl<T: Config> NFTs for Pallet<T> {
         Ok(())
     }
 
-    fn series_details(id: Self::NFTId) -> Option<Self::NFTSeriesDetails> {
-        Data::<T>::get(id).series_details
+    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId> {
+        Data::<T>::get(id).series_id.clone()
     }
 }
 

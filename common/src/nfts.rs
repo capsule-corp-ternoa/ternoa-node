@@ -14,13 +14,13 @@ pub trait NFTs {
     /// How NFTs are represented internally.
     type NFTId: Parameter + Copy;
 
-    type NFTSeriesDetails;
+    type NFTSeriesId: Parameter + Copy + Default;
 
     /// Create a new NFT with the specified details and return its ID or an error.
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_details: Option<Self::NFTSeriesDetails>,
+        series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
     /// Change the details related to an NFT.
@@ -48,7 +48,7 @@ pub trait NFTs {
     fn burn(id: Self::NFTId) -> DispatchResult;
 
     /// TODO!
-    fn series_details(id: Self::NFTId) -> Option<Self::NFTSeriesDetails>;
+    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId>;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.
