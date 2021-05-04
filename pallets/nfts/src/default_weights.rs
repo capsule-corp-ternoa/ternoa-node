@@ -2,7 +2,7 @@ use frame_support::weights::{constants::RocksDbWeight as DbWeight, Weight};
 
 impl crate::WeightInfo for () {
     fn create() -> Weight {
-        (34_540_000 as Weight)
+        (36_220_000 as Weight)
             .saturating_add(DbWeight::get().reads(3 as Weight))
             .saturating_add(DbWeight::get().writes(4 as Weight))
     }

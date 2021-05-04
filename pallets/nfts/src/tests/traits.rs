@@ -101,37 +101,49 @@ fn burn_nft() {
 #[test]
 fn add_nft_to_a_series() {
     new_test_ext().execute_with(|| {
-        let series_id = 1u64;
+        let series_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let nft_id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, series_id)
             .expect("creation failed");
 
-        assert_eq!(<NFTs as traits::NFTs>::series_id(nft_id), Some(series_id));
-        assert_eq!(<NFTs as traits::NFTs>::series_length(series_id.into()), 1);
+        assert_eq!(<NFTs as traits::NFTs>::series_id(nft_id), series_id);
+        assert_eq!(<NFTs as traits::NFTs>::series_length(series_id), 1);
     })
 }
 
 #[test]
-fn nfts_with_default_series_id_are_not_part_of_any_series() {
+fn nfts_with_default_series_id_are_part_of_the_default_series() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
+        let series_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
+        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, series_id)
             .expect("creation failed");
 
-        assert_eq!(<NFTs as traits::NFTs>::series_id(id), None);
+        assert_eq!(<NFTs as traits::NFTs>::series_id(id), series_id);
     })
 }
 
 #[test]
 fn adding_nfts_to_a_series_increases_series_length() {
     new_test_ext().execute_with(|| {
-        let series_id = 1u64;
+        let series_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let count = 3;
         for _ in 0..count {
             let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, series_id)
                 .expect("creation failed");
         }
-        assert_eq!(
-            <NFTs as traits::NFTs>::series_length(series_id.into()),
-            count
+        assert_eq!(<NFTs as traits::NFTs>::series_length(series_id), count);
+    })
+}
+
+#[test]
+fn adding_an_nft_to_a_non_owned_nft_series_returns_error() {
+    new_test_ext().execute_with(|| {
+        let series_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, series_id)
+            .expect("creation failed");
+
+        assert_noop!(
+            <NFTs as traits::NFTs>::create(&BOB, MockNFTDetails::Empty, series_id),
+            Error::<Test>::NotSeriesOwner,
         );
     })
 }
