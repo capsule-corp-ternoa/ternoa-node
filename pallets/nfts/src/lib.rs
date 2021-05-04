@@ -30,7 +30,7 @@ pub struct NFTData<AccountId, NFTDetails, NFTSeriesId> {
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
     /// TODO!
-    pub series_id: Option<NFTSeriesId>,
+    pub series_id: NFTSeriesId,
 }
 
 pub trait WeightInfo {
@@ -60,7 +60,7 @@ pub mod pallet {
         type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
         type WeightInfo: WeightInfo;
         /// How the NFT series id is represented.
-        type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u64>;
+        type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u32>;
     }
 
     #[pallet::pallet]
@@ -198,6 +198,8 @@ pub mod pallet {
         Locked,
         /// We do not have any NFT series id left, a runtime upgrade is necessary.
         NFTSeriesIdOverflow,
+        /// Cannot add nfts to a series that is not owned.
+        NotSeriesOwner,
     }
 
     /// The number of NFTs managed by this pallet
@@ -224,8 +226,13 @@ pub mod pallet {
     /// TODO!
     #[pallet::storage]
     #[pallet::getter(fn series)]
-    pub type Series<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTSeriesId, sp_std::vec::Vec<T::NFTId>, ValueQuery>;
+    pub type Series<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::NFTSeriesId,
+        (T::AccountId, sp_std::vec::Vec<T::NFTId>),
+        ValueQuery,
+    >;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
@@ -269,6 +276,16 @@ impl<T: Config> NFTs for Pallet<T> {
         details: Self::NFTDetails,
         series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError> {
+        // Check if is the owner is even allowed to add anything to the series.
+        if series_id != Default::default() {
+            let series_owner = Series::<T>::get(series_id).0;
+            ensure!(
+                series_owner == Default::default() || series_owner == *owner,
+                Error::<T>::NotSeriesOwner
+            );
+        }
+
+        // Create the nft.
         let nft_id = Total::<T>::get();
         Total::<T>::put(
             nft_id
@@ -276,11 +293,10 @@ impl<T: Config> NFTs for Pallet<T> {
                 .ok_or(Error::<T>::NFTIdOverflow)?,
         );
 
-        let series_id = if series_id == Default::default() {
-            None
-        } else {
-            Some(series_id)
-        };
+        // Create or expand a series.
+        if series_id != Default::default() {
+            Self::add_nft_to_series(owner.clone(), nft_id, series_id)?;
+        }
 
         Data::<T>::insert(
             nft_id,
@@ -289,23 +305,9 @@ impl<T: Config> NFTs for Pallet<T> {
                 details,
                 sealed: false,
                 locked: false,
-                series_id: series_id.clone(),
+                series_id,
             },
         );
-
-        if let Some(series_id) = series_id {
-            if Series::<T>::contains_key(series_id) {
-                Series::<T>::mutate(series_id, |vec| vec.push(nft_id));
-            } else {
-                Series::<T>::insert(series_id, sp_std::vec![nft_id]);
-
-                let count = TotalSeries::<T>::get();
-                let count = count
-                    .checked_add(&1.into())
-                    .ok_or(Error::<T>::NFTSeriesIdOverflow)?;
-                TotalSeries::<T>::put(count);
-            }
-        }
 
         Self::deposit_event(Event::Created(nft_id, owner.clone()));
 
@@ -364,12 +366,12 @@ impl<T: Config> NFTs for Pallet<T> {
         Ok(())
     }
 
-    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId> {
-        Data::<T>::get(id).series_id.clone()
+    fn series_id(id: Self::NFTId) -> Self::NFTSeriesId {
+        Data::<T>::get(id).series_id
     }
 
     fn series_length(id: Self::NFTSeriesId) -> usize {
-        let length = Series::<T>::get(id).len();
+        let length = Series::<T>::get(id).1.len();
         length
     }
 }
@@ -392,5 +394,30 @@ impl<T: Config> LockableNFTs for Pallet<T> {
 
     fn locked(id: Self::NFTId) -> bool {
         Data::<T>::get(id).locked
+    }
+}
+
+impl<T: Config> Pallet<T> {
+    fn add_nft_to_series(
+        owner: T::AccountId,
+        nft_id: T::NFTId,
+        series_id: T::NFTSeriesId,
+    ) -> Result<(), Error<T>> {
+        Series::<T>::mutate_exists(series_id, |vec| {
+            if let Some(vec) = vec {
+                // If the series already exists, try to expand it...
+                vec.1.push(nft_id);
+            } else {
+                // ... otherwise create a new series.
+                let count = TotalSeries::<T>::get();
+                let count = count
+                    .checked_add(&1.into())
+                    .ok_or(Error::<T>::NFTSeriesIdOverflow)?;
+                TotalSeries::<T>::put(count);
+                *vec = Some((owner.clone(), sp_std::vec![nft_id]));
+            }
+
+            Ok(())
+        })
     }
 }

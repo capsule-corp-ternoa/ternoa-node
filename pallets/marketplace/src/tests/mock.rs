@@ -75,7 +75,7 @@ impl ternoa_nfts::Config for Test {
     type NFTId = u8;
     type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
-    type NFTSeriesId = u64;
+    type NFTSeriesId = u32;
 }
 
 impl Config for Test {
