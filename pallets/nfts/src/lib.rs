@@ -29,7 +29,7 @@ pub struct NFTData<AccountId, NFTDetails, NFTSeriesId> {
     pub sealed: bool,
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
-    /// TODO!
+    /// The Id of the Series that this NFT belongs. Zero means that it doesn't belong to any series.
     pub series_id: NFTSeriesId,
 }
 
@@ -218,12 +218,12 @@ pub mod pallet {
         ValueQuery,
     >;
 
-    /// TODO!
+    /// The number of NFT Series managed by this pallet
     #[pallet::storage]
     #[pallet::getter(fn total_series)]
     pub type TotalSeries<T: Config> = StorageValue<_, T::NFTSeriesId, ValueQuery>;
 
-    /// TODO!
+    /// Data related to NFT Series.
     #[pallet::storage]
     #[pallet::getter(fn series)]
     pub type Series<T: Config> = StorageMap<
@@ -276,7 +276,7 @@ impl<T: Config> NFTs for Pallet<T> {
         details: Self::NFTDetails,
         series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError> {
-        // Check if is the owner is even allowed to add anything to the series.
+        // Check if the owner is even allowed to add anything to the series.
         if series_id != Default::default() {
             let series_owner = Series::<T>::get(series_id).0;
             ensure!(
