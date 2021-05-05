@@ -253,6 +253,7 @@ fn series_create() {
             Default::default(),
             valid_id,
         ));
+        assert_eq!(NFTs::series(valid_id).unwrap().owner, ALICE);
 
         // Since Alice is now the owner of the series, she can add as many nfts as she
         // wants.
@@ -269,15 +270,11 @@ fn series_create() {
             Error::<Test>::NotSeriesOwner
         );
 
-        assert_ok!(NFTs::transfer(alice.clone().into(), NFTs::total() - 2, BOB));
-        assert_ok!(NFTs::transfer(alice.clone().into(), NFTs::total() - 1, BOB));
-
         // Alice stays the owner of the series even if all the nfts do not belong to her
         // anymore.
-        assert_noop!(
-            NFTs::create(RawOrigin::Signed(BOB).into(), Default::default(), valid_id),
-            Error::<Test>::NotSeriesOwner
-        );
+        assert_ok!(NFTs::transfer(alice.clone().into(), NFTs::total() - 2, BOB));
+        assert_ok!(NFTs::transfer(alice.clone().into(), NFTs::total() - 1, BOB));
+        assert_eq!(NFTs::series(valid_id).unwrap().owner, ALICE);
     })
 }
 
