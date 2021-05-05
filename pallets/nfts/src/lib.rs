@@ -241,8 +241,6 @@ pub mod pallet {
         /// NFT is locked and thus its owner cannot be changed until it
         /// is unlocked.
         Locked,
-        /// We do not have any NFT series id left, a runtime upgrade is necessary.
-        NFTSeriesIdOverflow,
         /// Cannot add nfts to a series that is not owned.
         NotSeriesOwner,
         /// No one can be the owner the of the default series id.
