@@ -13,5 +13,9 @@
     "NFTDetails": {
         "offchain_uri": "Vec<u8>"
     },
-    "LookupSource": "AccountId"
+    "LookupSource": "AccountId",
+    "NFTSeriesDetails": {
+        "owner": "AccountId",
+        "nfts": "Vec<NFTId>"
+    }
 }

@@ -1,4 +1,4 @@
-use crate::{Call, Config, Module, NFTData};
+use crate::{Call, Config, Module, NFTData, NFTSeriesDetails};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
@@ -8,10 +8,11 @@ benchmarks! {
     create {
         let caller: T::AccountId = whitelisted_caller();
         let series_id: T::NFTSeriesId = 10.into();
-    }: _(RawOrigin::Signed(caller), Default::default(), series_id)
+    }: _(RawOrigin::Signed(caller.clone()), Default::default(), series_id)
     verify {
+        let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
         assert_eq!(Module::<T>::total(), T::NFTId::from(1));
-        assert_eq!(Module::<T>::total_series(), T::NFTSeriesId::from(1));
+        assert_eq!(Module::<T>::series(series_id), Some(series));
     }
 
     mutate {
