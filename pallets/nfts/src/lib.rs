@@ -181,7 +181,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::burn())]
+        #[pallet::weight(T::WeightInfo::transfer_series())]
         pub fn transfer_series(
             origin: OriginFor<T>,
             id: T::NFTSeriesId,
