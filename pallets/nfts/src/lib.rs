@@ -34,10 +34,13 @@ pub struct NFTData<AccountId, NFTDetails, NFTSeriesId> {
     pub series_id: NFTSeriesId,
 }
 
+/// Data related to an NFT Series.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct NFTSeriesDetails<AccountId, NFTId> {
+    // Series owner.
     pub owner: AccountId,
+    // NFTs that are part of the same series.
     pub nfts: Vec<NFTId>,
 }
 
@@ -53,6 +56,7 @@ pub trait WeightInfo {
     fn seal() -> Weight;
     fn transfer() -> Weight;
     fn burn() -> Weight;
+    fn transfer_series() -> Weight;
 }
 
 #[frame_support::pallet]
@@ -176,6 +180,30 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::burn())]
+        pub fn transfer_series(
+            origin: OriginFor<T>,
+            id: T::NFTSeriesId,
+            to: <T::Lookup as StaticLookup>::Source,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let to_unlookup = T::Lookup::lookup(to)?;
+
+            Series::<T>::mutate(id, |series| {
+                if let Some(series) = series {
+                    ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
+                    series.owner = to_unlookup.clone();
+                    Ok(())
+                } else {
+                    Err(Error::<T>::NotSeriesOwner)
+                }
+            })?;
+
+            Self::deposit_event(Event::SeriesTransfer(id, who, to_unlookup));
+
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -197,6 +225,8 @@ pub mod pallet {
         Unlocked(T::NFTId),
         /// An NFT that was burned. \[nft id\]
         Burned(T::NFTId),
+        /// An NFT Series was transferred to someone else. \[nft series id, old owner, new owner\]
+        SeriesTransfer(T::NFTSeriesId, T::AccountId, T::AccountId),
     }
 
     #[pallet::error]
@@ -214,6 +244,8 @@ pub mod pallet {
         NFTSeriesIdOverflow,
         /// Cannot add nfts to a series that is not owned.
         NotSeriesOwner,
+        /// No one can be the owner the of the default series id.
+        NFTSeriesLocked,
     }
 
     /// The number of NFTs managed by this pallet
@@ -382,6 +414,24 @@ impl<T: Config> NFTs for Pallet<T> {
 
     fn series_length(id: Self::NFTSeriesId) -> usize {
         Series::<T>::get(id).unwrap_or_default().nfts.len()
+    }
+
+    fn series_owner(id: Self::NFTSeriesId) -> Option<Self::AccountId> {
+        Some(Series::<T>::get(id)?.owner)
+    }
+
+    fn set_series_owner(id: Self::NFTSeriesId, owner: &Self::AccountId) -> DispatchResult {
+        ensure!(id != Default::default(), Error::<T>::NFTSeriesLocked);
+
+        Series::<T>::mutate(id, |series| {
+            if let Some(series) = series {
+                series.owner = owner.clone();
+            } else {
+                *series = Some(NFTSeriesDetails::new(owner.clone(), sp_std::vec![]));
+            }
+        });
+
+        Ok(())
     }
 }
 

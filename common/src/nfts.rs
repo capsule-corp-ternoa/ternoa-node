@@ -53,6 +53,12 @@ pub trait NFTs {
 
     /// Return how many nfts belong to the same series.
     fn series_length(id: Self::NFTSeriesId) -> usize;
+
+    /// Return the owner of a NFT series.
+    fn series_owner(id: Self::NFTSeriesId) -> Option<Self::AccountId>;
+
+    /// Set the owner of a NFT series.
+    fn set_series_owner(id: Self::NFTSeriesId, owner: &Self::AccountId) -> DispatchResult;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.

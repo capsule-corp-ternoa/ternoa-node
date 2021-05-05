@@ -1,5 +1,5 @@
 use super::mock::*;
-use crate::Error;
+use crate::{Error, NFTSeriesDetails};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use ternoa_common::traits;
@@ -144,6 +144,48 @@ fn adding_an_nft_to_a_non_owned_nft_series_returns_error() {
         assert_noop!(
             <NFTs as traits::NFTs>::create(&BOB, MockNFTDetails::Empty, series_id),
             Error::<Test>::NotSeriesOwner,
+        );
+    })
+}
+
+#[test]
+fn series_owner() {
+    new_test_ext().execute_with(|| {
+        let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
+        let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
+        let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
+
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, valid_id)
+            .expect("creation failed");
+
+        // Existing id should return the creator of the series as owner.
+        assert_eq!(<NFTs as traits::NFTs>::series_owner(valid_id), Some(ALICE));
+        // Non existing id should return None as the series owner.
+        assert_eq!(<NFTs as traits::NFTs>::series_owner(invalid_id), None);
+        // Default id should return None as the series owner.
+        assert_eq!(<NFTs as traits::NFTs>::series_owner(default_id), None);
+    })
+}
+
+#[test]
+fn transfer_series() {
+    new_test_ext().execute_with(|| {
+        let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
+        let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
+        let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
+
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, valid_id)
+            .expect("creation failed");
+
+        assert_ok!(<NFTs as traits::NFTs>::set_series_owner(valid_id, &BOB));
+        assert_eq!(<NFTs as traits::NFTs>::series_owner(valid_id), Some(BOB));
+
+        assert_ok!(<NFTs as traits::NFTs>::set_series_owner(invalid_id, &BOB));
+        assert_eq!(<NFTs as traits::NFTs>::series_owner(invalid_id), Some(BOB));
+
+        assert_noop!(
+            <NFTs as traits::NFTs>::set_series_owner(default_id, &BOB),
+            Error::<Test>::NFTSeriesLocked,
         );
     })
 }

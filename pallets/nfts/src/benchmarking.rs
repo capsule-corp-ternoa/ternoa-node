@@ -57,6 +57,20 @@ benchmarks! {
     verify {
         assert_eq!(Module::<T>::data(id), NFTData::default());
     }
+
+    transfer_series {
+        let receiver: T::AccountId = account("receiver", 0, 0);
+        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
+
+
+        let caller: T::AccountId = whitelisted_caller();
+        let series_id = T::NFTSeriesId::from(1);
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(),series_id));
+    }: _(RawOrigin::Signed(caller), series_id, receiver_lookup)
+    verify {
+        let series = NFTSeriesDetails::new(receiver, sp_std::vec![T::NFTId::from(0)]);
+        assert_eq!(Module::<T>::series(series_id), Some(series));
+    }
 }
 
 #[cfg(test)]
