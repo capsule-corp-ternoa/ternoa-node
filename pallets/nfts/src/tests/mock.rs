@@ -75,6 +75,7 @@ impl Config for Test {
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
+pub const CHAD: u64 = 3;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
     frame_system::GenesisConfig::default()

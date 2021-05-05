@@ -49,10 +49,10 @@ pub trait NFTs {
     fn burn(id: Self::NFTId) -> DispatchResult;
 
     /// Return the series id of an NFT.
-    fn series_id(id: Self::NFTId) -> Self::NFTSeriesId;
+    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId>;
 
     /// Return how many nfts belong to the same series.
-    fn series_length(id: Self::NFTSeriesId) -> usize;
+    fn series_length(id: Self::NFTSeriesId) -> Option<usize>;
 
     /// Return the owner of a NFT series.
     fn series_owner(id: Self::NFTSeriesId) -> Option<Self::AccountId>;

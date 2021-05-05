@@ -51,11 +51,12 @@ benchmarks! {
 
     burn {
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
-        let id = T::NFTId::from(0);
-    }: _(RawOrigin::Signed(caller), id)
+        let series_id =  T::NFTSeriesId::from(1);
+        let nft_id = T::NFTId::from(0);
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), series_id));
+    }: _(RawOrigin::Signed(caller), nft_id)
     verify {
-        assert_eq!(Module::<T>::data(id), NFTData::default());
+        assert_eq!(Module::<T>::data(nft_id), NFTData::default());
     }
 
     transfer_series {

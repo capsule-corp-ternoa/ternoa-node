@@ -190,13 +190,14 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let to_unlookup = T::Lookup::lookup(to)?;
 
+            ensure!(id != Default::default(), Error::<T>::NotSeriesOwner);
             Series::<T>::mutate(id, |series| {
                 if let Some(series) = series {
                     ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
                     series.owner = to_unlookup.clone();
                     Ok(())
                 } else {
-                    Err(Error::<T>::NotSeriesOwner)
+                    Err(Error::<T>::NFTSeriesNotFound)
                 }
             })?;
 
@@ -246,6 +247,8 @@ pub mod pallet {
         NotSeriesOwner,
         /// No one can be the owner the of the default series id.
         NFTSeriesLocked,
+        /// No series was found with that given id.
+        NFTSeriesNotFound,
     }
 
     /// The number of NFTs managed by this pallet
@@ -402,18 +405,32 @@ impl<T: Config> NFTs for Pallet<T> {
     }
 
     fn burn(id: Self::NFTId) -> DispatchResult {
+        if let Some(series_id) = Self::series_id(id) {
+            Series::<T>::mutate(series_id, |series| {
+                if let Some(series) = series {
+                    if let Some(index) = series.nfts.iter().position(|x| *x == id) {
+                        series.nfts.remove(index);
+                    }
+                }
+            });
+        }
+
         Data::<T>::remove(id);
         Self::deposit_event(Event::Burned(id));
 
         Ok(())
     }
 
-    fn series_id(id: Self::NFTId) -> Self::NFTSeriesId {
-        Data::<T>::get(id).series_id
+    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId> {
+        if Data::<T>::contains_key(id) {
+            Some(Data::<T>::get(id).series_id)
+        } else {
+            None
+        }
     }
 
-    fn series_length(id: Self::NFTSeriesId) -> usize {
-        Series::<T>::get(id).unwrap_or_default().nfts.len()
+    fn series_length(id: Self::NFTSeriesId) -> Option<usize> {
+        Some(Series::<T>::get(id)?.nfts.len())
     }
 
     fn series_owner(id: Self::NFTSeriesId) -> Option<Self::AccountId> {
@@ -426,10 +443,11 @@ impl<T: Config> NFTs for Pallet<T> {
         Series::<T>::mutate(id, |series| {
             if let Some(series) = series {
                 series.owner = owner.clone();
+                Ok(())
             } else {
-                *series = Some(NFTSeriesDetails::new(owner.clone(), sp_std::vec![]));
+                Err(Error::<T>::NFTSeriesNotFound)
             }
-        });
+        })?;
 
         Ok(())
     }

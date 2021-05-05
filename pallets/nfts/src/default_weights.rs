@@ -22,9 +22,9 @@ impl crate::WeightInfo for () {
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
     fn burn() -> Weight {
-        (24_510_000 as Weight)
-            .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(1 as Weight))
+        (37_070_000 as Weight)
+            .saturating_add(DbWeight::get().reads(2 as Weight))
+            .saturating_add(DbWeight::get().writes(2 as Weight))
     }
     fn transfer_series() -> Weight {
         (24_180_000 as Weight)
