@@ -51,7 +51,8 @@ impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
 }
 
 pub trait WeightInfo {
-    fn create(series_id: u32) -> Weight;
+    fn create() -> Weight;
+    fn create_with_series() -> Weight;
     fn mutate() -> Weight;
     fn seal() -> Weight;
     fn transfer() -> Weight;
@@ -78,7 +79,13 @@ pub mod pallet {
         type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
         type WeightInfo: WeightInfo;
         /// How the NFT series id is represented.
-        type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u32> + Into<u32>;
+        type NFTSeriesId: Parameter
+            + Copy
+            + Default
+            + CheckedAdd
+            + Member
+            + From<u32>
+            + MaybeSerializeDeserialize;
     }
 
     #[pallet::pallet]
@@ -93,7 +100,7 @@ pub mod pallet {
         /// Create a new NFT with the provided details. An ID will be auto
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
-        #[pallet::weight(T::WeightInfo::create((*series_id).into()))]
+        #[pallet::weight(if *series_id == Default::default() {T::WeightInfo::create()} else {T::WeightInfo::create_with_series()})]
         pub fn create(
             origin: OriginFor<T>,
             details: T::NFTDetails,
@@ -278,8 +285,8 @@ pub mod pallet {
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub nfts: Vec<(T::AccountId, T::NFTDetails, u32)>,
-        pub series: Vec<(T::AccountId, u32)>,
+        pub nfts: Vec<(T::AccountId, T::NFTDetails, T::NFTSeriesId)>,
+        pub series: Vec<(T::AccountId, T::NFTSeriesId)>,
     }
 
     #[cfg(feature = "std")]
@@ -299,21 +306,14 @@ pub mod pallet {
                 .clone()
                 .into_iter()
                 .for_each(|(account, series_id)| {
-                    drop(<Pallet<T> as NFTs>::set_series_owner(
-                        series_id.into(),
-                        &account,
-                    ));
+                    drop(<Pallet<T> as NFTs>::set_series_owner(series_id, &account));
                 });
 
             self.nfts
                 .clone()
                 .into_iter()
                 .for_each(|(account, details, series_id)| {
-                    drop(<Pallet<T> as NFTs>::create(
-                        &account,
-                        details,
-                        series_id.into(),
-                    ))
+                    drop(<Pallet<T> as NFTs>::create(&account, details, series_id))
                 });
         }
     }
