@@ -102,7 +102,8 @@ pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 
 pub struct ExtBuilder {
-    nfts: Vec<(u64, MockNFTDetails)>,
+    nfts: Vec<(u64, MockNFTDetails, u32)>,
+    series: Vec<(u64, u32)>,
     endowed_accounts: Vec<(u64, u64)>,
 }
 
@@ -110,6 +111,7 @@ impl Default for ExtBuilder {
     fn default() -> Self {
         ExtBuilder {
             nfts: Vec::new(),
+            series: Vec::new(),
             endowed_accounts: Vec::new(),
         }
     }
@@ -117,7 +119,8 @@ impl Default for ExtBuilder {
 
 impl ExtBuilder {
     pub fn one_nft_for_alice(mut self) -> Self {
-        self.nfts.push((ALICE, Default::default()));
+        self.nfts
+            .push((ALICE, Default::default(), Default::default()));
         self
     }
 
@@ -138,9 +141,12 @@ impl ExtBuilder {
         .assimilate_storage(&mut t)
         .unwrap();
 
-        ternoa_nfts::GenesisConfig::<Test> { nfts: self.nfts }
-            .assimilate_storage(&mut t)
-            .unwrap();
+        ternoa_nfts::GenesisConfig::<Test> {
+            nfts: self.nfts,
+            series: self.series,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
 
         let mut ext = sp_io::TestExternalities::new(t);
         ext.execute_with(|| System::set_block_number(1));

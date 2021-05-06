@@ -9,7 +9,8 @@ fn register_nfts() {
         .unwrap();
 
     GenesisConfig::<Test> {
-        nfts: vec![(ALICE, MockNFTDetails::WithU8(1))],
+        nfts: vec![(ALICE, MockNFTDetails::WithU8(1), Default::default())],
+        series: vec![],
     }
     .assimilate_storage(&mut t)
     .unwrap();

@@ -278,7 +278,8 @@ pub mod pallet {
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub nfts: Vec<(T::AccountId, T::NFTDetails)>,
+        pub nfts: Vec<(T::AccountId, T::NFTDetails, u32)>,
+        pub series: Vec<(T::AccountId, u32)>,
     }
 
     #[cfg(feature = "std")]
@@ -286,6 +287,7 @@ pub mod pallet {
         fn default() -> Self {
             Self {
                 nfts: Default::default(),
+                series: Default::default(),
             }
         }
     }
@@ -293,14 +295,24 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
+            self.series
+                .clone()
+                .into_iter()
+                .for_each(|(account, series_id)| {
+                    drop(<Pallet<T> as NFTs>::set_series_owner(
+                        series_id.into(),
+                        &account,
+                    ));
+                });
+
             self.nfts
                 .clone()
                 .into_iter()
-                .for_each(|(account, details)| {
+                .for_each(|(account, details, series_id)| {
                     drop(<Pallet<T> as NFTs>::create(
                         &account,
                         details,
-                        Default::default(),
+                        series_id.into(),
                     ))
                 });
         }
@@ -441,11 +453,10 @@ impl<T: Config> NFTs for Pallet<T> {
         Series::<T>::mutate(id, |series| {
             if let Some(series) = series {
                 series.owner = owner.clone();
-                Ok(())
             } else {
-                Err(Error::<T>::NFTSeriesNotFound)
+                *series = Some(NFTSeriesDetails::new(owner.clone(), sp_std::vec![]));
             }
-        })?;
+        });
 
         Ok(())
     }

@@ -187,11 +187,9 @@ fn set_series_owner() {
         assert_ok!(<NFTs as traits::NFTs>::set_series_owner(valid_id, &BOB));
         assert_eq!(<NFTs as traits::NFTs>::series_owner(valid_id), Some(BOB));
 
-        // It is not possible to claim ownership of a invalid series.
-        assert_noop!(
-            <NFTs as traits::NFTs>::set_series_owner(invalid_id, &BOB),
-            Error::<Test>::NFTSeriesNotFound,
-        );
+        // It is possible to claim ownership of unoccupied series.
+        assert_ok!(<NFTs as traits::NFTs>::set_series_owner(invalid_id, &BOB));
+        assert_eq!(<NFTs as traits::NFTs>::series_owner(invalid_id), Some(BOB));
 
         // It is not possible to claim ownership of the default series.
         assert_noop!(
