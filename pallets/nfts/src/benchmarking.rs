@@ -7,8 +7,16 @@ use sp_std::{boxed::Box, prelude::*};
 benchmarks! {
     create {
         let caller: T::AccountId = whitelisted_caller();
-        let series_id: T::NFTSeriesId = 10.into();
-    }: _(RawOrigin::Signed(caller.clone()), Default::default(), series_id)
+    }: _(RawOrigin::Signed(caller.clone()), Default::default(), Default::default())
+    verify {
+        let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
+        assert_eq!(Module::<T>::total(), T::NFTId::from(1));
+    }
+
+    create_with_series {
+        let caller: T::AccountId = whitelisted_caller();
+        let series_id = T::NFTSeriesId::from(1u32);
+    }: create(RawOrigin::Signed(caller.clone()), Default::default(), series_id)
     verify {
         let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
         assert_eq!(Module::<T>::total(), T::NFTId::from(1));

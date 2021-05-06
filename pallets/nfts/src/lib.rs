@@ -51,7 +51,7 @@ impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
 }
 
 pub trait WeightInfo {
-    fn create() -> Weight;
+    fn create(series_id: u32) -> Weight;
     fn mutate() -> Weight;
     fn seal() -> Weight;
     fn transfer() -> Weight;
@@ -78,7 +78,7 @@ pub mod pallet {
         type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
         type WeightInfo: WeightInfo;
         /// How the NFT series id is represented.
-        type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u32>;
+        type NFTSeriesId: Parameter + Copy + Default + CheckedAdd + Member + From<u32> + Into<u32>;
     }
 
     #[pallet::pallet]
@@ -93,7 +93,7 @@ pub mod pallet {
         /// Create a new NFT with the provided details. An ID will be auto
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
-        #[pallet::weight(T::WeightInfo::create())]
+        #[pallet::weight(T::WeightInfo::create((*series_id).into()))]
         pub fn create(
             origin: OriginFor<T>,
             details: T::NFTDetails,

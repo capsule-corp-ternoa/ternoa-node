@@ -1,10 +1,16 @@
 use frame_support::weights::{constants::RocksDbWeight as DbWeight, Weight};
 
 impl crate::WeightInfo for () {
-    fn create() -> Weight {
-        (31_410_000 as Weight)
-            .saturating_add(DbWeight::get().reads(2 as Weight))
-            .saturating_add(DbWeight::get().writes(3 as Weight))
+    fn create(series_id: u32) -> Weight {
+        if series_id == 0 {
+            (24_111_000 as Weight)
+                .saturating_add(DbWeight::get().reads(1 as Weight))
+                .saturating_add(DbWeight::get().writes(2 as Weight))
+        } else {
+            (31_410_000 as Weight)
+                .saturating_add(DbWeight::get().reads(2 as Weight))
+                .saturating_add(DbWeight::get().writes(3 as Weight))
+        }
     }
     fn mutate() -> Weight {
         (25_120_000 as Weight)
