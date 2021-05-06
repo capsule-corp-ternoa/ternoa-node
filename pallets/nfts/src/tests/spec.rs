@@ -262,7 +262,7 @@ fn series_create() {
             Default::default(),
             valid_id,
         ));
-        assert_eq!(NFTs::series(valid_id), Some(details));
+        assert_eq!(NFTs::series(valid_id), Some(details.clone()));
 
         // Bob cannot create an nft under a series that he does not own.
         assert_noop!(
@@ -272,8 +272,9 @@ fn series_create() {
 
         // Alice stays the owner of the series even if all the nfts do not belong to her
         // anymore.
-        assert_ok!(NFTs::transfer(alice.clone().into(), NFTs::total() - 2, BOB));
-        assert_ok!(NFTs::transfer(alice.clone().into(), NFTs::total() - 1, BOB));
+        for nft_id in details.nfts {
+            assert_ok!(NFTs::transfer(alice.clone().into(), nft_id, BOB));
+        }
         assert_eq!(NFTs::series(valid_id).unwrap().owner, ALICE);
     })
 }
