@@ -188,6 +188,8 @@ pub mod pallet {
             Ok(().into())
         }
 
+        /// Transfer an NFT series from one account to another one. Must be called by the
+        /// actual owner of the NFT series.
         #[pallet::weight(T::WeightInfo::transfer_series())]
         pub fn transfer_series(
             origin: OriginFor<T>,
