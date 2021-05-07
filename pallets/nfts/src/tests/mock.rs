@@ -68,12 +68,14 @@ impl Config for Test {
     type NFTId = u32;
     type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
+    type NFTSeriesId = u32;
 }
 
 // Do not use the `0` account id since this would be the default value
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
+pub const CHAD: u64 = 3;
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
     frame_system::GenesisConfig::default()

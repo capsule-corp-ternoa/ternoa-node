@@ -1,4 +1,4 @@
-use crate::{Call, Config, Module, NFTData};
+use crate::{Call, Config, Module, NFTData, NFTSeriesDetails};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
@@ -7,9 +7,20 @@ use sp_std::{boxed::Box, prelude::*};
 benchmarks! {
     create {
         let caller: T::AccountId = whitelisted_caller();
-    }: _(RawOrigin::Signed(caller), Default::default())
+    }: _(RawOrigin::Signed(caller.clone()), Default::default(), Default::default())
     verify {
+        let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
         assert_eq!(Module::<T>::total(), T::NFTId::from(1));
+    }
+
+    create_with_series {
+        let caller: T::AccountId = whitelisted_caller();
+        let series_id = T::NFTSeriesId::from(1u32);
+    }: create(RawOrigin::Signed(caller.clone()), Default::default(), series_id)
+    verify {
+        let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
+        assert_eq!(Module::<T>::total(), T::NFTId::from(1));
+        assert_eq!(Module::<T>::series(series_id), Some(series));
     }
 
     mutate {
@@ -19,7 +30,7 @@ benchmarks! {
         // than before so calling mutate with the same values (default) will
         // always do the same work and thus keep the benchmark relevant.
 
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0), Default::default())
     verify {
         // Absence of error should be enough but we also check the
@@ -29,7 +40,7 @@ benchmarks! {
 
     seal {
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0))
     verify {
         assert_eq!(Module::<T>::data(T::NFTId::from(0)).sealed, true);
@@ -40,7 +51,7 @@ benchmarks! {
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0), receiver_lookup)
     verify {
         assert_eq!(Module::<T>::data(T::NFTId::from(0)).owner, receiver);
@@ -48,11 +59,26 @@ benchmarks! {
 
     burn {
         let caller: T::AccountId = whitelisted_caller();
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default()));
-        let id = T::NFTId::from(0);
-    }: _(RawOrigin::Signed(caller), id)
+        let series_id =  T::NFTSeriesId::from(1);
+        let nft_id = T::NFTId::from(0);
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), series_id));
+    }: _(RawOrigin::Signed(caller), nft_id)
     verify {
-        assert_eq!(Module::<T>::data(id), NFTData::default());
+        assert_eq!(Module::<T>::data(nft_id), NFTData::default());
+    }
+
+    transfer_series {
+        let receiver: T::AccountId = account("receiver", 0, 0);
+        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
+
+
+        let caller: T::AccountId = whitelisted_caller();
+        let series_id = T::NFTSeriesId::from(1);
+        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(),series_id));
+    }: _(RawOrigin::Signed(caller), series_id, receiver_lookup)
+    verify {
+        let series = NFTSeriesDetails::new(receiver, sp_std::vec![T::NFTId::from(0)]);
+        assert_eq!(Module::<T>::series(series_id), Some(series));
     }
 }
 

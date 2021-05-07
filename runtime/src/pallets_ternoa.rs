@@ -1,11 +1,12 @@
 use crate::{Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler};
-use ternoa_primitives::{NFTDetails, NFTId};
+use ternoa_primitives::{NFTDetails, NFTId, NFTSeriesId};
 
 impl ternoa_nfts::Config for Runtime {
     type Event = Event;
     type NFTId = NFTId;
     type NFTDetails = NFTDetails;
     type WeightInfo = ();
+    type NFTSeriesId = NFTSeriesId;
 }
 
 impl ternoa_timed_escrow::Config for Runtime {

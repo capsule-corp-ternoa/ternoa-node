@@ -49,3 +49,5 @@ pub struct NFTDetails {
 
 /// How NFT IDs are encoded.
 pub type NFTId = u32;
+/// How the NFT series id is encoded.
+pub type NFTSeriesId = u32;

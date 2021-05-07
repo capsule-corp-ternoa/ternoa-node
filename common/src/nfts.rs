@@ -14,10 +14,14 @@ pub trait NFTs {
     /// How NFTs are represented internally.
     type NFTId: Parameter + Copy;
 
+    /// How the NFT series id is represented internally.
+    type NFTSeriesId: Parameter + Copy + Default;
+
     /// Create a new NFT with the specified details and return its ID or an error.
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
+        series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
     /// Change the details related to an NFT.
@@ -43,6 +47,18 @@ pub trait NFTs {
 
     /// Remove an NFT from the storage.
     fn burn(id: Self::NFTId) -> DispatchResult;
+
+    /// Return the series id of an NFT.
+    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId>;
+
+    /// Return how many nfts belong to the same series.
+    fn series_length(id: Self::NFTSeriesId) -> Option<usize>;
+
+    /// Return the owner of a NFT series.
+    fn series_owner(id: Self::NFTSeriesId) -> Option<Self::AccountId>;
+
+    /// Set the owner of a NFT series.
+    fn set_series_owner(id: Self::NFTSeriesId, owner: &Self::AccountId) -> DispatchResult;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.

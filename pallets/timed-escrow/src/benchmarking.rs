@@ -9,6 +9,7 @@ fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
     T::NFTs::create(
         caller,
         <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
+        Default::default(),
     )
     .expect("shall not fail with a clean state")
 }
