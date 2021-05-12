@@ -1,5 +1,10 @@
-use crate::{Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler};
-use ternoa_primitives::{NFTDetails, NFTId, NFTSeriesId};
+use crate::{constants::currency::CENTS, Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler};
+use frame_support::parameter_types;
+use ternoa_primitives::{NFTDetails, NFTId, NFTSeriesId, Balance};
+
+parameter_types! {
+    pub const MintFee: Balance = 50 * CENTS;
+}
 
 impl ternoa_nfts::Config for Runtime {
     type Event = Event;
@@ -7,6 +12,9 @@ impl ternoa_nfts::Config for Runtime {
     type NFTDetails = NFTDetails;
     type WeightInfo = ();
     type NFTSeriesId = NFTSeriesId;
+    type Currency = Balances;
+    type MintFee = MintFee;
+    type FeesCollector = ();
 }
 
 impl ternoa_timed_escrow::Config for Runtime {
