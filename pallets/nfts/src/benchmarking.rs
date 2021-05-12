@@ -1,12 +1,14 @@
 use crate::{Call, Config, Module, NFTData, NFTSeriesDetails};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
+use frame_support::traits::{Get, Currency};
 use sp_runtime::traits::StaticLookup;
 use sp_std::{boxed::Box, prelude::*};
 
 benchmarks! {
     create {
         let caller: T::AccountId = whitelisted_caller();
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
     }: _(RawOrigin::Signed(caller.clone()), Default::default(), Default::default())
     verify {
         let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
@@ -16,6 +18,7 @@ benchmarks! {
     create_with_series {
         let caller: T::AccountId = whitelisted_caller();
         let series_id = T::NFTSeriesId::from(1u32);
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
     }: create(RawOrigin::Signed(caller.clone()), Default::default(), series_id)
     verify {
         let series = NFTSeriesDetails::new(caller, sp_std::vec![T::NFTId::from(0)]);
@@ -30,6 +33,7 @@ benchmarks! {
         // than before so calling mutate with the same values (default) will
         // always do the same work and thus keep the benchmark relevant.
 
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
         drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0), Default::default())
     verify {
@@ -40,6 +44,8 @@ benchmarks! {
 
     seal {
         let caller: T::AccountId = whitelisted_caller();
+
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
         drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0))
     verify {
@@ -51,6 +57,7 @@ benchmarks! {
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
         let caller: T::AccountId = whitelisted_caller();
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
         drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), Default::default()));
     }: _(RawOrigin::Signed(caller), T::NFTId::from(0), receiver_lookup)
     verify {
@@ -61,6 +68,8 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let series_id =  T::NFTSeriesId::from(1);
         let nft_id = T::NFTId::from(0);
+
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
         drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(), series_id));
     }: _(RawOrigin::Signed(caller), nft_id)
     verify {
@@ -71,9 +80,10 @@ benchmarks! {
         let receiver: T::AccountId = account("receiver", 0, 0);
         let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
-
         let caller: T::AccountId = whitelisted_caller();
         let series_id = T::NFTSeriesId::from(1);
+
+        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
         drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), Default::default(),series_id));
     }: _(RawOrigin::Signed(caller), series_id, receiver_lookup)
     verify {
@@ -91,7 +101,6 @@ mod tests {
     #[test]
     fn create() {
         ExtBuilder::default()
-            .one_hundred_for_everyone()
             .build()
             .execute_with(|| {
                 assert_ok!(test_benchmark_create::<Test>());
@@ -101,7 +110,6 @@ mod tests {
     #[test]
     fn mutate() {
         ExtBuilder::default()
-            .one_hundred_for_everyone()
             .build()
             .execute_with(|| {
                 assert_ok!(test_benchmark_mutate::<Test>());
@@ -111,7 +119,6 @@ mod tests {
     #[test]
     fn seal() {
         ExtBuilder::default()
-            .one_hundred_for_everyone()
             .build()
             .execute_with(|| {
                 assert_ok!(test_benchmark_seal::<Test>());
@@ -121,7 +128,6 @@ mod tests {
     #[test]
     fn transfer() {
         ExtBuilder::default()
-            .one_hundred_for_everyone()
             .build()
             .execute_with(|| {
                 assert_ok!(test_benchmark_transfer::<Test>());
@@ -131,7 +137,6 @@ mod tests {
     #[test]
     fn burn() {
         ExtBuilder::default()
-            .one_hundred_for_everyone()
             .build()
             .execute_with(|| {
                 assert_ok!(test_benchmark_burn::<Test>());
