@@ -85,41 +85,56 @@ benchmarks! {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::mock::{new_test_ext, Test};
+    use crate::tests::mock::{ExtBuilder, Test};
     use frame_support::assert_ok;
 
     #[test]
     fn create() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_create::<Test>());
-        });
+        ExtBuilder::default()
+            .one_hundred_for_everyone()
+            .build()
+            .execute_with(|| {
+                assert_ok!(test_benchmark_create::<Test>());
+            });
     }
 
     #[test]
     fn mutate() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_mutate::<Test>());
-        });
+        ExtBuilder::default()
+            .one_hundred_for_everyone()
+            .build()
+            .execute_with(|| {
+                assert_ok!(test_benchmark_mutate::<Test>());
+            });
     }
 
     #[test]
     fn seal() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_seal::<Test>());
-        });
+        ExtBuilder::default()
+            .one_hundred_for_everyone()
+            .build()
+            .execute_with(|| {
+                assert_ok!(test_benchmark_seal::<Test>());
+            });
     }
 
     #[test]
     fn transfer() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_transfer::<Test>());
-        });
+        ExtBuilder::default()
+            .one_hundred_for_everyone()
+            .build()
+            .execute_with(|| {
+                assert_ok!(test_benchmark_transfer::<Test>());
+            });
     }
 
     #[test]
     fn burn() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_burn::<Test>());
-        });
+        ExtBuilder::default()
+            .one_hundred_for_everyone()
+            .build()
+            .execute_with(|| {
+                assert_ok!(test_benchmark_burn::<Test>());
+            });
     }
 }
