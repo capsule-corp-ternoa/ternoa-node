@@ -20,6 +20,7 @@ pallet-authority-discovery = { version = "3.0.0", default-features = false }
 pallet-authorship = { version = "3.0.0", default-features = false }
 pallet-babe = { version = "3.0.0", default-features = false }
 pallet-balances = { version = "3.0.0", default-features = false }
+pallet-bounties = { version = "3.0.0", default-features = false }
 pallet-curveless-staking = { version = "0.1.0", default-features = false }
 pallet-grandpa = { version = "3.0.0", default-features = false }
 pallet-im-online = { version = "3.0.0", default-features = false }
@@ -33,6 +34,7 @@ pallet-sudo = { version = "3.0.0", default-features = false }
 pallet-timestamp = { version = "3.0.0", default-features = false }
 pallet-transaction-payment = { version = "3.0.0", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { version = "3.0.0", default-features = false }
+pallet-treasury = { version = "3.0.0", default-features = false }
 pallet-utility = { version = "3.0.0", default-features = false }
 serde = { version = "1.0.125", optional = true }
 sp-api = { version = "3.0.0", default-features = false }
@@ -69,6 +71,7 @@ std = [
 	"pallet-authorship/std",
 	"pallet-babe/std",
 	"pallet-balances/std",
+	"pallet-bounties/std",
 	"pallet-curveless-staking/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
@@ -80,6 +83,7 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
+	"pallet-treasury/std",
 	"pallet-utility/std",
 	"serde",
 	"sp-api/std",
@@ -108,12 +112,14 @@ runtime-benchmarks = [
 	"hex-literal",
 	"pallet-babe/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
+	"pallet-bounties/runtime-benchmarks",
 	"pallet-curveless-staking/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
 	#"pallet-offences-benchmarking",
 	"pallet-scheduler/runtime-benchmarks",
 	#"pallet-session-benchmarking",
+	"pallet-treasury/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-utility/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",

@@ -1,5 +1,6 @@
 use crate::{
     constants::currency::CENTS, Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler,
+    Treasury,
 };
 use frame_support::parameter_types;
 use ternoa_primitives::{Balance, NFTDetails, NFTId, NFTSeriesId};
@@ -16,7 +17,7 @@ impl ternoa_nfts::Config for Runtime {
     type NFTSeriesId = NFTSeriesId;
     type Currency = Balances;
     type MintFee = MintFee;
-    type FeesCollector = ();
+    type FeesCollector = Treasury;
 }
 
 impl ternoa_timed_escrow::Config for Runtime {
