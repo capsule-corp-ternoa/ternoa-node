@@ -63,7 +63,11 @@ pub trait WeightInfo {
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-    use frame_support::pallet_prelude::*;
+    use frame_support::{
+        pallet_prelude::*,
+        traits::{Currency, OnUnbalanced, WithdrawReasons},
+        transactional,
+    };
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedAdd, StaticLookup};
     use sp_runtime::DispatchResult;
@@ -86,7 +90,20 @@ pub mod pallet {
             + Member
             + From<u32>
             + MaybeSerializeDeserialize;
+
+        /// Currency used to bill minting fees
+        type Currency: Currency<Self::AccountId>;
+        /// Host much does it cost to mint a NFT (extra fee on top of the tx fees)
+        type MintFee: Get<BalanceOf<Self>>;
+        /// What we do with additional fees
+        type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
     }
+
+    type BalanceOf<T> =
+        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+    pub(crate) type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
+        <T as frame_system::Config>::AccountId,
+    >>::NegativeImbalance;
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
@@ -101,12 +118,24 @@ pub mod pallet {
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
         #[pallet::weight(if *series_id == Default::default() {T::WeightInfo::create()} else {T::WeightInfo::create_with_series()})]
+        // have to be transactional otherwise we could make people pay the mint
+        // even if the creation fails.
+        #[transactional]
         pub fn create(
             origin: OriginFor<T>,
             details: T::NFTDetails,
             series_id: T::NFTSeriesId,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+
+            let imbalance = T::Currency::withdraw(
+                &who,
+                T::MintFee::get(),
+                WithdrawReasons::FEE,
+                frame_support::traits::ExistenceRequirement::KeepAlive,
+            )?;
+            T::FeesCollector::on_unbalanced(imbalance);
+
             let _id = <Self as NFTs>::create(&who, details, series_id)?;
 
             Ok(().into())
