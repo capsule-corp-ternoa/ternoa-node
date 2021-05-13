@@ -71,7 +71,7 @@ construct_runtime!(
         AuthorityDiscovery: pallet_authority_discovery::{Module, Call, Config},
         Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
         Babe: pallet_babe::{Module, Call, Storage, Config, Inherent, ValidateUnsigned},
-        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        Balances: pallet_balances::<Instance0>::{Module, Call, Storage, Config<T>, Event<T>},
         Bounties: pallet_bounties::{Module, Call, Storage, Event<T>},
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
         Historical: pallet_session_historical::{Module},
@@ -349,7 +349,9 @@ impl_runtime_apis! {
             let params = (&config, &whitelist);
 
             add_benchmark!(params, batches, pallet_babe, Babe);
-            add_benchmark!(params, batches, pallet_balances, Balances);
+            // There is a bug in the substrate implementation, pallet_balances
+            // can only be benchmarked if it is instantiated only once in the runtime.
+            //add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_bounties, Bounties);
             add_benchmark!(params, batches, pallet_grandpa, Grandpa);
             add_benchmark!(params, batches, pallet_im_online, ImOnline);
