@@ -13,12 +13,13 @@ use serde::{Deserialize, Serialize};
 
 use codec::{Decode, Encode};
 use frame_support::pallet_prelude::{ensure, DispatchError};
-use frame_support::weights::Weight;
 use sp_runtime::traits::CheckedAdd;
 use sp_runtime::{DispatchResult, RuntimeDebug};
 use sp_std::result;
 use sp_std::vec::Vec;
 use ternoa_common::traits::{LockableNFTs, NFTs};
+
+pub use default_weights::WeightInfo;
 
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
@@ -48,16 +49,6 @@ impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
     pub fn new(owner: AccountId, nfts: Vec<NFTId>) -> Self {
         Self { owner, nfts }
     }
-}
-
-pub trait WeightInfo {
-    fn create() -> Weight;
-    fn create_with_series() -> Weight;
-    fn mutate() -> Weight;
-    fn seal() -> Weight;
-    fn transfer() -> Weight;
-    fn burn() -> Weight;
-    fn transfer_series() -> Weight;
 }
 
 #[frame_support::pallet]

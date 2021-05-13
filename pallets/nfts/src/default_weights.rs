@@ -35,99 +35,101 @@
 // --output=./pallets/nfts/src/default_weights.rs
 // --template=./.maintain/frame-weight-template.hbs
 
-
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{Weight, constants::RocksDbWeight}};
+use frame_support::{
+    traits::Get,
+    weights::{constants::RocksDbWeight, Weight},
+};
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for ternoa_nfts.
 pub trait WeightInfo {
-	fn create() -> Weight;
-	fn create_with_series() -> Weight;
-	fn mutate() -> Weight;
-	fn seal() -> Weight;
-	fn transfer() -> Weight;
-	fn burn() -> Weight;
-	fn transfer_series() -> Weight;
+    fn create() -> Weight;
+    fn create_with_series() -> Weight;
+    fn mutate() -> Weight;
+    fn seal() -> Weight;
+    fn transfer() -> Weight;
+    fn burn() -> Weight;
+    fn transfer_series() -> Weight;
 }
 
 /// Weights for ternoa_nfts using the Substrate node and recommended hardware.
 pub struct SubstrateWeight<T>(PhantomData<T>);
 impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
-	fn create() -> Weight {
-		(336_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
-	}
-	fn create_with_series() -> Weight {
-		(376_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
-	}
-	fn mutate() -> Weight {
-		(111_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
-	}
-	fn seal() -> Weight {
-		(110_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
-	}
-	fn transfer() -> Weight {
-		(122_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
-	}
-	fn burn() -> Weight {
-		(181_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
-	}
-	fn transfer_series() -> Weight {
-		(110_000_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
-	}
+    fn create() -> Weight {
+        (336_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(1 as Weight))
+            .saturating_add(T::DbWeight::get().writes(2 as Weight))
+    }
+    fn create_with_series() -> Weight {
+        (376_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(2 as Weight))
+            .saturating_add(T::DbWeight::get().writes(3 as Weight))
+    }
+    fn mutate() -> Weight {
+        (111_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(1 as Weight))
+            .saturating_add(T::DbWeight::get().writes(1 as Weight))
+    }
+    fn seal() -> Weight {
+        (110_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(1 as Weight))
+            .saturating_add(T::DbWeight::get().writes(1 as Weight))
+    }
+    fn transfer() -> Weight {
+        (122_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(1 as Weight))
+            .saturating_add(T::DbWeight::get().writes(1 as Weight))
+    }
+    fn burn() -> Weight {
+        (181_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(2 as Weight))
+            .saturating_add(T::DbWeight::get().writes(2 as Weight))
+    }
+    fn transfer_series() -> Weight {
+        (110_000_000 as Weight)
+            .saturating_add(T::DbWeight::get().reads(1 as Weight))
+            .saturating_add(T::DbWeight::get().writes(1 as Weight))
+    }
 }
 
 // For backwards compatibility and tests
 impl WeightInfo for () {
-	fn create() -> Weight {
-		(336_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
-	}
-	fn create_with_series() -> Weight {
-		(376_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(2 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(3 as Weight))
-	}
-	fn mutate() -> Weight {
-		(111_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
-	}
-	fn seal() -> Weight {
-		(110_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
-	}
-	fn transfer() -> Weight {
-		(122_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
-	}
-	fn burn() -> Weight {
-		(181_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(2 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(2 as Weight))
-	}
-	fn transfer_series() -> Weight {
-		(110_000_000 as Weight)
-			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
-			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
-	}
+    fn create() -> Weight {
+        (336_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(2 as Weight))
+    }
+    fn create_with_series() -> Weight {
+        (376_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(2 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(3 as Weight))
+    }
+    fn mutate() -> Weight {
+        (111_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(1 as Weight))
+    }
+    fn seal() -> Weight {
+        (110_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(1 as Weight))
+    }
+    fn transfer() -> Weight {
+        (122_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(1 as Weight))
+    }
+    fn burn() -> Weight {
+        (181_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(2 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(2 as Weight))
+    }
+    fn transfer_series() -> Weight {
+        (110_000_000 as Weight)
+            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
+            .saturating_add(RocksDbWeight::get().writes(1 as Weight))
+    }
 }

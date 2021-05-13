@@ -1,7 +1,7 @@
 use crate::{Call, Config, Module, NFTData, NFTSeriesDetails};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
+use frame_support::traits::{Currency, Get};
 use frame_system::RawOrigin;
-use frame_support::traits::{Get, Currency};
 use sp_runtime::traits::StaticLookup;
 use sp_std::{boxed::Box, prelude::*};
 
@@ -100,46 +100,36 @@ mod tests {
 
     #[test]
     fn create() {
-        ExtBuilder::default()
-            .build()
-            .execute_with(|| {
-                assert_ok!(test_benchmark_create::<Test>());
-            });
+        ExtBuilder::default().build().execute_with(|| {
+            assert_ok!(test_benchmark_create::<Test>());
+        });
     }
 
     #[test]
     fn mutate() {
-        ExtBuilder::default()
-            .build()
-            .execute_with(|| {
-                assert_ok!(test_benchmark_mutate::<Test>());
-            });
+        ExtBuilder::default().build().execute_with(|| {
+            assert_ok!(test_benchmark_mutate::<Test>());
+        });
     }
 
     #[test]
     fn seal() {
-        ExtBuilder::default()
-            .build()
-            .execute_with(|| {
-                assert_ok!(test_benchmark_seal::<Test>());
-            });
+        ExtBuilder::default().build().execute_with(|| {
+            assert_ok!(test_benchmark_seal::<Test>());
+        });
     }
 
     #[test]
     fn transfer() {
-        ExtBuilder::default()
-            .build()
-            .execute_with(|| {
-                assert_ok!(test_benchmark_transfer::<Test>());
-            });
+        ExtBuilder::default().build().execute_with(|| {
+            assert_ok!(test_benchmark_transfer::<Test>());
+        });
     }
 
     #[test]
     fn burn() {
-        ExtBuilder::default()
-            .build()
-            .execute_with(|| {
-                assert_ok!(test_benchmark_burn::<Test>());
-            });
+        ExtBuilder::default().build().execute_with(|| {
+            assert_ok!(test_benchmark_burn::<Test>());
+        });
     }
 }
