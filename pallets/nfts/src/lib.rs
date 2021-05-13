@@ -25,15 +25,13 @@ use ternoa_common::traits::{LockableNFTs, NFTs};
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct NFTData<AccountId, NFTDetails, NFTSeriesId> {
+pub struct NFTData<AccountId, NFTDetails> {
     pub owner: AccountId,
     pub details: NFTDetails,
     /// Set to true to prevent further modifications to the details struct
     pub sealed: bool,
     /// Set to true to prevent changes to the owner variable
     pub locked: bool,
-    /// The Id of the Series that this NFT belongs. Zero means that it doesn't belong to any series.
-    pub series_id: NFTSeriesId,
 }
 
 /// Data related to an NFT Series.
@@ -254,13 +252,8 @@ pub mod pallet {
     /// Data related to NFTs.
     #[pallet::storage]
     #[pallet::getter(fn data)]
-    pub type Data<T: Config> = StorageMap<
-        _,
-        Blake2_128Concat,
-        T::NFTId,
-        NFTData<T::AccountId, NFTDetails, NFTSeriesId>,
-        ValueQuery,
-    >;
+    pub type Data<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, NFTDetails>, ValueQuery>;
 
     /// Data related to NFT Series.
     #[pallet::storage]
@@ -351,7 +344,6 @@ impl<T: Config> NFTs for Pallet<T> {
                 details,
                 sealed: false,
                 locked: false,
-                series_id,
             },
         );
 
@@ -424,7 +416,7 @@ impl<T: Config> NFTs for Pallet<T> {
 
     fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId> {
         if Data::<T>::contains_key(id) {
-            Some(Data::<T>::get(id).series_id)
+            Some(Data::<T>::get(id).details.series_id)
         } else {
             None
         }
