@@ -114,6 +114,7 @@ pub fn testnet_genesis(
                 .map(|k| (k, ENDOWMENT))
                 .collect(),
         }),
+        pallet_balances_Instance1: Some(Default::default()),
 
         // Consensus
         pallet_session: Some(SessionConfig {

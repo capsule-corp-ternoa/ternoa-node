@@ -84,6 +84,7 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
+        TiimeBalances: pallet_balances::<Instance1>::{Module, Call, Storage, Config<T>, Event<T>},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Utility: pallet_utility::{Module, Call, Storage, Event},

@@ -56,3 +56,13 @@ impl pallet_balances::Config for Runtime {
     type AccountStore = frame_system::Pallet<Runtime>;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }
+
+impl pallet_balances::Config<pallet_balances::Instance1> for Runtime {
+    type MaxLocks = MaxLocks;
+    type Balance = Balance;
+    type DustRemoval = ();
+    type Event = Event;
+    type ExistentialDeposit = ExistentialDeposit;
+    type AccountStore = frame_system::Pallet<Runtime>;
+    type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
+}
