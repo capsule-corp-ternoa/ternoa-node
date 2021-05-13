@@ -18,7 +18,7 @@ fn create_increment_id() {
 #[test]
 fn create_register_details() {
     new_test_ext().execute_with(|| {
-        let details = NFTDetails::new(vec![0, 1], 1);
+        let details = NFTDetails::new(vec![42], 1);
 
         assert_ok!(NFTs::create(
             RawOrigin::Signed(ALICE).into(),
@@ -53,7 +53,7 @@ fn create_is_unsealed() {
 #[test]
 fn mutate_update_details() {
     new_test_ext().execute_with(|| {
-        let details = NFTDetails::new(vec![0, 1], 1);
+        let details = NFTDetails::new(vec![42], 1);
         let nft_id = 0;
 
         assert_ok!(NFTs::create(
@@ -72,7 +72,7 @@ fn mutate_update_details() {
 #[test]
 fn mutate_not_the_owner() {
     new_test_ext().execute_with(|| {
-        let details = NFTDetails::new(vec![0, 1], 1);
+        let details = NFTDetails::new(vec![42], 1);
         let nft_id = 0;
 
         assert_ok!(NFTs::create(
@@ -89,7 +89,7 @@ fn mutate_not_the_owner() {
 #[test]
 fn mutate_sealed() {
     new_test_ext().execute_with(|| {
-        let details = NFTDetails::new(vec![0, 1], 1);
+        let details = NFTDetails::new(vec![42], 1);
         let nft_id = 0;
 
         assert_ok!(NFTs::create(
@@ -98,7 +98,7 @@ fn mutate_sealed() {
         ));
         Data::<Test>::mutate(0, |d| d.sealed = true);
         assert_noop!(
-            NFTs::mutate(RawOrigin::Signed(ALICE).into(), nft_id, details,),
+            NFTs::mutate(RawOrigin::Signed(ALICE).into(), nft_id, details),
             Error::<Test>::Sealed
         );
     })

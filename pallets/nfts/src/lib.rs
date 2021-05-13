@@ -208,8 +208,8 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     #[pallet::metadata(T::AccountId = "AccountId", T::NFTId = "NFTId")]
     pub enum Event<T: Config> {
-        /// A new NFT was created. \[nft id, owner\]
-        Created(T::NFTId, T::AccountId),
+        /// A new NFT was created. \[nft id, owner, series id\]
+        Created(T::NFTId, T::AccountId, NFTSeriesId),
         /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
         Transfer(T::NFTId, T::AccountId, T::AccountId),
         /// An NFT was updated by its owner. \[nft id\]
@@ -355,7 +355,7 @@ impl<T: Config> NFTs for Pallet<T> {
             },
         );
 
-        Self::deposit_event(Event::Created(nft_id, owner.clone()));
+        Self::deposit_event(Event::Created(nft_id, owner.clone(), series_id));
 
         Ok(nft_id)
     }
