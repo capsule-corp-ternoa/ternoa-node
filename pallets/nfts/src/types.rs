@@ -17,7 +17,7 @@ pub struct NFTDetails {
 }
 
 impl NFTDetails {
-    pub fn new(offchain_uri: Vec<u8>, series_id: NFTSeriesId) -> Self {
+    pub const fn new(offchain_uri: Vec<u8>, series_id: NFTSeriesId) -> Self {
         Self {
             offchain_uri,
             series_id,
