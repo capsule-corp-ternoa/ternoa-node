@@ -5,8 +5,10 @@ mod benchmarking;
 mod default_weights;
 #[cfg(test)]
 mod tests;
+mod types;
 
 pub use pallet::*;
+pub use types::*;
 
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
@@ -75,17 +77,7 @@ pub mod pallet {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// How NFTs are represented
         type NFTId: Parameter + Default + CheckedAdd + Copy + Member + From<u8>;
-        /// How NFT details are represented
-        type NFTDetails: Parameter + Member + MaybeSerializeDeserialize + Default;
         type WeightInfo: WeightInfo;
-        /// How the NFT series id is represented.
-        type NFTSeriesId: Parameter
-            + Copy
-            + Default
-            + CheckedAdd
-            + Member
-            + From<u32>
-            + MaybeSerializeDeserialize;
     }
 
     #[pallet::pallet]
@@ -100,14 +92,10 @@ pub mod pallet {
         /// Create a new NFT with the provided details. An ID will be auto
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
-        #[pallet::weight(if *series_id == Default::default() {T::WeightInfo::create()} else {T::WeightInfo::create_with_series()})]
-        pub fn create(
-            origin: OriginFor<T>,
-            details: T::NFTDetails,
-            series_id: T::NFTSeriesId,
-        ) -> DispatchResultWithPostInfo {
+        #[pallet::weight(if details.series_id == NFTSeriesId::default() {T::WeightInfo::create()} else {T::WeightInfo::create_with_series()})]
+        pub fn create(origin: OriginFor<T>, details: NFTDetails) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let _id = <Self as NFTs>::create(&who, details, series_id)?;
+            let _id = <Self as NFTs>::create(&who, details)?;
 
             Ok(().into())
         }
@@ -118,7 +106,7 @@ pub mod pallet {
         pub fn mutate(
             origin: OriginFor<T>,
             id: T::NFTId,
-            details: T::NFTDetails,
+            details: NFTDetails,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             <Self as NFTs>::mutate(id, |owner, dets| -> DispatchResult {
@@ -193,13 +181,13 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::transfer_series())]
         pub fn transfer_series(
             origin: OriginFor<T>,
-            id: T::NFTSeriesId,
+            id: NFTSeriesId,
             to: <T::Lookup as StaticLookup>::Source,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let to_unlookup = T::Lookup::lookup(to)?;
 
-            ensure!(id != Default::default(), Error::<T>::NotSeriesOwner);
+            ensure!(id != NFTSeriesId::default(), Error::<T>::NotSeriesOwner);
             Series::<T>::mutate(id, |series| {
                 if let Some(series) = series {
                     ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
@@ -236,7 +224,7 @@ pub mod pallet {
         /// An NFT that was burned. \[nft id\]
         Burned(T::NFTId),
         /// An NFT Series was transferred to someone else. \[nft series id, old owner, new owner\]
-        SeriesTransfer(T::NFTSeriesId, T::AccountId, T::AccountId),
+        SeriesTransfer(NFTSeriesId, T::AccountId, T::AccountId),
     }
 
     #[pallet::error]
@@ -270,7 +258,7 @@ pub mod pallet {
         _,
         Blake2_128Concat,
         T::NFTId,
-        NFTData<T::AccountId, T::NFTDetails, T::NFTSeriesId>,
+        NFTData<T::AccountId, NFTDetails, NFTSeriesId>,
         ValueQuery,
     >;
 
@@ -280,15 +268,15 @@ pub mod pallet {
     pub type Series<T: Config> = StorageMap<
         _,
         Blake2_128Concat,
-        T::NFTSeriesId,
+        NFTSeriesId,
         NFTSeriesDetails<T::AccountId, T::NFTId>,
         OptionQuery,
     >;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub nfts: Vec<(T::AccountId, T::NFTDetails, T::NFTSeriesId)>,
-        pub series: Vec<(T::AccountId, T::NFTSeriesId)>,
+        pub nfts: Vec<(T::AccountId, NFTDetails)>,
+        pub series: Vec<(T::AccountId, NFTSeriesId)>,
     }
 
     #[cfg(feature = "std")]
@@ -314,8 +302,8 @@ pub mod pallet {
             self.nfts
                 .clone()
                 .into_iter()
-                .for_each(|(account, details, series_id)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details, series_id))
+                .for_each(|(account, details)| {
+                    drop(<Pallet<T> as NFTs>::create(&account, details))
                 });
         }
     }
@@ -323,18 +311,19 @@ pub mod pallet {
 
 impl<T: Config> NFTs for Pallet<T> {
     type AccountId = T::AccountId;
-    type NFTDetails = T::NFTDetails;
+    type NFTDetails = NFTDetails;
     type NFTId = T::NFTId;
-    type NFTSeriesId = T::NFTSeriesId;
+    type NFTSeriesId = NFTSeriesId;
 
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError> {
         // Check if the owner is even allowed to add anything to the series.
         let mut nft_series = sp_std::vec![];
-        if series_id != Default::default() {
+        let series_id = details.series_id;
+
+        if series_id != NFTSeriesId::default() {
             if let Some(series) = Series::<T>::get(series_id) {
                 ensure!(series.owner == *owner, Error::<T>::NotSeriesOwner);
                 nft_series = series.nfts;
@@ -350,7 +339,7 @@ impl<T: Config> NFTs for Pallet<T> {
         );
 
         // Create or expand a series.
-        if series_id != Default::default() {
+        if series_id != NFTSeriesId::default() {
             nft_series.push(nft_id);
             Series::<T>::insert(series_id, NFTSeriesDetails::new(owner.clone(), nft_series));
         }
@@ -450,7 +439,7 @@ impl<T: Config> NFTs for Pallet<T> {
     }
 
     fn set_series_owner(id: Self::NFTSeriesId, owner: &Self::AccountId) -> DispatchResult {
-        ensure!(id != Default::default(), Error::<T>::NFTSeriesLocked);
+        ensure!(id != NFTSeriesId::default(), Error::<T>::NFTSeriesLocked);
 
         Series::<T>::mutate(id, |series| {
             if let Some(series) = series {

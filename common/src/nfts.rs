@@ -21,7 +21,6 @@ pub trait NFTs {
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
-        series_id: Self::NFTSeriesId,
     ) -> result::Result<Self::NFTId, DispatchError>;
 
     /// Change the details related to an NFT.

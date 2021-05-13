@@ -7,11 +7,11 @@
         "owner": "AccountId",
         "details": "NFTDetails",
         "sealed": "bool",
-        "locked": "bool",
-        "series_id": "NFTSeriesId"
+        "locked": "bool"
     },
     "NFTDetails": {
-        "offchain_uri": "Vec<u8>"
+        "offchain_uri": "Vec<u8>",
+        "series_id": "NFTSeriesId"
     },
     "LookupSource": "AccountId",
     "NFTSeriesDetails": {
