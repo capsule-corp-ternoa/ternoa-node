@@ -1,4 +1,5 @@
 use super::mock::*;
+use crate::types::NFTDetails;
 use crate::Error;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
@@ -7,8 +8,8 @@ use ternoa_common::traits;
 #[test]
 fn set_owner() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ok!(<NFTs as traits::NFTs>::set_owner(id, &BOB));
         assert_eq!(<NFTs as traits::NFTs>::owner(id), BOB);
@@ -18,8 +19,8 @@ fn set_owner() {
 #[test]
 fn seal() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ok!(<NFTs as traits::NFTs>::seal(id));
         assert_eq!(<NFTs as traits::NFTs>::sealed(id), true);
@@ -33,8 +34,8 @@ fn seal() {
 #[test]
 fn lock_and_unlock() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_eq!(<NFTs as traits::LockableNFTs>::locked(id), true);
@@ -47,8 +48,8 @@ fn lock_and_unlock() {
 #[test]
 fn lock_prevent_transfers() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_noop!(
@@ -61,8 +62,8 @@ fn lock_prevent_transfers() {
 #[test]
 fn lock_prevent_set_owner() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_noop!(
@@ -75,8 +76,8 @@ fn lock_prevent_set_owner() {
 #[test]
 fn lock_double_fail() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
         assert_noop!(
@@ -89,8 +90,8 @@ fn lock_double_fail() {
 #[test]
 fn burn_nft() {
     new_test_ext().execute_with(|| {
-        let id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, Default::default())
-            .expect("creation failed");
+        let id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
         assert_ne!(<NFTs as traits::NFTs>::owner(id), 0);
         assert_ok!(<NFTs as traits::NFTs>::burn(id));
@@ -107,7 +108,7 @@ fn series_length() {
 
         let count = 3;
         for _ in 0..count {
-            let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, valid_id)
+            let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
                 .expect("creation failed");
         }
 
@@ -128,11 +129,12 @@ fn series_id() {
         let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let valid_nft_id = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, valid_id)
-            .expect("creation failed");
+        let valid_nft_id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
+                .expect("creation failed");
         let invalid_nft_id = <NFTs as traits::NFTs>::NFTId::from(100u32);
         let default_nft_id =
-            <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, default_id)
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], default_id))
                 .expect("creation failed");
 
         // Existing nft ids should return valid non default series ids.
@@ -159,7 +161,7 @@ fn series_owner() {
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, valid_id)
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
             .expect("creation failed");
 
         // Existing ids should return the creator of the series as owner.
@@ -180,7 +182,7 @@ fn set_series_owner() {
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let _ = <NFTs as traits::NFTs>::create(&ALICE, MockNFTDetails::Empty, valid_id)
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
             .expect("creation failed");
 
         // It is possible to change owners of existing series.

@@ -70,9 +70,7 @@ impl pallet_scheduler::Config for Test {
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type NFTId = u8;
-    type NFTDetails = ();
     type WeightInfo = ();
-    type NFTSeriesId = u32;
 }
 impl Config for Test {
     type Event = Event;
@@ -98,7 +96,6 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 pub fn create_one_capsule() {
     assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
         &ALICE,
-        (),
         Default::default(),
     ));
 }

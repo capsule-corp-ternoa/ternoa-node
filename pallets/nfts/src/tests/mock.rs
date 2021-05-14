@@ -1,7 +1,5 @@
 use crate::{self as ternoa_nfts, Config};
-use codec::{Decode, Encode};
 use frame_support::parameter_types;
-use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
@@ -52,23 +50,10 @@ impl frame_system::Config for Test {
     type SS58Prefix = ();
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum MockNFTDetails {
-    Empty,
-    WithU8(u8),
-}
-impl Default for MockNFTDetails {
-    fn default() -> Self {
-        Self::Empty
-    }
-}
 impl Config for Test {
     type Event = Event;
     type NFTId = u32;
-    type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
-    type NFTSeriesId = u32;
 }
 
 // Do not use the `0` account id since this would be the default value
