@@ -51,6 +51,7 @@ sp-std = { version = "3.0.0", default-features = false }
 sp-transaction-pool = { version = "3.0.0", default-features = false }
 sp-version = { version = "3.0.0", default-features = false }
 static_assertions = "1.1.0"
+ternoa-account-store = { default-features = false, path = "../pallets/account-store" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
@@ -99,6 +100,7 @@ std = [
 	"sp-std/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"ternoa-account-store/std",
 	"ternoa-marketplace/std",
 	"ternoa-nfts/std",
 	"ternoa-primitives/std",

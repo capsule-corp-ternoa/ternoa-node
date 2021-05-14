@@ -1,6 +1,6 @@
 use crate::{
     constants::currency::{MILLICENTS, UNIT},
-    Balances, Event, Runtime, Staking,
+    Balances, Event, Runtime, Staking, TiimeAccountStore,
 };
 use frame_support::{
     parameter_types,
@@ -57,12 +57,16 @@ impl pallet_balances::Config<pallet_balances::Instance0> for Runtime {
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }
 
+impl ternoa_account_store::Config for Runtime {
+    type AccountData = pallet_balances::AccountData<Balance>;
+}
+
 impl pallet_balances::Config<pallet_balances::Instance1> for Runtime {
     type MaxLocks = MaxLocks;
     type Balance = Balance;
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
-    type AccountStore = frame_system::Pallet<Runtime>;
+    type AccountStore = TiimeAccountStore;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }

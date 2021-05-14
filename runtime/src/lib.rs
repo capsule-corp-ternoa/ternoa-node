@@ -84,11 +84,13 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
-        TiimeBalances: pallet_balances::<Instance1>::{Module, Call, Storage, Config<T>, Event<T>},
-        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Utility: pallet_utility::{Module, Call, Storage, Event},
 
+        TiimeAccountStore: ternoa_account_store::{Module, Storage},
+        TiimeBalances: pallet_balances::<Instance1>::{Module, Call, Storage, Config<T>, Event<T>},
+
+        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
         Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
