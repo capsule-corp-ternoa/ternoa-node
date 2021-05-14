@@ -147,6 +147,7 @@ pub fn testnet_genesis(
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         }),
+        pallet_treasury: Default::default(),
 
         // Governance
         pallet_sudo: Some(SudoConfig {

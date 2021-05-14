@@ -15,12 +15,13 @@ use serde::{Deserialize, Serialize};
 
 use codec::{Decode, Encode};
 use frame_support::pallet_prelude::{ensure, DispatchError};
-use frame_support::weights::Weight;
 use sp_runtime::traits::CheckedAdd;
 use sp_runtime::{DispatchResult, RuntimeDebug};
 use sp_std::result;
 use sp_std::vec::Vec;
 use ternoa_common::traits::{LockableNFTs, NFTs};
+
+pub use default_weights::WeightInfo;
 
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
@@ -50,20 +51,14 @@ impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
     }
 }
 
-pub trait WeightInfo {
-    fn create() -> Weight;
-    fn create_with_series() -> Weight;
-    fn mutate() -> Weight;
-    fn seal() -> Weight;
-    fn transfer() -> Weight;
-    fn burn() -> Weight;
-    fn transfer_series() -> Weight;
-}
-
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-    use frame_support::pallet_prelude::*;
+    use frame_support::{
+        pallet_prelude::*,
+        traits::{Currency, OnUnbalanced, WithdrawReasons},
+        transactional,
+    };
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedAdd, StaticLookup};
     use sp_runtime::DispatchResult;
@@ -76,7 +71,19 @@ pub mod pallet {
         /// How NFTs are represented
         type NFTId: Parameter + Default + CheckedAdd + Copy + Member + From<u8>;
         type WeightInfo: WeightInfo;
+        /// Currency used to bill minting fees
+        type Currency: Currency<Self::AccountId>;
+        /// Host much does it cost to mint a NFT (extra fee on top of the tx fees)
+        type MintFee: Get<BalanceOf<Self>>;
+        /// What we do with additional fees
+        type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
     }
+
+    type BalanceOf<T> =
+        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+    pub(crate) type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
+        <T as frame_system::Config>::AccountId,
+    >>::NegativeImbalance;
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
@@ -91,8 +98,20 @@ pub mod pallet {
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
         #[pallet::weight(if details.series_id == NFTSeriesId::default() {T::WeightInfo::create()} else {T::WeightInfo::create_with_series()})]
+        // have to be transactional otherwise we could make people pay the mint
+        // even if the creation fails.
+        #[transactional]
         pub fn create(origin: OriginFor<T>, details: NFTDetails) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+
+            let imbalance = T::Currency::withdraw(
+                &who,
+                T::MintFee::get(),
+                WithdrawReasons::FEE,
+                frame_support::traits::ExistenceRequirement::KeepAlive,
+            )?;
+            T::FeesCollector::on_unbalanced(imbalance);
+
             let _id = <Self as NFTs>::create(&who, details)?;
 
             Ok(().into())

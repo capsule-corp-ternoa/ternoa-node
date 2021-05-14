@@ -7,7 +7,7 @@ use ternoa_common::traits;
 
 #[test]
 fn set_owner() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -18,7 +18,7 @@ fn set_owner() {
 
 #[test]
 fn seal() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -33,7 +33,7 @@ fn seal() {
 
 #[test]
 fn lock_and_unlock() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -47,7 +47,7 @@ fn lock_and_unlock() {
 
 #[test]
 fn lock_prevent_transfers() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -61,7 +61,7 @@ fn lock_prevent_transfers() {
 
 #[test]
 fn lock_prevent_set_owner() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -75,7 +75,7 @@ fn lock_prevent_set_owner() {
 
 #[test]
 fn lock_double_fail() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -89,7 +89,7 @@ fn lock_double_fail() {
 
 #[test]
 fn burn_nft() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let id =
             <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
 
@@ -101,7 +101,7 @@ fn burn_nft() {
 
 #[test]
 fn series_length() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
@@ -125,7 +125,7 @@ fn series_length() {
 
 #[test]
 fn series_id() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
@@ -156,7 +156,7 @@ fn series_id() {
 
 #[test]
 fn series_owner() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
@@ -177,7 +177,7 @@ fn series_owner() {
 
 #[test]
 fn set_series_owner() {
-    new_test_ext().execute_with(|| {
+    ExtBuilder::default().build().execute_with(|| {
         let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();

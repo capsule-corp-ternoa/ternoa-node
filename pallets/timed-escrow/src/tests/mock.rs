@@ -18,6 +18,7 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Balances: pallet_balances::{Module, Call, Storage, Event<T>},
         Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
         NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
@@ -47,11 +48,25 @@ impl frame_system::Config for Test {
     type BlockHashCount = BlockHashCount;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = ();
+    type AccountData = pallet_balances::AccountData<u64>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
     type SS58Prefix = ();
+}
+
+parameter_types! {
+    pub const ExistentialDeposit: u64 = 0;
+    pub const MaxLocks: u32 = 50;
+}
+impl pallet_balances::Config for Test {
+    type Balance = u64;
+    type DustRemoval = ();
+    type Event = Event;
+    type ExistentialDeposit = ExistentialDeposit;
+    type AccountStore = System;
+    type WeightInfo = ();
+    type MaxLocks = MaxLocks;
 }
 
 parameter_types! {
@@ -67,10 +82,17 @@ impl pallet_scheduler::Config for Test {
     type MaxScheduledPerBlock = ();
     type WeightInfo = ();
 }
+
+parameter_types! {
+    pub const MintFee: u64 = 0;
+}
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type NFTId = u8;
     type WeightInfo = ();
+    type Currency = Balances;
+    type MintFee = MintFee;
+    type FeesCollector = ();
 }
 impl Config for Test {
     type Event = Event;

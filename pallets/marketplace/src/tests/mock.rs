@@ -69,10 +69,16 @@ impl pallet_balances::Config for Test {
     type MaxLocks = MaxLocks;
 }
 
+parameter_types! {
+    pub const MintFee: u64 = 0;
+}
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type NFTId = u8;
     type WeightInfo = ();
+    type Currency = Balances;
+    type MintFee = MintFee;
+    type FeesCollector = ();
 }
 
 impl Config for Test {

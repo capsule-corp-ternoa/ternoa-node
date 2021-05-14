@@ -35,6 +35,7 @@ mod pallets_economy;
 mod pallets_governance;
 mod pallets_ternoa;
 mod pallets_time;
+mod pallets_treasury;
 mod pallets_validators;
 mod version;
 
@@ -71,6 +72,7 @@ construct_runtime!(
         Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
         Babe: pallet_babe::{Module, Call, Storage, Config, Inherent, ValidateUnsigned},
         Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        Bounties: pallet_bounties::{Module, Call, Storage, Event<T>},
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
         Historical: pallet_session_historical::{Module},
         ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
@@ -81,6 +83,7 @@ construct_runtime!(
         Staking: pallet_curveless_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
         Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Utility: pallet_utility::{Module, Call, Storage, Event},
@@ -346,6 +349,7 @@ impl_runtime_apis! {
 
             add_benchmark!(params, batches, pallet_babe, Babe);
             add_benchmark!(params, batches, pallet_balances, Balances);
+            add_benchmark!(params, batches, pallet_bounties, Bounties);
             add_benchmark!(params, batches, pallet_grandpa, Grandpa);
             add_benchmark!(params, batches, pallet_im_online, ImOnline);
             //add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
@@ -353,6 +357,7 @@ impl_runtime_apis! {
             //add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
             add_benchmark!(params, batches, pallet_curveless_staking, Staking);
             add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
+            add_benchmark!(params, batches, pallet_treasury, Treasury);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
 
             add_benchmark!(params, batches, ternoa_nfts, Nfts);
