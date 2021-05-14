@@ -1,5 +1,5 @@
 use super::mock::*;
-use crate::{Config, Data, Error, NFTData, NFTSeriesDetails};
+use crate::{Data, Error, NFTData, NFTDetails, NFTSeriesDetails, NFTSeriesId};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 
@@ -12,8 +12,7 @@ fn create_increment_id() {
             assert_eq!(NFTs::total(), 0);
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_eq!(NFTs::total(), 1);
         })
@@ -25,13 +24,13 @@ fn create_register_details() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let mock_details = MockNFTDetails::WithU8(42);
+            let details = NFTDetails::new(vec![42], 1);
+
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                mock_details.clone(),
-                Default::default(),
+                details.clone(),
             ));
-            assert_eq!(NFTs::data(0).details, mock_details);
+            assert_eq!(NFTs::data(0).details, details);
         })
 }
 
@@ -43,8 +42,7 @@ fn create_register_owner() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_eq!(NFTs::data(0).owner, ALICE);
         })
@@ -58,8 +56,7 @@ fn create_is_unsealed() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_eq!(NFTs::data(0).sealed, false);
         })
@@ -71,18 +68,19 @@ fn mutate_update_details() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let mock_details = MockNFTDetails::WithU8(42);
+            let details = NFTDetails::new(vec![42], 1);
+            let nft_id = 0;
+
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_ok!(NFTs::mutate(
                 RawOrigin::Signed(ALICE).into(),
-                0,
-                mock_details.clone(),
+                nft_id,
+                details.clone(),
             ));
-            assert_eq!(NFTs::data(0).details, mock_details);
+            assert_eq!(NFTs::data(0).details, details);
         })
 }
 
@@ -92,13 +90,15 @@ fn mutate_not_the_owner() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
+            let details = NFTDetails::new(vec![42], 1);
+            let nft_id = 0;
+
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_noop!(
-                NFTs::mutate(RawOrigin::Signed(BOB).into(), 0, MockNFTDetails::WithU8(42),),
+                NFTs::mutate(RawOrigin::Signed(BOB).into(), nft_id, details),
                 Error::<Test>::NotOwner
             );
         })
@@ -110,18 +110,16 @@ fn mutate_sealed() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
+            let details = NFTDetails::new(vec![42], 1);
+            let nft_id = 0;
+
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             Data::<Test>::mutate(0, |d| d.sealed = true);
             assert_noop!(
-                NFTs::mutate(
-                    RawOrigin::Signed(ALICE).into(),
-                    0,
-                    MockNFTDetails::WithU8(42),
-                ),
+                NFTs::mutate(RawOrigin::Signed(ALICE).into(), nft_id, details),
                 Error::<Test>::Sealed
             );
         })
@@ -135,8 +133,7 @@ fn transfer_update_owner() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_ok!(NFTs::transfer(RawOrigin::Signed(ALICE).into(), 0, BOB));
             assert_eq!(NFTs::data(0).owner, BOB);
@@ -151,8 +148,7 @@ fn transfer_not_the_owner() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_noop!(
                 NFTs::transfer(RawOrigin::Signed(BOB).into(), 0, BOB),
@@ -169,8 +165,7 @@ fn seal_mutate_seal_flag() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_ok!(NFTs::seal(RawOrigin::Signed(ALICE).into(), 0));
             assert_eq!(NFTs::data(0).sealed, true);
@@ -185,8 +180,7 @@ fn seal_not_the_owner() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_noop!(
                 NFTs::seal(RawOrigin::Signed(BOB).into(), 0),
@@ -203,8 +197,7 @@ fn seal_already_sealed() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
             assert_ok!(NFTs::seal(RawOrigin::Signed(ALICE).into(), 0));
             assert_noop!(
@@ -220,17 +213,14 @@ fn burn_owned_nft() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let series_id = <Test as Config>::NFTSeriesId::from(1u32);
+            let series_id = NFTSeriesId::from(1u32);
             let nft_id = NFTs::total();
 
             let before_details = NFTSeriesDetails::new(ALICE, sp_std::vec![nft_id]);
             let after_details = NFTSeriesDetails::new(ALICE, sp_std::vec![]);
+            let details = NFTDetails::new(vec![], series_id);
 
-            assert_ok!(NFTs::create(
-                RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                series_id,
-            ));
+            assert_ok!(NFTs::create(RawOrigin::Signed(ALICE).into(), details));
             assert_eq!(NFTs::series(series_id), Some(before_details));
 
             assert_ok!(NFTs::burn(RawOrigin::Signed(ALICE).into(), nft_id));
@@ -247,8 +237,7 @@ fn burn_not_owned_nft() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
+                NFTDetails::default(),
             ));
 
             let id = NFTs::total() - 1;
@@ -283,23 +272,23 @@ fn series_create() {
         .execute_with(|| {
             let alice = RawOrigin::Signed(ALICE);
 
-            let valid_id = <Test as Config>::NFTSeriesId::from(1u32);
-            let default_id = <Test as Config>::NFTSeriesId::default();
+            let valid_id = NFTSeriesId::from(1u32);
+            let default_id = NFTSeriesId::default();
 
             let details = NFTSeriesDetails::new(ALICE, sp_std::vec![1u32, 2u32]);
+            let valid_nft_details = NFTDetails::new(vec![], valid_id);
+            let default_nft_details = NFTDetails::new(vec![], default_id);
 
             // Alice can create an nft that belongs to the default series.
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                Default::default(),
-                default_id,
+                default_nft_details,
             ));
 
             // Alice can create a new nft series by creating an nft with a unused series id.
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                Default::default(),
-                valid_id,
+                valid_nft_details.clone(),
             ));
             assert_eq!(NFTs::series(valid_id).unwrap().owner, ALICE);
 
@@ -307,14 +296,13 @@ fn series_create() {
             // wants.
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                Default::default(),
-                valid_id,
+                valid_nft_details.clone(),
             ));
             assert_eq!(NFTs::series(valid_id), Some(details.clone()));
 
             // Bob cannot create an nft under a series that he does not own.
             assert_noop!(
-                NFTs::create(RawOrigin::Signed(BOB).into(), Default::default(), valid_id),
+                NFTs::create(RawOrigin::Signed(BOB).into(), valid_nft_details),
                 Error::<Test>::NotSeriesOwner
             );
 
@@ -335,16 +323,15 @@ fn transfer_series() {
         .execute_with(|| {
             let alice = RawOrigin::Signed(ALICE);
 
-            let valid_id = <Test as Config>::NFTSeriesId::from(1u32);
-            let invalid_id = <Test as Config>::NFTSeriesId::from(10u32);
-            let default_id = <Test as Config>::NFTSeriesId::default();
+            let valid_id = NFTSeriesId::from(1u32);
+            let invalid_id = NFTSeriesId::from(10u32);
+            let default_id = NFTSeriesId::default();
 
             let bob_details = NFTSeriesDetails::new(BOB, sp_std::vec![0u32]);
 
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                Default::default(),
-                valid_id,
+                NFTDetails::new(vec![], valid_id),
             ));
 
             // Since Alice owns the series she can transfer it to Bob.
@@ -377,11 +364,7 @@ fn transfer_series() {
 fn cannot_create_if_not_enough_funds_to_pay_for_fees() {
     ExtBuilder::default().build().execute_with(|| {
         assert_noop!(
-            NFTs::create(
-                RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
-                Default::default(),
-            ),
+            NFTs::create(RawOrigin::Signed(ALICE).into(), Default::default(),),
             pallet_balances::Error::<Test>::InsufficientBalance
         );
     })
@@ -395,7 +378,6 @@ fn fees_are_passed_to_collector() {
         .execute_with(|| {
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                MockNFTDetails::Empty,
                 Default::default(),
             ));
             assert_eq!(Balances::free_balance(&COLLECTOR), MintFee::get());

@@ -1,4 +1,5 @@
 use super::mock::*;
+use crate::types::NFTDetails;
 use crate::GenesisConfig;
 use frame_support::traits::GenesisBuild;
 
@@ -9,7 +10,7 @@ fn register_nfts() {
         .unwrap();
 
     GenesisConfig::<Test> {
-        nfts: vec![(ALICE, MockNFTDetails::WithU8(1), Default::default())],
+        nfts: vec![(ALICE, NFTDetails::new(vec![1], 0))],
         series: vec![],
     }
     .assimilate_storage(&mut t)
@@ -19,7 +20,7 @@ fn register_nfts() {
     ext.execute_with(|| {
         assert_eq!(NFTs::total(), 1);
         assert_eq!(NFTs::data(0).owner, ALICE);
-        assert_eq!(NFTs::data(0).details, MockNFTDetails::WithU8(1));
+        assert_eq!(NFTs::data(0).details, NFTDetails::new(vec![1], 0));
         assert_eq!(NFTs::data(0).locked, false);
         assert_eq!(NFTs::data(0).sealed, false);
     });

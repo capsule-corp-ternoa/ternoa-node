@@ -1,13 +1,12 @@
 use crate::{self as ternoa_marketplace, Config};
-use codec::{Decode, Encode};
 use frame_support::parameter_types;
 use frame_support::traits::GenesisBuild;
-use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
 };
+use ternoa_nfts::NFTDetails;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -76,9 +75,7 @@ parameter_types! {
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type NFTId = u8;
-    type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
-    type NFTSeriesId = u32;
     type Currency = Balances;
     type MintFee = MintFee;
     type FeesCollector = ();
@@ -90,17 +87,6 @@ impl Config for Test {
     type NFTs = NFTs;
     type WeightInfo = ();
 }
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum MockNFTDetails {
-    Empty,
-    WithU8(u8),
-}
-impl Default for MockNFTDetails {
-    fn default() -> Self {
-        Self::Empty
-    }
-}
 
 // Do not use the `0` account id since this would be the default value
 // for our account id. This would mess with some tests.
@@ -108,7 +94,7 @@ pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 
 pub struct ExtBuilder {
-    nfts: Vec<(u64, MockNFTDetails, u32)>,
+    nfts: Vec<(u64, NFTDetails)>,
     series: Vec<(u64, u32)>,
     endowed_accounts: Vec<(u64, u64)>,
 }
@@ -125,8 +111,7 @@ impl Default for ExtBuilder {
 
 impl ExtBuilder {
     pub fn one_nft_for_alice(mut self) -> Self {
-        self.nfts
-            .push((ALICE, Default::default(), Default::default()));
+        self.nfts.push((ALICE, NFTDetails::default()));
         self
     }
 

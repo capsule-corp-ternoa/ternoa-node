@@ -89,9 +89,7 @@ parameter_types! {
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type NFTId = u8;
-    type NFTDetails = ();
     type WeightInfo = ();
-    type NFTSeriesId = u32;
     type Currency = Balances;
     type MintFee = MintFee;
     type FeesCollector = ();
@@ -120,7 +118,6 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 pub fn create_one_capsule() {
     assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
         &ALICE,
-        (),
         Default::default(),
     ));
 }

@@ -1,7 +1,5 @@
 use crate::{self as ternoa_nfts, Config, NegativeImbalanceOf};
-use codec::{Decode, Encode};
 use frame_support::{parameter_types, traits::Currency};
-use serde::{Deserialize, Serialize};
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
@@ -67,26 +65,13 @@ impl pallet_balances::Config for Test {
     type WeightInfo = ();
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum MockNFTDetails {
-    Empty,
-    WithU8(u8),
-}
-impl Default for MockNFTDetails {
-    fn default() -> Self {
-        Self::Empty
-    }
-}
 parameter_types! {
     pub const MintFee: u64 = 10;
 }
 impl Config for Test {
     type Event = Event;
     type NFTId = u32;
-    type NFTDetails = MockNFTDetails;
     type WeightInfo = ();
-    type NFTSeriesId = u32;
     type Currency = Balances;
     type MintFee = MintFee;
     type FeesCollector = MockFeeCollector;
