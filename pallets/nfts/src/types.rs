@@ -7,23 +7,6 @@ use sp_std::vec::Vec;
 /// How the NFT series id is encoded.
 pub type NFTSeriesId = u32;
 
-/// TODO!
-#[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, Debug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum Protocol {
-    Safe = 1,
-    DDay = 2,
-    Consent = 3,
-    Death = 4,
-    Countdown = 5,
-}
-
-impl Default for Protocol {
-    fn default() -> Self {
-        Protocol::Safe
-    }
-}
-
 /// Data related to NFTs on the Ternoa Chain.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -34,22 +17,14 @@ pub struct NFTDetails {
     pub series_id: NFTSeriesId,
     /// TODO!
     pub is_capsule: bool,
-    /// TODO!
-    pub protocol: Option<Protocol>,
 }
 
 impl NFTDetails {
-    pub fn new(
-        offchain_uri: Vec<u8>,
-        series_id: NFTSeriesId,
-        is_capsule: bool,
-        protocol: Option<Protocol>,
-    ) -> Self {
+    pub fn new(offchain_uri: Vec<u8>, series_id: NFTSeriesId, is_capsule: bool) -> Self {
         Self {
             offchain_uri,
             is_capsule,
             series_id,
-            protocol,
         }
     }
 

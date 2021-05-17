@@ -1,6 +1,6 @@
 use super::mock::*;
 use crate::types::NFTDetails;
-use crate::{Error, Protocol};
+use crate::Error;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use ternoa_common::traits;
@@ -108,11 +108,9 @@ fn series_length() {
 
         let count = 3;
         for _ in 0..count {
-            let _ = <NFTs as traits::NFTs>::create(
-                &ALICE,
-                NFTDetails::new(vec![], valid_id, false, None),
-            )
-            .expect("creation failed");
+            let _ =
+                <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
+                    .expect("creation failed");
         }
 
         // Existing ids should return valid length values.
@@ -133,14 +131,12 @@ fn series_id() {
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
         let valid_nft_id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false, None))
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
                 .expect("creation failed");
         let invalid_nft_id = <NFTs as traits::NFTs>::NFTId::from(100u32);
-        let default_nft_id = <NFTs as traits::NFTs>::create(
-            &ALICE,
-            NFTDetails::new(vec![], default_id, false, None),
-        )
-        .expect("creation failed");
+        let default_nft_id =
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], default_id, false))
+                .expect("creation failed");
 
         // Existing nft ids should return valid non default series ids.
         assert_eq!(
@@ -166,9 +162,8 @@ fn series_owner() {
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let _ =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false, None))
-                .expect("creation failed");
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
+            .expect("creation failed");
 
         // Existing ids should return the creator of the series as owner.
         assert_eq!(<NFTs as traits::NFTs>::series_owner(valid_id), Some(ALICE));
@@ -188,9 +183,8 @@ fn set_series_owner() {
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let _ =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false, None))
-                .expect("creation failed");
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
+            .expect("creation failed");
 
         // It is possible to change owners of existing series.
         assert_ok!(<NFTs as traits::NFTs>::set_series_owner(valid_id, &BOB));
@@ -214,39 +208,17 @@ fn create_capsule() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            // Setting up the stage
-            const SERIES_ID: u32 = 1;
-            const PROTOCOL: Option<Protocol> = Some(Protocol::Safe);
-
-            let _ = <NFTs as traits::NFTs>::create(
-                &BOB,
-                NFTDetails::new(vec![], SERIES_ID, false, None),
-            )
-            .expect("creation failed");
-
             // Valid values
-            let details = NFTDetails::new(vec![], 0, true, PROTOCOL);
+            let details = NFTDetails::new(vec![], 0, true);
             let id = <NFTs as traits::NFTs>::create(&ALICE, details).expect("creation failed");
             assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), true);
-            assert_eq!(<NFTs as traits::NFTs>::protocol(id), PROTOCOL);
 
             // The default values
             let id = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default())
                 .expect("creation failed");
             assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), false);
-            assert_eq!(<NFTs as traits::NFTs>::protocol(id), None);
 
-            // If for any reason the create function fails, Alice should not lose any money.
-            let funds: u64 = Balances::free_balance(ALICE);
-            assert!(
-                <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], 0, true, None))
-                    .is_err()
-            );
-            assert!(<NFTs as traits::NFTs>::create(
-                &ALICE,
-                NFTDetails::new(vec![], SERIES_ID, true, PROTOCOL)
-            )
-            .is_err());
-            assert_eq!(Balances::free_balance(ALICE), funds);
+            // Unknown nft id value
+            assert_eq!(<NFTs as traits::NFTs>::is_capsule(23), false);
         })
 }

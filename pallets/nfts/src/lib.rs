@@ -11,8 +11,8 @@ pub use pallet::*;
 pub use types::*;
 
 use frame_support::pallet_prelude::{ensure, DispatchError};
-use frame_support::traits::{Currency, ExistenceRequirement, Get, OnUnbalanced, WithdrawReasons};
-use sp_runtime::traits::{CheckedAdd, Saturating};
+use frame_support::traits::Get;
+use sp_runtime::traits::CheckedAdd;
 use sp_runtime::DispatchResult;
 use sp_std::result;
 use sp_std::vec::Vec;
@@ -23,6 +23,7 @@ pub use default_weights::WeightInfo;
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
+    use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
     use frame_support::{pallet_prelude::*, transactional};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedAdd, StaticLookup};
@@ -68,6 +69,15 @@ pub mod pallet {
         #[transactional]
         pub fn create(origin: OriginFor<T>, details: NFTDetails) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+
+            let imbalance = T::Currency::withdraw(
+                &who,
+                T::MintFee::get(),
+                WithdrawReasons::FEE,
+                frame_support::traits::ExistenceRequirement::KeepAlive,
+            )?;
+            T::FeesCollector::on_unbalanced(imbalance);
+
             let _id = <Self as NFTs>::create(&who, details)?;
 
             Ok(().into())
@@ -217,10 +227,6 @@ pub mod pallet {
         NFTSeriesLocked,
         /// No series was found with that given id.
         NFTSeriesNotFound,
-        /// TODO!
-        ProtocolNotEntered,
-        /// TODO!
-        InsufficientFunds,
     }
 
     /// The number of NFTs managed by this pallet
@@ -286,27 +292,17 @@ impl<T: Config> NFTs for Pallet<T> {
     type NFTDetails = NFTDetails;
     type NFTId = T::NFTId;
     type NFTSeriesId = NFTSeriesId;
-    type Protocol = Protocol;
 
     fn create(
         owner: &Self::AccountId,
         details: Self::NFTDetails,
     ) -> result::Result<Self::NFTId, DispatchError> {
-        // Check for capsule prerequisites.
-        if details.is_capsule {
-            Self::check_capsule_prerequisites(owner, details.protocol.clone())?;
-        }
-
         // Check for series prerequisites.
         let series_id = details.series_id;
         let mut nft_series = Self::get_nft_series_data(owner, series_id)?;
 
         // Get current and next nft id.
         let (nft_id, next_nft_id) = Self::get_next_nft_id()?;
-
-        if details.is_capsule {
-            Self::pay_fees(owner)?;
-        }
 
         if details.unique_series() {
             nft_series.push(nft_id);
@@ -418,10 +414,6 @@ impl<T: Config> NFTs for Pallet<T> {
     fn is_capsule(id: Self::NFTId) -> bool {
         Data::<T>::get(id).details.is_capsule
     }
-
-    fn protocol(id: Self::NFTId) -> Option<Self::Protocol> {
-        Data::<T>::get(id).details.protocol
-    }
 }
 
 impl<T: Config> LockableNFTs for Pallet<T> {
@@ -446,23 +438,6 @@ impl<T: Config> LockableNFTs for Pallet<T> {
 }
 
 impl<T: Config> Pallet<T> {
-    fn check_capsule_prerequisites(
-        owner: &T::AccountId,
-        protocol: Option<Protocol>,
-    ) -> Result<(), Error<T>> {
-        ensure!(protocol.is_some(), Error::<T>::ProtocolNotEntered);
-
-        let free_balance = T::Currency::free_balance(owner);
-        let fee = <T as pallet::Config>::MintFee::get();
-        let new_balance = free_balance.saturating_sub(fee);
-
-        // Owner needs to have enough money on his account
-        T::Currency::ensure_can_withdraw(owner, fee, WithdrawReasons::FEE, new_balance)
-            .map_err(|_| Error::<T>::InsufficientFunds)?;
-
-        Ok(())
-    }
-
     fn get_nft_series_data(
         owner: &T::AccountId,
         series_id: NFTSeriesId,
@@ -485,18 +460,5 @@ impl<T: Config> Pallet<T> {
             .ok_or(Error::<T>::NFTIdOverflow)?;
 
         Ok((nft_id, next_id))
-    }
-
-    fn pay_fees(owner: &T::AccountId) -> Result<(), Error<T>> {
-        let imbalance = T::Currency::withdraw(
-            owner,
-            T::MintFee::get(),
-            WithdrawReasons::FEE,
-            ExistenceRequirement::KeepAlive,
-        )
-        .map_err(|_| Error::<T>::InsufficientFunds)?;
-
-        T::FeesCollector::on_unbalanced(imbalance);
-        Ok(())
     }
 }

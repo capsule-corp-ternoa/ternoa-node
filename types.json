@@ -4,15 +4,6 @@
     "NFTId": "u32",
     "NFTIdOf": "NFTId",
     "NFTSeriesId": "u32",
-    "Protocol": {
-        "_enum": [
-            "Safe",
-            "DDay",
-            "Consent",
-            "Death",
-            "Countdown"
-        ]
-    },
     "NFTData": {
         "owner": "AccountId",
         "details": "NFTDetails",
@@ -22,8 +13,7 @@
     "NFTDetails": {
         "offchain_uri": "Vec<u8>",
         "series_id": "NFTSeriesId",
-        "is_capsule": "bool",
-        "protocol": "Option<Protocol>"
+        "is_capsule": "bool"
     },
     "LookupSource": "AccountId",
     "NFTSeriesDetails": {

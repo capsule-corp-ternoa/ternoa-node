@@ -17,9 +17,6 @@ pub trait NFTs {
     /// How the NFT series id is represented internally.
     type NFTSeriesId: Parameter + Copy + Default;
 
-    /// TODO!
-    type Protocol: Parameter + Copy + Default;
-
     /// Create a new NFT with the specified details and return its ID or an error.
     fn create(
         owner: &Self::AccountId,
@@ -64,9 +61,6 @@ pub trait NFTs {
 
     /// TODO!
     fn is_capsule(id: Self::NFTId) -> bool;
-
-    /// TODO!
-    fn protocol(id: Self::NFTId) -> Option<Self::Protocol>;
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.
