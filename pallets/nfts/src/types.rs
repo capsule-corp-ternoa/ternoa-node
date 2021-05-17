@@ -31,9 +31,9 @@ pub struct NFTDetails {
     /// ASCII encoded URI to fetch additional metadata
     pub offchain_uri: Vec<u8>,
     /// TODO!
-    pub is_capsule: bool,
-    /// TODO!
     pub series_id: NFTSeriesId,
+    /// TODO!
+    pub is_capsule: bool,
     /// TODO!
     pub protocol: Option<Protocol>,
 }
@@ -41,14 +41,14 @@ pub struct NFTDetails {
 impl NFTDetails {
     pub fn new(
         offchain_uri: Vec<u8>,
-        is_capsule: bool,
         series_id: NFTSeriesId,
+        is_capsule: bool,
         protocol: Option<Protocol>,
     ) -> Self {
         Self {
             offchain_uri,
-            series_id,
             is_capsule,
+            series_id,
             protocol,
         }
     }
