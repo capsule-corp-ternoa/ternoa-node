@@ -361,38 +361,12 @@ fn transfer_series() {
 }
 
 #[test]
-fn cannot_create_if_not_enough_funds_to_pay_for_fees() {
-    ExtBuilder::default().build().execute_with(|| {
-        assert_noop!(
-            NFTs::create(
-                RawOrigin::Signed(ALICE).into(),
-                NFTDetails::new(vec![], 0, true, Some(Protocol::Safe))
-            ),
-            Error::<Test>::InsufficientFunds
-        );
-    })
-}
-
-#[test]
-fn fees_are_passed_to_collector() {
-    ExtBuilder::default()
-        .one_hundred_for_everyone()
-        .build()
-        .execute_with(|| {
-            assert_ok!(NFTs::create(
-                RawOrigin::Signed(ALICE).into(),
-                NFTDetails::new(vec![], 0, true, Some(Protocol::Safe)),
-            ));
-            assert_eq!(Balances::free_balance(&COLLECTOR), MintFee::get());
-        })
-}
-
-#[test]
 fn mint_fees() {
     ExtBuilder::default()
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
+            // Setting up the stage
             const INITIAL_FUNDS: u64 = 100u64;
             const FEE: u64 = MintFee::get();
             const NEW_FUNDS: u64 = INITIAL_FUNDS - FEE;
@@ -401,24 +375,24 @@ fn mint_fees() {
             let alice: Origin = RawOrigin::Signed(ALICE).into();
             let bob: Origin = RawOrigin::Signed(BOB).into();
 
-            // Alice will not pay additional mint fees if she wants to create non-capsule like nfts.
+            const SERIES_ID: u32 = 1u32;
+            assert_ok!(NFTs::create(
+                bob.clone(),
+                NFTDetails::new(vec![], SERIES_ID, false, None)
+            ));
+
+            // Alice will not pay additional mint fees if she wants to create non-capsule nfts.
             assert_ok!(NFTs::create(alice.clone(), NFTDetails::default()));
             assert_eq!(Balances::free_balance(&COLLECTOR), 0u64);
             assert_eq!(Balances::free_balance(&ALICE), INITIAL_FUNDS);
 
-            // Alice will pay additional mint fees if she wants to create capsule like nfts.
+            // Alice will pay additional mint fees if she wants to create capsule nfts.
             assert_ok!(NFTs::create(
                 alice.clone(),
                 NFTDetails::new(vec![], 0, true, Some(PROTOCOL)),
             ));
             assert_eq!(Balances::free_balance(&COLLECTOR), FEE);
             assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS);
-
-            let series_id = 1u32;
-            assert_ok!(NFTs::create(
-                bob.clone(),
-                NFTDetails::new(vec![], series_id, false, None)
-            ));
 
             // Alice will not pay any fees if the create function fails.
             assert_noop!(
@@ -428,10 +402,44 @@ fn mint_fees() {
             assert_noop!(
                 NFTs::create(
                     alice.clone(),
-                    NFTDetails::new(vec![], series_id, true, Some(PROTOCOL))
+                    NFTDetails::new(vec![], SERIES_ID, true, Some(PROTOCOL))
                 ),
                 Error::<Test>::NotSeriesOwner
             );
             assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS);
+        })
+}
+
+#[test]
+fn create_capsule() {
+    ExtBuilder::default()
+        .one_hundred_for_everyone()
+        .build()
+        .execute_with(|| {
+            // Setting up the stage
+            const PROTOCOL: Protocol = Protocol::Safe;
+            let alice: Origin = RawOrigin::Signed(ALICE).into();
+
+            assert_ok!(NFTs::create(
+                alice.clone(),
+                NFTDetails::new(vec![], 0, true, Some(PROTOCOL))
+            ));
+
+            // Alice cannot create a capsule if she didn't chose a protocol.
+            assert_noop!(
+                NFTs::create(alice.clone(), NFTDetails::new(vec![], 0, true, None)),
+                Error::<Test>::ProtocolNotEntered
+            );
+
+            // Alice cannot create a capsule if she doesn't have enough money.
+            let funds = Balances::free_balance(ALICE);
+            assert_ok!(Balances::transfer(alice.clone(), BOB, funds));
+            assert_noop!(
+                NFTs::create(
+                    alice.clone(),
+                    NFTDetails::new(vec![], 0, true, Some(PROTOCOL))
+                ),
+                Error::<Test>::InsufficientFunds
+            );
         })
 }
