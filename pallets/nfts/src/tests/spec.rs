@@ -395,17 +395,12 @@ fn mint_fees() {
             assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS);
 
             // Alice will not pay any fees if the create function fails.
-            assert_noop!(
-                NFTs::create(alice.clone(), NFTDetails::new(vec![], 0, true, None)),
-                Error::<Test>::ProtocolNotEntered
-            );
-            assert_noop!(
-                NFTs::create(
-                    alice.clone(),
-                    NFTDetails::new(vec![], SERIES_ID, true, Some(PROTOCOL))
-                ),
-                Error::<Test>::NotSeriesOwner
-            );
+            assert!(NFTs::create(alice.clone(), NFTDetails::new(vec![], 0, true, None)).is_err());
+            assert!(NFTs::create(
+                alice.clone(),
+                NFTDetails::new(vec![], SERIES_ID, true, Some(PROTOCOL))
+            )
+            .is_err());
             assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS);
         })
 }
