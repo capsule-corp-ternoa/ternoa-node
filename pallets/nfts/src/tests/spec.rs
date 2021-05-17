@@ -386,7 +386,7 @@ fn mint_fees() {
             assert_eq!(Balances::free_balance(&COLLECTOR), 0u64);
             assert_eq!(Balances::free_balance(&ALICE), INITIAL_FUNDS);
 
-            // Alice will pay additional mint fees if she wants to create capsule nfts.
+            // Alice will pay additional mint fees if she wants to create a capsule.
             assert_ok!(NFTs::create(
                 alice.clone(),
                 NFTDetails::new(vec![], 0, true, Some(PROTOCOL)),

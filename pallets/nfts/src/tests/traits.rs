@@ -1,6 +1,6 @@
 use super::mock::*;
 use crate::types::NFTDetails;
-use crate::Error;
+use crate::{Error, Protocol};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use ternoa_common::traits;
@@ -206,4 +206,47 @@ fn set_series_owner() {
             Error::<Test>::NFTSeriesLocked,
         );
     })
+}
+
+#[test]
+fn create_capsule() {
+    ExtBuilder::default()
+        .one_hundred_for_everyone()
+        .build()
+        .execute_with(|| {
+            // Setting up the stage
+            const SERIES_ID: u32 = 1;
+            const PROTOCOL: Option<Protocol> = Some(Protocol::Safe);
+
+            let _ = <NFTs as traits::NFTs>::create(
+                &BOB,
+                NFTDetails::new(vec![], SERIES_ID, false, None),
+            )
+            .expect("creation failed");
+
+            // Valid values
+            let details = NFTDetails::new(vec![], 0, true, PROTOCOL);
+            let id = <NFTs as traits::NFTs>::create(&ALICE, details).expect("creation failed");
+            assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), true);
+            assert_eq!(<NFTs as traits::NFTs>::protocol(id), PROTOCOL);
+
+            // The default values
+            let id = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default())
+                .expect("creation failed");
+            assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), false);
+            assert_eq!(<NFTs as traits::NFTs>::protocol(id), None);
+
+            // If for any reason the create function fails, Alice should not lose any money.
+            let funds: u64 = Balances::free_balance(ALICE);
+            assert!(
+                <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], 0, true, None))
+                    .is_err()
+            );
+            assert!(<NFTs as traits::NFTs>::create(
+                &ALICE,
+                NFTDetails::new(vec![], SERIES_ID, true, PROTOCOL)
+            )
+            .is_err());
+            assert_eq!(Balances::free_balance(ALICE), funds);
+        })
 }

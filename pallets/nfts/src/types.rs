@@ -8,7 +8,7 @@ use sp_std::vec::Vec;
 pub type NFTSeriesId = u32;
 
 /// TODO!
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
+#[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum Protocol {
     Safe = 1,

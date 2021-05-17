@@ -286,6 +286,7 @@ impl<T: Config> NFTs for Pallet<T> {
     type NFTDetails = NFTDetails;
     type NFTId = T::NFTId;
     type NFTSeriesId = NFTSeriesId;
+    type Protocol = Protocol;
 
     fn create(
         owner: &Self::AccountId,
@@ -412,6 +413,14 @@ impl<T: Config> NFTs for Pallet<T> {
         });
 
         Ok(())
+    }
+
+    fn is_capsule(id: Self::NFTId) -> bool {
+        Data::<T>::get(id).details.is_capsule
+    }
+
+    fn protocol(id: Self::NFTId) -> Option<Self::Protocol> {
+        Data::<T>::get(id).details.protocol
     }
 }
 
