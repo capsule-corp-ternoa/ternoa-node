@@ -21,7 +21,7 @@ pallet-authorship = { git = "https://github.com/paritytech/substrate/", rev = "7
 pallet-babe = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-balances = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-bounties = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
-pallet-curveless-staking = { version = "0.1.0", default-features = false }
+pallet-curveless-staking = { git = "https://github.com/ETeissonniere/pallet-curveless-staking", branch = "main", default-features = false }
 pallet-grandpa = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-im-online = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-offences = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
@@ -40,7 +40,7 @@ serde = { version = "1.0.125", optional = true }
 sp-api = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 sp-block-builder = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
-sp-consensus-babe = { version = "0.9.0", default-features = false }
+sp-consensus-babe = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 sp-core = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 sp-inherents = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 sp-offchain = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
