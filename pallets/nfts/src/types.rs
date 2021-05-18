@@ -11,11 +11,11 @@ pub type NFTSeriesId = u32;
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct NFTDetails {
-    /// ASCII encoded URI to fetch additional metadata
+    /// ASCII encoded URI to fetch additional metadata.
     pub offchain_uri: Vec<u8>,
-    /// TODO!
+    /// The series id that this nft belongs to.
     pub series_id: NFTSeriesId,
-    /// TODO!
+    /// Capsule flag.
     pub is_capsule: bool,
 }
 
@@ -28,6 +28,7 @@ impl NFTDetails {
         }
     }
 
+    /// Checks if the nft is a part of an unique series.
     pub fn unique_series(&self) -> bool {
         self.series_id != NFTSeriesId::default()
     }
