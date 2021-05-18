@@ -18,9 +18,9 @@ sp-std = { default-features = false, git = "https://github.com/paritytech/substr
 ternoa-common = { default-features = false, path = "../../common" }
 
 [dev-dependencies]
-pallet-balances = "3.0.0"
-sp-core = "3.0.0"
-sp-io = "3.0.0"
+pallet-balances = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
+sp-core = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
+sp-io = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
 ternoa-nfts = { path = "../nfts" }
 
 [features]
