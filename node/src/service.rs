@@ -7,7 +7,7 @@ use sc_consensus_babe;
 use sc_finality_grandpa::{self, FinalityProofProvider as GrandpaFinalityProofProvider};
 use sc_network::{Event, NetworkService};
 use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager};
-use sc_telemetry::TelemetryConnectionNotifier;
+use sc_telemetry::{TelemetryConnectionNotifier, TelemetrySpan};
 use sp_inherents::InherentDataProviders;
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
@@ -219,6 +219,9 @@ pub fn new_full_base(
     let enable_grandpa = !config.disable_grandpa;
     let prometheus_registry = config.prometheus_registry().cloned();
 
+    let telemetry_span = TelemetrySpan::new();
+    let _telemetry_span_entered = telemetry_span.enter();
+
     let (_rpc_handlers, telemetry_connection_notifier) =
         sc_service::spawn_tasks(sc_service::SpawnTasksParams {
             config,
@@ -233,6 +236,7 @@ pub fn new_full_base(
             remote_blockchain: None,
             network_status_sinks: network_status_sinks.clone(),
             system_rpc_tx,
+            telemetry_span: Some(telemetry_span.clone()),
         })?;
 
     let (block_import, grandpa_link, babe_link) = import_setup;
@@ -312,7 +316,7 @@ pub fn new_full_base(
         name: Some(name),
         observer_enabled: false,
         keystore,
-        is_authority: role.is_network_authority(),
+        is_authority: role.is_authority(),
     };
 
     if enable_grandpa {
@@ -447,6 +451,9 @@ pub fn new_light_base(
 
     let rpc_extensions = rpc::create_light(light_deps);
 
+    let telemetry_span = TelemetrySpan::new();
+    let _telemetry_span_entered = telemetry_span.enter();
+
     let (rpc_handlers, telemetry_connection_notifier) =
         sc_service::spawn_tasks(sc_service::SpawnTasksParams {
             on_demand: Some(on_demand),
@@ -461,6 +468,7 @@ pub fn new_light_base(
             system_rpc_tx,
             network: network.clone(),
             task_manager: &mut task_manager,
+            telemetry_span: Some(telemetry_span.clone()),
         })?;
 
     Ok((
