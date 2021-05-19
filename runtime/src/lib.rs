@@ -71,7 +71,7 @@ construct_runtime!(
         AuthorityDiscovery: pallet_authority_discovery::{Module, Call, Config},
         Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
         Babe: pallet_babe::{Module, Call, Storage, Config, Inherent, ValidateUnsigned},
-        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        Balances: pallet_balances::<Instance0>::{Module, Call, Storage, Config<T>, Event<T>},
         Bounties: pallet_bounties::{Module, Call, Storage, Event<T>},
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
         Historical: pallet_session_historical::{Module},
@@ -84,10 +84,13 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
-        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Utility: pallet_utility::{Module, Call, Storage, Event},
 
+        TiimeAccountStore: ternoa_account_store::{Module, Storage},
+        TiimeBalances: pallet_balances::<Instance1>::{Module, Call, Storage, Config<T>, Event<T>},
+
+        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
         Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
         Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
@@ -348,7 +351,9 @@ impl_runtime_apis! {
             let params = (&config, &whitelist);
 
             add_benchmark!(params, batches, pallet_babe, Babe);
-            add_benchmark!(params, batches, pallet_balances, Balances);
+            // There is a bug in the substrate implementation, pallet_balances
+            // can only be benchmarked if it is instantiated only once in the runtime.
+            //add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_bounties, Bounties);
             add_benchmark!(params, batches, pallet_grandpa, Grandpa);
             add_benchmark!(params, batches, pallet_im_online, ImOnline);

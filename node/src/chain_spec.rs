@@ -107,13 +107,14 @@ pub fn testnet_genesis(
             code: wasm_binary_unwrap().to_vec(),
             changes_trie_config: Default::default(),
         }),
-        pallet_balances: Some(BalancesConfig {
+        pallet_balances_Instance0: Some(BalancesConfig {
             balances: endowed_accounts
                 .iter()
                 .cloned()
                 .map(|k| (k, ENDOWMENT))
                 .collect(),
         }),
+        pallet_balances_Instance1: Some(Default::default()),
 
         // Consensus
         pallet_session: Some(SessionConfig {

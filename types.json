@@ -1,4 +1,5 @@
 {
+    "AccountDataOf": "AccountData",
     "Address": "AccountId",
     "NFTId": "u32",
     "NFTIdOf": "NFTId",
