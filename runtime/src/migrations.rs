@@ -25,20 +25,14 @@ impl OnRuntimeUpgrade for SudoToTechComm {
         members_storage_key.extend_from_slice(&Twox128::hash(b"Instance0Membership"));
         members_storage_key.extend_from_slice(&Twox128::hash(b"Members"));
 
-        let mut prime_storage_key = Vec::new();
-        prime_storage_key.extend_from_slice(&Twox128::hash(b"Instance0Membership"));
-        prime_storage_key.extend_from_slice(&Twox128::hash(b"Prime"));
-
         if let Some(sudo_key) = unhashed::get::<AccountId>(&sudo_key_storage_key) {
             // Configure the tech membership with the old sudo key
             let mut members = Vec::new();
             members.push(sudo_key.clone());
             unhashed::put(&members_storage_key, &members);
-            unhashed::put(&prime_storage_key, &sudo_key);
 
             // Let the tech committee pallet know about the membership changes
             <<Runtime as pallet_membership::Config<TechnicalCollectiveMembers>>::MembershipInitialized as InitializeMembers<AccountId>>::initialize_members(&members);
-            <<Runtime as pallet_membership::Config<TechnicalCollectiveMembers>>::MembershipChanged as ChangeMembers<AccountId>>::set_prime(Some(sudo_key));
         }
 
         // Clean sudo storage
