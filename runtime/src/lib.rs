@@ -30,6 +30,7 @@ use sp_version::RuntimeVersion;
 use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 
 pub mod constants;
+mod migrations;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
@@ -76,13 +77,15 @@ construct_runtime!(
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
         Historical: pallet_session_historical::{Module},
         ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
+        Mandate: pallet_mandate::{Module, Call, Event},
         Offences: pallet_offences::{Module, Call, Storage, Event},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
         Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
         Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
         Staking: pallet_curveless_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
-        Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        TechnicalCommittee: pallet_collective::<Instance0>::{Module, Call, Storage, Origin<T>, Event<T>, Config<T>},
+        TechnicalMembership: pallet_membership::<Instance0>::{Module, Call, Storage, Event<T>, Config<T>},
         Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Utility: pallet_utility::{Module, Call, Storage, Event},
@@ -134,6 +137,7 @@ pub type Executive = frame_executive::Executive<
     frame_system::ChainContext<Runtime>,
     Runtime,
     AllModules,
+    migrations::SudoToTechComm,
 >;
 
 impl_runtime_apis! {
@@ -357,6 +361,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_bounties, Bounties);
             add_benchmark!(params, batches, pallet_grandpa, Grandpa);
             add_benchmark!(params, batches, pallet_im_online, ImOnline);
+            add_benchmark!(params, batches, pallet_collective, TechnicalCommittee);
             //add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
             add_benchmark!(params, batches, pallet_scheduler, Scheduler);
             //add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
