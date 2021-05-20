@@ -30,7 +30,6 @@ use sp_version::RuntimeVersion;
 use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 
 pub mod constants;
-mod migrations;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
@@ -137,7 +136,6 @@ pub type Executive = frame_executive::Executive<
     frame_system::ChainContext<Runtime>,
     Runtime,
     AllModules,
-    migrations::SudoToTechComm,
 >;
 
 impl_runtime_apis! {
