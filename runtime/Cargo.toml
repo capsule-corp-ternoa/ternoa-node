@@ -33,7 +33,6 @@ pallet-randomness-collective-flip = { version = "3.0.0", default-features = fals
 pallet-scheduler = { version = "3.0.0", default-features = false }
 pallet-session = { version = "3.0.0", features = ["historical"], default-features = false }
 #pallet-session-benchmarking = { version = "3.0.0",  default-features = false, optional = true }
-pallet-sudo = { version = "3.0.0", default-features = false }
 pallet-timestamp = { version = "3.0.0", default-features = false }
 pallet-transaction-payment = { version = "3.0.0", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { version = "3.0.0", default-features = false }
@@ -86,7 +85,6 @@ std = [
 	"pallet-randomness-collective-flip/std",
 	"pallet-scheduler/std",
 	"pallet-session/std",
-	"pallet-sudo/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",

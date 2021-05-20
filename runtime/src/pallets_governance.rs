@@ -3,11 +3,6 @@ use frame_support::parameter_types;
 use sp_core::u32_trait::{_1, _2};
 use ternoa_primitives::{AccountId, BlockNumber};
 
-impl pallet_sudo::Config for Runtime {
-    type Event = Event;
-    type Call = Call;
-}
-
 // Shared parameters with all collectives / committees
 parameter_types! {
     pub const MotionDuration: BlockNumber = 2 * DAYS;
