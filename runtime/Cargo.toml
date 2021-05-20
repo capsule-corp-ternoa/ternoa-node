@@ -25,6 +25,7 @@ pallet-collective = { version = "3.0.0", default-features = false }
 pallet-curveless-staking = { version = "0.1.0", default-features = false }
 pallet-grandpa = { version = "3.0.0", default-features = false }
 pallet-im-online = { version = "3.0.0", default-features = false }
+pallet-mandate = { version = "2.0.8", default-features = false }
 pallet-membership = { version = "3.0.0", default-features = false }
 pallet-offences = { version = "3.0.0", default-features = false }
 #pallet-offences-benchmarking = { version = "3.0.0", default-features = false, optional = true }
@@ -79,6 +80,7 @@ std = [
 	"pallet-curveless-staking/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
+	"pallet-mandate/std",
 	"pallet-membership/std",
 	"pallet-offences/std",
 	"pallet-randomness-collective-flip/std",

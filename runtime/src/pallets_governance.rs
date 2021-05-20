@@ -42,3 +42,9 @@ impl pallet_membership::Config<TechnicalCollectiveMembers> for Runtime {
     type MembershipInitialized = TechnicalCommittee;
     type MembershipChanged = TechnicalCommittee;
 }
+
+impl pallet_mandate::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type ExternalOrigin = MoreThanHalfOfTheTechnicalCollective;
+}

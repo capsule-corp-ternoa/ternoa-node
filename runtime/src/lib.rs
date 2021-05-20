@@ -76,6 +76,7 @@ construct_runtime!(
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
         Historical: pallet_session_historical::{Module},
         ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
+        Mandate: pallet_mandate::{Module, Call, Event},
         Offences: pallet_offences::{Module, Call, Storage, Event},
         RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
         Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
