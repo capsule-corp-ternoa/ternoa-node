@@ -4,7 +4,7 @@ use crate::{
 use frame_support::{
     debug,
     storage::unhashed,
-    traits::{ChangeMembers, InitializeMembers, OnRuntimeUpgrade},
+    traits::{InitializeMembers, OnRuntimeUpgrade},
     weights::Weight,
     StorageHasher, Twox128,
 };
