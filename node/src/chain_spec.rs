@@ -14,7 +14,7 @@ use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::{
     constants::currency::UNIT, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-    StakerStatus, StakingConfig, SudoConfig, SystemConfig,
+    StakerStatus, StakingConfig, SudoConfig, SystemConfig, TechnicalMembershipConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -152,7 +152,14 @@ pub fn testnet_genesis(
 
         // Governance
         pallet_sudo: Some(SudoConfig {
-            key: root.unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice")),
+            key: root
+                .clone()
+                .unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice")),
+        }),
+        pallet_collective_Instance0: Some(Default::default()),
+        pallet_membership_Instance0: Some(TechnicalMembershipConfig {
+            members: vec![root.unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice"))],
+            phantom: Default::default(),
         }),
 
         // Ternoa
