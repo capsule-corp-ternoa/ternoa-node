@@ -70,7 +70,7 @@ construct_runtime!(
     {
         AuthorityDiscovery: pallet_authority_discovery::{Module, Call, Config},
         Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
-        Babe: pallet_babe::{Module, Call, Storage, Config, Inherent, ValidateUnsigned},
+        Babe: pallet_babe::{Module, Call, Storage, Config, ValidateUnsigned},
         Balances: pallet_balances::<Instance0>::{Module, Call, Storage, Config<T>, Event<T>},
         Bounties: pallet_bounties::{Module, Call, Storage, Event<T>},
         Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
