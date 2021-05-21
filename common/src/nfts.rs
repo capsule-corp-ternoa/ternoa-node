@@ -59,7 +59,7 @@ pub trait NFTs {
     /// Set the owner of a NFT series.
     fn set_series_owner(id: Self::NFTSeriesId, owner: &Self::AccountId) -> DispatchResult;
 
-    /// TODO!
+    /// Check wether an NFT is a capsule.
     fn is_capsule(id: Self::NFTId) -> bool;
 }
 
