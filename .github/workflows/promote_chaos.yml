@@ -17,6 +17,6 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Push with chaos tag
         run: |
-          docker pull ternoa/ternoa-chain:latest
-          docker tag ternoa/ternoa-chain:latest ternoa/ternoa-chain:chaos
+          docker pull ternoa/ternoa-chain:${{ github.sha }}
+          docker tag ternoa/ternoa-chain:${{ github.sha }} ternoa/ternoa-chain:chaos
           docker push ternoa/ternoa-chain:chaos
