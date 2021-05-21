@@ -58,9 +58,9 @@ pub mod pallet {
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         fn on_runtime_upgrade() -> frame_support::weights::Weight {
-            if !UpgradedToCapsule::<T>::get() {
-                UpgradedToCapsule::<T>::put(true);
-                migrations::migrate_to_capsule::<T>()
+            if StorageVersion::<T>::get() == StorageReleases::V1_0_0 {
+                StorageVersion::<T>::put(StorageReleases::V2_0_0);
+                migrations::migrate_to_storage_v2::<T>()
             } else {
                 0
             }
@@ -247,7 +247,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn data)]
     pub type Data<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, NFTDetails>, ValueQuery>;
+        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId>, ValueQuery>;
 
     /// Data related to NFT Series.
     #[pallet::storage]
@@ -260,10 +260,9 @@ pub mod pallet {
         OptionQuery,
     >;
 
-    /// True if we have upgraded so that NFTDetails contains `is_capsule` flag.
-    /// False (default) if not.
+    /// Storage version that is being used. Default is V1_0_0;
     #[pallet::storage]
-    pub(super) type UpgradedToCapsule<T: Config> = StorageValue<_, bool, ValueQuery>;
+    pub(super) type StorageVersion<T: Config> = StorageValue<_, StorageReleases, ValueQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
@@ -284,7 +283,7 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            <UpgradedToCapsule<T>>::put(true);
+            <StorageVersion<T>>::put(StorageReleases::V2_0_0);
 
             self.series
                 .clone()
@@ -485,15 +484,17 @@ pub mod migrations {
     #[cfg(feature = "std")]
     use serde::{Deserialize, Serialize};
 
+    /// NFTDetails structure that was used for storage release V1_0_0
     #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    struct OldNFTDetails {
+    struct NFTDetailsV1 {
         pub offchain_uri: Vec<u8>,
         pub series_id: NFTSeriesId,
     }
 
-    pub fn migrate_to_capsule<T: Config>() -> frame_support::weights::Weight {
-        Data::<T>::translate::<(T::AccountId, OldNFTDetails, bool, bool), _>(
+    /// Function that migrates our storage from release V1_0_0 to V2_0_0
+    pub fn migrate_to_storage_v2<T: Config>() -> frame_support::weights::Weight {
+        Data::<T>::translate::<(T::AccountId, NFTDetailsV1, bool, bool), _>(
             |_key, (owner, old_details, sealed, locked)| {
                 let new_details =
                     NFTDetails::new(old_details.offchain_uri, old_details.series_id, false);
@@ -501,7 +502,7 @@ pub mod migrations {
                 Some(data)
             },
         );
-        // TODO!
-        0
+
+        T::BlockWeights::get().max_block
     }
 }

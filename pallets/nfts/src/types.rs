@@ -37,7 +37,7 @@ impl NFTDetails {
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct NFTData<AccountId, NFTDetails> {
+pub struct NFTData<AccountId> {
     pub owner: AccountId,
     pub details: NFTDetails,
     /// Set to true to prevent further modifications to the details struct
@@ -46,7 +46,7 @@ pub struct NFTData<AccountId, NFTDetails> {
     pub locked: bool,
 }
 
-impl<AccountId, NFTDetails> NFTData<AccountId, NFTDetails> {
+impl<AccountId> NFTData<AccountId> {
     pub fn new(owner: AccountId, details: NFTDetails, sealed: bool, locked: bool) -> Self {
         Self {
             owner,
@@ -70,5 +70,20 @@ pub struct NFTSeriesDetails<AccountId, NFTId> {
 impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
     pub fn new(owner: AccountId, nfts: Vec<NFTId>) -> Self {
         Self { owner, nfts }
+    }
+}
+
+// A value placed in storage that represents the current version of the NFT storage.
+// This value is used by the `on_runtime_upgrade` logic to determine whether we run
+// storage migration logic.
+#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, RuntimeDebug)]
+pub enum StorageReleases {
+    V1_0_0,
+    V2_0_0,
+}
+
+impl Default for StorageReleases {
+    fn default() -> Self {
+        Self::V1_0_0
     }
 }
