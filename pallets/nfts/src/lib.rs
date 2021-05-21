@@ -58,13 +58,9 @@ pub mod pallet {
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         fn on_runtime_upgrade() -> frame_support::weights::Weight {
-            frame_support::debug::RuntimeLogger::init();
             if !UpgradedToCapsule::<T>::get() {
-                debug::print!("🕊️ Starting capsule migration...");
                 UpgradedToCapsule::<T>::put(true);
-                let r = migrations::migrate_to_capsule::<T>();
-                debug::print!("🕊️ Capsule migration done");
-                r
+                migrations::migrate_to_capsule::<T>()
             } else {
                 0
             }
@@ -500,11 +496,12 @@ pub mod migrations {
         Data::<T>::translate::<(T::AccountId, OldNFTDetails, bool, bool), _>(
             |_key, (owner, old_details, sealed, locked)| {
                 let new_details =
-                    NFTDetails::new(old_details.offchain_uri, old_details.series_id, true);
+                    NFTDetails::new(old_details.offchain_uri, old_details.series_id, false);
                 let data = NFTData::new(owner, new_details, sealed, locked);
                 Some(data)
             },
         );
+        // TODO!
         0
     }
 }
