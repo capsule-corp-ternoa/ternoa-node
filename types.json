@@ -12,7 +12,8 @@
     },
     "NFTDetails": {
         "offchain_uri": "Vec<u8>",
-        "series_id": "NFTSeriesId"
+        "series_id": "NFTSeriesId",
+        "is_capsule": "bool"
     },
     "LookupSource": "AccountId",
     "NFTSeriesDetails": {

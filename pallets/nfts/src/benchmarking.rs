@@ -18,7 +18,7 @@ benchmarks! {
     create_with_series {
         let caller: T::AccountId = whitelisted_caller();
         let series_id = NFTSeriesId::from(1u32);
-        let details = NFTDetails::new(vec![], series_id);
+        let details = NFTDetails::new(vec![], series_id, false);
 
         T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
     }: create(RawOrigin::Signed(caller.clone()), details)
@@ -70,7 +70,7 @@ benchmarks! {
     burn {
         let caller: T::AccountId = whitelisted_caller();
         let series_id = NFTSeriesId::from(1u32);
-        let details = NFTDetails::new(vec![], series_id);
+        let details = NFTDetails::new(vec![], series_id, false);
         let nft_id = T::NFTId::from(0);
 
         T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
@@ -86,7 +86,7 @@ benchmarks! {
 
         let caller: T::AccountId = whitelisted_caller();
         let series_id = NFTSeriesId::from(1u32);
-        let details = NFTDetails::new(vec![], series_id);
+        let details = NFTDetails::new(vec![], series_id, false);
 
         T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
         drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), details));

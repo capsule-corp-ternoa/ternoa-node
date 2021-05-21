@@ -10,7 +10,7 @@ fn register_nfts() {
         .unwrap();
 
     GenesisConfig::<Test> {
-        nfts: vec![(ALICE, NFTDetails::new(vec![1], 0))],
+        nfts: vec![(ALICE, NFTDetails::new(vec![1], 0, false))],
         series: vec![],
     }
     .assimilate_storage(&mut t)
@@ -20,7 +20,7 @@ fn register_nfts() {
     ext.execute_with(|| {
         assert_eq!(NFTs::total(), 1);
         assert_eq!(NFTs::data(0).owner, ALICE);
-        assert_eq!(NFTs::data(0).details, NFTDetails::new(vec![1], 0));
+        assert_eq!(NFTs::data(0).details, NFTDetails::new(vec![1], 0, false));
         assert_eq!(NFTs::data(0).locked, false);
         assert_eq!(NFTs::data(0).sealed, false);
     });

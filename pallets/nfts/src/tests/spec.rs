@@ -24,7 +24,7 @@ fn create_register_details() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let details = NFTDetails::new(vec![42], 1);
+            let details = NFTDetails::new(vec![42], 1, false);
 
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
@@ -68,7 +68,7 @@ fn mutate_update_details() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let details = NFTDetails::new(vec![42], 1);
+            let details = NFTDetails::new(vec![42], 1, false);
             let nft_id = 0;
 
             assert_ok!(NFTs::create(
@@ -90,7 +90,7 @@ fn mutate_not_the_owner() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let details = NFTDetails::new(vec![42], 1);
+            let details = NFTDetails::new(vec![42], 1, false);
             let nft_id = 0;
 
             assert_ok!(NFTs::create(
@@ -110,7 +110,7 @@ fn mutate_sealed() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            let details = NFTDetails::new(vec![42], 1);
+            let details = NFTDetails::new(vec![42], 1, false);
             let nft_id = 0;
 
             assert_ok!(NFTs::create(
@@ -218,7 +218,7 @@ fn burn_owned_nft() {
 
             let before_details = NFTSeriesDetails::new(ALICE, sp_std::vec![nft_id]);
             let after_details = NFTSeriesDetails::new(ALICE, sp_std::vec![]);
-            let details = NFTDetails::new(vec![], series_id);
+            let details = NFTDetails::new(vec![], series_id, false);
 
             assert_ok!(NFTs::create(RawOrigin::Signed(ALICE).into(), details));
             assert_eq!(NFTs::series(series_id), Some(before_details));
@@ -276,8 +276,8 @@ fn series_create() {
             let default_id = NFTSeriesId::default();
 
             let details = NFTSeriesDetails::new(ALICE, sp_std::vec![1u32, 2u32]);
-            let valid_nft_details = NFTDetails::new(vec![], valid_id);
-            let default_nft_details = NFTDetails::new(vec![], default_id);
+            let valid_nft_details = NFTDetails::new(vec![], valid_id, false);
+            let default_nft_details = NFTDetails::new(vec![], default_id, false);
 
             // Alice can create an nft that belongs to the default series.
             assert_ok!(NFTs::create(
@@ -331,7 +331,7 @@ fn transfer_series() {
 
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
-                NFTDetails::new(vec![], valid_id),
+                NFTDetails::new(vec![], valid_id, false)
             ));
 
             // Since Alice owns the series she can transfer it to Bob.
@@ -361,25 +361,63 @@ fn transfer_series() {
 }
 
 #[test]
-fn cannot_create_if_not_enough_funds_to_pay_for_fees() {
-    ExtBuilder::default().build().execute_with(|| {
-        assert_noop!(
-            NFTs::create(RawOrigin::Signed(ALICE).into(), Default::default(),),
-            pallet_balances::Error::<Test>::InsufficientBalance
-        );
-    })
-}
-
-#[test]
-fn fees_are_passed_to_collector() {
+fn mint_fees() {
     ExtBuilder::default()
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
+            // Setting up the stage
+            const INITIAL_FUNDS: u64 = 100u64;
+            const FEE: u64 = MintFee::get();
+            const NEW_FUNDS_1: u64 = INITIAL_FUNDS - FEE;
+            const NEW_FUNDS_2: u64 = NEW_FUNDS_1 - FEE;
+
+            let alice: Origin = RawOrigin::Signed(ALICE).into();
+            let bob: Origin = RawOrigin::Signed(BOB).into();
+
+            const SERIES_ID: u32 = 1u32;
+            assert_ok!(NFTs::create(bob, NFTDetails::new(vec![], SERIES_ID, false)));
+            assert_eq!(Balances::free_balance(&COLLECTOR), FEE);
+
+            // Alice will pay additional mint fees if she wants to create a normal nft.
+            assert_ok!(NFTs::create(alice.clone(), NFTDetails::default()));
+            assert_eq!(Balances::free_balance(&COLLECTOR), FEE * 2);
+            assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS_1);
+
+            // Alice will pay additional mint fees if she wants to create a capsule.
             assert_ok!(NFTs::create(
-                RawOrigin::Signed(ALICE).into(),
-                Default::default(),
+                alice.clone(),
+                NFTDetails::new(vec![], 0, true)
             ));
-            assert_eq!(Balances::free_balance(&COLLECTOR), MintFee::get());
+            assert_eq!(Balances::free_balance(&COLLECTOR), FEE * 3);
+            assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS_2);
+
+            // Alice will not pay any fees if the create function fails.
+            assert!(NFTs::create(alice.clone(), NFTDetails::new(vec![], SERIES_ID, true)).is_err());
+            assert_eq!(Balances::free_balance(&ALICE), NEW_FUNDS_2);
+        })
+}
+
+#[test]
+fn create_capsule() {
+    ExtBuilder::default()
+        .one_hundred_for_everyone()
+        .build()
+        .execute_with(|| {
+            // Setting up the stage
+            let alice: Origin = RawOrigin::Signed(ALICE).into();
+
+            assert_ok!(NFTs::create(
+                alice.clone(),
+                NFTDetails::new(vec![], 0, true)
+            ));
+
+            // Alice cannot create a capsule if she doesn't have enough money.
+            let funds = Balances::free_balance(ALICE);
+            assert_ok!(Balances::transfer(alice.clone(), BOB, funds));
+            assert_noop!(
+                NFTs::create(alice.clone(), NFTDetails::new(vec![], 0, true)),
+                pallet_balances::Error::<Test>::InsufficientBalance
+            );
         })
 }

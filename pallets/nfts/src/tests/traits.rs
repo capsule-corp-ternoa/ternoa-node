@@ -108,8 +108,9 @@ fn series_length() {
 
         let count = 3;
         for _ in 0..count {
-            let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
-                .expect("creation failed");
+            let _ =
+                <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
+                    .expect("creation failed");
         }
 
         // Existing ids should return valid length values.
@@ -130,11 +131,11 @@ fn series_id() {
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
         let valid_nft_id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
                 .expect("creation failed");
         let invalid_nft_id = <NFTs as traits::NFTs>::NFTId::from(100u32);
         let default_nft_id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], default_id))
+            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], default_id, false))
                 .expect("creation failed");
 
         // Existing nft ids should return valid non default series ids.
@@ -161,7 +162,7 @@ fn series_owner() {
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
             .expect("creation failed");
 
         // Existing ids should return the creator of the series as owner.
@@ -182,7 +183,7 @@ fn set_series_owner() {
         let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
         let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
 
-        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id))
+        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
             .expect("creation failed");
 
         // It is possible to change owners of existing series.
@@ -199,4 +200,25 @@ fn set_series_owner() {
             Error::<Test>::NFTSeriesLocked,
         );
     })
+}
+
+#[test]
+fn create_capsule() {
+    ExtBuilder::default()
+        .one_hundred_for_everyone()
+        .build()
+        .execute_with(|| {
+            // Valid values
+            let details = NFTDetails::new(vec![], 0, true);
+            let id = <NFTs as traits::NFTs>::create(&ALICE, details).expect("creation failed");
+            assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), true);
+
+            // The default values
+            let id = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default())
+                .expect("creation failed");
+            assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), false);
+
+            // Unknown nft id value
+            assert_eq!(<NFTs as traits::NFTs>::is_capsule(23), false);
+        })
 }
