@@ -56,7 +56,20 @@ pub mod pallet {
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_runtime_upgrade() -> frame_support::weights::Weight {
+            frame_support::debug::RuntimeLogger::init();
+            if !UpgradedToCapsule::<T>::get() {
+                debug::print!("🕊️ Starting capsule migration...");
+                UpgradedToCapsule::<T>::put(true);
+                let r = migrations::migrate_to_capsule::<T>();
+                debug::print!("🕊️ Capsule migration done");
+                r
+            } else {
+                0
+            }
+        }
+    }
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
@@ -251,6 +264,11 @@ pub mod pallet {
         OptionQuery,
     >;
 
+    /// True if we have upgraded so that NFTDetails contains `is_capsule` flag.
+    /// False (default) if not.
+    #[pallet::storage]
+    pub(super) type UpgradedToCapsule<T: Config> = StorageValue<_, bool, ValueQuery>;
+
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub nfts: Vec<(T::AccountId, NFTDetails)>,
@@ -270,6 +288,8 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
+            <UpgradedToCapsule<T>>::put(true);
+
             self.series
                 .clone()
                 .into_iter()
@@ -460,5 +480,31 @@ impl<T: Config> Pallet<T> {
             .ok_or(Error::<T>::NFTIdOverflow)?;
 
         Ok((nft_id, next_id))
+    }
+}
+
+pub mod migrations {
+    use super::*;
+    use codec::{Decode, Encode};
+    #[cfg(feature = "std")]
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
+    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    struct OldNFTDetails {
+        pub offchain_uri: Vec<u8>,
+        pub series_id: NFTSeriesId,
+    }
+
+    pub fn migrate_to_capsule<T: Config>() -> frame_support::weights::Weight {
+        Data::<T>::translate::<(T::AccountId, OldNFTDetails, bool, bool), _>(
+            |_key, (owner, old_details, sealed, locked)| {
+                let new_details =
+                    NFTDetails::new(old_details.offchain_uri, old_details.series_id, true);
+                let data = NFTData::new(owner, new_details, sealed, locked);
+                Some(data)
+            },
+        );
+        0
     }
 }
