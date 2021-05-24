@@ -32,21 +32,14 @@ pub mod v020 {
 
 /// Function that migrates our storage from pallet version 0.2.0 to 0.3.0
 pub fn migration<T: Config>() -> Weight {
-    use frame_support::debug;
-    debug::RuntimeLogger::init();
-    debug::print!("🕊️ Starting migration...");
-
     let mut weight = Weight::from(0u64);
 
     let version: PalletVersion =
         <Pallet<T>>::storage_version().unwrap_or(<Pallet<T>>::current_version());
-    debug::print!("{:?}", version);
 
     if version.major == 0 && version.minor == 2 {
         weight = from_v020_to_v030::<T>()
     }
-
-    debug::print!("🕊️ migration Ended...");
 
     weight
 }
