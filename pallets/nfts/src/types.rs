@@ -72,18 +72,3 @@ impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
         Self { owner, nfts }
     }
 }
-
-// A value placed in storage that represents the current version of the NFT storage.
-// This value is used by the `on_runtime_upgrade` logic to determine whether we run
-// storage migration logic.
-#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, RuntimeDebug)]
-pub enum StorageReleases {
-    V1_0_0,
-    V2_0_0,
-}
-
-impl Default for StorageReleases {
-    fn default() -> Self {
-        Self::V1_0_0
-    }
-}

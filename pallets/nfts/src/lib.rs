@@ -3,6 +3,7 @@
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 mod default_weights;
+mod migration;
 #[cfg(test)]
 mod tests;
 mod types;
@@ -58,12 +59,7 @@ pub mod pallet {
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         fn on_runtime_upgrade() -> frame_support::weights::Weight {
-            if StorageVersion::<T>::get() == StorageReleases::V1_0_0 {
-                StorageVersion::<T>::put(StorageReleases::V2_0_0);
-                migrations::migrate_to_storage_v2::<T>()
-            } else {
-                0
-            }
+            migration::migration::<T>()
         }
     }
 
@@ -260,10 +256,6 @@ pub mod pallet {
         OptionQuery,
     >;
 
-    /// Storage version that is being used. Default is V1_0_0;
-    #[pallet::storage]
-    pub(super) type StorageVersion<T: Config> = StorageValue<_, StorageReleases, ValueQuery>;
-
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub nfts: Vec<(T::AccountId, NFTDetails)>,
@@ -283,8 +275,6 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            <StorageVersion<T>>::put(StorageReleases::V2_0_0);
-
             self.series
                 .clone()
                 .into_iter()
@@ -475,34 +465,5 @@ impl<T: Config> Pallet<T> {
             .ok_or(Error::<T>::NFTIdOverflow)?;
 
         Ok((nft_id, next_id))
-    }
-}
-
-pub mod migrations {
-    use super::*;
-    use codec::{Decode, Encode};
-    #[cfg(feature = "std")]
-    use serde::{Deserialize, Serialize};
-
-    /// NFTDetails structure that was used for storage release V1_0_0
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
-    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    struct NFTDetailsV1 {
-        pub offchain_uri: Vec<u8>,
-        pub series_id: NFTSeriesId,
-    }
-
-    /// Function that migrates our storage from release V1_0_0 to V2_0_0
-    pub fn migrate_to_storage_v2<T: Config>() -> frame_support::weights::Weight {
-        Data::<T>::translate::<(T::AccountId, NFTDetailsV1, bool, bool), _>(
-            |_key, (owner, old_details, sealed, locked)| {
-                let new_details =
-                    NFTDetails::new(old_details.offchain_uri, old_details.series_id, false);
-                let data = NFTData::new(owner, new_details, sealed, locked);
-                Some(data)
-            },
-        );
-
-        T::BlockWeights::get().max_block
     }
 }
