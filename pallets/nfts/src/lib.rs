@@ -3,6 +3,7 @@
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 mod default_weights;
+mod migration;
 #[cfg(test)]
 mod tests;
 mod types;
@@ -56,7 +57,11 @@ pub mod pallet {
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_runtime_upgrade() -> frame_support::weights::Weight {
+            migration::migration::<T>()
+        }
+    }
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
@@ -238,7 +243,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn data)]
     pub type Data<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId, NFTDetails>, ValueQuery>;
+        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId>, ValueQuery>;
 
     /// Data related to NFT Series.
     #[pallet::storage]

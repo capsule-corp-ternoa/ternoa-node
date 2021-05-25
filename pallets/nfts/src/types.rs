@@ -37,7 +37,7 @@ impl NFTDetails {
 /// Data related to an NFT, such as who is its owner.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct NFTData<AccountId, NFTDetails> {
+pub struct NFTData<AccountId> {
     pub owner: AccountId,
     pub details: NFTDetails,
     /// Set to true to prevent further modifications to the details struct
@@ -46,7 +46,7 @@ pub struct NFTData<AccountId, NFTDetails> {
     pub locked: bool,
 }
 
-impl<AccountId, NFTDetails> NFTData<AccountId, NFTDetails> {
+impl<AccountId> NFTData<AccountId> {
     pub fn new(owner: AccountId, details: NFTDetails, sealed: bool, locked: bool) -> Self {
         Self {
             owner,
