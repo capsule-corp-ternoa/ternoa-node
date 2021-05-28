@@ -1,5 +1,5 @@
 <h1 align="center">
-    Contributing to Ternoa Blockchain
+    Contributing to Ternoa Blockchain 🚀
 </h1>
 
 Thank you for your interest in contributing to Ternoa Blockchain!
