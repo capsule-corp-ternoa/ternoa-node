@@ -7,13 +7,13 @@ edition = "2018"
 parity-scale-codec = "2.0.1"
 ternoa-primitives = { path = "../primitives" }
 ternoa-runtime = { path = "../runtime" }
-sc-executor = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
-sp-core = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
-sp-io = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
-sp-state-machine = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
-sp-trie = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
+sc-executor = { git = "https://github.com/paritytech/substrate/" }
+sp-core = { git = "https://github.com/paritytech/substrate/" }
+sp-io = { git = "https://github.com/paritytech/substrate/" }
+sp-state-machine = { git = "https://github.com/paritytech/substrate/" }
+sp-trie = { git = "https://github.com/paritytech/substrate/" }
 trie-root = "0.16.0"
-frame-benchmarking = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd" }
+frame-benchmarking = { git = "https://github.com/paritytech/substrate/" }
 
 [features]
 wasmtime = [
