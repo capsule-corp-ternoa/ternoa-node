@@ -33,6 +33,7 @@ pub mod constants;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
+mod pallets_substratee;
 mod pallets_ternoa;
 mod pallets_time;
 mod pallets_treasury;
@@ -96,6 +97,8 @@ construct_runtime!(
         Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
         Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
+
+        SubstrateeRegistry: substratee_registry::{Pallet, Call, Storage, Event<T>},
     }
 );
 

@@ -33,6 +33,7 @@ pallet-randomness-collective-flip = { git = "https://github.com/paritytech/subst
 pallet-scheduler = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-session = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", features = ["historical"], default-features = false }
 #pallet-session-benchmarking = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd",  default-features = false, optional = true }
+pallet-substratee-registry = { git = "https://github.com/scs/pallet-substratee-registry", rev = "860097f21141fb6cd5eb455d8ca9e8adb7031c7d", default-features = false }
 pallet-sudo = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate/", rev = "743accbe3256de2fc615adcaa3ab03ebdbbb4dbd", default-features = false }
@@ -86,6 +87,7 @@ std = [
 	"pallet-randomness-collective-flip/std",
 	"pallet-scheduler/std",
 	"pallet-session/std",
+	"pallet-substratee-registry/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
