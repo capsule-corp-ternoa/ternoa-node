@@ -204,7 +204,7 @@ pub fn new_full_base(
     } = new_partial(&config)?;
 
     let shared_voter_state = rpc_setup;
-    let auth_disc_publish_non_global_ips = config.network.allow_non_globals_in_dht;
+    //let auth_disc_publish_non_global_ips = config.network.allow_non_globals_in_dht;
 
     config
         .network

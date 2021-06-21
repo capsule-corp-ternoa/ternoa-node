@@ -323,7 +323,7 @@ impl_runtime_apis! {
             use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
             //use pallet_session_benchmarking::Module as SessionBench;
             //use pallet_offences_benchmarking::Module as OffencesBench;
-            use frame_system_benchmarking::Module as SystemBench;
+            use frame_system_benchmarking::Pallet as SystemBench;
 
             // those two depends on pallets we do not use and pause compile time issues
             //impl pallet_session_benchmarking::Config for Runtime {}

@@ -1,8 +1,8 @@
-use crate::{Call, Config, Module, NFTIdOf, NFTsForSale};
+use crate::{Call, Config, NFTIdOf, NFTsForSale, Pallet};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
-use sp_std::{boxed::Box, prelude::*};
+use sp_std::prelude::*;
 use ternoa_common::traits::NFTs;
 
 fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
@@ -25,7 +25,7 @@ benchmarks! {
         let id = create_nft::<T>(&seller);
         let price: u32 = 0;
 
-        drop(Module::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price.into()));
+        drop(Pallet::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price.into()));
     }: _(RawOrigin::Signed(buyer.clone().into()), id)
     verify {
         assert_eq!(T::NFTs::owner(id), buyer);
@@ -46,7 +46,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        drop(Module::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, 100u32.into()));
+        drop(Pallet::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, 100u32.into()));
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
     verify {
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);
