@@ -2,7 +2,9 @@
 //! and staking.
 
 use crate::{
-    constants::time::{EPOCH_DURATION_IN_BLOCKS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK},
+    constants::time::{
+        EPOCH_DURATION_IN_BLOCKS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY,
+    },
     pallets_core::{BlockHashCount, RuntimeBlockWeights},
     AuthorityDiscovery, Babe, Balances, Call, Event, Grandpa, Historical, ImOnline, Offences,
     Runtime, Session, Signature, SignedPayload, Staking, System, Timestamp, UncheckedExtrinsic,
@@ -36,6 +38,13 @@ parameter_types! {
     pub const ReportLongevity: u64 =
         BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
 }
+
+/// The BABE epoch configuration at genesis.
+pub const BABE_GENESIS_EPOCH_CONFIG: sp_consensus_babe::BabeEpochConfiguration =
+    sp_consensus_babe::BabeEpochConfiguration {
+        c: PRIMARY_PROBABILITY,
+        allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryPlainSlots,
+    };
 
 impl pallet_babe::Config for Runtime {
     type EpochDuration = EpochDuration;

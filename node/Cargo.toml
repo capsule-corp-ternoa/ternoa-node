@@ -46,6 +46,7 @@ sc-consensus-babe = { git = "https://github.com/paritytech/substrate/" }
 sc-consensus-babe-rpc = { git = "https://github.com/paritytech/substrate/" }
 sc-consensus-epochs = { git = "https://github.com/paritytech/substrate/" }
 sc-consensus-slots = { git = "https://github.com/paritytech/substrate/" }
+sc-consensus-uncles = { git = "https://github.com/paritytech/substrate/" }
 sc-finality-grandpa = { git = "https://github.com/paritytech/substrate/" }
 sc-finality-grandpa-rpc = { git = "https://github.com/paritytech/substrate/" }
 sc-finality-grandpa-warp-sync = { git = "https://github.com/paritytech/substrate/" }
@@ -58,6 +59,7 @@ sc-transaction-pool = { git = "https://github.com/paritytech/substrate/" }
 serde_json = "1.0.64"
 sp-api = { git = "https://github.com/paritytech/substrate/" }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate/" }
+sp-authorship = { git = "https://github.com/paritytech/substrate/" }
 sp-blockchain = { git = "https://github.com/paritytech/substrate/" }
 sp-block-builder = { git = "https://github.com/paritytech/substrate/" }
 sp-chain-spec = { git = "https://github.com/paritytech/substrate/" }
@@ -68,6 +70,7 @@ sp-finality-grandpa = { git = "https://github.com/paritytech/substrate/" }
 sp-inherents = { git = "https://github.com/paritytech/substrate/" }
 sp-keystore = { git = "https://github.com/paritytech/substrate/" }
 sp-runtime = { git = "https://github.com/paritytech/substrate/" }
+sp-timestamp = { git = "https://github.com/paritytech/substrate/" }
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate/" }
 structopt = "0.3.21"
 substrate-frame-rpc-system = { git = "https://github.com/paritytech/substrate/" }

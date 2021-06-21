@@ -42,6 +42,7 @@ use pallets_validators::EpochDuration;
 pub use pallets_validators::SessionKeys;
 #[cfg(any(feature = "std", test))]
 pub use pallets_validators::StakerStatus;
+pub use pallets_validators::BABE_GENESIS_EPOCH_CONFIG;
 #[cfg(feature = "std")]
 pub use version::native_version;
 pub use version::VERSION;
