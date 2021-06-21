@@ -1,6 +1,6 @@
 use crate::{
     constants::time::{DAYS, MILLISECS_PER_BLOCK},
-    Balances, Call, Event, Runtime,
+    Balances, Event, Runtime,
 };
 use frame_support::parameter_types;
 

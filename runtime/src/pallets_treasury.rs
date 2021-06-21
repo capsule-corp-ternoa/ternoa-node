@@ -5,9 +5,9 @@ use crate::{
     },
     Balances, Bounties, Event, Runtime,
 };
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use frame_system::EnsureRoot;
-use sp_runtime::{ModuleId, Percent, Permill};
+use sp_runtime::{Percent, Permill};
 use ternoa_primitives::{AccountId, Balance, BlockNumber};
 
 parameter_types! {
@@ -21,7 +21,7 @@ parameter_types! {
     pub const DataDepositPerByte: Balance = 1 * CENTS;
     pub const BountyDepositBase: Balance = 1 * UNIT;
     pub const BountyDepositPayoutDelay: BlockNumber = 1 * DAYS;
-    pub const TreasuryModuleId: ModuleId = ModuleId(*b"py/trsry");
+    pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
     pub const BountyUpdatePeriod: BlockNumber = 14 * DAYS;
     pub const MaximumReasonLength: u32 = 16384;
     pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
@@ -29,7 +29,7 @@ parameter_types! {
 }
 
 impl pallet_treasury::Config for Runtime {
-    type ModuleId = TreasuryModuleId;
+    type PalletId = TreasuryPalletId;
     type Currency = Balances;
     type ApproveOrigin = EnsureRoot<AccountId>;
     type RejectOrigin = EnsureRoot<AccountId>;

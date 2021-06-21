@@ -9,9 +9,10 @@ use crate::{
 };
 use codec::Encode;
 use frame_support::{
-    debug, parameter_types,
+    parameter_types,
     traits::{KeyOwnerProofSystem, U128CurrencyToVote},
     weights::{constants::BlockExecutionWeight, DispatchClass, Weight},
+    PalletId,
 };
 use frame_system::EnsureRoot;
 #[cfg(any(feature = "std", test))]
@@ -23,7 +24,7 @@ use sp_runtime::{
     generic::Era,
     impl_opaque_keys,
     traits::{self as sp_runtime_traits, OpaqueKeys, StaticLookup},
-    ModuleId, Perbill, SaturatedConversion,
+    Perbill, SaturatedConversion,
 };
 use sp_std::prelude::*; // `impl_opaque_keys` need `Vec`
 use sp_transaction_pool::TransactionPriority;
@@ -169,7 +170,7 @@ where
         );
         let raw_payload = SignedPayload::new(call, extra)
             .map_err(|e| {
-                debug::warn!("Unable to create signed payload: {:?}", e);
+                sp_tracing::warn!("Unable to create signed payload: {:?}", e);
             })
             .ok()?;
         let signature = raw_payload.using_encoded(|payload| C::sign(payload, public))?;
@@ -196,7 +197,6 @@ impl pallet_im_online::Config for Runtime {
     type AuthorityId = ImOnlineId;
     type Event = Event;
     type ValidatorSet = Historical;
-    type SessionDuration = SessionDuration;
     type ReportUnresponsiveness = Offences;
     type UnsignedPriority = ImOnlineUnsignedPriority;
     type WeightInfo = pallet_im_online::weights::SubstrateWeight<Runtime>;
@@ -211,7 +211,6 @@ impl pallet_offences::Config for Runtime {
     type Event = Event;
     type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
     type OnOffenceHandler = Staking;
-    type WeightSoftLimit = OffencesWeightSoftLimit;
 }
 
 parameter_types! {
@@ -227,7 +226,7 @@ parameter_types! {
         .get(DispatchClass::Normal)
         .max_extrinsic.expect("Normal extrinsics have a weight limit configured; qed")
         .saturating_sub(BlockExecutionWeight::get());
-    pub const StakingPalletId: ModuleId = ModuleId(*b"mockstak");
+    pub const StakingPalletId: PalletId = PalletId(*b"mockstak");
 }
 
 impl pallet_curveless_staking::Config for Runtime {

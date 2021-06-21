@@ -52,6 +52,7 @@ sp-runtime = { git = "https://github.com/paritytech/substrate/", default-feature
 sp-session = { git = "https://github.com/paritytech/substrate/", default-features = false }
 sp-staking = { git = "https://github.com/paritytech/substrate/", default-features = false }
 sp-std = { git = "https://github.com/paritytech/substrate/", default-features = false }
+sp-tracing = { git = "https://github.com/paritytech/substrate/", default-features = false }
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate/", default-features = false }
 sp-version = { git = "https://github.com/paritytech/substrate/", default-features = false }
 static_assertions = "1.1.0"
@@ -105,6 +106,7 @@ std = [
 	"sp-session/std",
 	"sp-staking/std",
 	"sp-std/std",
+	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
 	"ternoa-account-store/std",
