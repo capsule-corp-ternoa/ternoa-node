@@ -118,18 +118,16 @@ pub mod pallet {
             let keep_alive = ExistenceRequirement::KeepAlive;
             match currency {
                 NFTCurrencyId::CAPS => {
-                    if let Some(price) = price.caps() {
-                        let value: BalanceCaps<T> = price.try_into().ok().unwrap();
-                        T::CurrencyCaps::transfer(&who, &owner, value, keep_alive)?;
-                    } else {
-                    }
+                    let price = price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    let value: BalanceCaps<T> =
+                        price.try_into().map_err(|_| Error::<T>::InternalError)?;
+                    T::CurrencyCaps::transfer(&who, &owner, value, keep_alive)?;
                 }
                 NFTCurrencyId::TIIME => {
-                    if let Some(price) = price.tiime() {
-                        let value: BalanceTiime<T> = price.try_into().ok().unwrap();
-                        T::CurrencyTiime::transfer(&who, &owner, value, keep_alive)?;
-                    } else {
-                    }
+                    let price = price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    let value: BalanceTiime<T> =
+                        price.try_into().map_err(|_| Error::<T>::InternalError)?;
+                    T::CurrencyTiime::transfer(&who, &owner, value, keep_alive)?;
                 }
             }
 
@@ -163,6 +161,10 @@ pub mod pallet {
         NftNotForSale,
         /// Yot cannot buy your own nft
         NftAlreadyOwned,
+        /// TODO!
+        InternalError,
+        /// TODO!
+        WrongCurrencyUsed,
     }
 
     /// Nfts listed on the marketplace

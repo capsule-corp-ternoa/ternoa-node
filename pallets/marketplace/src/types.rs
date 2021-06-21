@@ -1,9 +1,8 @@
-use std::fmt::Debug;
-
 use codec::{Decode, Encode};
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
+/// TODO!
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct NFTCurrencyCombined {
@@ -11,6 +10,7 @@ pub struct NFTCurrencyCombined {
     pub tiime: u128,
 }
 
+/// TODO!
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrency {
@@ -42,7 +42,7 @@ impl NFTCurrency {
         }
     }
 }
-
+/// TODO!
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrencyId {
