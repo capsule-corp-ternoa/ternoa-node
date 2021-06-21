@@ -36,6 +36,8 @@ impl pallet_membership::Config<TechnicalCollectiveMembers> for Runtime {
     type PrimeOrigin = MoreThanHalfOfTheTechnicalCollective;
     type MembershipInitialized = TechnicalCommittee;
     type MembershipChanged = TechnicalCommittee;
+    type MaxMembers = MaxMembers;
+    type WeightInfo = ();
 }
 
 impl pallet_mandate::Config for Runtime {

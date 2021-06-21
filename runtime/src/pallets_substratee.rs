@@ -1,11 +1,9 @@
-use crate::{
-    constants::time::{DAYS, MILLISECS_PER_BLOCK},
-    Balances, Event, Runtime,
-};
+use crate::{Balances, Event, Runtime};
 use frame_support::parameter_types;
+use ternoa_primitives::Moment;
 
 parameter_types! {
-    pub const MomentsPerDay: u64 = MILLISECS_PER_BLOCK * DAYS; // [ms/d]
+    pub const MomentsPerDay: Moment = 86_400_000; // [ms/d]
 }
 
 impl pallet_substratee_registry::Config for Runtime {
