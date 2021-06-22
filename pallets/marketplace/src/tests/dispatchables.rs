@@ -1,5 +1,6 @@
 use super::mock::*;
 use crate::{Error, NFTCurrency, NFTCurrencyId, NFTsForSale};
+use frame_support::instances::{Instance0, Instance1};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 
@@ -72,7 +73,7 @@ fn cannot_buy_if_not_enough_money() {
             ));
             assert_noop!(
                 Marketplace::buy(RawOrigin::Signed(BOB).into(), 0, NFTCurrencyId::CAPS),
-                pallet_balances::Error::<Test, _>::InsufficientBalance
+                pallet_balances::Error::<Test, Instance0>::InsufficientBalance
             );
         })
 }
