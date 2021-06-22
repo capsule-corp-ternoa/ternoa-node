@@ -66,7 +66,7 @@ pub mod pallet {
         pub fn list(
             origin: OriginFor<T>,
             nft_id: NFTIdOf<T>,
-            price: NFTCurrency,
+            price: NFTCurrency<T>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNftOwner);
@@ -146,7 +146,7 @@ pub mod pallet {
     #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", CommonBalanceT<T> = "Balance")]
     pub enum Event<T: Config> {
         /// A nft has been listed for sale. \[nft id, currency id, price\]
-        NftListed(NFTIdOf<T>, NFTCurrency),
+        NftListed(NFTIdOf<T>, NFTCurrency<T>),
         /// A nft is removed from the marketplace by its owner. \[nft id\]
         NftUnlisted(NFTIdOf<T>),
         /// A nft has been sold. \[nft id, new owner\]
@@ -171,5 +171,5 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn nft_for_sale)]
     pub type NFTsForSale<T: Config> =
-        StorageMap<_, Blake2_128Concat, NFTIdOf<T>, (T::AccountId, NFTCurrency), ValueQuery>;
+        StorageMap<_, Blake2_128Concat, NFTIdOf<T>, (T::AccountId, NFTCurrency<T>), ValueQuery>;
 }

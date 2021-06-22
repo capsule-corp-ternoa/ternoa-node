@@ -2,31 +2,27 @@ use codec::{Decode, Encode};
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-/// TODO!
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct NFTCurrencyCombined {
-    pub caps: u128,
-    pub tiime: u128,
-}
+use crate::{BalanceCaps, BalanceTiime, Config};
 
 /// TODO!
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum NFTCurrency {
-    CAPS(u128),
-    TIIME(u128),
-    COMBINED(NFTCurrencyCombined),
+pub struct NFTCurrencyCombined<T: Config> {
+    pub caps: BalanceCaps<T>,
+    pub tiime: BalanceTiime<T>,
 }
 
-impl Default for NFTCurrency {
-    fn default() -> Self {
-        Self::CAPS(0)
-    }
+/// TODO!
+#[derive(Encode, Decode, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub enum NFTCurrency<T: Config> {
+    CAPS(BalanceCaps<T>),
+    TIIME(BalanceTiime<T>),
+    COMBINED(NFTCurrencyCombined<T>),
 }
 
-impl NFTCurrency {
-    pub fn caps(&self) -> Option<u128> {
+impl<T: Config> NFTCurrency<T> {
+    pub fn caps(&self) -> Option<BalanceCaps<T>> {
         match self {
             NFTCurrency::CAPS(x) => Some(x.clone()),
             NFTCurrency::TIIME(_) => None,
@@ -34,7 +30,7 @@ impl NFTCurrency {
         }
     }
 
-    pub fn tiime(&self) -> Option<u128> {
+    pub fn tiime(&self) -> Option<BalanceTiime<T>> {
         match self {
             NFTCurrency::CAPS(_) => None,
             NFTCurrency::TIIME(x) => Some(x.clone()),
@@ -42,6 +38,20 @@ impl NFTCurrency {
         }
     }
 }
+
+impl<T: Config> Default for NFTCurrency<T> {
+    fn default() -> Self {
+        Self::CAPS(BalanceCaps::<T>::default())
+    }
+}
+
+#[cfg(feature = "std")]
+impl<T: Config> std::fmt::Debug for NFTCurrency<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
+
 /// TODO!
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
