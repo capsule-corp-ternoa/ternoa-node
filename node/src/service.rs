@@ -71,7 +71,7 @@ pub fn new_partial(
         config.transaction_pool.clone(),
         config.role.is_authority().into(),
         config.prometheus_registry(),
-        task_manager.spawn_essential_handle(),
+        task_manager.spawn_handle(),
         client.clone(),
     );
 
@@ -220,7 +220,7 @@ pub fn new_full_base(
         ),
     );
 
-    let (network, system_rpc_tx, network_starter) =
+    let (network, network_status_sinks, system_rpc_tx, network_starter) =
         sc_service::build_network(sc_service::BuildNetworkParams {
             config: &config,
             client: client.clone(),
@@ -254,6 +254,7 @@ pub fn new_full_base(
         client: client.clone(),
         keystore: keystore_container.sync_keystore(),
         network: network.clone(),
+        network_status_sinks,
         rpc_extensions_builder: Box::new(rpc_extensions_builder),
         transaction_pool: transaction_pool.clone(),
         task_manager: &mut task_manager,
@@ -288,7 +289,6 @@ pub fn new_full_base(
             env: proposer,
             block_import,
             sync_oracle: network.clone(),
-            justification_sync_link: network.clone(),
             create_inherent_data_providers: move |parent, ()| {
                 let client_clone = client_clone.clone();
                 async move {
@@ -313,7 +313,6 @@ pub fn new_full_base(
             babe_link,
             can_author_with,
             block_proposal_slot_portion: SlotProportion::new(0.5),
-            max_block_proposal_slot_portion: None,
             telemetry: telemetry.as_ref().map(|x| x.handle()),
         };
 
@@ -365,7 +364,7 @@ pub fn new_full_base(
         name: Some(name),
         observer_enabled: false,
         keystore,
-        local_role: role,
+        is_authority: role.is_authority(),
         telemetry: telemetry.as_ref().map(|x| x.handle()),
     };
 
@@ -461,7 +460,7 @@ pub fn new_light_base(
     let transaction_pool = Arc::new(sc_transaction_pool::BasicPool::new_light(
         config.transaction_pool.clone(),
         config.prometheus_registry(),
-        task_manager.spawn_essential_handle(),
+        task_manager.spawn_handle(),
         client.clone(),
         on_demand.clone(),
     ));
@@ -507,7 +506,7 @@ pub fn new_light_base(
         telemetry.as_ref().map(|x| x.handle()),
     )?;
 
-    let (network, system_rpc_tx, network_starter) =
+    let (network, network_status_sinks, system_rpc_tx, network_starter) =
         sc_service::build_network(sc_service::BuildNetworkParams {
             config: &config,
             client: client.clone(),
@@ -517,26 +516,7 @@ pub fn new_light_base(
             on_demand: Some(on_demand.clone()),
             block_announce_validator_builder: None,
         })?;
-
-    let enable_grandpa = !config.disable_grandpa;
-    if enable_grandpa {
-        let name = config.network.node_name.clone();
-
-        let config = sc_finality_grandpa::Config {
-            gossip_duration: std::time::Duration::from_millis(333),
-            justification_period: 512,
-            name: Some(name),
-            observer_enabled: false,
-            keystore: None,
-            local_role: config.role.clone(),
-            telemetry: telemetry.as_ref().map(|x| x.handle()),
-        };
-
-        task_manager.spawn_handle().spawn_blocking(
-            "grandpa-observer",
-            sc_finality_grandpa::run_grandpa_observer(config, grandpa_link, network.clone())?,
-        );
-    }
+    network_starter.start_network();
 
     if config.offchain_worker.enabled {
         sc_service::build_offchain_workers(
@@ -564,13 +544,13 @@ pub fn new_light_base(
         keystore: keystore_container.sync_keystore(),
         config,
         backend,
+        network_status_sinks,
         system_rpc_tx,
         network: network.clone(),
         task_manager: &mut task_manager,
         telemetry: telemetry.as_mut(),
     })?;
 
-    network_starter.start_network();
     Ok((
         task_manager,
         rpc_handlers,

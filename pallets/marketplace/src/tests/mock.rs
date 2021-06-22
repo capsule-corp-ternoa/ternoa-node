@@ -62,8 +62,6 @@ parameter_types! {
 
 impl pallet_balances::Config for Test {
     type Balance = u64;
-    type MaxReserves = ();
-    type ReserveIdentifier = [u8; 8];
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;

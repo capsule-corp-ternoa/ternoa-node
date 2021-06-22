@@ -104,5 +104,3 @@ impl pallet_utility::Config for Runtime {
     type Call = Call;
     type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }
-
-impl pallet_randomness_collective_flip::Config for Runtime {}
