@@ -84,7 +84,8 @@ impl ternoa_nfts::Config for Test {
 
 impl Config for Test {
     type Event = Event;
-    type Currency = Balances;
+    type CurrencyCaps = Balances;
+    type CurrencyTiime = Balances;
     type NFTs = NFTs;
     type WeightInfo = ();
 }

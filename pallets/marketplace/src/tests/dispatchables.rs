@@ -1,5 +1,5 @@
 use super::mock::*;
-use crate::{Error, NFTsForSale};
+use crate::{Error, NFTCurrency, NFTCurrencyId, NFTsForSale};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 
@@ -10,7 +10,7 @@ fn cannot_list_nft_if_not_owner() {
         .build()
         .execute_with(|| {
             assert_noop!(
-                Marketplace::list(RawOrigin::Signed(BOB).into(), 0, 1),
+                Marketplace::list(RawOrigin::Signed(BOB).into(), 0, NFTCurrency::CAPS(1)),
                 Error::<Test>::NotNftOwner
             );
         })
@@ -22,9 +22,13 @@ fn cannot_list_the_same_nft_twice() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 1));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(1)
+            ));
             assert_noop!(
-                Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 1),
+                Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, NFTCurrency::CAPS(1)),
                 ternoa_nfts::Error::<Test>::Locked
             );
         })
@@ -36,8 +40,12 @@ fn list_register_price() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 1));
-            assert_eq!(Marketplace::nft_for_sale(0), (ALICE, 1));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(1)
+            ));
+            assert_eq!(Marketplace::nft_for_sale(0), (ALICE, NFTCurrency::CAPS(1)));
         })
 }
 
@@ -45,7 +53,7 @@ fn list_register_price() {
 fn cannot_buy_if_not_for_sale() {
     ExtBuilder::default().build().execute_with(|| {
         assert_noop!(
-            Marketplace::buy(RawOrigin::Signed(ALICE).into(), 0),
+            Marketplace::buy(RawOrigin::Signed(ALICE).into(), 0, NFTCurrencyId::CAPS),
             Error::<Test>::NftNotForSale
         );
     })
@@ -57,9 +65,13 @@ fn cannot_buy_if_not_enough_money() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 1));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(1)
+            ));
             assert_noop!(
-                Marketplace::buy(RawOrigin::Signed(BOB).into(), 0),
+                Marketplace::buy(RawOrigin::Signed(BOB).into(), 0, NFTCurrencyId::CAPS),
                 pallet_balances::Error::<Test, _>::InsufficientBalance
             );
         })
@@ -72,8 +84,16 @@ fn buy_transfer_funds_to_owner() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
-            assert_ok!(Marketplace::buy(RawOrigin::Signed(BOB).into(), 0));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(50)
+            ));
+            assert_ok!(Marketplace::buy(
+                RawOrigin::Signed(BOB).into(),
+                0,
+                NFTCurrencyId::CAPS
+            ));
 
             assert_eq!(Balances::free_balance(ALICE), 150);
             assert_eq!(Balances::free_balance(BOB), 50);
@@ -87,8 +107,16 @@ fn buy_change_owner() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
-            assert_ok!(Marketplace::buy(RawOrigin::Signed(BOB).into(), 0));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(50)
+            ));
+            assert_ok!(Marketplace::buy(
+                RawOrigin::Signed(BOB).into(),
+                0,
+                NFTCurrencyId::CAPS
+            ));
 
             assert_eq!(NFTs::data(0).owner, BOB);
         })
@@ -101,8 +129,16 @@ fn buy_unlock_nft() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
-            assert_ok!(Marketplace::buy(RawOrigin::Signed(BOB).into(), 0));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(50)
+            ));
+            assert_ok!(Marketplace::buy(
+                RawOrigin::Signed(BOB).into(),
+                0,
+                NFTCurrencyId::CAPS
+            ));
 
             assert_eq!(NFTs::data(0).locked, false);
         })
@@ -127,7 +163,11 @@ fn cannot_unlist_if_not_owner() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(50)
+            ));
             assert_noop!(
                 Marketplace::unlist(RawOrigin::Signed(BOB).into(), 0),
                 Error::<Test>::NotNftOwner
@@ -141,7 +181,11 @@ fn unlist_unlocks_nft() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(50)
+            ));
             assert_ok!(Marketplace::unlist(RawOrigin::Signed(ALICE).into(), 0));
 
             assert_eq!(NFTs::data(0).locked, false);
@@ -154,7 +198,11 @@ fn unlist_remove_from_for_sale() {
         .one_nft_for_alice()
         .build()
         .execute_with(|| {
-            assert_ok!(Marketplace::list(RawOrigin::Signed(ALICE).into(), 0, 50));
+            assert_ok!(Marketplace::list(
+                RawOrigin::Signed(ALICE).into(),
+                0,
+                NFTCurrency::CAPS(50)
+            ));
             assert_ok!(Marketplace::unlist(RawOrigin::Signed(ALICE).into(), 0));
 
             assert_eq!(NFTsForSale::<Test>::contains_key(0), false);
@@ -169,15 +217,18 @@ fn bought_nft_is_not_listed_anymore() {
         .build()
         .execute_with(|| {
             let id = 0;
-            let price = 100;
 
             let seller = RawOrigin::Signed(ALICE);
             let buyer = RawOrigin::Signed(BOB);
 
-            assert_ok!(Marketplace::list(seller.into(), id, price));
-            assert_ok!(Marketplace::buy(buyer.clone().into(), id));
+            assert_ok!(Marketplace::list(seller.into(), id, NFTCurrency::CAPS(100)));
+            assert_ok!(Marketplace::buy(
+                buyer.clone().into(),
+                id,
+                NFTCurrencyId::CAPS
+            ));
             assert_noop!(
-                Marketplace::buy(buyer.into(), id),
+                Marketplace::buy(buyer.into(), id, NFTCurrencyId::CAPS),
                 Error::<Test>::NftNotForSale,
             );
         })
@@ -190,13 +241,16 @@ fn cannot_buy_your_own_nft() {
         .build()
         .execute_with(|| {
             let id = 0;
-            let price = 100;
 
             let caller = RawOrigin::Signed(ALICE);
 
-            assert_ok!(Marketplace::list(caller.clone().into(), id, price));
+            assert_ok!(Marketplace::list(
+                caller.clone().into(),
+                id,
+                NFTCurrency::CAPS(100)
+            ));
             assert_noop!(
-                Marketplace::buy(caller.into(), id),
+                Marketplace::buy(caller.into(), id, NFTCurrencyId::CAPS),
                 Error::<Test>::NftAlreadyOwned,
             );
         })
