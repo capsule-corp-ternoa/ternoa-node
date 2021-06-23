@@ -38,6 +38,8 @@ mod pallets_validators;
 mod version;
 
 use constants::time::PRIMARY_PROBABILITY;
+/// Added for compatibility with SubstraTee
+pub use pallet_substratee_registry as substratee_registry;
 use pallets_validators::EpochDuration;
 pub use pallets_validators::SessionKeys;
 #[cfg(any(feature = "std", test))]
