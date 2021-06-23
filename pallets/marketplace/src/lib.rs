@@ -22,8 +22,6 @@ pub trait WeightInfo {
 
 #[frame_support::pallet]
 pub mod pallet {
-    use sp_std::convert::TryInto;
-
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_support::traits::Currency;
@@ -123,15 +121,11 @@ pub mod pallet {
             let keep_alive = ExistenceRequirement::KeepAlive;
             match currency {
                 NFTCurrencyId::CAPS => {
-                    let price = price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
-                    let value: BalanceCaps<T> =
-                        price.try_into().map_err(|_| Error::<T>::InternalError)?;
+                    let value = price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
                     T::CurrencyCaps::transfer(&who, &owner, value, keep_alive)?;
                 }
                 NFTCurrencyId::TIIME => {
-                    let price = price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
-                    let value: BalanceTiime<T> =
-                        price.try_into().map_err(|_| Error::<T>::InternalError)?;
+                    let value = price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
                     T::CurrencyTiime::transfer(&who, &owner, value, keep_alive)?;
                 }
             }
@@ -150,7 +144,7 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", CommonBalanceT<T> = "Balance")]
     pub enum Event<T: Config> {
-        /// A nft has been listed for sale. \[nft id, currency id, price\]
+        /// A nft has been listed for sale. \[nft id, nft currency\]
         NftListed(NFTIdOf<T>, NFTCurrency<T>),
         /// A nft is removed from the marketplace by its owner. \[nft id\]
         NftUnlisted(NFTIdOf<T>),
@@ -162,13 +156,11 @@ pub mod pallet {
     pub enum Error<T> {
         /// This function is reserved to the owner of a nft.
         NotNftOwner,
-        /// Nft is not present on the marketplace
+        /// Nft is not present on the marketplace.
         NftNotForSale,
-        /// Yot cannot buy your own nft
+        /// Yot cannot buy your own nft.
         NftAlreadyOwned,
-        /// TODO!
-        InternalError,
-        /// TODO!
+        /// Used wrong currency to buy an nft.
         WrongCurrencyUsed,
     }
 

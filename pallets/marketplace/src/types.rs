@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{BalanceCaps, BalanceTiime, Config};
 
-/// TODO!
+/// Structure that stores both NFT currencies at the same time.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct NFTCurrencyCombined<T: Config> {
@@ -29,7 +29,7 @@ impl<T: Config> std::fmt::Debug for NFTCurrencyCombined<T> {
     }
 }
 
-/// TODO!
+/// Currency combination that can be used to set a price of an NFT.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrency<T: Config> {
@@ -73,7 +73,7 @@ impl<T: Config> std::fmt::Debug for NFTCurrency<T> {
     }
 }
 
-/// TODO!
+/// Currency ID
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrencyId {
