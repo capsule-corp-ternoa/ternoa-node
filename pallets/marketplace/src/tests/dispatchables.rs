@@ -2,7 +2,6 @@ use super::mock::*;
 use crate::tests::mock;
 use crate::{Error, NFTCurrency, NFTCurrencyCombined, NFTCurrencyId, NFTsForSale};
 use frame_support::instances::{Instance0, Instance1};
-use frame_support::traits::Currency;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 

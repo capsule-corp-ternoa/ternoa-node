@@ -18,6 +18,17 @@ impl<T: Config> NFTCurrencyCombined<T> {
     }
 }
 
+#[cfg(feature = "std")]
+impl<T: Config> std::fmt::Debug for NFTCurrencyCombined<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "NFTCurrencyCombined {{caps: {:?}, tiime: {:?}}}",
+            self.caps, self.tiime
+        )
+    }
+}
+
 /// TODO!
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -54,7 +65,11 @@ impl<T: Config> Default for NFTCurrency<T> {
 #[cfg(feature = "std")]
 impl<T: Config> std::fmt::Debug for NFTCurrency<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        match &self {
+            NFTCurrency::CAPS(x) => write!(f, "CAPS({:?})", x),
+            NFTCurrency::TIIME(x) => write!(f, "TIIME({:?})", x),
+            NFTCurrency::COMBINED(x) => write!(f, "COMBINED({:?})", x),
+        }
     }
 }
 
