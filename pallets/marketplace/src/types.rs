@@ -5,15 +5,21 @@ use serde::{Deserialize, Serialize};
 use crate::{BalanceCaps, BalanceTiime, Config};
 
 /// TODO!
-#[derive(Encode, Decode, Clone, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct NFTCurrencyCombined<T: Config> {
     pub caps: BalanceCaps<T>,
     pub tiime: BalanceTiime<T>,
 }
 
+impl<T: Config> NFTCurrencyCombined<T> {
+    pub fn new(caps: BalanceCaps<T>, tiime: BalanceTiime<T>) -> Self {
+        Self { caps, tiime }
+    }
+}
+
 /// TODO!
-#[derive(Encode, Decode, Clone, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrency<T: Config> {
     CAPS(BalanceCaps<T>),

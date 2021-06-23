@@ -1,5 +1,5 @@
 use crate::{self as ternoa_marketplace, Config};
-use frame_support::instances::Instance0;
+use frame_support::instances::{Instance0, Instance1};
 use frame_support::parameter_types;
 use frame_support::traits::GenesisBuild;
 use sp_core::H256;
@@ -97,7 +97,7 @@ impl ternoa_nfts::Config for Test {
 impl Config for Test {
     type Event = Event;
     type CurrencyCaps = Balances;
-    type CurrencyTiime = Balances;
+    type CurrencyTiime = TiimeBalances;
     type NFTs = NFTs;
     type WeightInfo = ();
 }
@@ -110,7 +110,8 @@ pub const BOB: u64 = 2;
 pub struct ExtBuilder {
     nfts: Vec<(u64, NFTDetails)>,
     series: Vec<(u64, u32)>,
-    endowed_accounts: Vec<(u64, u64)>,
+    caps_endowed_accounts: Vec<(u64, u64)>,
+    tiime_endowed_accounts: Vec<(u64, u64)>,
 }
 
 impl Default for ExtBuilder {
@@ -118,7 +119,8 @@ impl Default for ExtBuilder {
         ExtBuilder {
             nfts: Vec::new(),
             series: Vec::new(),
-            endowed_accounts: Vec::new(),
+            caps_endowed_accounts: Vec::new(),
+            tiime_endowed_accounts: Vec::new(),
         }
     }
 }
@@ -129,9 +131,30 @@ impl ExtBuilder {
         self
     }
 
-    pub fn one_hundred_for_alice_n_bob(mut self) -> Self {
-        self.endowed_accounts.push((ALICE, 100));
-        self.endowed_accounts.push((BOB, 100));
+    pub fn three_nfts_for_alice(mut self) -> Self {
+        self.nfts.push((ALICE, NFTDetails::default()));
+        self.nfts.push((ALICE, NFTDetails::default()));
+        self.nfts.push((ALICE, NFTDetails::default()));
+        self
+    }
+
+    pub fn n_nfts_for_alice(mut self, n: u32) -> Self {
+        for _ in 0..n {
+            self.nfts.push((ALICE, NFTDetails::default()));
+        }
+
+        self
+    }
+
+    pub fn one_hundred_caps_for_alice_n_bob(mut self) -> Self {
+        self.caps_endowed_accounts.push((ALICE, 100));
+        self.caps_endowed_accounts.push((BOB, 100));
+        self
+    }
+
+    pub fn one_hundred_tiime_for_alice_n_bob(mut self) -> Self {
+        self.tiime_endowed_accounts.push((ALICE, 100));
+        self.tiime_endowed_accounts.push((BOB, 100));
         self
     }
 
@@ -141,7 +164,13 @@ impl ExtBuilder {
             .unwrap();
 
         pallet_balances::GenesisConfig::<Test, Instance0> {
-            balances: self.endowed_accounts,
+            balances: self.caps_endowed_accounts,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        pallet_balances::GenesisConfig::<Test, Instance1> {
+            balances: self.tiime_endowed_accounts,
         }
         .assimilate_storage(&mut t)
         .unwrap();
