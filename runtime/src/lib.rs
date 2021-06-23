@@ -6,10 +6,7 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
-use frame_support::{
-    construct_runtime,
-    traits::{KeyOwnerProofSystem, Randomness},
-};
+use frame_support::{construct_runtime, traits::KeyOwnerProofSystem};
 use pallet_grandpa::{
     fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
@@ -33,6 +30,7 @@ pub mod constants;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
+mod pallets_substratee;
 mod pallets_ternoa;
 mod pallets_time;
 mod pallets_treasury;
@@ -44,6 +42,7 @@ use pallets_validators::EpochDuration;
 pub use pallets_validators::SessionKeys;
 #[cfg(any(feature = "std", test))]
 pub use pallets_validators::StakerStatus;
+pub use pallets_validators::BABE_GENESIS_EPOCH_CONFIG;
 #[cfg(feature = "std")]
 pub use version::native_version;
 pub use version::VERSION;
@@ -68,34 +67,36 @@ construct_runtime!(
         NodeBlock = ternoa_primitives::Block,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
-        AuthorityDiscovery: pallet_authority_discovery::{Module, Call, Config},
-        Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
-        Babe: pallet_babe::{Module, Call, Storage, Config, ValidateUnsigned},
-        Balances: pallet_balances::<Instance0>::{Module, Call, Storage, Config<T>, Event<T>},
-        Bounties: pallet_bounties::{Module, Call, Storage, Event<T>},
-        Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
-        Historical: pallet_session_historical::{Module},
-        ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
-        Mandate: pallet_mandate::{Module, Call, Event},
-        Offences: pallet_offences::{Module, Call, Storage, Event},
-        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
-        Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
-        Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
-        Staking: pallet_curveless_staking::{Module, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        TechnicalCommittee: pallet_collective::<Instance0>::{Module, Call, Storage, Origin<T>, Event<T>, Config<T>},
-        TechnicalMembership: pallet_membership::<Instance0>::{Module, Call, Storage, Event<T>, Config<T>},
-        Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
-        TransactionPayment: pallet_transaction_payment::{Module, Storage},
-        Utility: pallet_utility::{Module, Call, Storage, Event},
+        AuthorityDiscovery: pallet_authority_discovery::{Pallet, Config},
+        Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent},
+        Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned},
+        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Bounties: pallet_bounties::{Pallet, Call, Storage, Event<T>},
+        Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned},
+        Historical: pallet_session_historical::{Pallet},
+        ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
+        Mandate: pallet_mandate::{Pallet, Call, Event},
+        Offences: pallet_offences::{Pallet, Storage, Event},
+        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
+        Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>},
+        Staking: pallet_curveless_staking::{Pallet, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
+        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        TechnicalCommittee: pallet_collective::<DefaultInstance>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>},
+        TechnicalMembership: pallet_membership::<DefaultInstance>::{Pallet, Call, Storage, Event<T>, Config<T>},
+        Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>},
+        TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
+        Utility: pallet_utility::{Pallet, Call, Storage, Event},
 
-        TiimeAccountStore: ternoa_account_store::{Module, Storage},
-        TiimeBalances: pallet_balances::<Instance1>::{Module, Call, Storage, Config<T>, Event<T>},
+        TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
+        TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Config<T>, Event<T>},
 
-        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-        Marketplace: ternoa_marketplace::{Module, Call, Storage, Event<T>},
-        Nfts: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
-        TimedEscrow: ternoa_timed_escrow::{Module, Call, Event<T>},
+        Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+        Marketplace: ternoa_marketplace::{Pallet, Call, Storage, Event<T>},
+        Nfts: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
+        TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
+
+        SubstrateeRegistry: pallet_substratee_registry::{Pallet, Call, Storage, Event<T>},
     }
 );
 
@@ -135,7 +136,7 @@ pub type Executive = frame_executive::Executive<
     Block,
     frame_system::ChainContext<Runtime>,
     Runtime,
-    AllModules,
+    AllPallets,
 >;
 
 impl_runtime_apis! {
@@ -174,10 +175,6 @@ impl_runtime_apis! {
 
         fn check_inherents(block: Block, data: InherentData) -> CheckInherentsResult {
             data.check_extrinsics(&block)
-        }
-
-        fn random_seed() -> <Block as BlockT>::Hash {
-            RandomnessCollectiveFlip::random_seed()
         }
     }
 
@@ -326,7 +323,7 @@ impl_runtime_apis! {
             use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
             //use pallet_session_benchmarking::Module as SessionBench;
             //use pallet_offences_benchmarking::Module as OffencesBench;
-            use frame_system_benchmarking::Module as SystemBench;
+            use frame_system_benchmarking::Pallet as SystemBench;
 
             // those two depends on pallets we do not use and pause compile time issues
             //impl pallet_session_benchmarking::Config for Runtime {}

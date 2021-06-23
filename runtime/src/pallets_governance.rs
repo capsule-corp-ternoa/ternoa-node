@@ -11,8 +11,8 @@ parameter_types! {
 }
 
 // --- Technical committee
-pub type TechnicalCollective = pallet_collective::Instance0;
-pub type TechnicalCollectiveMembers = pallet_membership::Instance0;
+pub type TechnicalCollective = pallet_collective::DefaultInstance;
+pub type TechnicalCollectiveMembers = pallet_membership::DefaultInstance;
 pub type MoreThanHalfOfTheTechnicalCollective =
     pallet_collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
 
@@ -36,6 +36,8 @@ impl pallet_membership::Config<TechnicalCollectiveMembers> for Runtime {
     type PrimeOrigin = MoreThanHalfOfTheTechnicalCollective;
     type MembershipInitialized = TechnicalCommittee;
     type MembershipChanged = TechnicalCommittee;
+    type MaxMembers = MaxMembers;
+    type WeightInfo = ();
 }
 
 impl pallet_mandate::Config for Runtime {

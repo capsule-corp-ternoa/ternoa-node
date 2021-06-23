@@ -103,21 +103,21 @@ pub fn testnet_genesis(
 
     GenesisConfig {
         // Core
-        frame_system: Some(SystemConfig {
+        frame_system: SystemConfig {
             code: wasm_binary_unwrap().to_vec(),
             changes_trie_config: Default::default(),
-        }),
-        pallet_balances_Instance0: Some(BalancesConfig {
+        },
+        pallet_balances: BalancesConfig {
             balances: endowed_accounts
                 .iter()
                 .cloned()
                 .map(|k| (k, ENDOWMENT))
                 .collect(),
-        }),
-        pallet_balances_Instance1: Some(Default::default()),
+        },
+        pallet_balances_Instance1: Default::default(),
 
         // Consensus
-        pallet_session: Some(SessionConfig {
+        pallet_session: SessionConfig {
             keys: initial_authorities
                 .iter()
                 .map(|x| {
@@ -128,16 +128,17 @@ pub fn testnet_genesis(
                     )
                 })
                 .collect::<Vec<_>>(),
-        }),
-        pallet_babe: Some(BabeConfig {
+        },
+        pallet_babe: BabeConfig {
             authorities: vec![],
-        }),
-        pallet_im_online: Some(ImOnlineConfig { keys: vec![] }),
-        pallet_authority_discovery: Some(AuthorityDiscoveryConfig { keys: vec![] }),
-        pallet_grandpa: Some(GrandpaConfig {
+            epoch_config: Some(ternoa_runtime::BABE_GENESIS_EPOCH_CONFIG),
+        },
+        pallet_im_online: ImOnlineConfig { keys: vec![] },
+        pallet_authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
+        pallet_grandpa: GrandpaConfig {
             authorities: vec![],
-        }),
-        pallet_curveless_staking: Some(StakingConfig {
+        },
+        pallet_curveless_staking: StakingConfig {
             validator_count: initial_authorities.len() as u32 * 2,
             minimum_validator_count: initial_authorities.len() as u32,
             stakers: initial_authorities
@@ -147,18 +148,18 @@ pub fn testnet_genesis(
             invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
-        }),
+        },
         pallet_treasury: Default::default(),
 
         // Governance
-        pallet_collective_Instance0: Some(Default::default()),
-        pallet_membership_Instance0: Some(TechnicalMembershipConfig {
+        pallet_collective_DefaultInstance: Default::default(),
+        pallet_membership_DefaultInstance: TechnicalMembershipConfig {
             members: vec![root.unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice"))],
             phantom: Default::default(),
-        }),
+        },
 
         // Ternoa
-        ternoa_nfts: Some(Default::default()),
+        ternoa_nfts: Default::default(),
     }
 }
 

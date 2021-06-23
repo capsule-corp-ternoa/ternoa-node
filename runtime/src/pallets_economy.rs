@@ -47,7 +47,7 @@ parameter_types! {
     pub const MaxLocks: u32 = 50;
 }
 
-impl pallet_balances::Config<pallet_balances::Instance0> for Runtime {
+impl pallet_balances::Config for Runtime {
     type MaxLocks = MaxLocks;
     type Balance = Balance;
     type DustRemoval = ();

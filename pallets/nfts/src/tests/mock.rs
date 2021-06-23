@@ -15,9 +15,9 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Module, Call, Config<T>, Storage, Event<T>},
-        NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
+        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        Balances: pallet_balances::{Pallet, Call, Config<T>, Storage, Event<T>},
+        NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
     }
 );
 
@@ -49,6 +49,7 @@ impl frame_system::Config for Test {
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
     type SS58Prefix = ();
+    type OnSetCode = ();
 }
 
 parameter_types! {

@@ -1,8 +1,8 @@
-use crate::{Call, Config, Module, NFTIdOf};
+use crate::{Call, Config, NFTIdOf, Pallet};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
-use frame_system::{Module as SystemModule, RawOrigin};
+use frame_system::{Pallet as SystemModule, RawOrigin};
 use sp_runtime::traits::StaticLookup;
-use sp_std::{boxed::Box, prelude::*};
+use sp_std::prelude::*;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 
 fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
@@ -34,7 +34,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
+        drop(Pallet::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
     }: _(RawOrigin::Signed(caller), nft_id)
     verify {
         assert!(!T::NFTs::locked(nft_id));
@@ -48,7 +48,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        drop(Module::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
+        drop(Pallet::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
     }: _(RawOrigin::Root, receiver.clone(), nft_id)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), receiver);
