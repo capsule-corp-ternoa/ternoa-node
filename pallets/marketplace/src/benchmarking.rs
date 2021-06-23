@@ -1,4 +1,4 @@
-use crate::{Call, Config, NFTIdOf, NFTsForSale, Pallet};
+use crate::{Call, Config, NFTCurrency, NFTCurrencyId, NFTIdOf, NFTsForSale, Pallet};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
@@ -19,14 +19,14 @@ benchmarks! {
         let seller: T::AccountId = account("seller", 0, 0);
 
         let balance: u32 = 1_000_000;
-        T::Currency::make_free_balance_be(&buyer, balance.into());
-        T::Currency::make_free_balance_be(&seller, balance.into());
+        T::CurrencyCaps::make_free_balance_be(&buyer, balance.into());
+        T::CurrencyCaps::make_free_balance_be(&seller, balance.into());
 
         let id = create_nft::<T>(&seller);
-        let price: u32 = 0;
+        let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(0u32.into());
 
-        drop(Pallet::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price.into()));
-    }: _(RawOrigin::Signed(buyer.clone().into()), id)
+        drop(Pallet::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price));
+    }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::CAPS)
     verify {
         assert_eq!(T::NFTs::owner(id), buyer);
         assert_eq!(NFTsForSale::<T>::contains_key(id), false);
@@ -36,7 +36,9 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-    }: _(RawOrigin::Signed(caller.clone().into()), nft_id, 100u32.into())
+        let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(100u32.into());
+
+    }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), caller);
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), true);
@@ -46,7 +48,9 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        drop(Pallet::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, 100u32.into()));
+        let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(100u32.into());
+
+        drop(Pallet::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price));
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
     verify {
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);

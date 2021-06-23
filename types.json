@@ -19,5 +19,22 @@
     "NFTSeriesDetails": {
         "owner": "AccountId",
         "nfts": "Vec<NFTId>"
+    },
+    "NFTCurrencyCombined": {
+        "caps": "Balance",
+        "tiime": "Balance"
+    },
+    "NFTCurrency": {
+        "_enum": {
+            "CAPS": "Balance",
+            "TIIME": "Balance",
+            "COMBINED": "NFTCurrencyCombined"
+        }
+    },
+    "NFTCurrencyId": {
+        "_enum": [
+            "CAPS",
+            "TIIME"
+        ]
     }
 }

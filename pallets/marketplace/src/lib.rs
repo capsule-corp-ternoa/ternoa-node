@@ -4,10 +4,13 @@
 mod benchmarking;
 mod default_weights;
 
+mod migration;
 #[cfg(test)]
 mod tests;
+mod types;
 
 pub use pallet::*;
+pub use types::*;
 
 use frame_support::weights::Weight;
 
@@ -21,25 +24,31 @@ pub trait WeightInfo {
 pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
-    use frame_support::traits::{Currency, ExistenceRequirement};
+    use frame_support::traits::Currency;
+    use frame_support::traits::ExistenceRequirement;
     use frame_system::pallet_prelude::*;
     use ternoa_common::traits::{LockableNFTs, NFTs};
 
-    pub type BalanceOf<T> =
-        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
     pub type NFTIdOf<T> = <<T as Config>::NFTs as LockableNFTs>::NFTId;
+
+    pub type BalanceCaps<T> =
+        <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+    pub type BalanceTiime<T> =
+        <<T as Config>::CurrencyTiime as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        /// Currency used to handle transactions and pay for the nfts.
-        type Currency: Currency<Self::AccountId>;
         /// Pallet managing nfts.
         type NFTs: LockableNFTs<AccountId = Self::AccountId>
             + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
         /// Weight values for this pallet
         type WeightInfo: WeightInfo;
+
+        /// Currency used to handle transactions and pay for the nfts.
+        type CurrencyCaps: Currency<Self::AccountId>;
+        type CurrencyTiime: Currency<Self::AccountId>;
     }
 
     #[pallet::pallet]
@@ -47,7 +56,11 @@ pub mod pallet {
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_runtime_upgrade() -> frame_support::weights::Weight {
+            migration::migration::<T>()
+        }
+    }
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
@@ -56,13 +69,13 @@ pub mod pallet {
         pub fn list(
             origin: OriginFor<T>,
             nft_id: NFTIdOf<T>,
-            price: BalanceOf<T>,
+            price: NFTCurrency<T>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNftOwner);
 
             T::NFTs::lock(nft_id)?;
-            NFTsForSale::<T>::insert(nft_id, (who.clone(), price));
+            NFTsForSale::<T>::insert(nft_id, (who.clone(), price.clone()));
 
             Self::deposit_event(Event::NftListed(nft_id, price));
 
@@ -90,7 +103,11 @@ pub mod pallet {
 
         /// Buy a listed nft
         #[pallet::weight(T::WeightInfo::buy())]
-        pub fn buy(origin: OriginFor<T>, nft_id: NFTIdOf<T>) -> DispatchResultWithPostInfo {
+        pub fn buy(
+            origin: OriginFor<T>,
+            nft_id: NFTIdOf<T>,
+            currency: NFTCurrencyId,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             ensure!(
                 NFTsForSale::<T>::contains_key(nft_id),
@@ -100,8 +117,18 @@ pub mod pallet {
             let (owner, price) = NFTsForSale::<T>::get(nft_id);
             ensure!(owner != who, Error::<T>::NftAlreadyOwned);
 
-            // KeepAlive because they need to be able to use the NFT later on
-            T::Currency::transfer(&who, &owner, price, ExistenceRequirement::KeepAlive)?;
+            // KeepAlive because they need to be able to use the NFT later on#
+            let keep_alive = ExistenceRequirement::KeepAlive;
+            match currency {
+                NFTCurrencyId::CAPS => {
+                    let value = price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    T::CurrencyCaps::transfer(&who, &owner, value, keep_alive)?;
+                }
+                NFTCurrencyId::TIIME => {
+                    let value = price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    T::CurrencyTiime::transfer(&who, &owner, value, keep_alive)?;
+                }
+            }
 
             T::NFTs::unlock(nft_id);
             T::NFTs::set_owner(nft_id, &who)?;
@@ -115,10 +142,10 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", BalanceOf<T> = "Balance")]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", CommonBalanceT<T> = "Balance")]
     pub enum Event<T: Config> {
-        /// A nft has been listed for sale. \[nft id, price\]
-        NftListed(NFTIdOf<T>, BalanceOf<T>),
+        /// A nft has been listed for sale. \[nft id, nft currency\]
+        NftListed(NFTIdOf<T>, NFTCurrency<T>),
         /// A nft is removed from the marketplace by its owner. \[nft id\]
         NftUnlisted(NFTIdOf<T>),
         /// A nft has been sold. \[nft id, new owner\]
@@ -129,15 +156,17 @@ pub mod pallet {
     pub enum Error<T> {
         /// This function is reserved to the owner of a nft.
         NotNftOwner,
-        /// Nft is not present on the marketplace
+        /// Nft is not present on the marketplace.
         NftNotForSale,
-        /// Yot cannot buy your own nft
+        /// Yot cannot buy your own nft.
         NftAlreadyOwned,
+        /// Used wrong currency to buy an nft.
+        WrongCurrencyUsed,
     }
 
     /// Nfts listed on the marketplace
     #[pallet::storage]
     #[pallet::getter(fn nft_for_sale)]
     pub type NFTsForSale<T: Config> =
-        StorageMap<_, Blake2_128Concat, NFTIdOf<T>, (T::AccountId, BalanceOf<T>), ValueQuery>;
+        StorageMap<_, Blake2_128Concat, NFTIdOf<T>, (T::AccountId, NFTCurrency<T>), ValueQuery>;
 }
