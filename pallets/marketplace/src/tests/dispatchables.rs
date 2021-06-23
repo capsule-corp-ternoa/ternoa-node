@@ -1,7 +1,7 @@
 use super::mock::*;
 use crate::tests::mock;
 use crate::{Error, NFTCurrency, NFTCurrencyCombined, NFTCurrencyId, NFTsForSale};
-use frame_support::instances::{Instance0, Instance1};
+use frame_support::instances::Instance1;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 
@@ -236,7 +236,7 @@ fn buy_nft() {
             // Bob should NOT be able to buy nfts that are too expensive.
             assert_noop!(
                 Marketplace::buy(bob_caller.clone(), NFT_ID_1, CAPS_ID),
-                pallet_balances::Error::<Test, Instance0>::InsufficientBalance,
+                pallet_balances::Error::<Test>::InsufficientBalance,
             );
 
             assert_noop!(

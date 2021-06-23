@@ -1,5 +1,5 @@
 use crate::{self as ternoa_marketplace, Config};
-use frame_support::instances::{Instance0, Instance1};
+use frame_support::instances::Instance1;
 use frame_support::parameter_types;
 use frame_support::traits::GenesisBuild;
 use sp_core::H256;
@@ -18,11 +18,11 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Module, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::<Instance0>::{Module, Call, Storage, Event<T>},
-        NFTs: ternoa_nfts::{Module, Call, Storage, Event<T>, Config<T>},
-        Marketplace: ternoa_marketplace::{Module, Call, Event<T>},
-        TiimeBalances: pallet_balances::<Instance1>::{Module, Call, Storage, Event<T>},
+        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+        Balances: pallet_balances::{Pallet, Call, Storage, Event<T>},
+        NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
+        Marketplace: ternoa_marketplace::{Pallet, Call, Event<T>},
+        TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Event<T>},
     }
 );
 
@@ -62,7 +62,7 @@ parameter_types! {
     pub const MaxLocks: u32 = 50;
 }
 
-impl pallet_balances::Config<pallet_balances::Instance0> for Test {
+impl pallet_balances::Config for Test {
     type Balance = u64;
     type DustRemoval = ();
     type Event = Event;
@@ -163,7 +163,7 @@ impl ExtBuilder {
             .build_storage::<Test>()
             .unwrap();
 
-        pallet_balances::GenesisConfig::<Test, Instance0> {
+        pallet_balances::GenesisConfig::<Test> {
             balances: self.caps_endowed_accounts,
         }
         .assimilate_storage(&mut t)
