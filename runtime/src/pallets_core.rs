@@ -12,7 +12,7 @@ use frame_system::{
 };
 use sp_runtime::{
     generic,
-    traits::{BlakeTwo256, IdentityLookup},
+    traits::{AccountIdLookup, BlakeTwo256},
     Perbill,
 };
 use sp_version::RuntimeVersion;
@@ -68,7 +68,7 @@ impl frame_system::Config for Runtime {
     type Hash = Hash;
     type Hashing = BlakeTwo256;
     type AccountId = AccountId;
-    type Lookup = IdentityLookup<AccountId>;
+    type Lookup = AccountIdLookup<AccountId, ()>;
     type Header = generic::Header<BlockNumber, BlakeTwo256>;
     type Event = Event;
     type BlockHashCount = BlockHashCount;
