@@ -1,6 +1,12 @@
 {
     "AccountDataOf": "AccountData",
     "Address": "MultiAddress",
+    "Enclave": {
+        "pubkey": "AccountId",
+        "mrenclave": "Hash",
+        "timestamp": "u64",
+        "url": "Text"
+    },
     "NFTId": "u32",
     "NFTIdOf": "NFTId",
     "NFTSeriesId": "u32",
@@ -36,5 +42,10 @@
             "CAPS",
             "TIIME"
         ]
-    }
+    },
+    "Request": {
+        "shard": "ShardIdentifier",
+        "cyphertext": "Vec<u8>"
+    },
+    "ShardIdentifier": "Hash"
 }
