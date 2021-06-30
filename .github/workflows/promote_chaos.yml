@@ -15,8 +15,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set release version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Push with chaos tag
         run: |
           docker pull ternoa/ternoa-chain:${{ github.sha }}
+          docker tag ternoa/ternoa-chain:${{ github.sha }} ternoa/ternoa-chain:${{ env.RELEASE_VERSION }}
           docker tag ternoa/ternoa-chain:${{ github.sha }} ternoa/ternoa-chain:chaos
+          docker push ternoa/ternoa-chain:${{ env.RELEASE_VERSION }}
           docker push ternoa/ternoa-chain:chaos
