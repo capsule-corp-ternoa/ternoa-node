@@ -16,6 +16,7 @@ serde = { version = "1.0.125", optional = true }
 sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate/" }
 sp-std = { default-features = false, git = "https://github.com/paritytech/substrate/" }
 ternoa-common = { default-features = false, path = "../../common" }
+ternoa-primitives = { default-features = false, path = "../../primitives" }
 
 [dev-dependencies]
 pallet-balances = { git = "https://github.com/paritytech/substrate/" }

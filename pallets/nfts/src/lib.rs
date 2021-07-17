@@ -6,10 +6,8 @@ mod default_weights;
 mod migration;
 #[cfg(test)]
 mod tests;
-mod types;
 
 pub use pallet::*;
-pub use types::*;
 
 use frame_support::pallet_prelude::{ensure, DispatchError};
 use frame_support::traits::Get;
@@ -18,6 +16,7 @@ use sp_runtime::DispatchResult;
 use sp_std::result;
 use sp_std::vec::Vec;
 use ternoa_common::traits::{LockableNFTs, NFTs};
+use ternoa_primitives::nfts::{NFTData, NFTDetails, NFTSeriesDetails, NFTSeriesId};
 
 pub use default_weights::WeightInfo;
 

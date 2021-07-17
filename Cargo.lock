@@ -7930,6 +7930,7 @@ dependencies = [
  "sp-std 3.0.0 (git+https://github.com/paritytech/substrate/)",
  "ternoa-common",
  "ternoa-nfts",
+ "ternoa-primitives",
 ]
 
 [[package]]
@@ -7947,6 +7948,7 @@ dependencies = [
  "sp-runtime",
  "sp-std 3.0.0 (git+https://github.com/paritytech/substrate/)",
  "ternoa-common",
+ "ternoa-primitives",
 ]
 
 [[package]]

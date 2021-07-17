@@ -1,6 +1,6 @@
 use super::mock::*;
-use crate::types::NFTDetails;
 use crate::Error;
+use crate::NFTDetails;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use ternoa_common::traits;

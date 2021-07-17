@@ -1,6 +1,6 @@
 use super::mock::*;
-use crate::types::NFTDetails;
 use crate::GenesisConfig;
+use crate::NFTDetails;
 use frame_support::traits::GenesisBuild;
 
 #[test]
