@@ -465,7 +465,7 @@ pub fn new_light_base(
         on_demand.clone(),
     ));
 
-    let (grandpa_block_import, grandpa_link) = sc_finality_grandpa::block_import(
+    let (grandpa_block_import, _grandpa_link) = sc_finality_grandpa::block_import(
         client.clone(),
         &(client.clone() as Arc<_>),
         select_chain.clone(),
