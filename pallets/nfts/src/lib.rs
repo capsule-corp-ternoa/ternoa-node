@@ -158,6 +158,7 @@ pub mod pallet {
             let data = Data::<T>::get(id);
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
+            ensure!(!data.locked, Error::<T>::Locked);
             <Self as NFTs>::burn(id).expect("Call to Burn function should never fail!");
 
             Ok(().into())

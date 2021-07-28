@@ -2,6 +2,7 @@ use super::mock::*;
 use crate::{Data, Error, NFTData, NFTDetails, NFTSeriesDetails, NFTSeriesId};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
+use ternoa_common::traits::LockableNFTs;
 
 #[test]
 fn create_increment_id() {
@@ -219,13 +220,19 @@ fn burn_owned_nft() {
             let before_details = NFTSeriesDetails::new(ALICE, sp_std::vec![nft_id]);
             let after_details = NFTSeriesDetails::new(ALICE, sp_std::vec![]);
             let details = NFTDetails::new(vec![], series_id, false);
+            let alice: Origin = RawOrigin::Signed(ALICE).into();
 
-            assert_ok!(NFTs::create(RawOrigin::Signed(ALICE).into(), details));
+            assert_ok!(NFTs::create(alice.clone(), details.clone()));
             assert_eq!(NFTs::series(series_id), Some(before_details));
 
-            assert_ok!(NFTs::burn(RawOrigin::Signed(ALICE).into(), nft_id));
+            assert_ok!(NFTs::burn(alice.clone(), nft_id));
             assert_eq!(NFTs::data(nft_id), NFTData::default());
             assert_eq!(NFTs::series(series_id), Some(after_details));
+
+            let id = NFTs::total();
+            assert_ok!(NFTs::create(alice.clone(), details));
+            assert_ok!(<NFTs as LockableNFTs>::lock(id));
+            assert_noop!(NFTs::burn(alice, id), Error::<Test>::Locked);
         })
 }
 
