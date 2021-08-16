@@ -1,12 +1,12 @@
+use crate::constants::currency::ONE_UNIT;
 use crate::{
-    constants::currency::CENTS, Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler,
-    TiimeBalances, Treasury,
+    Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler, TiimeBalances, Treasury,
 };
 use frame_support::parameter_types;
 use ternoa_primitives::{Balance, NFTId};
 
 parameter_types! {
-    pub const MintFee: Balance = 50 * CENTS;
+    pub const MintFee: Balance = 10 * ONE_UNIT;
 }
 
 impl ternoa_nfts::Config for Runtime {
