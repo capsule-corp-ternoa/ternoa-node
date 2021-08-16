@@ -1,7 +1,7 @@
 use std::usize;
 
 use super::mock::*;
-use crate::{BalanceCaps, NFTCurrency};
+use crate::{NFTCurrency, SaleInformation};
 use codec::{Decode, Encode};
 use frame_support::migration::{get_storage_value, put_storage_value};
 use frame_support::traits::{OnRuntimeUpgrade, PalletVersion, PALLET_VERSION_STORAGE_KEY_POSTFIX};
@@ -39,26 +39,29 @@ const fn new_pallet_version(major: u16, minor: u8, patch: u8) -> PalletVersion {
     }
 }
 
-const PALLET_V020: PalletVersion = new_pallet_version(0, 2, 0);
 const PALLET_V030: PalletVersion = new_pallet_version(0, 3, 0);
+const PALLET_V040: PalletVersion = new_pallet_version(0, 4, 0);
 const PALLET_NAME: &str = "Marketplace";
 const MODULE_NAME: &[u8] = b"Marketplace";
 
 pub type AccountId = <Test as frame_system::Config>::AccountId;
 
 #[test]
-fn upgrade_from_v020_to_v030() {
+fn upgrade_from_v030_to_v040() {
     ExtBuilder::default().build().execute_with(|| {
         const ITEM_NAME: &[u8] = b"NFTsForSale";
-        set_pallet_version(PALLET_NAME, PALLET_V020);
+        set_pallet_version(PALLET_NAME, PALLET_V030);
 
         let nft_ids = vec![0u64, 1u64];
         let accounts = vec![ALICE, BOB];
-        let balances = vec![10u64, 20u64];
+        let balances = vec![
+            NFTCurrency::<Test>::CAPS(10),
+            NFTCurrency::<Test>::TIIME(10),
+        ];
         for i in nft_ids.iter() {
             let hash = i.blake2_128_concat();
             let account_id: AccountId = accounts[*i as usize].into();
-            let balance: BalanceCaps<Test> = balances[*i as usize].into();
+            let balance: NFTCurrency<Test> = balances[*i as usize].clone();
 
             let data = (account_id, balance);
 
@@ -69,17 +72,16 @@ fn upgrade_from_v020_to_v030() {
 
         for i in nft_ids.iter() {
             let hash = i.blake2_128_concat();
-            let actual =
-                get_storage_value::<(AccountId, NFTCurrency<Test>)>(MODULE_NAME, ITEM_NAME, &hash);
+            let actual = get_storage_value::<SaleInformation<Test>>(MODULE_NAME, ITEM_NAME, &hash);
 
             let account_id = accounts[*i as usize];
-            let caps = NFTCurrency::CAPS(balances[*i as usize]);
-            let expected = Some((account_id, caps));
+            let price = balances[*i as usize];
+            let expected = Some(SaleInformation::new(account_id, price, 0));
 
             assert_eq!(actual, expected);
         }
 
-        assert_eq!(get_pallet_version(PALLET_NAME), PALLET_V030);
+        assert_eq!(get_pallet_version(PALLET_NAME), PALLET_V040);
     })
 }
 

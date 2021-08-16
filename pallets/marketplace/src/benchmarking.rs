@@ -1,4 +1,6 @@
-use crate::{Call, Config, NFTCurrency, NFTCurrencyId, NFTIdOf, NFTsForSale, Pallet};
+use crate::{
+    Call, Config, MarketplaceOwners, NFTCurrency, NFTCurrencyId, NFTIdOf, NFTsForSale, Pallet,
+};
 use frame_benchmarking::{account, benchmarks, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
@@ -25,7 +27,7 @@ benchmarks! {
         let id = create_nft::<T>(&seller);
         let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(0u32.into());
 
-        drop(Pallet::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price));
+        drop(Pallet::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price, None));
     }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::CAPS)
     verify {
         assert_eq!(T::NFTs::owner(id), buyer);
@@ -38,7 +40,7 @@ benchmarks! {
 
         let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(100u32.into());
 
-    }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price)
+    }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price, None)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), caller);
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), true);
@@ -50,10 +52,18 @@ benchmarks! {
 
         let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(100u32.into());
 
-        drop(Pallet::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price));
+        drop(Pallet::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price, None));
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
     verify {
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);
+    }
+
+    create {
+        let caller: T::AccountId = whitelisted_caller();
+    }: _(RawOrigin::Signed(caller.clone().into()))
+    verify {
+        assert_eq!(MarketplaceOwners::<T>::contains_key(1), true);
+        assert_eq!(MarketplaceOwners::<T>::get(0).unwrap(), caller);
     }
 }
 

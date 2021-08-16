@@ -84,6 +84,7 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 
 parameter_types! {
     pub const MintFee: u64 = 0;
+    pub const MarketplaceFee: u64 = 10;
 }
 impl ternoa_nfts::Config for Test {
     type Event = Event;
@@ -100,6 +101,8 @@ impl Config for Test {
     type CurrencyTiime = TiimeBalances;
     type NFTs = NFTs;
     type WeightInfo = ();
+    type MarketplaceFee = MarketplaceFee;
+    type FeesCollector = ();
 }
 
 // Do not use the `0` account id since this would be the default value
@@ -143,6 +146,11 @@ impl ExtBuilder {
             self.nfts.push((ALICE, NFTDetails::default()));
         }
 
+        self
+    }
+
+    pub fn one_hundred_caps_for_alice(mut self) -> Self {
+        self.caps_endowed_accounts.push((ALICE, 100));
         self
     }
 
