@@ -3,10 +3,11 @@
 /// Money matters.
 pub mod currency {
     use ternoa_primitives::Balance;
-
     pub const MILLICENTS: Balance = 1_000_000_000;
     pub const CENTS: Balance = 1_000 * MILLICENTS;
     pub const UNIT: Balance = 100 * CENTS; // One full unit of currency
+
+    pub const ONE_UNIT: Balance = 1_000_000_000_000_000_000;
 
     pub const fn deposit(items: u32, bytes: u32) -> Balance {
         items as Balance * 15 * CENTS + (bytes as Balance) * 6 * CENTS
