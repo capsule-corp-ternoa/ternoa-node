@@ -83,14 +83,19 @@ pub mod pallet {
             marketplace_id: Option<MarketplaceId>,
         ) -> DispatchResultWithPostInfo {
             let account_id = ensure_signed(origin)?;
+            let marketplace_id = marketplace_id.unwrap_or(0);
+
             ensure!(
                 T::NFTs::owner(nft_id) == account_id,
                 Error::<T>::NotNftOwner
             );
+            ensure!(
+                marketplace_id <= MarketplaceCount::<T>::get(),
+                Error::<T>::UnknownMarketplace
+            );
 
             T::NFTs::lock(nft_id)?;
 
-            let marketplace_id = marketplace_id.unwrap_or(0);
             let sale_info = SaleInformation::<T>::new(account_id, price.clone(), marketplace_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
 
@@ -209,6 +214,8 @@ pub mod pallet {
         WrongCurrencyUsed,
         /// We do not have any marketplace ids left, a runtime upgrade is necessary.
         MarketplaceIdOverflow,
+        /// No marketplace found with that Id.
+        UnknownMarketplace,
     }
 
     /// Nfts listed on the marketplace
@@ -224,5 +231,5 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn marketplace_owners)]
     pub type MarketplaceOwners<T: Config> =
-        StorageMap<_, Blake2_128Concat, MarketplaceId, T::AccountId, ValueQuery>;
+        StorageMap<_, Blake2_128Concat, MarketplaceId, T::AccountId, OptionQuery>;
 }

@@ -3,6 +3,7 @@ use codec::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 
 use crate::{BalanceCaps, BalanceTiime, Config};
+use sp_runtime::RuntimeDebug;
 
 /// Structure that stores both NFT currencies at the same time.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
@@ -89,7 +90,7 @@ impl Default for NFTCurrencyId {
 
 pub type MarketplaceId = u32;
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
 pub struct SaleInformation<T: Config> {
     pub account_id: T::AccountId,
     pub price: NFTCurrency<T>,
