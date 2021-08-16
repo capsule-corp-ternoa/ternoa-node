@@ -7,6 +7,7 @@ use ternoa_primitives::{Balance, NFTId};
 
 parameter_types! {
     pub const MintFee: Balance = 10 * ONE_UNIT;
+    pub const MarketplaceFee: Balance = 10 * ONE_UNIT;
 }
 
 impl ternoa_nfts::Config for Runtime {
@@ -33,4 +34,6 @@ impl ternoa_marketplace::Config for Runtime {
     type CurrencyTiime = TiimeBalances;
     type NFTs = Nfts;
     type WeightInfo = ();
+    type MarketplaceFee = MarketplaceFee;
+    type FeesCollector = Treasury;
 }

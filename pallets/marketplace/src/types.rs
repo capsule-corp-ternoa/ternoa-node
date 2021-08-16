@@ -86,3 +86,36 @@ impl Default for NFTCurrencyId {
         Self::CAPS
     }
 }
+
+pub type MarketplaceId = u32;
+
+#[derive(Encode, Decode, Clone, PartialEq, Eq)]
+pub struct SaleInformation<T: Config> {
+    pub account_id: T::AccountId,
+    pub price: NFTCurrency<T>,
+    pub marketplace_id: MarketplaceId,
+}
+
+impl<T: Config> Default for SaleInformation<T> {
+    fn default() -> Self {
+        Self {
+            account_id: Default::default(),
+            price: Default::default(),
+            marketplace_id: Default::default(),
+        }
+    }
+}
+
+impl<T: Config> SaleInformation<T> {
+    pub fn new(
+        account_id: T::AccountId,
+        price: NFTCurrency<T>,
+        marketplace_id: MarketplaceId,
+    ) -> SaleInformation<T> {
+        Self {
+            account_id,
+            price,
+            marketplace_id,
+        }
+    }
+}
