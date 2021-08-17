@@ -2328,7 +2328,7 @@ dependencies = [
 [[package]]
 name = "ias-verify"
 version = "0.1.4"
-source = "git+https://github.com/scs/pallet-substratee-registry#860097f21141fb6cd5eb455d8ca9e8adb7031c7d"
+source = "git+https://github.com/scs/pallet-substratee-registry?branch=bh-skip-ra-feature#1c60c489744714a0fa64be17e55b0bd0081f9473"
 dependencies = [
  "base64 0.11.0",
  "chrono",
@@ -4098,7 +4098,7 @@ dependencies = [
 [[package]]
 name = "pallet-substratee-registry"
 version = "0.8.0"
-source = "git+https://github.com/scs/pallet-substratee-registry#860097f21141fb6cd5eb455d8ca9e8adb7031c7d"
+source = "git+https://github.com/scs/pallet-substratee-registry?branch=bh-skip-ra-feature#1c60c489744714a0fa64be17e55b0bd0081f9473"
 dependencies = [
  "frame-support",
  "frame-system",

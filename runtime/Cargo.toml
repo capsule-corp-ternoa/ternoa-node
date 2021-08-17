@@ -33,7 +33,7 @@ pallet-randomness-collective-flip = { git = "https://github.com/paritytech/subst
 pallet-scheduler = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-session = { git = "https://github.com/paritytech/substrate/", features = ["historical"], default-features = false }
 #pallet-session-benchmarking = { git = "https://github.com/paritytech/substrate/",  default-features = false, optional = true }
-pallet-substratee-registry = { git = "https://github.com/scs/pallet-substratee-registry", default-features = false }
+pallet-substratee-registry = { git = "https://github.com/scs/pallet-substratee-registry", default-features = false, branch = "bh-skip-ra-feature"}
 pallet-sudo = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate/", default-features = false }
@@ -67,6 +67,7 @@ substrate-wasm-builder = { git = "https://github.com/paritytech/substrate/" }
 
 [features]
 default = ["std"]
+skip-ias-check = ["pallet-substratee-registry/skip-ias-check"]
 std = [
 	"codec/std",
 	"frame-executive/std",
