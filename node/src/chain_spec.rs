@@ -98,7 +98,7 @@ pub fn testnet_genesis(
         ]
     });
 
-    const ENDOWMENT: Balance = 1_000_000 * UNIT;
+    const ENDOWMENT: Balance = UNIT * 1_000;
     const STASH: Balance = ENDOWMENT / 1_000;
 
     GenesisConfig {
