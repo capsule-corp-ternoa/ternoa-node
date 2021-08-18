@@ -3942,7 +3942,7 @@ dependencies = [
 [[package]]
 name = "pallet-curveless-staking"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/pallet-curveless-staking?branch=main#1157a9e551592ede731b57107a3285832fff5a1f"
+source = "git+https://github.com/markopoloparadox/pallet-curveless-staking?branch=marko/minimal-stake#fe88034d3db4da7183f71c85c5606a0037a113b5"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
