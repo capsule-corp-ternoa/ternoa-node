@@ -1,11 +1,12 @@
 //! Pallets related to consensus, block production and authorship, session keys
 //! and staking.
 
+use crate::constants::currency::UNIT;
+use crate::constants::time::{
+    EPOCH_DURATION_IN_BLOCKS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY,
+};
+use crate::pallets_core::{BlockHashCount, RuntimeBlockWeights};
 use crate::{
-    constants::time::{
-        EPOCH_DURATION_IN_BLOCKS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY,
-    },
-    pallets_core::{BlockHashCount, RuntimeBlockWeights},
     AuthorityDiscovery, Babe, Balances, Call, Event, Grandpa, Historical, ImOnline, Offences,
     Runtime, Session, Signature, SignedPayload, Staking, System, Timestamp, UncheckedExtrinsic,
 };
@@ -237,6 +238,7 @@ parameter_types! {
         .max_extrinsic.expect("Normal extrinsics have a weight limit configured; qed")
         .saturating_sub(BlockExecutionWeight::get());
     pub const StakingPalletId: PalletId = PalletId(*b"mockstak");
+    pub const MinimumStake: Balance = UNIT * 1_000;
 }
 
 impl pallet_curveless_staking::Config for Runtime {
@@ -264,4 +266,5 @@ impl pallet_curveless_staking::Config for Runtime {
     type OffchainSolutionWeightLimit = OffchainSolutionWeightLimit;
     type WeightInfo = pallet_curveless_staking::weights::SubstrateWeight<Runtime>;
     type PalletId = StakingPalletId;
+    type MinimumStake = MinimumStake;
 }
