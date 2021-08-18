@@ -1,9 +1,11 @@
+use hex_literal::hex;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sc_service::ChainType;
 use serde_json::json;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_chain_spec::Properties;
 use sp_consensus_babe::AuthorityId as BabeId;
+use sp_core::crypto::UncheckedInto;
 use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::{
@@ -218,6 +220,119 @@ pub fn local_testnet_config() -> ChainSpec {
         Some(build_local_properties()),
         Default::default(),
     )
+}
+
+pub fn staging_testnet_config() -> ChainSpec {
+    ChainSpec::from_genesis(
+        "Staging Testnet",
+        "staging_testnet",
+        ChainType::Live,
+        staging_genesis,
+        vec![],
+        None,
+        Some("ternoa"),
+        Some(build_local_properties()),
+        Default::default(),
+    )
+}
+
+pub fn staging_genesis() -> GenesisConfig {
+    let initial_authorities: Vec<(
+        AccountId,
+        AccountId,
+        GrandpaId,
+        BabeId,
+        ImOnlineId,
+        AuthorityDiscoveryId,
+    )> = vec![(
+        hex!["06703017d16edd0e9ca34fd550ad4b94d07cab000bc043a5288f923997300971"].into(),
+        hex!["06703017d16edd0e9ca34fd550ad4b94d07cab000bc043a5288f923997300971"].into(),
+        hex!["c6dda9ca0a520c60e3bcd6cdef22ba788050d5507e44d3063dfa4a7485b27cdb"].unchecked_into(),
+        hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].unchecked_into(),
+        hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].unchecked_into(),
+        hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].unchecked_into(),
+    )];
+
+    const ENDOWMENT: Balance = UNIT * 1_000;
+    const STASH: Balance = ENDOWMENT / 1_000;
+    let endowed_accounts: Vec<(AccountId, Balance)> = vec![
+        (
+            // Mickael 5Gzn4r3qmDP6xRhjafYb8w1UGazFg3UAKWVSnjHkBrURJBob
+            hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
+            UNIT * 2_500_000_000,
+        ),
+        (
+            // Validator 1 5CJmz9RgokHp8JXq2ssbftNSUEVwcmNQHQ9uL8bh9wFMaqzd
+            hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].into(),
+            ENDOWMENT,
+        ),
+        (
+            // Validator 1 Stash  5CD9UHTMw7jaj1BWRGPyP9kPWgQucCzKHSVxm5ztzzxa1PW1
+            hex!["06703017d16edd0e9ca34fd550ad4b94d07cab000bc043a5288f923997300971"].into(),
+            ENDOWMENT,
+        ),
+    ];
+    let technical_members: Vec<AccountId> = vec![
+        // Mickael 5Gzn4r3qmDP6xRhjafYb8w1UGazFg3UAKWVSnjHkBrURJBob
+        hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
+    ];
+
+    GenesisConfig {
+        // Core
+        frame_system: SystemConfig {
+            code: wasm_binary_unwrap().to_vec(),
+            changes_trie_config: Default::default(),
+        },
+        pallet_balances: BalancesConfig {
+            balances: endowed_accounts,
+        },
+        pallet_balances_Instance1: Default::default(),
+
+        // Consensus
+        pallet_session: SessionConfig {
+            keys: initial_authorities
+                .iter()
+                .map(|x| {
+                    (
+                        x.0.clone(),
+                        x.0.clone(),
+                        session_keys(x.2.clone(), x.3.clone(), x.4.clone(), x.5.clone()),
+                    )
+                })
+                .collect::<Vec<_>>(),
+        },
+        pallet_babe: BabeConfig {
+            authorities: vec![],
+            epoch_config: Some(ternoa_runtime::BABE_GENESIS_EPOCH_CONFIG),
+        },
+        pallet_im_online: ImOnlineConfig { keys: vec![] },
+        pallet_authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
+        pallet_grandpa: GrandpaConfig {
+            authorities: vec![],
+        },
+        pallet_curveless_staking: StakingConfig {
+            validator_count: initial_authorities.len() as u32 * 2,
+            minimum_validator_count: initial_authorities.len() as u32,
+            stakers: initial_authorities
+                .iter()
+                .map(|x| (x.0.clone(), x.1.clone(), STASH, StakerStatus::Validator))
+                .collect(),
+            invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
+            slash_reward_fraction: Perbill::from_percent(10),
+            ..Default::default()
+        },
+        pallet_treasury: Default::default(),
+
+        // Governance
+        pallet_collective_DefaultInstance: Default::default(),
+        pallet_membership_DefaultInstance: TechnicalMembershipConfig {
+            members: technical_members,
+            phantom: Default::default(),
+        },
+
+        // Ternoa
+        ternoa_nfts: Default::default(),
+    }
 }
 
 #[cfg(test)]
