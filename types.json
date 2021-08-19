@@ -53,5 +53,11 @@
         "account_id": "AccountId",
         "price": "NFTCurrency",
         "marketplace_id": "MarketplaceId"
+    },
+    "Status": {
+        "_enum": [
+            "Free",
+            "Reserved"
+        ]
     }
 }
