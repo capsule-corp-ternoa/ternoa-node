@@ -37,6 +37,7 @@ impl SubstrateCli for Cli {
         Ok(match id {
             "chaos" => Box::new(chain_spec::chaos_config()),
             "dev" => Box::new(chain_spec::development_config()),
+            "dev-remote" => Box::new(chain_spec::dev_remote_config()),
             "local" => Box::new(chain_spec::local_testnet_config()),
             "staging" => Box::new(chain_spec::staging_testnet_config()),
             path => Box::new(chain_spec::ChainSpec::from_json_file(
