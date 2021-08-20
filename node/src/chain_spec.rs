@@ -177,6 +177,10 @@ pub fn chaos_config() -> ChainSpec {
     ChainSpec::from_json_bytes(&include_bytes!("../res/chaos.json")[..]).unwrap()
 }
 
+pub fn dev_remote_config() -> ChainSpec {
+    ChainSpec::from_json_bytes(&include_bytes!("../res/dev-remote.json")[..]).unwrap()
+}
+
 fn development_config_genesis() -> GenesisConfig {
     testnet_genesis(vec![get_authority_keys_from_seed("Alice")], None, None)
 }
@@ -342,7 +346,7 @@ pub(crate) mod tests {
 
     #[test]
     fn create_chain_specs() {
-        let configs = vec![development_config(), local_testnet_config(), chaos_config()];
+        let configs = vec![development_config(), local_testnet_config(), chaos_config(), dev_remote_config()];
         for conf in configs {
             assert!(conf.build_storage().is_ok());
         }
