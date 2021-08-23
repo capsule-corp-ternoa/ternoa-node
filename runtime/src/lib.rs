@@ -59,9 +59,9 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 #[cfg(feature = "std")]
 pub fn wasm_binary_unwrap() -> &'static [u8] {
     WASM_BINARY.expect(
-        "Development wasm binary is not available. This means the client is \
-		built with `SKIP_WASM_BUILD` flag and it is only usable for \
-		production chains. Please rebuild with the flag disabled.",
+        "Development wasm binary is not available. This means the client is built with \
+            `SKIP_WASM_BUILD` flag and it is only usable for production chains. Please rebuild with \
+            the flag disabled.",
     )
 }
 
@@ -143,6 +143,8 @@ pub type Executive = frame_executive::Executive<
     AllPallets,
 >;
 
+impl pallet_randomness_collective_flip::Config for Runtime {}
+
 impl_runtime_apis! {
     impl sp_api::Core<Block> for Runtime {
         fn version() -> RuntimeVersion {
@@ -186,8 +188,9 @@ impl_runtime_apis! {
         fn validate_transaction(
             source: TransactionSource,
             tx: <Block as BlockT>::Extrinsic,
+            block_hash: <Block as BlockT>::Hash,
         ) -> TransactionValidity {
-            Executive::validate_transaction(source, tx)
+            Executive::validate_transaction(source, tx, block_hash)
         }
     }
 
@@ -197,28 +200,13 @@ impl_runtime_apis! {
         }
     }
 
-    impl frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Index> for Runtime {
-        fn account_nonce(account: AccountId) -> Index {
-            System::account_nonce(account)
-        }
-    }
-
-    impl pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<
-        Block,
-        Balance,
-    > for Runtime {
-        fn query_info(uxt: <Block as BlockT>::Extrinsic, len: u32) -> RuntimeDispatchInfo<Balance> {
-            TransactionPayment::query_info(uxt, len)
-        }
-
-        fn query_fee_details(uxt: <Block as BlockT>::Extrinsic, len: u32) -> FeeDetails<Balance> {
-            TransactionPayment::query_fee_details(uxt, len)
-        }
-    }
-
     impl fg_primitives::GrandpaApi<Block> for Runtime {
         fn grandpa_authorities() -> GrandpaAuthorityList {
             Grandpa::grandpa_authorities()
+        }
+
+        fn current_set_id() -> fg_primitives::SetId {
+            Grandpa::current_set_id()
         }
 
         fn submit_report_equivocation_unsigned_extrinsic(
@@ -307,6 +295,25 @@ impl_runtime_apis! {
         }
     }
 
+    impl frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Index> for Runtime {
+        fn account_nonce(account: AccountId) -> Index {
+            System::account_nonce(account)
+        }
+    }
+
+    impl pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<
+        Block,
+        Balance,
+    > for Runtime {
+        fn query_info(uxt: <Block as BlockT>::Extrinsic, len: u32) -> RuntimeDispatchInfo<Balance> {
+            TransactionPayment::query_info(uxt, len)
+        }
+
+        fn query_fee_details(uxt: <Block as BlockT>::Extrinsic, len: u32) -> FeeDetails<Balance> {
+            TransactionPayment::query_fee_details(uxt, len)
+        }
+    }
+
     impl sp_session::SessionKeys<Block> for Runtime {
         fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
             SessionKeys::generate(seed)
@@ -319,8 +326,52 @@ impl_runtime_apis! {
         }
     }
 
+    #[cfg(feature = "try-runtime")]
+    impl frame_try_runtime::TryRuntime<Block> for Runtime {
+        fn on_runtime_upgrade() -> Result<(Weight, Weight), sp_runtime::RuntimeString> {
+            let weight = Executive::try_runtime_upgrade()?;
+            Ok((weight, RuntimeBlockWeights::get().max_block))
+        }
+    }
+
     #[cfg(feature = "runtime-benchmarks")]
     impl frame_benchmarking::Benchmark<Block> for Runtime {
+        fn benchmark_metadata(extra: bool) -> (
+            Vec<frame_benchmarking::BenchmarkList>,
+            Vec<frame_support::traits::StorageInfo>,
+        ) {
+            use frame_benchmarking::{list_benchmark, Benchmarking, BenchmarkList};
+            use frame_support::traits::StorageInfoTrait;
+
+            // Trying to add benchmarks directly to the Session Pallet caused cyclic dependency
+            // issues. To get around that, we separated the Session benchmarks into its own crate,
+            // which is why we need these two lines below.
+            use frame_system_benchmarking::Pallet as SystemBench;
+
+            let mut list = Vec::<BenchmarkList>::new();
+
+            list_benchmark!(list, extra, pallet_babe, Babe);
+            list_benchmark!(list, extra, pallet_balances, Balances);
+            list_benchmark!(list, extra, pallet_bounties, Bounties);
+            list_benchmark!(list, extra, pallet_grandpa, Grandpa);
+            list_benchmark!(list, extra, pallet_im_online, ImOnline);
+            list_benchmark!(list, extra, pallet_scheduler, Scheduler);
+            list_benchmark!(list, extra, pallet_staking, Staking);
+            list_benchmark!(list, extra, frame_system, SystemBench::<Runtime>);
+            list_benchmark!(list, extra, pallet_timestamp, Timestamp);
+            list_benchmark!(list, extra, pallet_treasury, Treasury);
+            list_benchmark!(list, extra, pallet_utility, Utility);
+
+            list_benchmark!(list, extra, ternoa_nfts, Nfts);
+            list_benchmark!(list, extra, ternoa_timed_escrow, TimedEscrow);
+            list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
+
+
+            let storage_info = AllPalletsWithSystem::storage_info();
+
+            return (list, storage_info)
+        }
+
         fn dispatch_benchmark(
             config: frame_benchmarking::BenchmarkConfig
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {

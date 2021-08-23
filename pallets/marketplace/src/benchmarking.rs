@@ -1,11 +1,13 @@
 use crate::{
     Call, Config, MarketplaceOwners, NFTCurrency, NFTCurrencyId, NFTIdOf, NFTsForSale, Pallet,
 };
-use frame_benchmarking::{account, benchmarks, whitelisted_caller};
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
 use sp_std::prelude::*;
 use ternoa_common::traits::NFTs;
+
+use crate::Pallet as Marketplace;
 
 fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
     T::NFTs::create(
@@ -67,30 +69,8 @@ benchmarks! {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::tests::mock::{ExtBuilder, Test};
-    use frame_support::assert_ok;
-
-    #[test]
-    fn list() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_list::<Test>());
-        });
-    }
-
-    #[test]
-    fn unlist() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_unlist::<Test>());
-        });
-    }
-
-    #[test]
-    fn buy() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_buy::<Test>());
-        });
-    }
-}
+/* impl_benchmark_test_suite!(
+    Marketplace,
+    crate::tests::mock::new_test_ext(),
+    crate::tests::mock::Test
+); */

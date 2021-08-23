@@ -5,7 +5,7 @@
 
 use frame_support::traits::StoredMap;
 pub use pallet::*;
-use sp_runtime::traits::StoredMapError;
+use sp_runtime::DispatchError;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -43,7 +43,7 @@ impl<T: Config> StoredMap<T::AccountId, AccountDataOf<T>> for Pallet<T> {
         Account::<T>::get(k)
     }
 
-    fn try_mutate_exists<R, E: From<StoredMapError>>(
+    fn try_mutate_exists<R, E: From<DispatchError>>(
         k: &T::AccountId,
         f: impl FnOnce(&mut Option<AccountDataOf<T>>) -> Result<R, E>,
     ) -> Result<R, E> {

@@ -1,9 +1,9 @@
 use hex_literal::hex;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
+use sc_chain_spec::Properties;
 use sc_service::ChainType;
 use serde_json::json;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
-use sp_chain_spec::Properties;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::crypto::UncheckedInto;
 use sp_core::{sr25519, Pair, Public};
@@ -105,21 +105,21 @@ pub fn testnet_genesis(
 
     GenesisConfig {
         // Core
-        frame_system: SystemConfig {
+        system: SystemConfig {
             code: wasm_binary_unwrap().to_vec(),
             changes_trie_config: Default::default(),
         },
-        pallet_balances: BalancesConfig {
+        balances: BalancesConfig {
             balances: endowed_accounts
                 .iter()
                 .cloned()
                 .map(|k| (k, ENDOWMENT))
                 .collect(),
         },
-        pallet_balances_Instance1: Default::default(),
+        tiime_balances: Default::default(),
 
         // Consensus
-        pallet_session: SessionConfig {
+        session: SessionConfig {
             keys: initial_authorities
                 .iter()
                 .map(|x| {
@@ -131,16 +131,16 @@ pub fn testnet_genesis(
                 })
                 .collect::<Vec<_>>(),
         },
-        pallet_babe: BabeConfig {
+        babe: BabeConfig {
             authorities: vec![],
             epoch_config: Some(ternoa_runtime::BABE_GENESIS_EPOCH_CONFIG),
         },
-        pallet_im_online: ImOnlineConfig { keys: vec![] },
-        pallet_authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
-        pallet_grandpa: GrandpaConfig {
+        im_online: ImOnlineConfig { keys: vec![] },
+        authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
+        grandpa: GrandpaConfig {
             authorities: vec![],
         },
-        pallet_curveless_staking: StakingConfig {
+        staking: StakingConfig {
             validator_count: initial_authorities.len() as u32 * 2,
             minimum_validator_count: initial_authorities.len() as u32,
             stakers: initial_authorities
@@ -151,17 +151,17 @@ pub fn testnet_genesis(
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         },
-        pallet_treasury: Default::default(),
+        treasury: Default::default(),
 
         // Governance
-        pallet_collective_DefaultInstance: Default::default(),
-        pallet_membership_DefaultInstance: TechnicalMembershipConfig {
+        technical_committee: Default::default(),
+        technical_membership: TechnicalMembershipConfig {
             members: vec![root.unwrap_or(get_account_id_from_seed::<sr25519::Public>("Alice"))],
             phantom: Default::default(),
         },
 
         // Ternoa
-        ternoa_nfts: Default::default(),
+        nfts: Default::default(),
     }
 }
 
@@ -283,17 +283,17 @@ pub fn staging_genesis() -> GenesisConfig {
 
     GenesisConfig {
         // Core
-        frame_system: SystemConfig {
+        system: SystemConfig {
             code: wasm_binary_unwrap().to_vec(),
             changes_trie_config: Default::default(),
         },
-        pallet_balances: BalancesConfig {
+        balances: BalancesConfig {
             balances: endowed_accounts,
         },
-        pallet_balances_Instance1: Default::default(),
+        tiime_balances: Default::default(),
 
         // Consensus
-        pallet_session: SessionConfig {
+        session: SessionConfig {
             keys: initial_authorities
                 .iter()
                 .map(|x| {
@@ -305,16 +305,16 @@ pub fn staging_genesis() -> GenesisConfig {
                 })
                 .collect::<Vec<_>>(),
         },
-        pallet_babe: BabeConfig {
+        babe: BabeConfig {
             authorities: vec![],
             epoch_config: Some(ternoa_runtime::BABE_GENESIS_EPOCH_CONFIG),
         },
-        pallet_im_online: ImOnlineConfig { keys: vec![] },
-        pallet_authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
-        pallet_grandpa: GrandpaConfig {
+        im_online: ImOnlineConfig { keys: vec![] },
+        authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
+        grandpa: GrandpaConfig {
             authorities: vec![],
         },
-        pallet_curveless_staking: StakingConfig {
+        staking: StakingConfig {
             validator_count: initial_authorities.len() as u32 * 2,
             minimum_validator_count: initial_authorities.len() as u32,
             stakers: initial_authorities
@@ -325,17 +325,17 @@ pub fn staging_genesis() -> GenesisConfig {
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         },
-        pallet_treasury: Default::default(),
+        treasury: Default::default(),
 
         // Governance
-        pallet_collective_DefaultInstance: Default::default(),
-        pallet_membership_DefaultInstance: TechnicalMembershipConfig {
+        technical_committee: Default::default(),
+        technical_membership: TechnicalMembershipConfig {
             members: technical_members,
             phantom: Default::default(),
         },
 
         // Ternoa
-        ternoa_nfts: Default::default(),
+        nfts: Default::default(),
     }
 }
 
@@ -346,7 +346,13 @@ pub(crate) mod tests {
 
     #[test]
     fn create_chain_specs() {
-        let configs = vec![development_config(), local_testnet_config(), chaos_config(), dev_remote_config()];
+        let configs = vec![
+            development_config(),
+            local_testnet_config(),
+            staging_testnet_config(),
+            chaos_config(),
+            dev_remote_config(),
+        ];
         for conf in configs {
             assert!(conf.build_storage().is_ok());
         }

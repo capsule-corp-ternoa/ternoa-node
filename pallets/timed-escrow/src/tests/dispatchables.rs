@@ -2,7 +2,7 @@ use super::mock::{
     create_one_capsule, new_test_ext, NFTs, Scheduler, Test, TimedEscrow, ALICE, BOB,
 };
 use crate::Error;
-use frame_support::{assert_noop, assert_ok, error::BadOrigin, traits::OnInitialize, StorageMap};
+use frame_support::{assert_noop, assert_ok, error::BadOrigin, traits::OnInitialize};
 use frame_system::RawOrigin;
 use pallet_scheduler::Agenda as SchedulerAgenda;
 use ternoa_common::traits;

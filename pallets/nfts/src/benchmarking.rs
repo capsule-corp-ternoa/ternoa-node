@@ -1,9 +1,11 @@
 use crate::{Call, Config, NFTData, NFTDetails, NFTSeriesDetails, NFTSeriesId, Pallet};
-use frame_benchmarking::{account, benchmarks, whitelisted_caller};
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::traits::{Currency, Get};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
+
+use crate::Pallet as NFTs;
 
 benchmarks! {
     create {
@@ -97,44 +99,8 @@ benchmarks! {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::tests::mock::{ExtBuilder, Test};
-    use frame_support::assert_ok;
-
-    #[test]
-    fn create() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_create::<Test>());
-        });
-    }
-
-    #[test]
-    fn mutate() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_mutate::<Test>());
-        });
-    }
-
-    #[test]
-    fn seal() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_seal::<Test>());
-        });
-    }
-
-    #[test]
-    fn transfer() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_transfer::<Test>());
-        });
-    }
-
-    #[test]
-    fn burn() {
-        ExtBuilder::default().build().execute_with(|| {
-            assert_ok!(test_benchmark_burn::<Test>());
-        });
-    }
-}
+impl_benchmark_test_suite!(
+    NFTs,
+    crate::tests::mock::new_test_ext(),
+    crate::tests::mock::Test
+);
