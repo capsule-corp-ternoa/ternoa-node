@@ -1,0 +1,21 @@
+version: '3'
+
+
+services:
+  ternoa:
+    image: "ternoa/ternoa-chain:latest"
+    command: '--dev --tmp --unsafe-ws-external'
+    # command: '--chain dev --tmp --validator --name LordPolo --unsafe-ws-external --bootnodes /dns/validator.dev.chaos.ternoa.com/tcp/30333/p2p/12D3KooWAZ2wmUZThnEEmj8oewCMbvMj6VfZkm5E9S1R2hWs2XqL'
+    user: "1000:1000" # fix disk permissions by setting the docker user ID to be the one from the host system (typically 1000:1000)
+    restart: always
+    volumes:
+      - /opt/ternoa/node-data:/data
+    ports:
+      - 9933:9933
+      - 9944:9944
+      - 30333:30333
+      - 9615:9615
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
