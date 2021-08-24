@@ -15,6 +15,7 @@ frame-system = { git = "https://github.com/paritytech/substrate.git", default-fe
 serde = { optional = true, version = "1.0.126" }
 sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+log = { default-features = false, version = "0.4.14"}
 ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
 

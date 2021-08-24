@@ -1,5 +1,5 @@
-use super::mock::*;
-use frame_support::traits::OnRuntimeUpgrade;
+/* use super::mock::*;
+use frame_support::traits::OnRuntimeUpgrade; */
 
 /* #[test]
 fn upgrade_from_v3_to_v4() {

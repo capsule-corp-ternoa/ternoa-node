@@ -1,5 +1,5 @@
-use super::{Config, Data, NFTData, NFTDetails, Pallet};
-use frame_support::traits::{Get, StorageVersion};
+use crate::{Config, Data, NFTData, NFTDetails};
+use frame_support::traits::Get;
 use frame_support::weights::Weight;
 
 pub mod v020 {
@@ -30,23 +30,7 @@ pub mod v020 {
     }
 }
 
-/// Function that migrates our storage from pallet version 0.2.0 to 0.3.0
-pub fn migration<T: Config>() -> Weight {
-    let mut weight = Weight::from(0u64);
-
-    let storage_version = StorageVersion::get::<Pallet<T>>();
-
-    // TODO
-    /*     panic!(); */
-
-    if storage_version <= 2 {
-        weight = from_v2_to_v3::<T>();
-    }
-
-    weight
-}
-
-pub fn from_v2_to_v3<T: Config>() -> Weight {
+pub fn migrate<T: Config>() -> Weight {
     Data::<T>::translate::<(T::AccountId, v020::NFTDetails, bool, bool), _>(
         |_key, (owner, old_details, sealed, locked)| {
             let new_details =

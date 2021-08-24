@@ -1,6 +1,6 @@
-use super::mock::*;
+/* use super::mock::*;
 use frame_support::traits::OnRuntimeUpgrade;
-
+ */
 /* #[test]
 fn upgrade_from_v0_to_v3() {
     ExtBuilder::default().build().execute_with(|| {})

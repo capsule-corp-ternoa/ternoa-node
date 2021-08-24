@@ -17,6 +17,7 @@ frame-support = { git = "https://github.com/paritytech/substrate.git", default-f
 frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+log = { default-features = false, version = "0.4.14"}
 
 [dev-dependencies]
 ternoa-nfts = { path = "../nfts" }

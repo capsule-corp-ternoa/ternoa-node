@@ -2,17 +2,22 @@
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
-mod default_weights;
 
-mod migration;
 #[cfg(test)]
 mod tests;
+
+mod default_weights;
+mod migrations;
 mod types;
 
 pub use pallet::*;
 pub use types::*;
 
+use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
+
+/// The current storage version.
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(4);
 
 pub trait WeightInfo {
     fn list() -> Weight;
@@ -63,12 +68,13 @@ pub mod pallet {
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
+    #[pallet::storage_version(STORAGE_VERSION)]
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         fn on_runtime_upgrade() -> frame_support::weights::Weight {
-            migration::migration::<T>()
+            migrations::migrate::<T>()
         }
     }
 
