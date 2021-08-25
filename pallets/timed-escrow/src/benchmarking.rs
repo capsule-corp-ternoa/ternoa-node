@@ -1,9 +1,11 @@
 use crate::{Call, Config, NFTIdOf, Pallet};
-use frame_benchmarking::{account, benchmarks, whitelisted_caller};
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_system::{Pallet as SystemModule, RawOrigin};
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
 use ternoa_common::traits::{LockableNFTs, NFTs};
+
+use crate::Pallet as TimedEscrow;
 
 fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
     T::NFTs::create(
@@ -55,30 +57,8 @@ benchmarks! {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::tests::mock::{new_test_ext, Test};
-    use frame_support::assert_ok;
-
-    #[test]
-    fn create() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_create::<Test>());
-        });
-    }
-
-    #[test]
-    fn cancel() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_cancel::<Test>());
-        });
-    }
-
-    #[test]
-    fn complete_transfer() {
-        new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_complete_transfer::<Test>());
-        });
-    }
-}
+impl_benchmark_test_suite!(
+    TimedEscrow,
+    crate::tests::mock::new_test_ext(),
+    crate::tests::mock::Test
+);

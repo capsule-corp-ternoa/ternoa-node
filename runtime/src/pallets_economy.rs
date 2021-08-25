@@ -45,11 +45,14 @@ parameter_types! {
     // For weight estimation, we assume that the most locks on an individual account will be 50.
     // This number may need to be adjusted in the future if this assumption no longer holds true.
     pub const MaxLocks: u32 = 50;
+    pub const MaxReserves: u32 = 50;
 }
 
 impl pallet_balances::Config for Runtime {
     type MaxLocks = MaxLocks;
     type Balance = Balance;
+    type MaxReserves = MaxReserves;
+    type ReserveIdentifier = [u8; 8];
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
@@ -64,6 +67,8 @@ impl ternoa_account_store::Config for Runtime {
 impl pallet_balances::Config<pallet_balances::Instance1> for Runtime {
     type MaxLocks = MaxLocks;
     type Balance = Balance;
+    type MaxReserves = MaxReserves;
+    type ReserveIdentifier = [u8; 8];
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;

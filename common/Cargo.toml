@@ -7,9 +7,9 @@ edition = "2018"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-frame-support = { default-features = false, git = "https://github.com/paritytech/substrate/" }
-sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate/" }
-sp-std = { default-features = false, git = "https://github.com/paritytech/substrate/" }
+frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 
 [features]
 default = ["std"]

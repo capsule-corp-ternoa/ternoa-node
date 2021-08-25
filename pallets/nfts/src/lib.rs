@@ -2,15 +2,18 @@
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
-mod default_weights;
-mod migration;
+
 #[cfg(test)]
 mod tests;
 
+mod default_weights;
+mod migrations;
+
+pub use default_weights::WeightInfo;
 pub use pallet::*;
 
 use frame_support::pallet_prelude::{ensure, DispatchError};
-use frame_support::traits::Get;
+use frame_support::traits::{Get, StorageVersion};
 use sp_runtime::traits::CheckedAdd;
 use sp_runtime::DispatchResult;
 use sp_std::result;
@@ -18,7 +21,7 @@ use sp_std::vec::Vec;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 use ternoa_primitives::nfts::{NFTData, NFTDetails, NFTSeriesDetails, NFTSeriesId};
 
-pub use default_weights::WeightInfo;
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(4);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -53,12 +56,13 @@ pub mod pallet {
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
+    #[pallet::storage_version(STORAGE_VERSION)]
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         fn on_runtime_upgrade() -> frame_support::weights::Weight {
-            migration::migration::<T>()
+            migrations::migrate::<T>()
         }
     }
 

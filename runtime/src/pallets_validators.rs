@@ -23,6 +23,7 @@ pub use pallet_curveless_staking::StakerStatus;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sp_core::crypto::KeyTypeId;
+use sp_runtime::transaction_validity::TransactionPriority;
 use sp_runtime::{
     generic::Era,
     impl_opaque_keys,
@@ -30,7 +31,6 @@ use sp_runtime::{
     Perbill, SaturatedConversion,
 };
 use sp_std::prelude::*; // `impl_opaque_keys` need `Vec`
-use sp_transaction_pool::TransactionPriority;
 use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Moment};
 
 parameter_types! {
@@ -51,6 +51,7 @@ impl pallet_babe::Config for Runtime {
     type EpochDuration = EpochDuration;
     type ExpectedBlockTime = ExpectedBlockTime;
     type EpochChangeTrigger = pallet_babe::ExternalTrigger;
+    type DisabledValidators = Session;
 
     type KeyOwnerProofSystem = Historical;
 
