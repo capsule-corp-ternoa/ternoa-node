@@ -3,7 +3,7 @@ use crate::{
     Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler, TiimeBalances, Treasury,
 };
 use frame_support::parameter_types;
-use ternoa_primitives::{Balance, NFTId};
+use ternoa_primitives::Balance;
 
 parameter_types! {
     pub const MintFee: Balance = 10 * UNIT;
@@ -12,7 +12,6 @@ parameter_types! {
 
 impl ternoa_nfts::Config for Runtime {
     type Event = Event;
-    type NFTId = NFTId;
     type WeightInfo = ();
     type Currency = Balances;
     type MintFee = MintFee;

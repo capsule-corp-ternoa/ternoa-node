@@ -89,7 +89,6 @@ parameter_types! {
 }
 impl Config for Test {
     type Event = Event;
-    type NFTId = u32;
     type WeightInfo = ();
     type Currency = Balances;
     type MintFee = MintFee;
