@@ -8,12 +8,12 @@ use frame_support::instances::Instance1;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 
-const NFT_ID_1: u8 = 0;
-const NFT_ID_2: u8 = 1;
-const NFT_ID_3: u8 = 2;
-const NFT_ID_4: u8 = 3;
-const NFT_ID_5: u8 = 4;
-const NFT_ID_6: u8 = 5;
+const NFT_ID_1: u32 = 0;
+const NFT_ID_2: u32 = 1;
+const NFT_ID_3: u32 = 2;
+const NFT_ID_4: u32 = 3;
+const NFT_ID_5: u32 = 4;
+const NFT_ID_6: u32 = 5;
 const CAPS_ID: NFTCurrencyId = NFTCurrencyId::CAPS;
 const TIIME_ID: NFTCurrencyId = NFTCurrencyId::TIIME;
 

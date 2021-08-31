@@ -107,7 +107,6 @@ parameter_types! {
 }
 impl ternoa_nfts::Config for Test {
     type Event = Event;
-    type NFTId = u8;
     type WeightInfo = ();
     type Currency = Balances;
     type MintFee = MintFee;

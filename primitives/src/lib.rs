@@ -35,9 +35,6 @@ pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type.
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
 
-/// How NFT IDs are encoded.
-pub type NFTId = u32;
-
 pub mod nfts {
     use codec::{Decode, Encode};
     #[cfg(feature = "std")]
@@ -45,6 +42,10 @@ pub mod nfts {
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
 
+    /// How NFT IDs are encoded.
+    pub type NFTId = u32;
+
+    /// How NFT IDs are encoded.
     pub type NFTSeriesId = u32;
 
     /// Data related to NFTs on the Ternoa Chain.

@@ -14,12 +14,11 @@ pub use pallet::*;
 
 use frame_support::pallet_prelude::{ensure, DispatchError};
 use frame_support::traits::{Get, StorageVersion};
-use sp_runtime::traits::CheckedAdd;
 use sp_runtime::DispatchResult;
 use sp_std::result;
 use sp_std::vec::Vec;
 use ternoa_common::traits::{LockableNFTs, NFTs};
-use ternoa_primitives::nfts::{NFTData, NFTDetails, NFTSeriesDetails, NFTSeriesId};
+use ternoa_primitives::nfts::{NFTData, NFTDetails, NFTId, NFTSeriesDetails, NFTSeriesId};
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(4);
 
@@ -29,7 +28,7 @@ pub mod pallet {
     use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
     use frame_support::{pallet_prelude::*, transactional};
     use frame_system::pallet_prelude::*;
-    use sp_runtime::traits::{CheckedAdd, StaticLookup};
+    use sp_runtime::traits::StaticLookup;
     use sp_runtime::DispatchResult;
     use ternoa_common::traits::NFTs;
 
@@ -37,8 +36,6 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        /// How NFTs are represented
-        type NFTId: Parameter + Default + CheckedAdd + Copy + Member + From<u8>;
         type WeightInfo: WeightInfo;
         /// Currency used to bill minting fees
         type Currency: Currency<Self::AccountId>;
@@ -96,7 +93,7 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::mutate())]
         pub fn mutate(
             origin: OriginFor<T>,
-            id: T::NFTId,
+            id: NFTId,
             details: NFTDetails,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -116,7 +113,7 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::transfer())]
         pub fn transfer(
             origin: OriginFor<T>,
-            id: T::NFTId,
+            id: NFTId,
             to: <T::Lookup as StaticLookup>::Source,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -137,7 +134,7 @@ pub mod pallet {
         /// Mark an NFT as sealed, thus disabling further details modifications (but
         /// not preventing future transfers). Must be called by the owner of the NFT.
         #[pallet::weight(T::WeightInfo::seal())]
-        pub fn seal(origin: OriginFor<T>, id: T::NFTId) -> DispatchResultWithPostInfo {
+        pub fn seal(origin: OriginFor<T>, id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let mut data = Data::<T>::get(id);
 
@@ -157,7 +154,7 @@ pub mod pallet {
         /// get it back.
         /// Must be called by the owner of the NFT.
         #[pallet::weight(T::WeightInfo::burn())]
-        pub fn burn(origin: OriginFor<T>, id: T::NFTId) -> DispatchResultWithPostInfo {
+        pub fn burn(origin: OriginFor<T>, id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let data = Data::<T>::get(id);
 
@@ -198,23 +195,23 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", T::NFTId = "NFTId")]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId")]
     pub enum Event<T: Config> {
         /// A new NFT was created. \[nft id, owner, series id\]
-        Created(T::NFTId, T::AccountId, NFTSeriesId),
+        Created(NFTId, T::AccountId, NFTSeriesId),
         /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
-        Transfer(T::NFTId, T::AccountId, T::AccountId),
+        Transfer(NFTId, T::AccountId, T::AccountId),
         /// An NFT was updated by its owner. \[nft id\]
-        Mutated(T::NFTId),
+        Mutated(NFTId),
         /// An NFT was sealed, preventing any new mutations. \[nft id\]
-        Sealed(T::NFTId),
+        Sealed(NFTId),
         /// An NFT has been locked, preventing transfers until it is unlocked.
         /// \[nft id\]
-        Locked(T::NFTId),
+        Locked(NFTId),
         /// A locked NFT has been unlocked. \[nft id\]
-        Unlocked(T::NFTId),
+        Unlocked(NFTId),
         /// An NFT that was burned. \[nft id\]
-        Burned(T::NFTId),
+        Burned(NFTId),
         /// An NFT Series was transferred to someone else. \[nft series id, old owner, new owner\]
         SeriesTransfer(NFTSeriesId, T::AccountId, T::AccountId),
     }
@@ -241,13 +238,13 @@ pub mod pallet {
     /// The number of NFTs managed by this pallet
     #[pallet::storage]
     #[pallet::getter(fn total)]
-    pub type Total<T: Config> = StorageValue<_, T::NFTId, ValueQuery>;
+    pub type Total<T: Config> = StorageValue<_, NFTId, ValueQuery>;
 
     /// Data related to NFTs.
     #[pallet::storage]
     #[pallet::getter(fn data)]
     pub type Data<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTId, NFTData<T::AccountId>, ValueQuery>;
+        StorageMap<_, Blake2_128Concat, NFTId, NFTData<T::AccountId>, ValueQuery>;
 
     /// Data related to NFT Series.
     #[pallet::storage]
@@ -256,7 +253,7 @@ pub mod pallet {
         _,
         Blake2_128Concat,
         NFTSeriesId,
-        NFTSeriesDetails<T::AccountId, T::NFTId>,
+        NFTSeriesDetails<T::AccountId, NFTId>,
         OptionQuery,
     >;
 
@@ -299,8 +296,8 @@ pub mod pallet {
 impl<T: Config> NFTs for Pallet<T> {
     type AccountId = T::AccountId;
     type NFTDetails = NFTDetails;
-    type NFTId = T::NFTId;
     type NFTSeriesId = NFTSeriesId;
+    type NFTId = NFTId;
 
     fn create(
         owner: &Self::AccountId,
@@ -427,7 +424,7 @@ impl<T: Config> NFTs for Pallet<T> {
 
 impl<T: Config> LockableNFTs for Pallet<T> {
     type AccountId = T::AccountId;
-    type NFTId = T::NFTId;
+    type NFTId = NFTId;
 
     fn lock(id: Self::NFTId) -> DispatchResult {
         Data::<T>::try_mutate(id, |d| -> DispatchResult {
@@ -450,7 +447,7 @@ impl<T: Config> Pallet<T> {
     fn get_nft_series_data(
         owner: &T::AccountId,
         series_id: NFTSeriesId,
-    ) -> Result<Vec<T::NFTId>, Error<T>> {
+    ) -> Result<Vec<NFTId>, Error<T>> {
         let mut nft_series = sp_std::vec![];
         if series_id != NFTSeriesId::default() {
             if let Some(series) = Series::<T>::get(series_id) {
@@ -462,11 +459,9 @@ impl<T: Config> Pallet<T> {
         Ok(nft_series)
     }
 
-    fn get_next_nft_id() -> Result<(T::NFTId, T::NFTId), Error<T>> {
+    fn get_next_nft_id() -> Result<(NFTId, NFTId), Error<T>> {
         let nft_id = Total::<T>::get();
-        let next_id = nft_id
-            .checked_add(&1.into())
-            .ok_or(Error::<T>::NFTIdOverflow)?;
+        let next_id = nft_id.checked_add(1).ok_or(Error::<T>::NFTIdOverflow)?;
 
         Ok((nft_id, next_id))
     }
