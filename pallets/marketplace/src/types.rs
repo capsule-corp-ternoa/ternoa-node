@@ -1,26 +1,41 @@
-use codec::{Decode, Encode};
+#![cfg_attr(not(feature = "std"), no_std)]
+
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-use crate::{BalanceCaps, BalanceTiime, Config};
+use crate::Config;
+use codec::{Decode, Encode};
 use sp_runtime::RuntimeDebug;
+use sp_std::vec::Vec;
 
 /// Structure that stores both NFT currencies at the same time.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct NFTCurrencyCombined<T: Config> {
-    pub caps: BalanceCaps<T>,
-    pub tiime: BalanceTiime<T>,
+pub struct NFTCurrencyCombined<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
+    pub caps: BalanceCaps,
+    pub tiime: BalanceTiime,
 }
 
-impl<T: Config> NFTCurrencyCombined<T> {
-    pub fn new(caps: BalanceCaps<T>, tiime: BalanceTiime<T>) -> Self {
+impl<BalanceCaps, BalanceTiime> NFTCurrencyCombined<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
+    pub fn new(caps: BalanceCaps, tiime: BalanceTiime) -> Self {
         Self { caps, tiime }
     }
 }
 
 #[cfg(feature = "std")]
-impl<T: Config> std::fmt::Debug for NFTCurrencyCombined<T> {
+impl<BalanceCaps, BalanceTiime> std::fmt::Debug for NFTCurrencyCombined<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default + std::fmt::Debug,
+    BalanceTiime: Clone + Default + std::fmt::Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -33,14 +48,22 @@ impl<T: Config> std::fmt::Debug for NFTCurrencyCombined<T> {
 /// Currency combination that can be used to set a price of an NFT.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum NFTCurrency<T: Config> {
-    CAPS(BalanceCaps<T>),
-    TIIME(BalanceTiime<T>),
-    COMBINED(NFTCurrencyCombined<T>),
+pub enum NFTCurrency<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
+    CAPS(BalanceCaps),
+    TIIME(BalanceTiime),
+    COMBINED(NFTCurrencyCombined<BalanceCaps, BalanceTiime>),
 }
 
-impl<T: Config> NFTCurrency<T> {
-    pub fn caps(&self) -> Option<BalanceCaps<T>> {
+impl<BalanceCaps, BalanceTiime> NFTCurrency<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default + Copy,
+    BalanceTiime: Clone + Default + Copy,
+{
+    pub fn caps(&self) -> Option<BalanceCaps> {
         match self {
             NFTCurrency::CAPS(x) => Some(x.clone()),
             NFTCurrency::TIIME(_) => None,
@@ -48,7 +71,7 @@ impl<T: Config> NFTCurrency<T> {
         }
     }
 
-    pub fn tiime(&self) -> Option<BalanceTiime<T>> {
+    pub fn tiime(&self) -> Option<BalanceTiime> {
         match self {
             NFTCurrency::CAPS(_) => None,
             NFTCurrency::TIIME(x) => Some(x.clone()),
@@ -57,14 +80,22 @@ impl<T: Config> NFTCurrency<T> {
     }
 }
 
-impl<T: Config> Default for NFTCurrency<T> {
+impl<BalanceCaps, BalanceTiime> Default for NFTCurrency<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
     fn default() -> Self {
-        Self::CAPS(BalanceCaps::<T>::default())
+        Self::CAPS(BalanceCaps::default())
     }
 }
 
 #[cfg(feature = "std")]
-impl<T: Config> std::fmt::Debug for NFTCurrency<T> {
+impl<BalanceCaps, BalanceTiime> std::fmt::Debug for NFTCurrency<BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default + std::fmt::Debug,
+    BalanceTiime: Clone + Default + std::fmt::Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
             NFTCurrency::CAPS(x) => write!(f, "CAPS({:?})", x),
@@ -91,13 +122,24 @@ impl Default for NFTCurrencyId {
 pub type MarketplaceId = u32;
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
-pub struct SaleInformation<T: Config> {
-    pub account_id: T::AccountId,
-    pub price: NFTCurrency<T>,
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub struct SaleInformation<AccountId, BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
+    pub account_id: AccountId,
+    pub price: NFTCurrency<BalanceCaps, BalanceTiime>,
     pub marketplace_id: MarketplaceId,
 }
 
-impl<T: Config> Default for SaleInformation<T> {
+impl<AccountId, BalanceCaps, BalanceTiime> Default
+    for SaleInformation<AccountId, BalanceCaps, BalanceTiime>
+where
+    AccountId: Clone + Default,
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
     fn default() -> Self {
         Self {
             account_id: Default::default(),
@@ -107,16 +149,52 @@ impl<T: Config> Default for SaleInformation<T> {
     }
 }
 
-impl<T: Config> SaleInformation<T> {
+impl<AccountId, BalanceCaps, BalanceTiime> SaleInformation<AccountId, BalanceCaps, BalanceTiime>
+where
+    BalanceCaps: Clone + Default,
+    BalanceTiime: Clone + Default,
+{
     pub fn new(
-        account_id: T::AccountId,
-        price: NFTCurrency<T>,
+        account_id: AccountId,
+        price: NFTCurrency<BalanceCaps, BalanceTiime>,
         marketplace_id: MarketplaceId,
-    ) -> SaleInformation<T> {
+    ) -> SaleInformation<AccountId, BalanceCaps, BalanceTiime> {
         Self {
             account_id,
             price,
             marketplace_id,
+        }
+    }
+}
+
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub enum MarketplaceType {
+    Public,
+    Private,
+}
+
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+pub struct MarketplaceInformation<T: Config> {
+    pub kind: MarketplaceType,
+    pub commission_fee: u8,
+    pub owner: T::AccountId,
+    pub allow_list: Vec<T::AccountId>,
+}
+
+impl<T: Config> MarketplaceInformation<T> {
+    pub fn new(
+        kind: MarketplaceType,
+        commission_fee: u8,
+        owner: T::AccountId,
+        allow_list: Vec<T::AccountId>,
+    ) -> MarketplaceInformation<T> {
+        Self {
+            kind,
+            commission_fee,
+            owner,
+            allow_list,
         }
     }
 }

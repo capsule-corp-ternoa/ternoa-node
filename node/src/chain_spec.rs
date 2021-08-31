@@ -12,7 +12,9 @@ use sp_runtime::{
     traits::{IdentifyAccount, Verify},
     Perbill,
 };
+use ternoa_marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
+use ternoa_runtime::MarketplaceConfig;
 use ternoa_runtime::{
     constants::currency::UNIT, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
@@ -162,6 +164,19 @@ pub fn testnet_genesis(
 
         // Ternoa
         nfts: Default::default(),
+        marketplace: MarketplaceConfig {
+            nfts_for_sale: Default::default(),
+            marketplaces: vec![(
+                0,
+                MarketplaceInformation::new(
+                    MarketplaceType::Public,
+                    0,
+                    // Alice
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                    Default::default(),
+                ),
+            )],
+        },
     }
 }
 
@@ -336,6 +351,19 @@ pub fn staging_genesis() -> GenesisConfig {
 
         // Ternoa
         nfts: Default::default(),
+        marketplace: MarketplaceConfig {
+            nfts_for_sale: Default::default(),
+            marketplaces: vec![(
+                0,
+                MarketplaceInformation::new(
+                    MarketplaceType::Public,
+                    0,
+                    // Mickael
+                    hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
+                    Default::default(),
+                ),
+            )],
+        },
     }
 }
 

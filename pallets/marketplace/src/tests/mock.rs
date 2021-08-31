@@ -1,4 +1,4 @@
-use crate::{self as ternoa_marketplace, Config};
+use crate::{self as ternoa_marketplace, Config, MarketplaceInformation, MarketplaceType};
 use frame_support::instances::Instance1;
 use frame_support::parameter_types;
 use frame_support::traits::{Contains, GenesisBuild};
@@ -204,6 +204,16 @@ impl ExtBuilder {
         ternoa_nfts::GenesisConfig::<Test> {
             nfts: self.nfts,
             series: self.series,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        ternoa_marketplace::GenesisConfig::<Test> {
+            nfts_for_sale: Default::default(),
+            marketplaces: vec![(
+                0,
+                MarketplaceInformation::new(MarketplaceType::Public, 0, ALICE, Default::default()),
+            )],
         }
         .assimilate_storage(&mut t)
         .unwrap();

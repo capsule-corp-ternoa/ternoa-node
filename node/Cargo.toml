@@ -84,6 +84,7 @@ sp-transaction-pool = { git = "https://github.com/paritytech/substrate.git", ver
 substrate-frame-rpc-system = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 sp-transaction-storage-proof = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 node-inspect = { git = "https://github.com/paritytech/substrate.git", version = "0.9.0-dev" }
+ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 
 [build-dependencies]
 vergen = "3.0.4"

@@ -1,8 +1,8 @@
 use super::mock::*;
 use crate::tests::mock;
 use crate::{
-    Error, MarketplaceCount, MarketplaceOwners, NFTCurrency, NFTCurrencyCombined, NFTCurrencyId,
-    NFTsForSale, SaleInformation,
+    Error, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency, NFTCurrencyCombined,
+    NFTCurrencyId, NFTsForSale, SaleInformation,
 };
 use frame_support::instances::Instance1;
 use frame_support::{assert_noop, assert_ok};
@@ -147,7 +147,7 @@ fn list_nft() {
         .one_hundred_tiime_for_alice_n_bob()
         .build()
         .execute_with(|| {
-            let caps: NFTCurrency<Test> = NFTCurrency::CAPS(10);
+            let caps = NFTCurrency::CAPS(10);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -181,7 +181,7 @@ fn list_nft() {
             );
 
             // Alice should be able to list nfts on user-marketplaces.
-            assert_ok!(Marketplace::create(bob.clone()));
+            assert_ok!(Marketplace::create(bob.clone(), MarketplaceType::Public, 0));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_4, caps, Some(1)));
         })
 }
@@ -194,7 +194,7 @@ fn unlist_nft() {
         .one_hundred_tiime_for_alice_n_bob()
         .build()
         .execute_with(|| {
-            let nft_price: NFTCurrency<Test> = NFTCurrency::CAPS(10);
+            let nft_price = NFTCurrency::CAPS(10);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -224,8 +224,8 @@ fn buy_nft() {
         .one_hundred_tiime_for_alice_n_bob()
         .build()
         .execute_with(|| {
-            let caps: NFTCurrency<Test> = NFTCurrency::CAPS(200);
-            let tiime: NFTCurrency<Test> = NFTCurrency::TIIME(200);
+            let caps = NFTCurrency::CAPS(200);
+            let tiime = NFTCurrency::TIIME(200);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -291,16 +291,20 @@ fn create() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             // The default marketplace has the ID 0.
-            assert_eq!(MarketplaceCount::<Test>::get(), 0);
+            assert_eq!(MarketplaceIdGenerator::<Test>::get(), 0);
 
             // Alice should be able to create a user-marketplace if she has enough tokens.
-            assert_ok!(Marketplace::create(alice.clone()));
-            assert_eq!(MarketplaceCount::<Test>::get(), 1);
-            assert_eq!(MarketplaceOwners::<Test>::get(1), Some(ALICE));
+            assert_ok!(Marketplace::create(
+                alice.clone(),
+                MarketplaceType::Public,
+                0
+            ));
+            assert_eq!(MarketplaceIdGenerator::<Test>::get(), 1);
+            assert_eq!(Marketplaces::<Test>::get(1).unwrap().owner, ALICE);
 
             // Bob should NOT be able to create a user-marketplace since he doesn't have enough tokens.
             assert_noop!(
-                Marketplace::create(bob.clone()),
+                Marketplace::create(bob.clone(), MarketplaceType::Public, 0),
                 pallet_balances::Error::<Test>::InsufficientBalance,
             );
         })

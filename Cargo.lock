@@ -7419,6 +7419,7 @@ dependencies = [
  "substrate-build-script-utils",
  "substrate-frame-rpc-system",
  "ternoa-executor",
+ "ternoa-marketplace",
  "ternoa-primitives",
  "ternoa-runtime",
  "vergen",

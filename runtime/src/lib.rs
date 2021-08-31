@@ -96,7 +96,7 @@ construct_runtime!(
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Config<T>, Event<T>},
 
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-        Marketplace: ternoa_marketplace::{Pallet, Call, Storage, Event<T>},
+        Marketplace: ternoa_marketplace::{Pallet, Call, Storage, Event<T>, Config<T>},
         Nfts: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
 

@@ -59,5 +59,12 @@
             "Free",
             "Reserved"
         ]
+    },
+    "MarketplaceType": {
+        "_enum": [
+            "Public",
+            "Premium",
+            "Exclusive"
+        ]
     }
 }
