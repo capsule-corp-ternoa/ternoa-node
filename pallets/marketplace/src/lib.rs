@@ -19,7 +19,7 @@ use frame_support::weights::Weight;
 use ternoa_primitives::nfts::NFTId;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(4);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(5);
 
 pub trait WeightInfo {
     fn list() -> Weight;
