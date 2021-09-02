@@ -278,7 +278,8 @@ pub mod pallet {
                 }
             })?;
 
-            Self::deposit_event(Event::AccountAddedToMarketplace(marketplace_id, account_id));
+            let event = Event::AccountAddedToMarketplace(marketplace_id, account_id);
+            Self::deposit_event(event);
 
             Ok(().into())
         }
@@ -312,10 +313,37 @@ pub mod pallet {
                 }
             })?;
 
-            Self::deposit_event(Event::AccountRemovedFromMarketplace(
-                marketplace_id,
-                account_id,
-            ));
+            let event = Event::AccountRemovedFromMarketplace(marketplace_id, account_id);
+            Self::deposit_event(event);
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(1)]
+        pub fn change_owner(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            account_id: <T::Lookup as StaticLookup>::Source,
+        ) -> DispatchResultWithPostInfo {
+            let caller_id = ensure_signed(origin)?;
+            let account_id = T::Lookup::lookup(account_id)?;
+
+            Marketplaces::<T>::mutate(marketplace_id, |x| {
+                if let Some(market_info) = x {
+                    if market_info.owner != caller_id {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+
+                    market_info.owner = account_id.clone();
+
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceChangedOwner(marketplace_id, account_id);
+            Self::deposit_event(event);
 
             Ok(().into())
         }
@@ -341,6 +369,8 @@ pub mod pallet {
         AccountAddedToMarketplace(MarketplaceId, T::AccountId),
         /// Account removed from marketplace.  \[marketplace id, account\]
         AccountRemovedFromMarketplace(MarketplaceId, T::AccountId),
+        /// Marketplace changed owner.  \[marketplace id, account\]
+        MarketplaceChangedOwner(MarketplaceId, T::AccountId),
     }
 
     #[pallet::error]

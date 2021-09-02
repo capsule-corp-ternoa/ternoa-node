@@ -14,12 +14,7 @@ frame_support::generate_storage_alias!(
 );
 
 pub fn migrate<T: Config>() -> Weight {
-    log::info!("Migration V4 to V5 Marketplace");
-    log::info!(
-        target: "runtime::elections-phragmen",
-        "Count: {:?}",
-        MarketplaceCount::get(),
-    );
+    log::info!("Migrating marketplace to StorageVersion::V5");
 
     let count = MarketplaceOwners::<T>::iter().count();
     MarketplaceOwners::<T>::drain().for_each(|x| {
@@ -28,6 +23,16 @@ pub fn migrate<T: Config>() -> Weight {
             MarketplaceInformation::<T>::new(MarketplaceType::Public, 0, x.1, Default::default()),
         );
     });
+
+    Marketplaces::<T>::insert(
+        0,
+        MarketplaceInformation::<T>::new(
+            MarketplaceType::Public,
+            0,
+            Default::default(),
+            Default::default(),
+        ),
+    );
 
     MarketplaceCount::kill();
     MarketplaceIdGenerator::<T>::set(count as u32);

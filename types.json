@@ -63,8 +63,13 @@
     "MarketplaceType": {
         "_enum": [
             "Public",
-            "Premium",
-            "Exclusive"
+            "Private"
         ]
+    },
+    "MarketplaceInformation": {
+        "kind": "MarketplaceType",
+        "commission_fee": "u8",
+        "owner": "AccountId",
+        "allow_list": "Vec<AccountId>"
     }
 }

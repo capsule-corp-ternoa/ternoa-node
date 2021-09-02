@@ -8,10 +8,10 @@ pub fn migrate<T: Config>() -> Weight {
 
     let storage_version = StorageVersion::get::<Pallet<T>>();
     if storage_version == 4 {
-        log::info!(target: "runtime::marketplace", "Running migration to v5 for marketplace with storage version {:?}", storage_version);
         weight = v5::migrate::<T>();
 
         StorageVersion::new(5).put::<Pallet<T>>();
+        log::info!("Migration done.");
     } else {
         log::info!(target: "runtime::marketplace", "No migration was run. Current storage version {:?}", storage_version);
     }
