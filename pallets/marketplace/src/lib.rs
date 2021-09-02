@@ -97,10 +97,16 @@ pub mod pallet {
                 T::NFTs::owner(nft_id) == account_id,
                 Error::<T>::NotNftOwner
             );
-            ensure!(
-                Marketplaces::<T>::contains_key(marketplace_id),
-                Error::<T>::UnknownMarketplace
-            );
+
+            let market_info =
+                Marketplaces::<T>::get(marketplace_id).ok_or(Error::<T>::UnknownMarketplace)?;
+
+            if market_info.kind == MarketplaceType::Private {
+                ensure!(
+                    market_info.allow_list.contains(&account_id),
+                    Error::<T>::NotAllowed
+                );
+            }
 
             T::NFTs::lock(nft_id)?;
 
