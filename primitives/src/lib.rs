@@ -36,9 +36,10 @@ pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
 
 pub mod nfts {
-    use codec::{Decode, Encode};
     #[cfg(feature = "std")]
     use serde::{Deserialize, Serialize};
+
+    use codec::{Decode, Encode};
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
 

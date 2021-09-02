@@ -1,8 +1,8 @@
 use super::mock::*;
 use crate::tests::mock;
 use crate::{
-    Error, MarketplaceCount, MarketplaceOwners, NFTCurrency, NFTCurrencyCombined, NFTCurrencyId,
-    NFTsForSale, SaleInformation,
+    Error, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency, NFTCurrencyCombined,
+    NFTCurrencyId, NFTsForSale, SaleInformation,
 };
 use frame_support::instances::Instance1;
 use frame_support::{assert_noop, assert_ok};
@@ -14,13 +14,16 @@ const NFT_ID_3: u32 = 2;
 const NFT_ID_4: u32 = 3;
 const NFT_ID_5: u32 = 4;
 const NFT_ID_6: u32 = 5;
+const NFT_ID_7: u32 = 6;
 const CAPS_ID: NFTCurrencyId = NFTCurrencyId::CAPS;
 const TIIME_ID: NFTCurrencyId = NFTCurrencyId::TIIME;
+
+type MPT = MarketplaceType;
 
 #[test]
 fn list_register_price() {
     ExtBuilder::default()
-        .one_nft_for_alice()
+        .nfts(vec![(ALICE, 1)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -35,8 +38,8 @@ fn list_register_price() {
 #[test]
 fn buy_transfer_funds_to_owner() {
     ExtBuilder::default()
-        .one_hundred_caps_for_alice_n_bob()
-        .one_nft_for_alice()
+        .nfts(vec![(ALICE, 1)])
+        .caps(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -54,8 +57,8 @@ fn buy_transfer_funds_to_owner() {
 #[test]
 fn buy_change_owner() {
     ExtBuilder::default()
-        .one_hundred_caps_for_alice_n_bob()
-        .one_nft_for_alice()
+        .nfts(vec![(ALICE, 1)])
+        .caps(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -71,8 +74,8 @@ fn buy_change_owner() {
 #[test]
 fn buy_unlock_nft() {
     ExtBuilder::default()
-        .one_hundred_caps_for_alice_n_bob()
-        .one_nft_for_alice()
+        .nfts(vec![(ALICE, 1)])
+        .caps(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -88,7 +91,7 @@ fn buy_unlock_nft() {
 #[test]
 fn unlist_unlocks_nft() {
     ExtBuilder::default()
-        .one_nft_for_alice()
+        .nfts(vec![(ALICE, 1)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -103,7 +106,7 @@ fn unlist_unlocks_nft() {
 #[test]
 fn unlist_remove_from_for_sale() {
     ExtBuilder::default()
-        .one_nft_for_alice()
+        .nfts(vec![(ALICE, 1)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -118,8 +121,8 @@ fn unlist_remove_from_for_sale() {
 #[test]
 fn bought_nft_is_not_listed_anymore() {
     ExtBuilder::default()
-        .one_nft_for_alice()
-        .one_hundred_caps_for_alice_n_bob()
+        .nfts(vec![(ALICE, 1)])
+        .caps(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
             let seller: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -142,12 +145,12 @@ fn bought_nft_is_not_listed_anymore() {
 #[test]
 fn list_nft() {
     ExtBuilder::default()
-        .n_nfts_for_alice(6)
-        .one_hundred_caps_for_alice_n_bob()
-        .one_hundred_tiime_for_alice_n_bob()
+        .nfts(vec![(ALICE, 5), (BOB, 1)])
+        .caps(vec![(ALICE, 100), (BOB, 100)])
+        .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
-            let caps: NFTCurrency<Test> = NFTCurrency::CAPS(10);
+            let caps = NFTCurrency::CAPS(10);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -181,20 +184,31 @@ fn list_nft() {
             );
 
             // Alice should be able to list nfts on user-marketplaces.
-            assert_ok!(Marketplace::create(bob.clone()));
+            assert_ok!(Marketplace::create(bob.clone(), MPT::Public, 0));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_4, caps, Some(1)));
+
+            // Alice should be able to list nfts on private user-marketplaces with access.
+            let ok = Marketplace::create(bob.clone(), MPT::Private, 0);
+            assert_ok!(ok);
+            let ok = Marketplace::add_account_to_allow_list(bob.clone(), 2, ALICE);
+            assert_ok!(ok);
+            assert_ok!(Marketplace::list(alice.clone(), NFT_ID_5, caps, Some(2)));
+
+            // Bob should NOT be able to list nfts on private user-marketplaces without access.
+            let ok = Marketplace::list(bob.clone(), NFT_ID_6, caps, Some(2));
+            assert_noop!(ok, Error::<Test>::NotAllowed);
         })
 }
 
 #[test]
 fn unlist_nft() {
     ExtBuilder::default()
-        .three_nfts_for_alice()
-        .one_hundred_caps_for_alice_n_bob()
-        .one_hundred_tiime_for_alice_n_bob()
+        .nfts(vec![(ALICE, 3)])
+        .caps(vec![(ALICE, 100), (BOB, 100)])
+        .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
-            let nft_price: NFTCurrency<Test> = NFTCurrency::CAPS(10);
+            let nft_price = NFTCurrency::CAPS(10);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -219,15 +233,16 @@ fn unlist_nft() {
 #[test]
 fn buy_nft() {
     ExtBuilder::default()
-        .n_nfts_for_alice(6)
-        .one_hundred_caps_for_alice_n_bob()
-        .one_hundred_tiime_for_alice_n_bob()
+        .nfts(vec![(ALICE, 7)])
+        .caps(vec![(ALICE, 100), (BOB, 100), (DAVE, 1000)])
+        .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
-            let caps: NFTCurrency<Test> = NFTCurrency::CAPS(200);
-            let tiime: NFTCurrency<Test> = NFTCurrency::TIIME(200);
+            let caps = NFTCurrency::CAPS(200);
+            let tiime = NFTCurrency::TIIME(200);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+            let dave: mock::Origin = RawOrigin::Signed(DAVE).into();
 
             // Bob should NOT be able to buy nfts that are not listed.
             assert_noop!(
@@ -278,30 +293,153 @@ fn buy_nft() {
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_6, combined, None));
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_5, CAPS_ID));
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_6, TIIME_ID));
+
+            // Dave should NOT be able to buy nfts that are listed in private markets without being in the allow list.
+            let commission_fee = 5;
+            assert_ok!(Marketplace::create(
+                bob.clone(),
+                MPT::Private,
+                commission_fee
+            ));
+            assert_ok!(Marketplace::add_account_to_allow_list(
+                bob.clone(),
+                1,
+                ALICE
+            ));
+            assert_ok!(Marketplace::list(alice.clone(), NFT_ID_7, caps, Some(1)));
+            assert_noop!(
+                Marketplace::buy(dave.clone(), NFT_ID_7, CAPS_ID),
+                Error::<Test>::NotAllowed,
+            );
+            assert_ok!(Marketplace::add_account_to_allow_list(bob.clone(), 1, DAVE));
+
+            // Bob should be able to buy nfts from private markets if he is in the allow list.
+            // He also needs to pay the commission fee.
+            let dave_balance = Balances::free_balance(DAVE);
+            let alice_balance = Balances::free_balance(ALICE);
+            let bob_balance = Balances::free_balance(BOB);
+
+            let price = caps.caps().unwrap();
+            let commission = price / 100 * commission_fee as u64;
+
+            let expected_dave_balance = dave_balance - price;
+            let expected_alice_balance = alice_balance + (price - commission);
+            let expected_bob_balance = bob_balance + commission;
+
+            assert_ok!(Marketplace::buy(dave.clone(), NFT_ID_7, CAPS_ID));
+            assert_eq!(Balances::free_balance(DAVE), expected_dave_balance);
+            assert_eq!(Balances::free_balance(ALICE), expected_alice_balance);
+            assert_eq!(Balances::free_balance(BOB), expected_bob_balance);
         })
 }
 
 #[test]
 fn create() {
     ExtBuilder::default()
-        .one_hundred_caps_for_alice()
+        .caps(vec![(ALICE, 100)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             // The default marketplace has the ID 0.
-            assert_eq!(MarketplaceCount::<Test>::get(), 0);
+            assert_eq!(MarketplaceIdGenerator::<Test>::get(), 0);
 
-            // Alice should be able to create a user-marketplace if she has enough tokens.
-            assert_ok!(Marketplace::create(alice.clone()));
-            assert_eq!(MarketplaceCount::<Test>::get(), 1);
-            assert_eq!(MarketplaceOwners::<Test>::get(1), Some(ALICE));
+            // Alice should be able to create a marketplace if she has enough tokens.
+            assert_ok!(Marketplace::create(alice.clone(), MPT::Public, 0));
+            assert_eq!(MarketplaceIdGenerator::<Test>::get(), 1);
+            assert_eq!(Marketplaces::<Test>::get(1).unwrap().owner, ALICE);
 
-            // Bob should NOT be able to create a user-marketplace since he doesn't have enough tokens.
+            // Bob should NOT be able to create a marketplace since he doesn't have enough tokens.
             assert_noop!(
-                Marketplace::create(bob.clone()),
+                Marketplace::create(bob.clone(), MPT::Public, 0),
                 pallet_balances::Error::<Test>::InsufficientBalance,
             );
+        })
+}
+
+#[test]
+fn change_marketplace_owner() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100), (DAVE, 100)])
+        .marketplace(vec![(ALICE, MPT::Public, 0), (DAVE, MPT::Public, 0)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Alice should be able to give her marketplace to someone else.
+            assert_ok!(Marketplace::change_owner(alice.clone(), 1, BOB));
+
+            // Alice should NOT be able to give a marketplace not owned by her to someone else.
+            assert_noop!(
+                Marketplace::change_owner(alice.clone(), 2, BOB),
+                Error::<Test>::NotMarketplaceOwner
+            );
+
+            // Alice should NOT be able to give a non existing marketplace to someone else.
+            assert_noop!(
+                Marketplace::change_owner(alice.clone(), 3, BOB),
+                Error::<Test>::UnknownMarketplace
+            );
+        })
+}
+
+#[test]
+fn add_account() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1_000), (DAVE, 1_000)])
+        .marketplace(vec![
+            (ALICE, MPT::Private, 0),
+            (ALICE, MPT::Public, 0),
+            (BOB, MPT::Public, 0),
+        ])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Alice should be able to add Dave to her private marketplace.
+            let ok = Marketplace::add_account_to_allow_list(alice.clone(), 1, DAVE);
+            assert_ok!(ok);
+
+            // Alice should NOT be able to add Dave to her public marketplace.
+            let ok = Marketplace::add_account_to_allow_list(alice.clone(), 2, DAVE);
+            assert_noop!(ok, Error::<Test>::UnsupportedMarketplace);
+
+            // Alice should NOT be able to add Dave someones else marketplace.
+            let ok = Marketplace::add_account_to_allow_list(alice.clone(), 3, DAVE);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+        })
+}
+
+#[test]
+fn remove_account() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1_000), (DAVE, 1_000)])
+        .marketplace(vec![
+            (ALICE, MPT::Private, 0),
+            (ALICE, MPT::Public, 0),
+            (BOB, MPT::Private, 0),
+        ])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Alice should be able to remove Dave from her private marketplace.
+            let ok = Marketplace::add_account_to_allow_list(alice.clone(), 1, DAVE);
+            assert_ok!(ok);
+            let ok = Marketplace::remove_account_from_allow_list(alice.clone(), 1, DAVE);
+            assert_ok!(ok);
+
+            // Alice should NOT be able to remove Dave if dave is not on the allow list.
+            let ok = Marketplace::remove_account_from_allow_list(alice.clone(), 1, DAVE);
+            assert_noop!(ok, Error::<Test>::AccountNotFound);
+
+            // Alice should NOT be able to remove Dave from a marketplace that she does not own.
+            let ok = Marketplace::remove_account_from_allow_list(alice.clone(), 3, DAVE);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+
+            // Alice should NOT be able to remove Dave from a marketplace that does not use the allow list.
+            let ok = Marketplace::remove_account_from_allow_list(alice.clone(), 2, DAVE);
+            assert_noop!(ok, Error::<Test>::UnsupportedMarketplace);
         })
 }

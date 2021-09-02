@@ -340,6 +340,10 @@
       "tiimeBalances": {
         "balances": []
       },
+      "marketplace": {
+        "nftsForSale": [],
+        "marketplaces": []
+      },
       "nfts": {
         "nfts": [],
         "series": []

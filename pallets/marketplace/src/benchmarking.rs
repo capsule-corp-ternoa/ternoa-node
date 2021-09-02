@@ -1,15 +1,17 @@
 use crate::{
-    Call, Config, MarketplaceOwners, NFTCurrency, NFTCurrencyId, NFTIdOf, NFTsForSale, Pallet,
+    Call, Config, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency,
+    NFTCurrencyId, NFTsForSale, Pallet,
 };
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
 use sp_std::prelude::*;
 use ternoa_common::traits::NFTs;
+use ternoa_primitives::nfts::NFTId;
 
 use crate::Pallet as Marketplace;
 
-fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
+fn create_nft<T: Config>(caller: &T::AccountId) -> NFTId {
     T::NFTs::create(
         caller,
         <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
@@ -27,7 +29,7 @@ benchmarks! {
         T::CurrencyCaps::make_free_balance_be(&seller, balance.into());
 
         let id = create_nft::<T>(&seller);
-        let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(0u32.into());
+        let price = NFTCurrency::CAPS(0u32.into());
 
         drop(Pallet::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price, None));
     }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::CAPS)
@@ -40,7 +42,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(100u32.into());
+        let price = NFTCurrency::CAPS(100u32.into());
 
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price, None)
     verify {
@@ -52,7 +54,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        let price: NFTCurrency<T> = NFTCurrency::<T>::CAPS(100u32.into());
+        let price = NFTCurrency::CAPS(100u32.into());
 
         drop(Pallet::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price, None));
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
@@ -62,10 +64,11 @@ benchmarks! {
 
     create {
         let caller: T::AccountId = whitelisted_caller();
-    }: _(RawOrigin::Signed(caller.clone().into()))
+    }: _(RawOrigin::Signed(caller.clone().into()), MarketplaceType::Public, 0)
     verify {
-        assert_eq!(MarketplaceOwners::<T>::contains_key(1), true);
-        assert_eq!(MarketplaceOwners::<T>::get(0).unwrap(), caller);
+        assert_eq!(Marketplaces::<T>::contains_key(1), true);
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, caller);
+        assert_eq!(MarketplaceIdGenerator::<T>::get(), 1);
     }
 }
 

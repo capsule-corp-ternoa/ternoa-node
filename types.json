@@ -59,5 +59,17 @@
             "Free",
             "Reserved"
         ]
+    },
+    "MarketplaceType": {
+        "_enum": [
+            "Public",
+            "Private"
+        ]
+    },
+    "MarketplaceInformation": {
+        "kind": "MarketplaceType",
+        "commission_fee": "u8",
+        "owner": "AccountId",
+        "allow_list": "Vec<AccountId>"
     }
 }

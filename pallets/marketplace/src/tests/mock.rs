@@ -1,4 +1,4 @@
-use crate::{self as ternoa_marketplace, Config};
+use crate::{self as ternoa_marketplace, Config, MarketplaceInformation, MarketplaceType};
 use frame_support::instances::Instance1;
 use frame_support::parameter_types;
 use frame_support::traits::{Contains, GenesisBuild};
@@ -105,6 +105,7 @@ parameter_types! {
     pub const MintFee: u64 = 0;
     pub const MarketplaceFee: u64 = 10;
 }
+
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type WeightInfo = ();
@@ -127,12 +128,14 @@ impl Config for Test {
 // for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
+pub const DAVE: u64 = 3;
 
 pub struct ExtBuilder {
     nfts: Vec<(u64, NFTDetails)>,
     series: Vec<(u64, u32)>,
     caps_endowed_accounts: Vec<(u64, u64)>,
     tiime_endowed_accounts: Vec<(u64, u64)>,
+    marketplaces: Vec<(u64, MarketplaceType, u8)>,
 }
 
 impl Default for ExtBuilder {
@@ -142,45 +145,40 @@ impl Default for ExtBuilder {
             series: Vec::new(),
             caps_endowed_accounts: Vec::new(),
             tiime_endowed_accounts: Vec::new(),
+            marketplaces: Vec::new(),
         }
     }
 }
 
 impl ExtBuilder {
-    pub fn one_nft_for_alice(mut self) -> Self {
-        self.nfts.push((ALICE, NFTDetails::default()));
-        self
-    }
-
-    pub fn three_nfts_for_alice(mut self) -> Self {
-        self.nfts.push((ALICE, NFTDetails::default()));
-        self.nfts.push((ALICE, NFTDetails::default()));
-        self.nfts.push((ALICE, NFTDetails::default()));
-        self
-    }
-
-    pub fn n_nfts_for_alice(mut self, n: u32) -> Self {
-        for _ in 0..n {
-            self.nfts.push((ALICE, NFTDetails::default()));
+    pub fn nfts(mut self, accounts: Vec<(u64, u64)>) -> Self {
+        for account in accounts {
+            for _ in 0..account.1 {
+                self.nfts.push((account.0, NFTDetails::default()));
+            }
         }
 
         self
     }
 
-    pub fn one_hundred_caps_for_alice(mut self) -> Self {
-        self.caps_endowed_accounts.push((ALICE, 100));
+    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+        for account in accounts {
+            self.caps_endowed_accounts.push(account);
+        }
         self
     }
 
-    pub fn one_hundred_caps_for_alice_n_bob(mut self) -> Self {
-        self.caps_endowed_accounts.push((ALICE, 100));
-        self.caps_endowed_accounts.push((BOB, 100));
+    pub fn tiime(mut self, accounts: Vec<(u64, u64)>) -> Self {
+        for account in accounts {
+            self.tiime_endowed_accounts.push(account);
+        }
         self
     }
 
-    pub fn one_hundred_tiime_for_alice_n_bob(mut self) -> Self {
-        self.tiime_endowed_accounts.push((ALICE, 100));
-        self.tiime_endowed_accounts.push((BOB, 100));
+    pub fn marketplace(mut self, accounts: Vec<(u64, MarketplaceType, u8)>) -> Self {
+        for account in accounts {
+            self.marketplaces.push(account);
+        }
         self
     }
 
@@ -204,6 +202,27 @@ impl ExtBuilder {
         ternoa_nfts::GenesisConfig::<Test> {
             nfts: self.nfts,
             series: self.series,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        let mut marketplaces = vec![(
+            0,
+            MarketplaceInformation::new(MarketplaceType::Public, 0, ALICE, Default::default()),
+        )];
+        let mut i = 1;
+        for market in self.marketplaces {
+            marketplaces.push((
+                i,
+                MarketplaceInformation::new(market.1, market.2, market.0, vec![]),
+            ));
+
+            i += 1;
+        }
+
+        ternoa_marketplace::GenesisConfig::<Test> {
+            nfts_for_sale: Default::default(),
+            marketplaces: marketplaces,
         }
         .assimilate_storage(&mut t)
         .unwrap();
