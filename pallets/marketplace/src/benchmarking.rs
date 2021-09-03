@@ -29,10 +29,10 @@ benchmarks! {
         T::CurrencyCaps::make_free_balance_be(&seller, T::CurrencyCaps::minimum_balance());
 
         let id = create_nft::<T>(&seller);
-        let price = NFTCurrency::CAPS(1u32.into());
+        let price = NFTCurrency::Caps(1u32.into());
 
         drop(Marketplace::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price, None));
-    }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::CAPS)
+    }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::Caps)
     verify {
         assert_eq!(T::NFTs::owner(id), buyer);
         assert_eq!(NFTsForSale::<T>::contains_key(id), false);
@@ -44,7 +44,7 @@ benchmarks! {
 
         let nft_id = create_nft::<T>(&caller);
 
-        let price = NFTCurrency::CAPS(100u32.into());
+        let price = NFTCurrency::Caps(100u32.into());
 
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price, None)
     verify {
@@ -58,7 +58,7 @@ benchmarks! {
 
         let nft_id = create_nft::<T>(&caller);
 
-        let price = NFTCurrency::CAPS(100u32.into());
+        let price = NFTCurrency::Caps(100u32.into());
 
         drop(Marketplace::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price, None));
     }: _(RawOrigin::Signed(caller.clone().into()), nft_id)

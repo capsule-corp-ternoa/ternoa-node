@@ -174,7 +174,7 @@ pub mod pallet {
 
             // KeepAlive because they need to be able to use the NFT later on
             match currency {
-                NFTCurrencyId::CAPS => {
+                NFTCurrencyId::Caps => {
                     let mut value = sale.price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
                     if commission_fee != 0 {
                         let tmp = 100u8
@@ -194,7 +194,7 @@ pub mod pallet {
 
                     T::CurrencyCaps::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
                 }
-                NFTCurrencyId::TIIME => {
+                NFTCurrencyId::Tiime => {
                     let mut value = sale.price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
                     if commission_fee != 0 {
                         let tmp = 100u8

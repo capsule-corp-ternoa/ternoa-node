@@ -32,15 +32,15 @@
     },
     "NFTCurrency": {
         "_enum": {
-            "CAPS": "Balance",
-            "TIIME": "Balance",
-            "COMBINED": "NFTCurrencyCombined"
+            "Caps": "Balance",
+            "Tiime": "Balance",
+            "Combined": "NFTCurrencyCombined"
         }
     },
     "NFTCurrencyId": {
         "_enum": [
-            "CAPS",
-            "TIIME"
+            "Caps",
+            "Tiime"
         ]
     },
     "Request": {
