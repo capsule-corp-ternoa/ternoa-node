@@ -116,6 +116,16 @@ benchmarks! {
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, account);
     }
+
+    change_market_type {
+        let owner: T::AccountId = account("owner", 0, 0);
+        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0));
+
+    }: _(RawOrigin::Signed(owner.clone().into()), 1, MarketplaceType::Private)
+    verify {
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().kind, MarketplaceType::Private);
+    }
 }
 
 impl_benchmark_test_suite!(

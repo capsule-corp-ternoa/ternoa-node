@@ -371,16 +371,12 @@ fn change_marketplace_owner() {
             assert_ok!(Marketplace::change_owner(alice.clone(), 1, BOB));
 
             // Alice should NOT be able to give a marketplace not owned by her to someone else.
-            assert_noop!(
-                Marketplace::change_owner(alice.clone(), 2, BOB),
-                Error::<Test>::NotMarketplaceOwner
-            );
+            let ok = Marketplace::change_owner(alice.clone(), 2, BOB);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
 
             // Alice should NOT be able to give a non existing marketplace to someone else.
-            assert_noop!(
-                Marketplace::change_owner(alice.clone(), 3, BOB),
-                Error::<Test>::UnknownMarketplace
-            );
+            let ok = Marketplace::change_owner(alice.clone(), 3, BOB);
+            assert_noop!(ok, Error::<Test>::UnknownMarketplace);
         })
 }
 
@@ -441,5 +437,28 @@ fn remove_account() {
             // Alice should NOT be able to remove Dave from a marketplace that does not use the allow list.
             let ok = Marketplace::remove_account_from_allow_list(alice.clone(), 2, DAVE);
             assert_noop!(ok, Error::<Test>::UnsupportedMarketplace);
+        })
+}
+
+#[test]
+fn change_marketplace_type() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100), (DAVE, 100)])
+        .marketplace(vec![(ALICE, MPT::Public, 0), (DAVE, MPT::Public, 0)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Alice should be able to change her marketplace.
+            let ok = Marketplace::change_market_type(alice.clone(), 1, MPT::Private);
+            assert_ok!(ok);
+
+            // Alice should NOT be able to change the type of a marketplace not owned by her.
+            let ok = Marketplace::change_market_type(alice.clone(), 2, MPT::Private);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+
+            // Alice should NOT be able to change the type of a marketplace that does not exist.
+            let ok = Marketplace::change_market_type(alice.clone(), 3, MPT::Private);
+            assert_noop!(ok, Error::<Test>::UnknownMarketplace);
         })
 }
