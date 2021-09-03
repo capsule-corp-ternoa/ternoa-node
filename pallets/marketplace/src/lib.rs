@@ -25,6 +25,10 @@ pub trait WeightInfo {
     fn list() -> Weight;
     fn unlist() -> Weight;
     fn buy() -> Weight;
+    fn create() -> Weight;
+    fn add_account_to_allow_list() -> Weight;
+    fn remove_account_from_allow_list() -> Weight;
+    fn change_owner() -> Weight;
 }
 
 #[frame_support::pallet]
@@ -220,7 +224,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(1)]
+        #[pallet::weight(T::WeightInfo::create())]
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
@@ -257,7 +261,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(1)]
+        #[pallet::weight(T::WeightInfo::add_account_to_allow_list())]
         pub fn add_account_to_allow_list(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
@@ -290,7 +294,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(1)]
+        #[pallet::weight(T::WeightInfo::remove_account_from_allow_list())]
         pub fn remove_account_from_allow_list(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
@@ -325,7 +329,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(1)]
+        #[pallet::weight(T::WeightInfo::change_owner())]
         pub fn change_owner(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,

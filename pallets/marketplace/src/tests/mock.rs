@@ -102,7 +102,7 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 }
 
 parameter_types! {
-    pub const MintFee: u64 = 0;
+    pub const MintFee: u64 = 5;
     pub const MarketplaceFee: u64 = 10;
 }
 
@@ -233,9 +233,21 @@ impl ExtBuilder {
     }
 }
 
+#[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    frame_system::GenesisConfig::default()
+    let mut t = frame_system::GenesisConfig::default()
         .build_storage::<Test>()
-        .unwrap()
-        .into()
+        .unwrap();
+
+    ternoa_marketplace::GenesisConfig::<Test> {
+        nfts_for_sale: Default::default(),
+        marketplaces: vec![(
+            0,
+            MarketplaceInformation::new(MarketplaceType::Public, 0, ALICE, Default::default()),
+        )],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    t.into()
 }
