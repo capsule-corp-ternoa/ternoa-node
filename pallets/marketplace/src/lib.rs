@@ -29,6 +29,7 @@ pub trait WeightInfo {
     fn add_account_to_allow_list() -> Weight;
     fn remove_account_from_allow_list() -> Weight;
     fn change_owner() -> Weight;
+    fn change_market_type() -> Weight;
 }
 
 #[frame_support::pallet]
@@ -357,6 +358,34 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::change_market_type())]
+        pub fn change_market_type(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            kind: MarketplaceType,
+        ) -> DispatchResultWithPostInfo {
+            let caller_id = ensure_signed(origin)?;
+
+            Marketplaces::<T>::mutate(marketplace_id, |x| {
+                if let Some(market_info) = x {
+                    if market_info.owner != caller_id {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+
+                    market_info.kind = kind;
+
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceTypeChanged(marketplace_id, kind);
+            Self::deposit_event(event);
+
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -379,8 +408,10 @@ pub mod pallet {
         AccountAddedToMarketplace(MarketplaceId, T::AccountId),
         /// Account removed from marketplace.  \[marketplace id, account\]
         AccountRemovedFromMarketplace(MarketplaceId, T::AccountId),
-        /// Marketplace changed owner.  \[marketplace id, account\]
+        /// Marketplace changed owner.  \[marketplace id, new owner\]
         MarketplaceChangedOwner(MarketplaceId, T::AccountId),
+        /// Marketplace changed type.  \[marketplace id, marketplace type\]
+        MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
     }
 
     #[pallet::error]
