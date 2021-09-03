@@ -408,9 +408,9 @@ pub mod pallet {
         AccountAddedToMarketplace(MarketplaceId, T::AccountId),
         /// Account removed from marketplace.  \[marketplace id, account\]
         AccountRemovedFromMarketplace(MarketplaceId, T::AccountId),
-        /// Marketplace changed owner.  \[marketplace id, account\]
+        /// Marketplace changed owner.  \[marketplace id, new owner\]
         MarketplaceChangedOwner(MarketplaceId, T::AccountId),
-        /// Marketplace changed owner.  \[marketplace id, account\]
+        /// Marketplace changed type.  \[marketplace id, marketplace type\]
         MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
     }
 
