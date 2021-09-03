@@ -1,4 +1,4 @@
-mod v3;
+mod v5;
 
 use crate::{Config, Pallet};
 use frame_support::traits::StorageVersion;
@@ -8,11 +8,11 @@ pub fn migrate<T: Config>() -> Weight {
     let mut weight: Weight = 0;
 
     let storage_version = StorageVersion::get::<Pallet<T>>();
-    if storage_version == 2 {
-        log::info!(target: "runtime::nfts", "Running migration to v3 for nfts with storage version {:?}", storage_version);
-        weight = v3::migrate::<T>();
+    if storage_version == 4 {
+        weight = v5::migrate::<T>();
 
-        StorageVersion::new(3).put::<Pallet<T>>();
+        StorageVersion::new(5).put::<Pallet<T>>();
+        log::info!("Migration done.");
     } else {
         log::info!(target: "runtime::nfts", "No migration was run. Current storage version {:?}", storage_version);
     }
