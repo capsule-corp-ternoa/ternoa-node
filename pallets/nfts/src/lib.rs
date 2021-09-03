@@ -20,7 +20,7 @@ use sp_std::vec::Vec;
 use ternoa_common::traits::{LockableNFTs, NFTs};
 use ternoa_primitives::nfts::{NFTData, NFTDetails, NFTId, NFTSeriesDetails, NFTSeriesId};
 
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(4);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(5);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -237,8 +237,8 @@ pub mod pallet {
 
     /// The number of NFTs managed by this pallet
     #[pallet::storage]
-    #[pallet::getter(fn total)]
-    pub type Total<T: Config> = StorageValue<_, NFTId, ValueQuery>;
+    #[pallet::getter(fn nft_id_generator)]
+    pub type NftIdGenerator<T: Config> = StorageValue<_, NFTId, ValueQuery>;
 
     /// Data related to NFTs.
     #[pallet::storage]
@@ -318,7 +318,7 @@ impl<T: Config> NFTs for Pallet<T> {
         let value = NFTData::new(owner.clone(), details, false, false);
 
         Data::<T>::insert(nft_id, value);
-        Total::<T>::put(next_nft_id);
+        NftIdGenerator::<T>::put(next_nft_id);
 
         Self::deposit_event(Event::Created(nft_id, owner.clone(), series_id));
 
@@ -460,7 +460,7 @@ impl<T: Config> Pallet<T> {
     }
 
     fn get_next_nft_id() -> Result<(NFTId, NFTId), Error<T>> {
-        let nft_id = Total::<T>::get();
+        let nft_id = NftIdGenerator::<T>::get();
         let next_id = nft_id.checked_add(1).ok_or(Error::<T>::NFTIdOverflow)?;
 
         Ok((nft_id, next_id))

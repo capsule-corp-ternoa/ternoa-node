@@ -14,7 +14,7 @@ benchmarks! {
     }: _(RawOrigin::Signed(caller.clone()), NFTDetails::default())
     verify {
         let series = NFTSeriesDetails::new(caller, sp_std::vec![NFTId::from(0u32)]);
-        assert_eq!(NFTs::<T>::total(), NFTId::from(1u32));
+        assert_eq!(NFTs::<T>::nft_id_generator(), NFTId::from(1u32));
     }
 
     create_with_series {
@@ -26,7 +26,7 @@ benchmarks! {
     }: create(RawOrigin::Signed(caller.clone()), details)
     verify {
         let series = NFTSeriesDetails::new(caller, sp_std::vec![NFTId::from(0u32)]);
-        assert_eq!(NFTs::<T>::total(), NFTId::from(1u32));
+        assert_eq!(NFTs::<T>::nft_id_generator(), NFTId::from(1u32));
         assert_eq!(NFTs::<T>::series(series_id), Some(series));
     }
 

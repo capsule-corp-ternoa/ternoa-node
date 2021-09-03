@@ -53,9 +53,9 @@ where
     BalanceCaps: Clone + Default,
     BalanceTiime: Clone + Default,
 {
-    CAPS(BalanceCaps),
-    TIIME(BalanceTiime),
-    COMBINED(NFTCurrencyCombined<BalanceCaps, BalanceTiime>),
+    Caps(BalanceCaps),
+    Tiime(BalanceTiime),
+    Combined(NFTCurrencyCombined<BalanceCaps, BalanceTiime>),
 }
 
 impl<BalanceCaps, BalanceTiime> NFTCurrency<BalanceCaps, BalanceTiime>
@@ -65,17 +65,17 @@ where
 {
     pub fn caps(&self) -> Option<BalanceCaps> {
         match self {
-            NFTCurrency::CAPS(x) => Some(x.clone()),
-            NFTCurrency::TIIME(_) => None,
-            NFTCurrency::COMBINED(x) => Some(x.caps),
+            NFTCurrency::Caps(x) => Some(x.clone()),
+            NFTCurrency::Tiime(_) => None,
+            NFTCurrency::Combined(x) => Some(x.caps),
         }
     }
 
     pub fn tiime(&self) -> Option<BalanceTiime> {
         match self {
-            NFTCurrency::CAPS(_) => None,
-            NFTCurrency::TIIME(x) => Some(x.clone()),
-            NFTCurrency::COMBINED(x) => Some(x.tiime),
+            NFTCurrency::Caps(_) => None,
+            NFTCurrency::Tiime(x) => Some(x.clone()),
+            NFTCurrency::Combined(x) => Some(x.tiime),
         }
     }
 }
@@ -86,7 +86,7 @@ where
     BalanceTiime: Clone + Default,
 {
     fn default() -> Self {
-        Self::CAPS(BalanceCaps::default())
+        Self::Caps(BalanceCaps::default())
     }
 }
 
@@ -98,9 +98,9 @@ where
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
-            NFTCurrency::CAPS(x) => write!(f, "CAPS({:?})", x),
-            NFTCurrency::TIIME(x) => write!(f, "TIIME({:?})", x),
-            NFTCurrency::COMBINED(x) => write!(f, "COMBINED({:?})", x),
+            NFTCurrency::Caps(x) => write!(f, "Caps({:?})", x),
+            NFTCurrency::Tiime(x) => write!(f, "Tiime({:?})", x),
+            NFTCurrency::Combined(x) => write!(f, "Combined({:?})", x),
         }
     }
 }
@@ -109,13 +109,13 @@ where
 #[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrencyId {
-    CAPS,
-    TIIME,
+    Caps,
+    Tiime,
 }
 
 impl Default for NFTCurrencyId {
     fn default() -> Self {
-        Self::CAPS
+        Self::Caps
     }
 }
 

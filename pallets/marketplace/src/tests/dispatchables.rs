@@ -15,8 +15,8 @@ const NFT_ID_4: u32 = 3;
 const NFT_ID_5: u32 = 4;
 const NFT_ID_6: u32 = 5;
 const NFT_ID_7: u32 = 6;
-const CAPS_ID: NFTCurrencyId = NFTCurrencyId::CAPS;
-const TIIME_ID: NFTCurrencyId = NFTCurrencyId::TIIME;
+const CAPS_ID: NFTCurrencyId = NFTCurrencyId::Caps;
+const TIIME_ID: NFTCurrencyId = NFTCurrencyId::Tiime;
 
 type MPT = MarketplaceType;
 
@@ -27,7 +27,7 @@ fn list_register_price() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            let caps = NFTCurrency::CAPS(50);
+            let caps = NFTCurrency::Caps(50);
             let sale = SaleInformation::new(ALICE, caps, 0);
 
             assert_ok!(Marketplace::list(alice, NFT_ID_1, caps, None));
@@ -44,7 +44,7 @@ fn buy_transfer_funds_to_owner() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let caps = NFTCurrency::CAPS(50);
+            let caps = NFTCurrency::Caps(50);
 
             assert_ok!(Marketplace::list(alice, NFT_ID_1, caps, None));
             assert_ok!(Marketplace::buy(bob, NFT_ID_1, CAPS_ID));
@@ -63,7 +63,7 @@ fn buy_change_owner() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let caps = NFTCurrency::CAPS(50);
+            let caps = NFTCurrency::Caps(50);
 
             assert_ok!(Marketplace::list(alice, NFT_ID_1, caps, None));
             assert_ok!(Marketplace::buy(bob, NFT_ID_1, CAPS_ID));
@@ -80,7 +80,7 @@ fn buy_unlock_nft() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let caps = NFTCurrency::CAPS(50);
+            let caps = NFTCurrency::Caps(50);
 
             assert_ok!(Marketplace::list(alice, NFT_ID_1, caps, None));
             assert_ok!(Marketplace::buy(bob, NFT_ID_1, CAPS_ID));
@@ -95,7 +95,7 @@ fn unlist_unlocks_nft() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            let caps = NFTCurrency::CAPS(50);
+            let caps = NFTCurrency::Caps(50);
 
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_1, caps, None));
             assert_ok!(Marketplace::unlist(alice, NFT_ID_1));
@@ -110,7 +110,7 @@ fn unlist_remove_from_for_sale() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            let caps = NFTCurrency::CAPS(50);
+            let caps = NFTCurrency::Caps(50);
 
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_1, caps, None));
             assert_ok!(Marketplace::unlist(alice, NFT_ID_1));
@@ -131,7 +131,7 @@ fn bought_nft_is_not_listed_anymore() {
             assert_ok!(Marketplace::list(
                 seller,
                 NFT_ID_1,
-                NFTCurrency::CAPS(100),
+                NFTCurrency::Caps(100),
                 None
             ));
             assert_ok!(Marketplace::buy(buyer.clone(), NFT_ID_1, CAPS_ID));
@@ -150,7 +150,7 @@ fn list_nft() {
         .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
-            let caps = NFTCurrency::CAPS(10);
+            let caps = NFTCurrency::Caps(10);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -170,11 +170,11 @@ fn list_nft() {
             );
 
             // Alice should be able to list her second nft with Tiime.
-            let tiime = NFTCurrency::TIIME(10);
+            let tiime = NFTCurrency::Tiime(10);
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_2, tiime, None));
 
             // Alice should be able to list her third nft with Combined currency.
-            let combined = NFTCurrency::COMBINED(NFTCurrencyCombined::new(10, 10));
+            let combined = NFTCurrency::Combined(NFTCurrencyCombined::new(10, 10));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_3, combined, None));
 
             // Alice should NOT be able to list nfts on a user-marketplace that does not exist.
@@ -208,7 +208,7 @@ fn unlist_nft() {
         .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
-            let nft_price = NFTCurrency::CAPS(10);
+            let nft_price = NFTCurrency::Caps(10);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
@@ -238,8 +238,8 @@ fn buy_nft() {
         .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
         .execute_with(|| {
-            let caps = NFTCurrency::CAPS(200);
-            let tiime = NFTCurrency::TIIME(200);
+            let caps = NFTCurrency::Caps(200);
+            let tiime = NFTCurrency::Tiime(200);
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
             let dave: mock::Origin = RawOrigin::Signed(DAVE).into();
@@ -280,15 +280,15 @@ fn buy_nft() {
             );
 
             // Bob should be able to buy nfts that are listed with either caps or time.
-            let caps = NFTCurrency::CAPS(10);
-            let time = NFTCurrency::TIIME(10);
+            let caps = NFTCurrency::Caps(10);
+            let time = NFTCurrency::Tiime(10);
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_3, caps, None));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_4, time, None));
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_3, CAPS_ID));
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_4, TIIME_ID));
 
             // Bob should be able to buy nfts (that are listed with combined currency) with either caps or tiime.
-            let combined = NFTCurrency::COMBINED(NFTCurrencyCombined::new(10, 10));
+            let combined = NFTCurrency::Combined(NFTCurrencyCombined::new(10, 10));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_5, combined, None));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_6, combined, None));
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_5, CAPS_ID));

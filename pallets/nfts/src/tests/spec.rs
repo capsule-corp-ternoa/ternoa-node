@@ -10,12 +10,12 @@ fn create_increment_id() {
         .one_hundred_for_everyone()
         .build()
         .execute_with(|| {
-            assert_eq!(NFTs::total(), 0);
+            assert_eq!(NFTs::nft_id_generator(), 0);
             assert_ok!(NFTs::create(
                 RawOrigin::Signed(ALICE).into(),
                 NFTDetails::default(),
             ));
-            assert_eq!(NFTs::total(), 1);
+            assert_eq!(NFTs::nft_id_generator(), 1);
         })
 }
 
@@ -215,7 +215,7 @@ fn burn_owned_nft() {
         .build()
         .execute_with(|| {
             let series_id = NFTSeriesId::from(1u32);
-            let nft_id = NFTs::total();
+            let nft_id = NFTs::nft_id_generator();
 
             let before_details = NFTSeriesDetails::new(ALICE, sp_std::vec![nft_id]);
             let after_details = NFTSeriesDetails::new(ALICE, sp_std::vec![]);
@@ -229,7 +229,7 @@ fn burn_owned_nft() {
             assert_eq!(NFTs::data(nft_id), NFTData::default());
             assert_eq!(NFTs::series(series_id), Some(after_details));
 
-            let id = NFTs::total();
+            let id = NFTs::nft_id_generator();
             assert_ok!(NFTs::create(alice.clone(), details));
             assert_ok!(<NFTs as LockableNFTs>::lock(id));
             assert_noop!(NFTs::burn(alice, id), Error::<Test>::Locked);
@@ -247,7 +247,7 @@ fn burn_not_owned_nft() {
                 NFTDetails::default(),
             ));
 
-            let id = NFTs::total() - 1;
+            let id = NFTs::nft_id_generator() - 1;
 
             assert_eq!(id, 0);
             assert_noop!(
