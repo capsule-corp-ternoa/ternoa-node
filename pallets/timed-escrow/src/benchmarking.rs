@@ -36,7 +36,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        drop(Pallet::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
+        drop(TimedEscrow::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
     }: _(RawOrigin::Signed(caller), nft_id)
     verify {
         assert!(!T::NFTs::locked(nft_id));
@@ -50,7 +50,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         let nft_id = create_nft::<T>(&caller);
 
-        drop(Pallet::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
+        drop(TimedEscrow::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
     }: _(RawOrigin::Root, receiver.clone(), nft_id)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), receiver);
