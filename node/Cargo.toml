@@ -40,7 +40,7 @@ hex-literal = { version = "0.3.3" }
 jsonrpc-core = { version = "18.0.0" }
 jsonrpc-pubsub = { version = "18.0.0" }
 serde_json = { version = "1.0.66" }
-structopt = { version = "0.3.22" }
+structopt = { version = "0.3.23" }
 futures = { features = ["compat"], version = "0.3.16" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 frame-benchmarking-cli = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
