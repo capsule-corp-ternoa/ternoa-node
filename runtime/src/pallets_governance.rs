@@ -12,7 +12,6 @@ parameter_types! {
 
 // --- Technical committee
 pub type TechnicalCollective = pallet_collective::DefaultInstance;
-pub type TechnicalCollectiveMembers = pallet_membership::DefaultInstance;
 pub type MoreThanHalfOfTheTechnicalCollective =
     pallet_collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
 
@@ -27,7 +26,7 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
     type DefaultVote = pallet_collective::PrimeDefaultVote;
 }
 
-impl pallet_membership::Config<TechnicalCollectiveMembers> for Runtime {
+impl pallet_membership::Config for Runtime {
     type Event = Event;
     type AddOrigin = MoreThanHalfOfTheTechnicalCollective;
     type RemoveOrigin = MoreThanHalfOfTheTechnicalCollective;

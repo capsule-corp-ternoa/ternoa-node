@@ -87,7 +87,7 @@ construct_runtime!(
         Staking: pallet_curveless_staking::{Pallet, Call, Config<T>, Storage, Event<T>, ValidateUnsigned},
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         TechnicalCommittee: pallet_collective::<DefaultInstance>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>},
-        TechnicalMembership: pallet_membership::<DefaultInstance>::{Pallet, Call, Storage, Event<T>, Config<T>},
+        TechnicalMembership: pallet_membership::{Pallet, Call, Storage, Event<T>, Config<T>},
         Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Utility: pallet_utility::{Pallet, Call, Storage, Event},
