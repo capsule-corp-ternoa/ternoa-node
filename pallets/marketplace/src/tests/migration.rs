@@ -1,11 +1,10 @@
 use super::mock::*;
-use crate::{
-    MarketplaceId, MarketplaceIdGenerator, MarketplaceInformation, MarketplaceType, Marketplaces,
-};
+use crate::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use frame_support::traits::{OnRuntimeUpgrade, StorageVersion};
 use frame_support::Blake2_128Concat;
 use frame_system::Config as FSConfig;
 
+/*
 frame_support::generate_storage_alias!(
     Marketplace,  MarketplaceCount => Value<MarketplaceId>
 );
@@ -44,6 +43,66 @@ fn upgrade_from_v4_to_v5() {
 
         assert_ne!(weight, 0);
     })
+} */
+
+mod v6 {
+    use super::*;
+    use crate::migrations::v6::v5::MarketplaceInformation as v5MarketplaceInformation;
+    use crate::Marketplaces as v6Marketplaces;
+
+    frame_support::generate_storage_alias!(
+        Marketplace,  Marketplaces<T: FSConfig> => Map<(Blake2_128Concat, MarketplaceId), v5MarketplaceInformation<T>>
+    );
+
+    #[test]
+    fn upgrade_from_v5_to_v6() {
+        ExtBuilder::default().build_v6_migration().execute_with(|| {
+            StorageVersion::put::<Marketplace>(&StorageVersion::new(5));
+
+            Marketplaces::<Test>::insert(
+                0,
+                v5MarketplaceInformation {
+                    kind: MarketplaceType::Public,
+                    commission_fee: Default::default(),
+                    owner: ALICE,
+                    allow_list: Default::default(),
+                },
+            );
+
+            Marketplaces::<Test>::insert(
+                1,
+                v5MarketplaceInformation {
+                    kind: MarketplaceType::Public,
+                    commission_fee: Default::default(),
+                    owner: BOB,
+                    allow_list: Default::default(),
+                },
+            );
+
+            let weight = <Marketplace as OnRuntimeUpgrade>::on_runtime_upgrade();
+
+            let market_1 = MarketplaceInformation::<Test>::new(
+                MarketplaceType::Public,
+                0,
+                ALICE,
+                Vec::default(),
+                "Ternoa Marketplace".into(),
+            );
+            let market_2 = MarketplaceInformation::<Test>::new(
+                MarketplaceType::Public,
+                0,
+                BOB,
+                Vec::default(),
+                "User Marketplace".into(),
+            );
+
+            assert_eq!(v6Marketplaces::<Test>::get(0), Some(market_1));
+            assert_eq!(v6Marketplaces::<Test>::get(1), Some(market_2));
+            assert_eq!(StorageVersion::get::<Marketplace>(), 6);
+
+            assert_ne!(weight, 0);
+        })
+    }
 }
 
 #[test]

@@ -184,11 +184,11 @@ fn list_nft() {
             );
 
             // Alice should be able to list nfts on user-marketplaces.
-            assert_ok!(Marketplace::create(bob.clone(), MPT::Public, 0));
+            assert_ok!(Marketplace::create(bob.clone(), MPT::Public, 0, "A".into()));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_4, caps, Some(1)));
 
             // Alice should be able to list nfts on private user-marketplaces with access.
-            let ok = Marketplace::create(bob.clone(), MPT::Private, 0);
+            let ok = Marketplace::create(bob.clone(), MPT::Private, 0, "A".into());
             assert_ok!(ok);
             let ok = Marketplace::add_account_to_allow_list(bob.clone(), 2, ALICE);
             assert_ok!(ok);
@@ -299,7 +299,8 @@ fn buy_nft() {
             assert_ok!(Marketplace::create(
                 bob.clone(),
                 MPT::Private,
-                commission_fee
+                commission_fee,
+                "A".into()
             ));
             assert_ok!(Marketplace::add_account_to_allow_list(
                 bob.clone(),
@@ -346,13 +347,18 @@ fn create() {
             assert_eq!(MarketplaceIdGenerator::<Test>::get(), 0);
 
             // Alice should be able to create a marketplace if she has enough tokens.
-            assert_ok!(Marketplace::create(alice.clone(), MPT::Public, 0));
+            assert_ok!(Marketplace::create(
+                alice.clone(),
+                MPT::Public,
+                0,
+                "A".into()
+            ));
             assert_eq!(MarketplaceIdGenerator::<Test>::get(), 1);
             assert_eq!(Marketplaces::<Test>::get(1).unwrap().owner, ALICE);
 
             // Bob should NOT be able to create a marketplace since he doesn't have enough tokens.
             assert_noop!(
-                Marketplace::create(bob.clone(), MPT::Public, 0),
+                Marketplace::create(bob.clone(), MPT::Public, 0, "A".into()),
                 pallet_balances::Error::<Test>::InsufficientBalance,
             );
         })
@@ -362,7 +368,10 @@ fn create() {
 fn change_marketplace_owner() {
     ExtBuilder::default()
         .caps(vec![(ALICE, 100), (DAVE, 100)])
-        .marketplace(vec![(ALICE, MPT::Public, 0), (DAVE, MPT::Public, 0)])
+        .marketplace(vec![
+            (ALICE, MPT::Public, 0, "A".into()),
+            (DAVE, MPT::Public, 0, "A".into()),
+        ])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -385,9 +394,9 @@ fn add_account() {
     ExtBuilder::default()
         .caps(vec![(ALICE, 1_000), (DAVE, 1_000)])
         .marketplace(vec![
-            (ALICE, MPT::Private, 0),
-            (ALICE, MPT::Public, 0),
-            (BOB, MPT::Public, 0),
+            (ALICE, MPT::Private, 0, "".into()),
+            (ALICE, MPT::Public, 0, "".into()),
+            (BOB, MPT::Public, 0, "".into()),
         ])
         .build()
         .execute_with(|| {
@@ -412,9 +421,9 @@ fn remove_account() {
     ExtBuilder::default()
         .caps(vec![(ALICE, 1_000), (DAVE, 1_000)])
         .marketplace(vec![
-            (ALICE, MPT::Private, 0),
-            (ALICE, MPT::Public, 0),
-            (BOB, MPT::Private, 0),
+            (ALICE, MPT::Private, 0, "".into()),
+            (ALICE, MPT::Public, 0, "".into()),
+            (BOB, MPT::Private, 0, "".into()),
         ])
         .build()
         .execute_with(|| {
@@ -444,7 +453,10 @@ fn remove_account() {
 fn change_marketplace_type() {
     ExtBuilder::default()
         .caps(vec![(ALICE, 100), (DAVE, 100)])
-        .marketplace(vec![(ALICE, MPT::Public, 0), (DAVE, MPT::Public, 0)])
+        .marketplace(vec![
+            (ALICE, MPT::Public, 0, "".into()),
+            (DAVE, MPT::Public, 0, "".into()),
+        ])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
@@ -459,6 +471,44 @@ fn change_marketplace_type() {
 
             // Alice should NOT be able to change the type of a marketplace that does not exist.
             let ok = Marketplace::change_market_type(alice.clone(), 3, MPT::Private);
+            assert_noop!(ok, Error::<Test>::UnknownMarketplace);
+        })
+}
+
+#[test]
+fn set_name() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .marketplace(vec![
+            (ALICE, MPT::Public, 0, "".into()),
+            (DAVE, MPT::Public, 0, "".into()),
+        ])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Alice should be able to change her marketplace name.
+            let ok = Marketplace::set_name(alice.clone(), 1, "Dance, boogie wonderland".into());
+            assert_ok!(ok);
+
+            // Alice should NOT be able to change the name if the name has less the X characters.
+            let ok = Marketplace::set_name(alice.clone(), 1, "".into());
+            assert_noop!(ok, Error::<Test>::TooShortName);
+
+            // Alice should NOT be able to change the name if the name has more the Y characters.
+            let ok = Marketplace::set_name(
+                alice.clone(),
+                1,
+                "I find romance when I start to dance in boogie wonderland".into(),
+            );
+            assert_noop!(ok, Error::<Test>::TooLongName);
+
+            // Alice should NOT be able to change the name of a marketplace not owned by her.
+            let ok = Marketplace::set_name(alice.clone(), 2, "Dance, boogie wonderland".into());
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+
+            // Alice should NOT be able to change the type of a marketplace that does not exist.
+            let ok = Marketplace::set_name(alice.clone(), 3, "Dance, boogie wonderland".into());
             assert_noop!(ok, Error::<Test>::UnknownMarketplace);
         })
 }

@@ -70,7 +70,7 @@ benchmarks! {
         let caller: T::AccountId = whitelisted_caller();
         T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
 
-    }: _(RawOrigin::Signed(caller.clone().into()), MarketplaceType::Public, 0)
+    }: _(RawOrigin::Signed(caller.clone().into()), MarketplaceType::Public, 0, "".into())
     verify {
         assert_eq!(Marketplaces::<T>::contains_key(1), true);
         assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, caller);
@@ -83,7 +83,7 @@ benchmarks! {
         let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
         T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
 
     }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup.into())
     verify {
@@ -96,7 +96,7 @@ benchmarks! {
         let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
         T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
         drop(Marketplace::<T>::add_account_to_allow_list(RawOrigin::Signed(owner.clone()).into(), 1, account_lookup.clone()));
 
     }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup)
@@ -110,7 +110,7 @@ benchmarks! {
         let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
         T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
 
     }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup)
     verify {
@@ -120,11 +120,22 @@ benchmarks! {
     change_market_type {
         let owner: T::AccountId = account("owner", 0, 0);
         T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0, "".into()));
 
     }: _(RawOrigin::Signed(owner.clone().into()), 1, MarketplaceType::Private)
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().kind, MarketplaceType::Private);
+    }
+
+    set_name {
+        let owner: T::AccountId = account("owner", 0, 0);
+        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0, "".into()));
+
+        let new_name: Vec<u8> = "What is love baby dont hurt me".into();
+    }: _(RawOrigin::Signed(owner.clone().into()), 1, new_name.clone())
+    verify {
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().name, new_name);
     }
 }
 

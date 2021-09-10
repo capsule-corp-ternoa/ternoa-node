@@ -174,6 +174,7 @@ pub fn testnet_genesis(
                     // Alice
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     Default::default(),
+                    "Ternoa Marketplace".into(),
                 ),
             )],
         },
@@ -361,6 +362,7 @@ pub fn staging_genesis() -> GenesisConfig {
                     // Mickael
                     hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
                     Default::default(),
+                    "Ternoa Marketplace".into(),
                 ),
             )],
         },

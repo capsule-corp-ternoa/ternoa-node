@@ -179,6 +179,7 @@ pub struct MarketplaceInformation<T: Config> {
     pub commission_fee: u8,
     pub owner: T::AccountId,
     pub allow_list: Vec<T::AccountId>,
+    pub name: Vec<u8>,
 }
 
 impl<T: Config> MarketplaceInformation<T> {
@@ -187,12 +188,14 @@ impl<T: Config> MarketplaceInformation<T> {
         commission_fee: u8,
         owner: T::AccountId,
         allow_list: Vec<T::AccountId>,
+        name: Vec<u8>,
     ) -> MarketplaceInformation<T> {
         Self {
             kind,
             commission_fee,
             owner,
             allow_list,
+            name,
         }
     }
 }

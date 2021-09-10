@@ -19,7 +19,7 @@ use frame_support::weights::Weight;
 use ternoa_primitives::nfts::NFTId;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(5);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
 
 pub trait WeightInfo {
     fn list() -> Weight;
@@ -30,6 +30,7 @@ pub trait WeightInfo {
     fn remove_account_from_allow_list() -> Weight;
     fn change_owner() -> Weight;
     fn change_market_type() -> Weight;
+    fn set_name() -> Weight;
 }
 
 #[frame_support::pallet]
@@ -71,6 +72,14 @@ pub mod pallet {
         type MarketplaceFee: Get<BalanceCaps<Self>>;
         /// Place where the marketplace fees go.
         type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
+
+        /// The minimum length a name may be.
+        #[pallet::constant]
+        type MinNameLength: Get<u32>;
+
+        /// The maximum length a name may be.
+        #[pallet::constant]
+        type MaxNameLength: Get<u32>;
     }
 
     #[pallet::pallet]
@@ -231,6 +240,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             kind: MarketplaceType,
             commission_fee: u8,
+            name: Vec<u8>,
         ) -> DispatchResultWithPostInfo {
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
 
@@ -250,6 +260,7 @@ pub mod pallet {
                 commission_fee,
                 caller_id.clone(),
                 Vec::default(),
+                name,
             );
 
             let id = MarketplaceIdGenerator::<T>::get();
@@ -386,6 +397,42 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::set_name())]
+        pub fn set_name(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            name: Vec<u8>,
+        ) -> DispatchResult {
+            ensure!(
+                name.len() >= T::MinNameLength::get() as usize,
+                Error::<T>::TooShortName
+            );
+            ensure!(
+                name.len() <= T::MaxNameLength::get() as usize,
+                Error::<T>::TooLongName
+            );
+            let caller_id = ensure_signed(origin)?;
+
+            Marketplaces::<T>::mutate(marketplace_id, |x| {
+                if let Some(market_info) = x {
+                    if market_info.owner != caller_id {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+
+                    market_info.name = name.clone();
+
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceNameChanged(marketplace_id, name);
+            Self::deposit_event(event);
+
+            Ok(())
+        }
     }
 
     #[pallet::event]
@@ -412,6 +459,8 @@ pub mod pallet {
         MarketplaceChangedOwner(MarketplaceId, T::AccountId),
         /// Marketplace changed type.  \[marketplace id, marketplace type\]
         MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
+        /// Marketplace changed name. \[marketplace id, marketplace name\]
+        MarketplaceNameChanged(MarketplaceId, Vec<u8>),
     }
 
     #[pallet::error]
@@ -440,6 +489,10 @@ pub mod pallet {
         InternalMathError,
         /// Account not on the allow list should not be able to buy gated nfts.
         NotAllowed,
+        /// Too short marketplace name
+        TooShortName,
+        /// Too long marketplace name
+        TooLongName,
     }
 
     /// Nfts listed on the marketplace
