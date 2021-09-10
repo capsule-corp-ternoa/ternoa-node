@@ -1,4 +1,4 @@
-use super::Config;
+/* use super::Config;
 use crate::MarketplaceId;
 use crate::{MarketplaceIdGenerator, MarketplaceInformation, MarketplaceType, Marketplaces};
 use frame_support::traits::Get;
@@ -39,3 +39,4 @@ pub fn migrate<T: Config>() -> Weight {
 
     T::BlockWeights::get().max_block
 }
+ */

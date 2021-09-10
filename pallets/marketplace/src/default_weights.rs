@@ -56,4 +56,10 @@ impl crate::WeightInfo for () {
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
+    // Storage: Marketplace Marketplaces (r:1 w:1)
+    fn set_name() -> Weight {
+        (24_310_000 as Weight)
+            .saturating_add(DbWeight::get().reads(1 as Weight))
+            .saturating_add(DbWeight::get().writes(1 as Weight))
+    }
 }

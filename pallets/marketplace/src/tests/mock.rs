@@ -104,6 +104,8 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 parameter_types! {
     pub const MintFee: u64 = 5;
     pub const MarketplaceFee: u64 = 10;
+    pub const MaxNameLength: u32 = 50;
+    pub const MinNameLength: u32 = 1;
 }
 
 impl ternoa_nfts::Config for Test {
@@ -122,6 +124,8 @@ impl Config for Test {
     type WeightInfo = ();
     type MarketplaceFee = MarketplaceFee;
     type FeesCollector = ();
+    type MaxNameLength = MaxNameLength;
+    type MinNameLength = MinNameLength;
 }
 
 // Do not use the `0` account id since this would be the default value
@@ -135,7 +139,7 @@ pub struct ExtBuilder {
     series: Vec<(u64, u32)>,
     caps_endowed_accounts: Vec<(u64, u64)>,
     tiime_endowed_accounts: Vec<(u64, u64)>,
-    marketplaces: Vec<(u64, MarketplaceType, u8)>,
+    marketplaces: Vec<(u64, MarketplaceType, u8, Vec<u8>)>,
 }
 
 impl Default for ExtBuilder {
@@ -175,9 +179,9 @@ impl ExtBuilder {
         self
     }
 
-    pub fn marketplace(mut self, accounts: Vec<(u64, MarketplaceType, u8)>) -> Self {
-        for account in accounts {
-            self.marketplaces.push(account);
+    pub fn marketplace(mut self, markets: Vec<(u64, MarketplaceType, u8, Vec<u8>)>) -> Self {
+        for market in markets {
+            self.marketplaces.push(market);
         }
         self
     }
@@ -208,13 +212,19 @@ impl ExtBuilder {
 
         let mut marketplaces = vec![(
             0,
-            MarketplaceInformation::new(MarketplaceType::Public, 0, ALICE, Default::default()),
+            MarketplaceInformation::new(
+                MarketplaceType::Public,
+                0,
+                ALICE,
+                Default::default(),
+                "Ternoa marketplace".into(),
+            ),
         )];
         let mut i = 1;
         for market in self.marketplaces {
             marketplaces.push((
                 i,
-                MarketplaceInformation::new(market.1, market.2, market.0, vec![]),
+                MarketplaceInformation::new(market.1, market.2, market.0, vec![], market.3),
             ));
 
             i += 1;
@@ -226,6 +236,16 @@ impl ExtBuilder {
         }
         .assimilate_storage(&mut t)
         .unwrap();
+
+        let mut ext = sp_io::TestExternalities::new(t);
+        ext.execute_with(|| System::set_block_number(1));
+        ext
+    }
+
+    pub fn build_v6_migration(self) -> sp_io::TestExternalities {
+        let t = frame_system::GenesisConfig::default()
+            .build_storage::<Test>()
+            .unwrap();
 
         let mut ext = sp_io::TestExternalities::new(t);
         ext.execute_with(|| System::set_block_number(1));
@@ -243,7 +263,13 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         nfts_for_sale: Default::default(),
         marketplaces: vec![(
             0,
-            MarketplaceInformation::new(MarketplaceType::Public, 0, ALICE, Default::default()),
+            MarketplaceInformation::new(
+                MarketplaceType::Public,
+                0,
+                ALICE,
+                Default::default(),
+                "Ternoa Marketplace".into(),
+            ),
         )],
     }
     .assimilate_storage(&mut t)

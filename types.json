@@ -70,6 +70,7 @@
         "kind": "MarketplaceType",
         "commission_fee": "u8",
         "owner": "AccountId",
-        "allow_list": "Vec<AccountId>"
+        "allow_list": "Vec<AccountId>",
+        "name": "Vec<u8>"
     }
 }
