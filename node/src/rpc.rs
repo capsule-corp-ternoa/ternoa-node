@@ -63,6 +63,8 @@ pub struct FullDeps<C, P, SC, B> {
     pub pool: Arc<P>,
     /// The SelectChain Strategy
     pub select_chain: SC,
+    /// A copy of the chain spec.
+    pub chain_spec: Box<dyn sc_chain_spec::ChainSpec>,
     /// Whether to deny unsafe calls
     pub deny_unsafe: DenyUnsafe,
     /// BABE specific dependencies.
@@ -77,7 +79,7 @@ pub type IoHandler = jsonrpc_core::IoHandler<sc_rpc::Metadata>;
 /// Instantiate all Full RPC extensions.
 pub fn create_full<C, P, SC, B>(
     deps: FullDeps<C, P, SC, B>,
-) -> Result<jsonrpc_core::IoHandler<sc_rpc_api::Metadata>, Box<dyn std::error::Error + Send + Sync>>
+) -> jsonrpc_core::IoHandler<sc_rpc_api::Metadata>
 where
     C: ProvideRuntimeApi<Block>
         + HeaderBackend<Block>
@@ -103,6 +105,7 @@ where
         client,
         pool,
         select_chain,
+        chain_spec: _,
         deny_unsafe,
         babe,
         grandpa,
@@ -113,6 +116,7 @@ where
         babe_config,
         shared_epoch_changes,
     } = babe;
+
     let GrandpaDeps {
         shared_voter_state,
         shared_authority_set,
@@ -152,7 +156,7 @@ where
         ),
     ));
 
-    Ok(io)
+    io
 }
 
 /// Instantiate all Light RPC extensions.

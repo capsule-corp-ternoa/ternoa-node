@@ -2,7 +2,7 @@ use crate::cli::{Cli, Subcommand};
 use crate::{chain_spec, service, service::new_partial};
 use sc_cli::{ChainSpec, Result, Role, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
-use ternoa_executor::ExecutorDispatch;
+use ternoa_executor::Executor;
 use ternoa_runtime::{Block, RuntimeApi};
 
 impl SubstrateCli for Cli {
@@ -73,16 +73,16 @@ pub fn run() -> Result<()> {
         Some(Subcommand::Inspect(cmd)) => {
             let runner = cli.create_runner(cmd)?;
 
-            runner.sync_run(|config| cmd.run::<Block, RuntimeApi, ExecutorDispatch>(config))
+            runner.sync_run(|config| cmd.run::<Block, RuntimeApi, Executor>(config))
         }
         Some(Subcommand::Benchmark(cmd)) => {
             if cfg!(feature = "runtime-benchmarks") {
                 let runner = cli.create_runner(cmd)?;
 
-                runner.sync_run(|config| cmd.run::<Block, ExecutorDispatch>(config))
+                runner.sync_run(|config| cmd.run::<Block, Executor>(config))
             } else {
                 Err("Benchmarking wasn't enabled when building the node. \
-                You can enable it with `--features runtime-benchmarks`."
+				You can enable it with `--features runtime-benchmarks`."
                     .into())
             }
         }
@@ -167,12 +167,12 @@ pub fn run() -> Result<()> {
                     sc_service::TaskManager::new(config.task_executor.clone(), registry)
                         .map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
 
-                Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
+                Ok((cmd.run::<Block, Executor>(config), task_manager))
             })
         }
         #[cfg(not(feature = "try-runtime"))]
         Some(Subcommand::TryRuntime) => Err("TryRuntime wasn't enabled when building the node. \
-                You can enable it with `--features try-runtime`."
+				You can enable it with `--features try-runtime`."
             .into()),
     }
 }
