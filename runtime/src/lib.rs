@@ -39,7 +39,7 @@ mod version;
 
 // Re-exports added for compatibility with SubstraTee
 pub use pallet_balances::Call as BalancesCall;
-pub use pallet_substratee_registry as substratee_registry;
+pub use pallet_teerex as substratee_registry;
 
 use constants::time::PRIMARY_PROBABILITY;
 use pallets_validators::EpochDuration;
@@ -100,7 +100,7 @@ construct_runtime!(
         Nfts: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
 
-        SubstrateeRegistry: pallet_substratee_registry::{Pallet, Call, Storage, Event<T>},
+        SubstrateeRegistry: pallet_teerex::{Pallet, Call, Storage, Event<T>},
     }
 );
 
