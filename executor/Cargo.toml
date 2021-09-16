@@ -8,12 +8,12 @@ ternoa-primitives = { path = "../primitives" }
 ternoa-runtime = { path = "../runtime" }
 parity-scale-codec = { version = "2.2.0" }
 trie-root = { version = "0.16.0" }
-sc-executor = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev", branch = "master" }
-sp-state-machine = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev", branch = "master" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sc-executor = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev" }
+sp-state-machine = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev" }
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 
 [features]
 wasmtime = [
