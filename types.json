@@ -72,5 +72,11 @@
         "owner": "AccountId",
         "allow_list": "Vec<AccountId>",
         "name": "Vec<u8>"
-    }
+    },
+    "ClusterId": "u32",
+    "EnclaveId": "u32",
+    "Cluster": {
+        "enclaves": "Vec<EnclaveId>"
+    },
+    "Url": "Vec<u8>"
 }

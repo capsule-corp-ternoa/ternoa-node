@@ -30,7 +30,6 @@ pub mod constants;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
-mod pallets_substratee;
 mod pallets_ternoa;
 mod pallets_time;
 mod pallets_treasury;
@@ -39,7 +38,6 @@ mod version;
 
 // Re-exports added for compatibility with SubstraTee
 pub use pallet_balances::Call as BalancesCall;
-pub use pallet_substratee_registry as substratee_registry;
 
 use constants::time::PRIMARY_PROBABILITY;
 use pallets_validators::EpochDuration;
@@ -99,8 +97,7 @@ construct_runtime!(
         Marketplace: ternoa_marketplace::{Pallet, Call, Storage, Event<T>, Config<T>},
         Nfts: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
-
-        SubstrateeRegistry: pallet_substratee_registry::{Pallet, Call, Storage, Event<T>},
+        Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>},
     }
 );
 
@@ -365,6 +362,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_nfts, Nfts);
             list_benchmark!(list, extra, ternoa_timed_escrow, TimedEscrow);
             list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
+            list_benchmark!(list, extra, ternoa_sgx, Sgx);
 
 
             let storage_info = AllPalletsWithSystem::storage_info();
@@ -423,6 +421,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_nfts, Nfts);
             add_benchmark!(params, batches, ternoa_timed_escrow, TimedEscrow);
             add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
+            add_benchmark!(params, batches, ternoa_sgx, Sgx);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

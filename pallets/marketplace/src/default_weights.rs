@@ -1,6 +1,18 @@
 use frame_support::weights::{constants::RocksDbWeight as DbWeight, Weight};
 
-impl crate::WeightInfo for () {
+pub trait WeightInfo {
+    fn list() -> Weight;
+    fn unlist() -> Weight;
+    fn buy() -> Weight;
+    fn create() -> Weight;
+    fn add_account_to_allow_list() -> Weight;
+    fn remove_account_from_allow_list() -> Weight;
+    fn change_owner() -> Weight;
+    fn change_market_type() -> Weight;
+    fn set_name() -> Weight;
+}
+
+impl WeightInfo for () {
     // Storage: Marketplace NFTsForSale (r:1 w:1)
     // Storage: Marketplace Marketplaces (r:1 w:0)
     // Storage: System Account (r:2 w:2)

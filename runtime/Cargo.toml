@@ -10,9 +10,10 @@ targets = ["x86_64-unknown-linux-gnu"]
 [dependencies]
 ternoa-account-store = { default-features = false, path = "../pallets/account-store" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
+ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
+ternoa-sgx = { default-features = false, path = "../pallets/sgx" }
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
-ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
 static_assertions = { version = "1.1.0" }
 serde = { optional = true, version = "1.0.126" }
 hex-literal = { optional = true, version = "0.3.1" }
@@ -40,7 +41,6 @@ pallet-randomness-collective-flip = { git = "https://github.com/paritytech/subst
 pallet-scheduler = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-session = { git = "https://github.com/paritytech/substrate.git", features = ["historical"], default-features = false, version = "4.0.0-dev" }
 #pallet-session-benchmarking = { git = "https://github.com/paritytech/substrate/",  default-features = false, optional = true }
-pallet-substratee-registry = { git = "https://github.com/scs/pallet-substratee-registry", default-features = false, branch = "bh-skip-ra-feature"}
 pallet-timestamp = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -66,7 +66,6 @@ substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", 
 
 [features]
 default = ["std"]
-skip-ias-check = ["pallet-substratee-registry/skip-ias-check"]
 std = [
 	"codec/std",
 	"frame-executive/std",
@@ -88,7 +87,6 @@ std = [
 	"pallet-randomness-collective-flip/std",
 	"pallet-scheduler/std",
 	"pallet-session/std",
-	"pallet-substratee-registry/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
@@ -114,6 +112,7 @@ std = [
 	"ternoa-nfts/std",
 	"ternoa-primitives/std",
 	"ternoa-timed-escrow/std",
+	"ternoa-sgx/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking",
@@ -138,4 +137,5 @@ runtime-benchmarks = [
 	"ternoa-nfts/runtime-benchmarks",
 	"ternoa-timed-escrow/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
+	"ternoa-sgx/runtime-benchmarks",
 ]
