@@ -7497,6 +7497,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-sgx"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-nfts",
+ "ternoa-primitives",
+]
+
+[[package]]
 name = "ternoa-timed-escrow"
 version = "0.2.0"
 dependencies = [
