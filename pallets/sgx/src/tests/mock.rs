@@ -88,6 +88,7 @@ impl pallet_balances::Config for Test {
 parameter_types! {
     pub const EnclaveFee: u64 = 5;
     pub const ClusterSize: u32 = 2;
+    pub const MaxUrlLength: u32 = 5;
 }
 
 impl Config for Test {
@@ -97,6 +98,7 @@ impl Config for Test {
     type Currency = Balances;
     type EnclaveFee = EnclaveFee;
     type ClusterSize = ClusterSize;
+    type MaxUrlLength = MaxUrlLength;
 }
 
 // Do not use the `0` account id since this would be the default value

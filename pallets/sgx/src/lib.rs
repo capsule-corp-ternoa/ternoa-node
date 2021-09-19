@@ -29,7 +29,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
 
-    type BalanceOf<T> =
+    pub type BalanceOf<T> =
         <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
     pub(crate) type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
         <T as frame_system::Config>::AccountId,
@@ -55,6 +55,10 @@ pub mod pallet {
         /// Size of a cluster
         #[pallet::constant]
         type ClusterSize: Get<u32>;
+
+        /// Size of a cluster
+        #[pallet::constant]
+        type MaxUrlLength: Get<u32>;
     }
 
     #[pallet::pallet]
@@ -75,6 +79,10 @@ pub mod pallet {
         pub fn register_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
 
+            ensure!(
+                api_url.len() < T::MaxUrlLength::get() as usize,
+                Error::<T>::UrlTooLong
+            );
             ensure!(
                 !EnclaveIndex::<T>::contains_key(&account),
                 Error::<T>::PublicKeyAlreadyTiedToACluster
@@ -268,6 +276,7 @@ pub mod pallet {
         UnknownClusterId,
         NotEnclaveOwner,
         PublicKeyAlreadyTiedToACluster,
+        UrlTooLong,
         EnclaveIdOverflow,
         ClusterIdOverflow,
         ClusterIsAlreadyFull,

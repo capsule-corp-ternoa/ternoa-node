@@ -1,5 +1,5 @@
+use super::mock;
 use super::mock::*;
-use crate::tests::mock;
 use crate::{
     Cluster, ClusterId, ClusterIdGenerator, ClusterIndex, ClusterRegistry, Enclave, EnclaveId,
     EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Error, Url,
@@ -11,11 +11,12 @@ use sp_runtime::traits::BadOrigin;
 #[test]
 fn register_enclave() {
     ExtBuilder::default()
-        .tokens(vec![(ALICE, 100), (BOB, 0)])
+        .tokens(vec![(ALICE, 100), (BOB, 0), (DAVE, 10)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+            let dave: mock::Origin = RawOrigin::Signed(DAVE).into();
 
             assert_eq!(EnclaveIndex::<Test>::iter().count(), 0);
             assert_eq!(EnclaveRegistry::<Test>::iter().count(), 0);
@@ -38,9 +39,13 @@ fn register_enclave() {
             let ok = Sgx::register_enclave(alice, Default::default());
             assert_noop!(ok, Error::<Test>::PublicKeyAlreadyTiedToACluster);
 
-            // Bob should NOT be able to create an enclave if je doesn't have enough tokens.
+            // Bob should NOT be able to create an enclave if the doesn't have enough tokens.
             let ok = Sgx::register_enclave(bob, Default::default());
             assert_noop!(ok, pallet_balances::Error::<Test>::InsufficientBalance);
+
+            // Dave should NOT be able to create an enclave if the url is too long.
+            let ok = Sgx::register_enclave(dave, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            assert_noop!(ok, Error::<Test>::UrlTooLong);
         })
 }
 

@@ -17,9 +17,6 @@ cli = [
 	"ternoa-executor/wasmi-errno",
 ]
 
-# allow workers to register without remote attestation for dev purposes
-skip-ias-check = ["ternoa-runtime/skip-ias-check"]
-
 [package.metadata.wasm-pack.profile.release]
 # `wasm-opt` has some problems on linux, see
 # https://github.com/rustwasm/wasm-pack/issues/781 etc.

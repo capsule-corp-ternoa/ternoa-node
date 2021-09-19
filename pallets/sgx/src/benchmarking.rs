@@ -1,147 +1,119 @@
-/* use crate::{
-    BalanceCaps, Call, Config, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency,
-    NFTCurrencyId, NFTsForSale, Pallet,
+use crate::{
+    BalanceOf, Call, Cluster, ClusterId, ClusterIdGenerator, ClusterIndex, ClusterRegistry, Config,
+    Enclave, EnclaveId, EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Pallet, Url,
 };
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
 use sp_runtime::traits::{Bounded, StaticLookup};
 use sp_std::prelude::*;
-use ternoa_common::traits::NFTs;
-use ternoa_primitives::nfts::NFTId;
 
-use crate::Pallet as Marketplace;
-
-fn create_nft<T: Config>(caller: &T::AccountId) -> NFTId {
-    T::NFTs::create(
-        caller,
-        <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
-    )
-    .expect("shall not fail with a clean state")
-}
+use crate::Pallet as Sgx;
 
 benchmarks! {
-    buy {
-        let buyer: T::AccountId = account("buyer", 0, 0);
-        let seller: T::AccountId = account("seller", 0, 0);
+    register_enclave {
+        let alice: T::AccountId = whitelisted_caller();
+        let url: Url = Default::default();
+        let enclave_id: EnclaveId = 0;
+        let enclave = Enclave::new(vec![]);
 
-        T::CurrencyCaps::make_free_balance_be(&buyer, BalanceCaps::<T>::max_value());
-        T::CurrencyCaps::make_free_balance_be(&seller, T::CurrencyCaps::minimum_balance());
-
-        let id = create_nft::<T>(&seller);
-        let price = NFTCurrency::Caps(1u32.into());
-
-        drop(Marketplace::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price, None));
-    }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::Caps)
+        T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
+    }: _(RawOrigin::Signed(alice.clone().into()), url.clone())
     verify {
-        assert_eq!(T::NFTs::owner(id), buyer);
-        assert_eq!(NFTsForSale::<T>::contains_key(id), false);
+        assert!(EnclaveRegistry::<T>::contains_key(enclave_id));
+        assert_eq!(EnclaveRegistry::<T>::get(enclave_id), Some(enclave));
+        assert!(EnclaveIndex::<T>::contains_key(alice.clone()));
+        assert_eq!(EnclaveIndex::<T>::get(alice.clone()).unwrap(), enclave_id);
+        assert_eq!(EnclaveIdGenerator::<T>::get(), 1);
     }
 
-    list {
-        let caller: T::AccountId = whitelisted_caller();
-        T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
+    assign_enclave {
+        let alice: T::AccountId = whitelisted_caller();
+        let url: Url = Default::default();
+        let enclave_id: EnclaveId = 0;
+        let cluster_id: ClusterId = 0;
 
-        let nft_id = create_nft::<T>(&caller);
+        T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
-        let price = NFTCurrency::Caps(100u32.into());
-
-    }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price, None)
+        drop(Sgx::<T>::create_cluster(RawOrigin::Root.into()));
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+    }: _(RawOrigin::Signed(alice.clone().into()), cluster_id)
     verify {
-        assert_eq!(T::NFTs::owner(nft_id), caller);
-        assert_eq!(NFTsForSale::<T>::contains_key(nft_id), true);
+        assert_eq!(ClusterRegistry::<T>::get(cluster_id).unwrap().enclaves, vec![enclave_id]);
+        assert_eq!(ClusterIndex::<T>::get(enclave_id), Some(cluster_id));
     }
 
-    unlist {
-        let caller: T::AccountId = whitelisted_caller();
-        T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
+    unassign_enclave {
+        let alice: T::AccountId = whitelisted_caller();
+        let url: Url = Default::default();
+        let enclave_id: EnclaveId = 0;
+        let cluster_id: ClusterId = 0;
+        let empty: Vec<EnclaveId> = vec![];
 
-        let nft_id = create_nft::<T>(&caller);
+        T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
-        let price = NFTCurrency::Caps(100u32.into());
-
-        drop(Marketplace::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price, None));
-    }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
+        drop(Sgx::<T>::create_cluster(RawOrigin::Root.into()));
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+        drop(Sgx::<T>::assign_enclave(RawOrigin::Signed(alice.clone()).into(), cluster_id));
+    }: _(RawOrigin::Signed(alice.clone().into()))
     verify {
-        assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);
+        assert_eq!(ClusterRegistry::<T>::get(cluster_id).unwrap().enclaves, empty);
+        assert_eq!(ClusterIndex::<T>::get(enclave_id), None);
     }
 
-    create {
-        let caller: T::AccountId = whitelisted_caller();
-        T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
+    update_enclave {
+        let alice: T::AccountId = whitelisted_caller();
+        let url: Url = Default::default();
+        let enclave_id: EnclaveId = 0;
+        let new_url: Url = vec![0, 1, 2];
 
-    }: _(RawOrigin::Signed(caller.clone().into()), MarketplaceType::Public, 0, "".into())
+        T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
+
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+    }: _(RawOrigin::Signed(alice.clone().into()), new_url.clone())
     verify {
-        assert_eq!(Marketplaces::<T>::contains_key(1), true);
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, caller);
-        assert_eq!(MarketplaceIdGenerator::<T>::get(), 1);
+        assert_eq!(EnclaveRegistry::<T>::get(enclave_id).unwrap().api_url, new_url);
     }
 
-    add_account_to_allow_list {
-        let owner: T::AccountId = account("owner", 0, 0);
-        let account: T::AccountId = account("account", 0, 0);
-        let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+    change_enclave_owner {
+        let alice: T::AccountId = whitelisted_caller();
+        let bob: T::AccountId = account("bob", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
+        let url: Url = Default::default();
+        T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
-
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup.into())
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+    }: _(RawOrigin::Signed(alice.clone().into()), bob_lookup)
     verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().allow_list, vec![account]);
+        assert!(EnclaveIndex::<T>::contains_key(bob.clone()));
+        assert!(!EnclaveIndex::<T>::contains_key(alice.clone()));
     }
 
-    remove_account_from_allow_list {
-        let owner: T::AccountId = account("owner", 0, 0);
-        let account: T::AccountId = account("account", 0, 0);
-        let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
-
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
-        drop(Marketplace::<T>::add_account_to_allow_list(RawOrigin::Signed(owner.clone()).into(), 1, account_lookup.clone()));
-
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup)
+    create_cluster {
+        let cluster = Cluster::new(Default::default());
+        let cluster_id: ClusterId = 0;
+    }: _(RawOrigin::Root)
     verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().allow_list, vec![]);
+        assert_eq!(ClusterIndex::<T>::iter().count(), 0);
+        assert_eq!(ClusterRegistry::<T>::get(cluster_id), Some(cluster));
+        assert_eq!(ClusterRegistry::<T>::iter().count(), 1);
+        assert_eq!(ClusterIdGenerator::<T>::get(), 1);
     }
 
-    change_owner {
-        let owner: T::AccountId = account("owner", 0, 0);
-        let account: T::AccountId = account("account", 0, 0);
-        let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+    remove_cluster {
+        let cluster = Cluster::new(Default::default());
+        let cluster_id: ClusterId = 0;
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
-
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup)
+        drop(Sgx::<T>::create_cluster(RawOrigin::Root.into()));
+    }: _(RawOrigin::Root, cluster_id)
     verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, account);
-    }
-
-    change_market_type {
-        let owner: T::AccountId = account("owner", 0, 0);
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0, "".into()));
-
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, MarketplaceType::Private)
-    verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().kind, MarketplaceType::Private);
-    }
-
-    set_name {
-        let owner: T::AccountId = account("owner", 0, 0);
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0, "".into()));
-
-        let new_name: Vec<u8> = "What is love baby dont hurt me".into();
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, new_name.clone())
-    verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().name, new_name);
+        assert_eq!(ClusterRegistry::<T>::get(cluster_id), None);
+        assert_eq!(ClusterRegistry::<T>::iter().count(), 0);
     }
 }
 
 impl_benchmark_test_suite!(
-    Marketplace,
+    Sgx,
     crate::tests::mock::new_test_ext(),
     crate::tests::mock::Test
 );
- */
