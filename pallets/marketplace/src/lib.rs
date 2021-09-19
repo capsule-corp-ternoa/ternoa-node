@@ -14,24 +14,13 @@ use frame_support::dispatch::DispatchResultWithPostInfo;
 pub use pallet::*;
 pub use types::*;
 
+use default_weights::WeightInfo;
 use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
 use ternoa_primitives::nfts::NFTId;
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
-
-pub trait WeightInfo {
-    fn list() -> Weight;
-    fn unlist() -> Weight;
-    fn buy() -> Weight;
-    fn create() -> Weight;
-    fn add_account_to_allow_list() -> Weight;
-    fn remove_account_from_allow_list() -> Weight;
-    fn change_owner() -> Weight;
-    fn change_market_type() -> Weight;
-    fn set_name() -> Weight;
-}
 
 #[frame_support::pallet]
 pub mod pallet {
