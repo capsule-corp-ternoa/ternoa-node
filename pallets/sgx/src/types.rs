@@ -1,7 +1,6 @@
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-use crate::{Config, Pallet};
 use codec::{Decode, Encode};
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;

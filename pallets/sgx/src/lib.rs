@@ -13,24 +13,11 @@ use frame_support::dispatch::DispatchResultWithPostInfo;
 pub use pallet::*;
 pub use types::*;
 
+use default_weights::WeightInfo;
 use frame_support::traits::StorageVersion;
-use frame_support::weights::Weight;
-use ternoa_primitives::nfts::NFTId;
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
-
-pub trait WeightInfo {
-    fn list() -> Weight;
-    fn unlist() -> Weight;
-    fn buy() -> Weight;
-    fn create() -> Weight;
-    fn add_account_to_allow_list() -> Weight;
-    fn remove_account_from_allow_list() -> Weight;
-    fn change_owner() -> Weight;
-    fn change_market_type() -> Weight;
-    fn set_name() -> Weight;
-}
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -40,17 +27,11 @@ pub mod pallet {
     use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
     use frame_support::transactional;
     use frame_system::pallet_prelude::*;
-    use sp_runtime::traits::{CheckedAdd, CheckedDiv, CheckedSub, StaticLookup};
-    use sp_std::vec::Vec;
-    use ternoa_common::traits::{LockableNFTs, NFTs};
-    use ternoa_primitives::AccountId;
+    use sp_runtime::traits::StaticLookup;
 
-    pub type BalanceCaps<T> =
-        <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
-    pub type BalanceTiime<T> =
-        <<T as Config>::CurrencyTiime as Currency<<T as frame_system::Config>::AccountId>>::Balance;
-
-    pub type NegativeImbalanceCaps<T> = <<T as Config>::CurrencyCaps as Currency<
+    type BalanceOf<T> =
+        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+    pub(crate) type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
         <T as frame_system::Config>::AccountId,
     >>::NegativeImbalance;
 
@@ -58,26 +39,20 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-        /// Pallet managing nfts.
-        type NFTs: LockableNFTs<AccountId = Self::AccountId, NFTId = NFTId>
-            + NFTs<AccountId = Self::AccountId, NFTId = NFTId>;
+
         /// Weight values for this pallet
         type WeightInfo: WeightInfo;
 
-        /// Currency used to handle transactions and pay for the nfts.
-        type CurrencyCaps: Currency<Self::AccountId>;
-        type CurrencyTiime: Currency<Self::AccountId>;
+        /// Currency used to bill minting fees
+        type Currency: Currency<Self::AccountId>;
 
-        /// Host much does it cost to create a marketplace.
-        type MarketplaceFee: Get<BalanceCaps<Self>>;
-        /// Place where the marketplace fees go.
-        type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
+        /// Host much does it cost to mint enclave (extra fee on top of the tx fees)
+        type EnclaveFee: Get<BalanceOf<Self>>;
 
-        /// The minimum length a name may be.
-        #[pallet::constant]
-        type MinNameLength: Get<u32>;
+        /// What we do with additional fees
+        type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
-        /// The maximum length a name may be.
+        /// Size of a cluster
         #[pallet::constant]
         type ClusterSize: Get<u32>;
     }
@@ -96,14 +71,24 @@ pub mod pallet {
         // Enclave
         //
         #[pallet::weight(1)]
+        #[transactional]
         pub fn register_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
 
             ensure!(
-                EnclaveIndex::<T>::contains_key(&account),
+                !EnclaveIndex::<T>::contains_key(&account),
                 Error::<T>::PublicKeyAlreadyTiedToACluster
             );
             let (enclave_id, new_id) = Self::new_enclave_id()?;
+            // Needs to have enough money
+            let imbalance = T::Currency::withdraw(
+                &account,
+                T::EnclaveFee::get(),
+                WithdrawReasons::FEE,
+                KeepAlive,
+            )?;
+            T::FeesCollector::on_unbalanced(imbalance);
+
             let enclave = Enclave::new(api_url.clone());
 
             EnclaveIndex::<T>::insert(account.clone(), enclave_id);
@@ -147,33 +132,21 @@ pub mod pallet {
         }
 
         #[pallet::weight(1)]
-        pub fn unassign_enclave(
-            origin: OriginFor<T>,
-            cluster_id: ClusterId,
-        ) -> DispatchResultWithPostInfo {
+        pub fn unassign_enclave(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
             let enclave_id = EnclaveIndex::<T>::get(&account).ok_or(Error::<T>::NotEnclaveOwner)?;
-            let old_cluster_id =
+            let cluster_id =
                 ClusterIndex::<T>::get(enclave_id).ok_or(Error::<T>::EnclaveNotAssigned)?;
-            ensure!(
-                cluster_id != old_cluster_id,
-                Error::<T>::CannotAssignToSameCluster
-            );
 
             ClusterRegistry::<T>::mutate(cluster_id, |cluster_opt| {
                 if let Some(cluster) = cluster_opt {
-                    if cluster.enclaves.len() >= T::ClusterSize::get() as usize {
-                        return Err(Error::<T>::ClusterIsAlreadyFull);
-                    }
-
                     let index = cluster
                         .enclaves
                         .iter()
                         .position(|x| *x == enclave_id)
                         .ok_or(Error::<T>::InternalLogicalError)?;
                     cluster.enclaves.remove(index);
-                    ClusterIndex::<T>::insert(enclave_id, cluster_id);
-
+                    ClusterIndex::<T>::remove(enclave_id);
                     Ok(())
                 } else {
                     Err(Error::<T>::UnknownClusterId)
@@ -187,8 +160,8 @@ pub mod pallet {
         #[pallet::weight(1)]
         pub fn update_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
-
             let enclave_id = EnclaveIndex::<T>::get(&account).ok_or(Error::<T>::NotEnclaveOwner)?;
+
             EnclaveRegistry::<T>::mutate(enclave_id, |enclave_opt| {
                 if let Some(enclave) = enclave_opt {
                     enclave.api_url = api_url.clone();
