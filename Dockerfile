@@ -16,7 +16,7 @@ ADD . .
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
     export PATH=$PATH:$HOME/.cargo/bin && \
     ./scripts/init.sh && \
-    cargo build -p ternoa --release --features skip-ias-check && \
+    cargo build -p ternoa --release && \
     cp target/release/ternoa /ternoa
 
 # ===== SECOND STAGE ======
