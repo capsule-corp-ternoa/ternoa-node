@@ -1,12 +1,6 @@
 {
     "AccountDataOf": "AccountData",
     "Address": "MultiAddress",
-    "Enclave": {
-        "pubkey": "AccountId",
-        "mrenclave": "Hash",
-        "timestamp": "u64",
-        "url": "Text"
-    },
     "NFTId": "u32",
     "NFTIdOf": "NFTId",
     "NFTSeriesId": "u32",
@@ -78,5 +72,8 @@
     "Cluster": {
         "enclaves": "Vec<EnclaveId>"
     },
-    "Url": "Vec<u8>"
+    "Url": "Vec<u8>",
+    "Enclave": {
+        "api_url": "Url"
+    }
 }
