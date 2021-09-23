@@ -2,7 +2,7 @@ name: Docker-chaos-tag
 
 on:
   push:
-    branches: main
+    branches: chaos-fork-2021-09-23
 
 jobs:
   docker-build:
