@@ -20,7 +20,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     // and set impl_version to 0. If only runtime
     // implementation changes and behavior does not, then leave spec_version as
     // is and increment impl_version.
-    spec_version: 38,
+    spec_version: 39,
 
     // The version of the implementation of the specification. Nodes are
     // free to ignore this; it serves only as an indication that the code is
