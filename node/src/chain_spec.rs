@@ -1,28 +1,26 @@
-use hex_literal::hex;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sc_chain_spec::Properties;
 use sc_service::ChainType;
+use sc_telemetry::TelemetryEndpoints;
 use serde_json::json;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
-use sp_core::crypto::UncheckedInto;
 use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::{
-    traits::{IdentifyAccount, Verify},
-    Perbill,
-};
+use sp_runtime::traits::{IdentifyAccount, Verify};
+use sp_runtime::Perbill;
 use ternoa_marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
+use ternoa_runtime::constants::currency::UNIT;
 use ternoa_runtime::{
-    constants::currency::UNIT, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
-    BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
+    wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, GenesisConfig,
+    GrandpaConfig, ImOnlineConfig, MarketplaceConfig, SessionConfig, SessionKeys, SgxConfig,
     StakerStatus, StakingConfig, SystemConfig, TechnicalMembershipConfig,
 };
-use ternoa_runtime::{MarketplaceConfig, SgxConfig};
 
 type AccountPublic = <Signature as Verify>::Signer;
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig>;
+const VALIDATOR_TEST_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
 fn session_keys(
     grandpa: GrandpaId,
@@ -193,14 +191,20 @@ fn build_local_properties() -> Properties {
     props
 }
 
-pub fn chaos_config() -> ChainSpec {
-    ChainSpec::from_json_bytes(&include_bytes!("../res/chaos.json")[..]).unwrap()
+pub fn staging_net_config() -> ChainSpec {
+    ChainSpec::from_json_bytes(&include_bytes!("../chain-specifications/staging-net.json")[..])
+        .unwrap()
 }
 
-pub fn dev_remote_config() -> ChainSpec {
-    ChainSpec::from_json_bytes(&include_bytes!("../res/dev-remote.json")[..]).unwrap()
+pub fn test_net_config() -> ChainSpec {
+    ChainSpec::from_json_bytes(&include_bytes!("../chain-specifications/test-net.json")[..])
+        .unwrap()
 }
 
+pub fn main_net_config() -> ChainSpec {
+    ChainSpec::from_json_bytes(&include_bytes!("../chain-specifications/main-net.json")[..])
+        .unwrap()
+}
 fn development_config_genesis() -> GenesisConfig {
     testnet_genesis(vec![get_authority_keys_from_seed("Alice")], None, None)
 }
@@ -246,135 +250,44 @@ pub fn local_testnet_config() -> ChainSpec {
     )
 }
 
-pub fn staging_testnet_config() -> ChainSpec {
-    ChainSpec::from_genesis(
-        "Staging Testnet",
-        "staging_testnet",
-        ChainType::Live,
-        staging_genesis,
-        vec![],
+fn local_validator_testnet_genesis() -> GenesisConfig {
+    let mut genesis = testnet_genesis(
+        vec![
+            get_authority_keys_from_seed("Alice"),
+            get_authority_keys_from_seed("Bob"),
+            get_authority_keys_from_seed("Charlie"),
+            get_authority_keys_from_seed("Dave"),
+            get_authority_keys_from_seed("Eve"),
+        ],
         None,
+        None,
+    );
+    genesis.staking.minimum_validator_count = 1;
+    genesis.staking.invulnerables.clear();
+
+    genesis
+}
+
+/// Local Validator testnet config
+pub fn local_validator_testnet_config() -> ChainSpec {
+    ChainSpec::from_genesis(
+        "Local Validator Testnet",
+        "local_validator_testnet",
+        ChainType::Local,
+        local_validator_testnet_genesis,
+        vec![
+            "/ip4/127.0.0.1/tcp/30333/p2p/12D3KooWDEjYH18aJ67pxnyPnSumDCyaPvqZFyGCpURnTYo8jtyU"
+                .parse()
+                .unwrap(),
+        ],
+        Some(
+            TelemetryEndpoints::new(vec![(VALIDATOR_TEST_TELEMETRY_URL.to_string(), 0)])
+                .expect("Staging telemetry url is valid"),
+        ),
         Some("ternoa"),
         Some(build_local_properties()),
         Default::default(),
     )
-}
-
-pub fn staging_genesis() -> GenesisConfig {
-    let initial_authorities: Vec<(
-        AccountId,
-        AccountId,
-        GrandpaId,
-        BabeId,
-        ImOnlineId,
-        AuthorityDiscoveryId,
-    )> = vec![(
-        hex!["06703017d16edd0e9ca34fd550ad4b94d07cab000bc043a5288f923997300971"].into(),
-        hex!["06703017d16edd0e9ca34fd550ad4b94d07cab000bc043a5288f923997300971"].into(),
-        hex!["c6dda9ca0a520c60e3bcd6cdef22ba788050d5507e44d3063dfa4a7485b27cdb"].unchecked_into(),
-        hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].unchecked_into(),
-        hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].unchecked_into(),
-        hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].unchecked_into(),
-    )];
-
-    const ENDOWMENT: Balance = UNIT * 1_000;
-    const STASH: Balance = ENDOWMENT / 1_000;
-    let endowed_accounts: Vec<(AccountId, Balance)> = vec![
-        (
-            // Mickael 5Gzn4r3qmDP6xRhjafYb8w1UGazFg3UAKWVSnjHkBrURJBob
-            hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
-            UNIT * 2_500_000_000,
-        ),
-        (
-            // Validator 1 5CJmz9RgokHp8JXq2ssbftNSUEVwcmNQHQ9uL8bh9wFMaqzd
-            hex!["0abb55b84a1675335650befe8930f56b3e6dac26e4fcbb5b06915a3f64b96f74"].into(),
-            ENDOWMENT,
-        ),
-        (
-            // Validator 1 Stash  5CD9UHTMw7jaj1BWRGPyP9kPWgQucCzKHSVxm5ztzzxa1PW1
-            hex!["06703017d16edd0e9ca34fd550ad4b94d07cab000bc043a5288f923997300971"].into(),
-            ENDOWMENT,
-        ),
-    ];
-    let technical_members: Vec<AccountId> = vec![
-        // Mickael 5Gzn4r3qmDP6xRhjafYb8w1UGazFg3UAKWVSnjHkBrURJBob
-        hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
-    ];
-
-    GenesisConfig {
-        // Core
-        system: SystemConfig {
-            code: wasm_binary_unwrap().to_vec(),
-            changes_trie_config: Default::default(),
-        },
-        balances: BalancesConfig {
-            balances: endowed_accounts,
-        },
-        tiime_balances: Default::default(),
-
-        // Consensus
-        session: SessionConfig {
-            keys: initial_authorities
-                .iter()
-                .map(|x| {
-                    (
-                        x.0.clone(),
-                        x.0.clone(),
-                        session_keys(x.2.clone(), x.3.clone(), x.4.clone(), x.5.clone()),
-                    )
-                })
-                .collect::<Vec<_>>(),
-        },
-        babe: BabeConfig {
-            authorities: vec![],
-            epoch_config: Some(ternoa_runtime::BABE_GENESIS_EPOCH_CONFIG),
-        },
-        im_online: ImOnlineConfig { keys: vec![] },
-        authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
-        grandpa: GrandpaConfig {
-            authorities: vec![],
-        },
-        staking: StakingConfig {
-            validator_count: initial_authorities.len() as u32 * 2,
-            minimum_validator_count: initial_authorities.len() as u32,
-            stakers: initial_authorities
-                .iter()
-                .map(|x| (x.0.clone(), x.1.clone(), STASH, StakerStatus::Validator))
-                .collect(),
-            invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
-            slash_reward_fraction: Perbill::from_percent(10),
-            ..Default::default()
-        },
-        treasury: Default::default(),
-
-        // Governance
-        technical_committee: Default::default(),
-        technical_membership: TechnicalMembershipConfig {
-            members: technical_members,
-            phantom: Default::default(),
-        },
-
-        // Ternoa
-        nfts: Default::default(),
-        marketplace: MarketplaceConfig {
-            nfts_for_sale: Default::default(),
-            marketplaces: vec![(
-                0,
-                MarketplaceInformation::new(
-                    MarketplaceType::Public,
-                    0,
-                    // Mickael
-                    hex!["da2e5b8e41da88a4a2ab3b5c7763cb5c60f814a41f27cd1ef020fe7eafe77d58"].into(),
-                    Default::default(),
-                    "Ternoa Marketplace".into(),
-                ),
-            )],
-        },
-        sgx: SgxConfig {
-            clusters: Default::default(),
-            enclaves: Default::default(),
-        },
-    }
 }
 
 #[cfg(test)]
@@ -387,9 +300,10 @@ pub(crate) mod tests {
         let configs = vec![
             development_config(),
             local_testnet_config(),
-            staging_testnet_config(),
-            /*             chaos_config(),
-            dev_remote_config(), */
+            local_validator_testnet_config(),
+            staging_net_config(),
+            test_net_config(),
+            main_net_config(),
         ];
         for conf in configs {
             assert!(conf.build_storage().is_ok());

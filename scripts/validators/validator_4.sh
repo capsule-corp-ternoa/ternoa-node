@@ -1,0 +1,1 @@
+./target/debug/ternoa --base-path ./tmp/v4 --chain validator-net --validator --dave --name Dave_Node --port 30336 --ws-port 9947 --rpc-port 9936

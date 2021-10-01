@@ -3,8 +3,11 @@
 ## Specification 40 - 2021-10-01
 ### Added
 - Sgx to the chain genesis
+- Added validator-net, staging-net, test-net and main-net chain specification
 ### Changed
 - You don't need to be anymore on the allow list to buy from private marketplaces
+### Removed
+- Removed chaos, dev-remote and staging chain specification
 
 ## Specification 39 - 2021-09-27
 ### Changed

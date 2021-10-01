@@ -1,0 +1,1 @@
+./target/debug/ternoa --base-path ./tmp/v2 --chain validator-net --validator --bob --name Bob_Node --port 30334 --ws-port 9945 --rpc-port 9934

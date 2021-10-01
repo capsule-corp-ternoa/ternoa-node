@@ -1,0 +1,1 @@
+./target/debug/ternoa --base-path ./tmp/v6 --chain validator-net --validator --name Marko_Node --port 30338 --ws-port 9949 --rpc-port 9938

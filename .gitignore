@@ -7,3 +7,5 @@
 
 # Local vs code configuration files
 .vscode/
+
+tmp/
