@@ -3,6 +3,8 @@
 ## Specification 40 - 2021-10-01
 ### Added
 - Sgx to the chain genesis
+### Changed
+- You don't need to be anymore on the allow list to buy from private marketplaces
 
 ## Specification 39 - 2021-09-27
 ### Changed
