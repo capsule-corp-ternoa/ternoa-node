@@ -319,6 +319,49 @@ pub mod pallet {
     #[pallet::getter(fn cluster_index)]
     pub type ClusterIndex<T: Config> =
         StorageMap<_, Blake2_128Concat, EnclaveId, ClusterId, OptionQuery>;
+
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub enclaves: Vec<(T::AccountId, EnclaveId, Url)>,
+        pub clusters: Vec<(ClusterId, Vec<EnclaveId>)>,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self {
+                enclaves: Default::default(),
+                clusters: Default::default(),
+            }
+        }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            let enclaves = self.enclaves.clone();
+            if let Some(enclave) = enclaves.last() {
+                EnclaveIdGenerator::<T>::put(enclave.1 + 1);
+            }
+
+            for enclave in enclaves {
+                EnclaveIndex::<T>::insert(enclave.0, enclave.1);
+                EnclaveRegistry::<T>::insert(enclave.1, Enclave { api_url: enclave.2 });
+            }
+
+            let clusters = self.clusters.clone();
+            if let Some(cluster) = clusters.last() {
+                ClusterIdGenerator::<T>::put(cluster.0 + 1);
+            }
+
+            for cluster in clusters {
+                for enclave_id in cluster.1.iter() {
+                    ClusterIndex::<T>::insert(*enclave_id, cluster.0);
+                }
+                ClusterRegistry::<T>::insert(cluster.0, Cluster::new(cluster.1));
+            }
+        }
+    }
 }
 
 impl<T: Config> Pallet<T> {

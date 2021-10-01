@@ -14,12 +14,12 @@ use sp_runtime::{
 };
 use ternoa_marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
-use ternoa_runtime::MarketplaceConfig;
 use ternoa_runtime::{
     constants::currency::UNIT, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
     StakerStatus, StakingConfig, SystemConfig, TechnicalMembershipConfig,
 };
+use ternoa_runtime::{MarketplaceConfig, SgxConfig};
 
 type AccountPublic = <Signature as Verify>::Signer;
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig>;
@@ -177,6 +177,10 @@ pub fn testnet_genesis(
                     "Ternoa Marketplace".into(),
                 ),
             )],
+        },
+        sgx: SgxConfig {
+            clusters: Default::default(),
+            enclaves: Default::default(),
         },
     }
 }
@@ -366,6 +370,10 @@ pub fn staging_genesis() -> GenesisConfig {
                 ),
             )],
         },
+        sgx: SgxConfig {
+            clusters: Default::default(),
+            enclaves: Default::default(),
+        },
     }
 }
 
@@ -380,8 +388,8 @@ pub(crate) mod tests {
             development_config(),
             local_testnet_config(),
             staging_testnet_config(),
-            chaos_config(),
-            dev_remote_config(),
+            /*             chaos_config(),
+            dev_remote_config(), */
         ];
         for conf in configs {
             assert!(conf.build_storage().is_ok());
