@@ -1,0 +1,1 @@
+./target/debug/ternoa --base-path ./tmp/v3 --chain validator-net --validator --charlie --name Charlie_Node --port 30335 --ws-port 9946 --rpc-port 9935

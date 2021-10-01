@@ -38,11 +38,12 @@ impl SubstrateCli for Cli {
                         .into(),
                 )
             }
-            "chaos" => Box::new(chain_spec::chaos_config()),
             "dev" => Box::new(chain_spec::development_config()),
-            "dev-remote" => Box::new(chain_spec::dev_remote_config()),
             "local" => Box::new(chain_spec::local_testnet_config()),
-            "staging" => Box::new(chain_spec::staging_testnet_config()),
+            "validator-net" => Box::new(chain_spec::local_validator_testnet_config()),
+            "staging-net" => Box::new(chain_spec::staging_net_config()),
+            "test-net" => Box::new(chain_spec::test_net_config()),
+            "main-net" => Box::new(chain_spec::main_net_config()),
             path => Box::new(chain_spec::ChainSpec::from_json_file(
                 std::path::PathBuf::from(path),
             )?),
