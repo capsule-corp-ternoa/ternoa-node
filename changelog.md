@@ -1,5 +1,14 @@
 # 0.1.10-dev
 
+## Specification 40 - 2021-10-01
+### Added
+- Sgx to the chain genesis
+
+## Specification 39 - 2021-09-27
+### Changed
+- types.json
+- Changed Create NFT Event. It it also contains the Offchain URI
+
 ## Specification 38 - 2021-09-20
 ### Added
 - Created and added pallet `ternoa-sgx`
