@@ -161,13 +161,6 @@ pub mod pallet {
             let market_info = Marketplaces::<T>::get(sale.marketplace_id)
                 .ok_or(Error::<T>::UnknownMarketplace)?;
 
-            if market_info.kind == MarketplaceType::Private {
-                ensure!(
-                    market_info.allow_list.contains(&caller_id),
-                    Error::<T>::NotAllowed
-                );
-            }
-
             let commission_fee = market_info.commission_fee;
 
             // KeepAlive because they need to be able to use the NFT later on

@@ -15,6 +15,7 @@ const NFT_ID_4: u32 = 3;
 const NFT_ID_5: u32 = 4;
 const NFT_ID_6: u32 = 5;
 const NFT_ID_7: u32 = 6;
+const NFT_ID_8: u32 = 7;
 const CAPS_ID: NFTCurrencyId = NFTCurrencyId::Caps;
 const TIIME_ID: NFTCurrencyId = NFTCurrencyId::Tiime;
 
@@ -233,7 +234,7 @@ fn unlist_nft() {
 #[test]
 fn buy_nft() {
     ExtBuilder::default()
-        .nfts(vec![(ALICE, 7)])
+        .nfts(vec![(ALICE, 8)])
         .caps(vec![(ALICE, 100), (BOB, 100), (DAVE, 1000)])
         .tiime(vec![(ALICE, 100), (BOB, 100)])
         .build()
@@ -294,7 +295,7 @@ fn buy_nft() {
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_5, CAPS_ID));
             assert_ok!(Marketplace::buy(bob.clone(), NFT_ID_6, TIIME_ID));
 
-            // Dave should NOT be able to buy nfts that are listed in private markets without being in the allow list.
+            // Dave should be able to buy nfts that are listed in private markets without being in the allow list.
             let commission_fee = 5;
             assert_ok!(Marketplace::create(
                 bob.clone(),
@@ -308,13 +309,10 @@ fn buy_nft() {
                 ALICE
             ));
             assert_ok!(Marketplace::list(alice.clone(), NFT_ID_7, caps, Some(1)));
-            assert_noop!(
-                Marketplace::buy(dave.clone(), NFT_ID_7, CAPS_ID),
-                Error::<Test>::NotAllowed,
-            );
+            assert_ok!(Marketplace::buy(dave.clone(), NFT_ID_7, CAPS_ID));
             assert_ok!(Marketplace::add_account_to_allow_list(bob.clone(), 1, DAVE));
 
-            // Bob should be able to buy nfts from private markets if he is in the allow list.
+            // Dave should be able to buy nfts from private markets if he is in the allow list.
             // He also needs to pay the commission fee.
             let dave_balance = Balances::free_balance(DAVE);
             let alice_balance = Balances::free_balance(ALICE);
@@ -327,7 +325,8 @@ fn buy_nft() {
             let expected_alice_balance = alice_balance + (price - commission);
             let expected_bob_balance = bob_balance + commission;
 
-            assert_ok!(Marketplace::buy(dave.clone(), NFT_ID_7, CAPS_ID));
+            assert_ok!(Marketplace::list(alice.clone(), NFT_ID_8, caps, Some(1)));
+            assert_ok!(Marketplace::buy(dave.clone(), NFT_ID_8, CAPS_ID));
             assert_eq!(Balances::free_balance(DAVE), expected_dave_balance);
             assert_eq!(Balances::free_balance(ALICE), expected_alice_balance);
             assert_eq!(Balances::free_balance(BOB), expected_bob_balance);
