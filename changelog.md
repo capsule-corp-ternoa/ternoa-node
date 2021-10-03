@@ -1,6 +1,6 @@
 # 0.1.10-dev
 
-## Specification 40 - 2021-10-01
+## Specification 40 - 2021-10-03
 ### Added
 - Sgx to the chain genesis
 - Added validator-net, staging-net, test-net and main-net chain specification
