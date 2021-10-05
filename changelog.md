@@ -1,5 +1,17 @@
-# 0.1.10-dev
+# 0.2.0 Release
+This is the initial release for the Ternoa Testnet.
+Most notably, the marketplace was extended to allow anyone to create their own
+marketplace. The marketplace can either be Public or Private and the owner can
+set a commission fee so that he can get a cut of every nft sold on his
+marketplace. 
 
+# 🚀 New Features
+- Marketplaces can be created by users if they have enough funds. 
+- Gitbook with tutorial on how to use the Ternoa blockchain client.
+# ⛓️ Updates
+- Updated to substrate version 0.4.0-dev #5be50ac14b23147c6f120745c2205a86a2675169
+
+# 0.1.XX-dev
 ## Specification 40 - 2021-10-03
 ### Added
 - Sgx to the chain genesis
