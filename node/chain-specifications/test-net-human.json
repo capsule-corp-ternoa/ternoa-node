@@ -127,6 +127,22 @@
           [
             "5Cm6vfDxbCQKYhCf6wUVS14v6THqN5YYBeaLU3mjiN8YiGxx",
             1001000000000000000000
+          ],
+          [
+            "5HppzfrTfaJz7ns9cNxTqxYD8c39cG1tnR2YH4kGzcEqnAZX",
+            1000000000000000000
+          ],
+          [
+            "5Dw44aR7M3WDH92vfx8276wQko7RZD5T8mDNQNwpUaFRci6r",
+            1001000000000000000000
+          ],
+          [
+            "5HbsswvCZEHK38KHegzMxadpcTWuD6kT5D8jWVHcURWcVfWK",
+            1000000000000000000
+          ],
+          [
+            "5FACvHbbEfbFpbXZsu829682iuoLGPPQAAxZLywzd4FZWHbk",
+            1001000000000000000000
           ]
         ]
       },
@@ -237,6 +253,26 @@
               "im_online": "5C7LMozYSxEk6RmwgSAn2LX7r5eQXnj1EgEjTJB49MpWsFHv",
               "authority_discovery": "5C7LMozYSxEk6RmwgSAn2LX7r5eQXnj1EgEjTJB49MpWsFHv"
             }
+          ],
+          [
+            "5Dw44aR7M3WDH92vfx8276wQko7RZD5T8mDNQNwpUaFRci6r",
+            "5Dw44aR7M3WDH92vfx8276wQko7RZD5T8mDNQNwpUaFRci6r",
+            {
+              "grandpa": "5FAkRcgmPzPUAeY1S4ym14VnniUHbX79pxrtytVbvyp9gpZy",
+              "babe": "5HppzfrTfaJz7ns9cNxTqxYD8c39cG1tnR2YH4kGzcEqnAZX",
+              "im_online": "5HppzfrTfaJz7ns9cNxTqxYD8c39cG1tnR2YH4kGzcEqnAZX",
+              "authority_discovery": "5HppzfrTfaJz7ns9cNxTqxYD8c39cG1tnR2YH4kGzcEqnAZX"
+            }
+          ],
+          [
+            "5FACvHbbEfbFpbXZsu829682iuoLGPPQAAxZLywzd4FZWHbk",
+            "5FACvHbbEfbFpbXZsu829682iuoLGPPQAAxZLywzd4FZWHbk",
+            {
+              "grandpa": "5E7R6T8rBu7JdWT1MyEXVRpjCY7hDMhVbQXWUVws29D7Z8e7",
+              "babe": "5HbsswvCZEHK38KHegzMxadpcTWuD6kT5D8jWVHcURWcVfWK",
+              "im_online": "5HbsswvCZEHK38KHegzMxadpcTWuD6kT5D8jWVHcURWcVfWK",
+              "authority_discovery": "5HbsswvCZEHK38KHegzMxadpcTWuD6kT5D8jWVHcURWcVfWK"
+            }
           ]
         ]
       },
@@ -309,6 +345,18 @@
           [
             "5Cm6vfDxbCQKYhCf6wUVS14v6THqN5YYBeaLU3mjiN8YiGxx",
             "5C7LMozYSxEk6RmwgSAn2LX7r5eQXnj1EgEjTJB49MpWsFHv",
+            1000000000000000000000,
+            "Validator"
+          ],
+          [
+            "5Dw44aR7M3WDH92vfx8276wQko7RZD5T8mDNQNwpUaFRci6r",
+            "5HppzfrTfaJz7ns9cNxTqxYD8c39cG1tnR2YH4kGzcEqnAZX",
+            1000000000000000000000,
+            "Validator"
+          ],
+          [
+            "5FACvHbbEfbFpbXZsu829682iuoLGPPQAAxZLywzd4FZWHbk",
+            "5HbsswvCZEHK38KHegzMxadpcTWuD6kT5D8jWVHcURWcVfWK",
             1000000000000000000000,
             "Validator"
           ]
