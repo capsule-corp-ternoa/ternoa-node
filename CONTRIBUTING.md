@@ -42,9 +42,9 @@ The quickest and most open way to communicate with the Ternoa Blockchain team is
 # Code Contributions
 
 ## Branch names
-Branch names should use the following convention: `author-name/issue-that-is-begin-fixed`
+Branch names should use the following convention: `features/jira-number-issue-name`
 
-Example: `alex/add-minting-fee-to-capsules`
+Example: `features/67-add-minting-fee-to-capsules`
 
 ## Documentation
 Any piece of code that will be used by a third party needs to be well documented and this includes but is not limited to the following:
@@ -68,7 +68,7 @@ Tests are used to prove that the code is correct and to convey system usage and 
 ## Runtime storage | Migration
 In case of changing how the runtime storage is ordered for existing objects, either by adding new properties or changing existing properties, it needs to be handled by writing a functions which will allow nodes with older versions of storage to safely and gracefully upgrade to a newer version.
 
-Example code: [nfts pallet](pallets/nfts/src/migration.rs).
+Example code: [marketplace pallet](pallets/marketplace/src/migrations/v6.rs).
 
 ## Types and Metadata
 User defined structures are not by default recognized by the PolkadotJs UI. In order to be recognized a JSON file, which contains the description of all types, needs to be supplied to the webapp.
@@ -87,7 +87,7 @@ This means that if user defined structures are changed or a new structure is add
   - [ ] Update tests
   - [ ] Generate new weights
 - [ ] If runtime storage has changed:
-  - [ ] Bump pallet version
+  - [ ] Bump storage version
   - [ ] Write migration code
   - [ ] Write tests for the migration code
   - [ ] Manually Test migration
