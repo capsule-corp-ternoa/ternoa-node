@@ -1,224 +1,170 @@
 use super::mock::*;
+use crate::tests::mock;
+use crate::traits::{LockableNFTs, NFTs as NFTTrait};
 use crate::Error;
-use crate::NFTDetails;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
-use ternoa_common::traits;
 
 #[test]
-fn set_owner() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ok!(<NFTs as traits::NFTs>::set_owner(id, &BOB));
-        assert_eq!(<NFTs as traits::NFTs>::owner(id), BOB);
-    })
-}
-
-#[test]
-fn seal() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ok!(<NFTs as traits::NFTs>::seal(id));
-        assert_eq!(<NFTs as traits::NFTs>::sealed(id), true);
-        assert_noop!(
-            <NFTs as traits::NFTs>::mutate(id, |_o, _d| { Ok(()) }),
-            Error::<Test>::Sealed
-        );
-    })
-}
-
-#[test]
-fn lock_and_unlock() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
-        assert_eq!(<NFTs as traits::LockableNFTs>::locked(id), true);
-
-        <NFTs as traits::LockableNFTs>::unlock(id);
-        assert_eq!(<NFTs as traits::LockableNFTs>::locked(id), false);
-    })
-}
-
-#[test]
-fn lock_prevent_transfers() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
-        assert_noop!(
-            NFTs::transfer(RawOrigin::Signed(ALICE).into(), id, BOB),
-            Error::<Test>::Locked
-        );
-    })
-}
-
-#[test]
-fn lock_prevent_set_owner() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
-        assert_noop!(
-            <NFTs as traits::NFTs>::set_owner(id, &BOB),
-            Error::<Test>::Locked
-        );
-    })
-}
-
-#[test]
-fn lock_double_fail() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ok!(<NFTs as traits::LockableNFTs>::lock(id));
-        assert_noop!(
-            <NFTs as traits::LockableNFTs>::lock(id),
-            Error::<Test>::Locked
-        );
-    })
-}
-
-#[test]
-fn burn_nft() {
-    ExtBuilder::default().build().execute_with(|| {
-        let id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default()).expect("creation failed");
-
-        assert_ne!(<NFTs as traits::NFTs>::owner(id), 0);
-        assert_ok!(<NFTs as traits::NFTs>::burn(id));
-        assert_eq!(<NFTs as traits::NFTs>::owner(id), 0);
-    })
-}
-
-#[test]
-fn series_length() {
-    ExtBuilder::default().build().execute_with(|| {
-        let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
-        let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
-        let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
-
-        let count = 3;
-        for _ in 0..count {
-            let _ =
-                <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
-                    .expect("creation failed");
-        }
-
-        // Existing ids should return valid length values.
-        assert_eq!(<NFTs as traits::NFTs>::series_length(valid_id), Some(count));
-
-        // Non existing ids should return None as the length.
-        assert_eq!(<NFTs as traits::NFTs>::series_length(invalid_id), None);
-
-        // The Default id should return None as the length.
-        assert_eq!(<NFTs as traits::NFTs>::series_length(default_id), None);
-    })
-}
-
-#[test]
-fn series_id() {
-    ExtBuilder::default().build().execute_with(|| {
-        let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
-        let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
-
-        let valid_nft_id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
-                .expect("creation failed");
-        let invalid_nft_id = <NFTs as traits::NFTs>::NFTId::from(100u32);
-        let default_nft_id =
-            <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], default_id, false))
-                .expect("creation failed");
-
-        // Existing nft ids should return valid non default series ids.
-        assert_eq!(
-            <NFTs as traits::NFTs>::series_id(valid_nft_id),
-            Some(valid_id)
-        );
-
-        // None should be returned when looking for the series id of non existing nfts.
-        assert_eq!(<NFTs as traits::NFTs>::series_id(invalid_nft_id), None);
-
-        // The default series id should be returned for nfts that belong to the default series.
-        assert_eq!(
-            <NFTs as traits::NFTs>::series_id(default_nft_id),
-            Some(<NFTs as traits::NFTs>::NFTSeriesId::default())
-        );
-    })
-}
-
-#[test]
-fn series_owner() {
-    ExtBuilder::default().build().execute_with(|| {
-        let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
-        let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
-        let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
-
-        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
-            .expect("creation failed");
-
-        // Existing ids should return the creator of the series as owner.
-        assert_eq!(<NFTs as traits::NFTs>::series_owner(valid_id), Some(ALICE));
-
-        // Non existing ids should return None as the series owner.
-        assert_eq!(<NFTs as traits::NFTs>::series_owner(invalid_id), None);
-
-        // The Default id should return None as the series owner.
-        assert_eq!(<NFTs as traits::NFTs>::series_owner(default_id), None);
-    })
-}
-
-#[test]
-fn set_series_owner() {
-    ExtBuilder::default().build().execute_with(|| {
-        let valid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(1u32);
-        let invalid_id = <NFTs as traits::NFTs>::NFTSeriesId::from(2u32);
-        let default_id = <NFTs as traits::NFTs>::NFTSeriesId::default();
-
-        let _ = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::new(vec![], valid_id, false))
-            .expect("creation failed");
-
-        // It is possible to change owners of existing series.
-        assert_ok!(<NFTs as traits::NFTs>::set_series_owner(valid_id, &BOB));
-        assert_eq!(<NFTs as traits::NFTs>::series_owner(valid_id), Some(BOB));
-
-        // It is possible to claim ownership of unoccupied series.
-        assert_ok!(<NFTs as traits::NFTs>::set_series_owner(invalid_id, &BOB));
-        assert_eq!(<NFTs as traits::NFTs>::series_owner(invalid_id), Some(BOB));
-
-        // It is not possible to claim ownership of the default series.
-        assert_noop!(
-            <NFTs as traits::NFTs>::set_series_owner(default_id, &BOB),
-            Error::<Test>::NFTSeriesLocked,
-        );
-    })
-}
-
-#[test]
-fn create_capsule() {
+fn lock_happy() {
     ExtBuilder::default()
-        .one_hundred_for_everyone()
+        .caps(vec![(ALICE, 100)])
         .build()
         .execute_with(|| {
-            // Valid values
-            let details = NFTDetails::new(vec![], 0, true);
-            let id = <NFTs as traits::NFTs>::create(&ALICE, details).expect("creation failed");
-            assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), true);
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
-            // The default values
-            let id = <NFTs as traits::NFTs>::create(&ALICE, NFTDetails::default())
-                .expect("creation failed");
-            assert_eq!(<NFTs as traits::NFTs>::is_capsule(id), false);
-
-            // Unknown nft id value
-            assert_eq!(<NFTs as traits::NFTs>::is_capsule(23), false);
+            // Happy path
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_ok!(NFTs::lock(nft_id));
+            assert_eq!(NFTs::data(nft_id).unwrap().locked, true);
         })
+}
+
+#[test]
+fn lock_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Unhappy already locked
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_ok!(NFTs::lock(nft_id));
+            assert_noop!(NFTs::lock(nft_id), Error::<Test>::Locked);
+
+            // Unhappy invalid NFT Id
+            assert_noop!(NFTs::lock(1001), Error::<Test>::InvalidNFTId);
+        })
+}
+
+#[test]
+fn unlock_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_ok!(NFTs::lock(nft_id));
+            assert_eq!(NFTs::unlock(nft_id), true);
+            assert_eq!(NFTs::data(nft_id).unwrap().locked, false);
+
+            // Happy double unlock
+            assert_eq!(NFTs::unlock(nft_id), true);
+        })
+}
+
+#[test]
+fn unlock_unhappy() {
+    ExtBuilder::default().build().execute_with(|| {
+        // Unhappy invalid NFT Id
+        assert_eq!(NFTs::unlock(1001), false);
+    })
+}
+
+#[test]
+fn locked_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_eq!(NFTs::locked(nft_id), Some(false));
+            assert_ok!(NFTs::lock(nft_id));
+            assert_eq!(NFTs::locked(nft_id), Some(true));
+        })
+}
+
+#[test]
+fn locked_unhappy() {
+    ExtBuilder::default().build().execute_with(|| {
+        // Unhappy invalid NFT Id
+        assert_eq!(NFTs::locked(1001), None);
+    })
+}
+
+#[test]
+fn set_owner_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_ok!(NFTs::set_owner(nft_id, &BOB));
+            assert_eq!(NFTs::data(nft_id).unwrap().owner, BOB);
+        })
+}
+
+#[test]
+fn set_owner_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Unhappy is locked
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_ok!(NFTs::lock(nft_id));
+            assert_noop!(NFTs::set_owner(nft_id, &BOB), Error::<Test>::Locked);
+
+            // Unhappy invalid NFT Id
+            assert_noop!(NFTs::set_owner(1000, &BOB), Error::<Test>::InvalidNFTId);
+        })
+}
+
+#[test]
+fn owner_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let nft_id = help::create(alice.clone(), vec![1], None);
+            assert_eq!(NFTs::owner(nft_id), Some(ALICE));
+        })
+}
+
+#[test]
+fn owner_unhappy() {
+    ExtBuilder::default().build().execute_with(|| {
+        // Unhappy invalid NFT Id
+        assert_eq!(NFTs::owner(1000), None);
+    })
+}
+
+#[test]
+fn is_series_completed_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let series_id = vec![50];
+            let nft_id = help::create(alice.clone(), vec![1], Some(series_id.clone()));
+            assert_eq!(NFTs::is_series_completed(nft_id), Some(false));
+            assert_ok!(NFTs::finish_series(alice, series_id));
+            assert_eq!(NFTs::is_series_completed(nft_id), Some(true));
+        })
+}
+
+#[test]
+fn is_series_completed_unhappy() {
+    ExtBuilder::default().build().execute_with(|| {
+        // Unhappy invalid NFT Id
+        assert_eq!(NFTs::is_series_completed(1001), None);
+    })
 }

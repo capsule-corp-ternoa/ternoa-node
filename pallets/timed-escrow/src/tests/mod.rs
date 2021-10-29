@@ -1,2 +1,2 @@
-mod dispatchables;
+mod extrinsics;
 pub mod mock;

@@ -34,7 +34,8 @@ std = [
     "serde",
     "sp-runtime/std",
     "sp-std/std",
-    "ternoa-common/std"
+    "ternoa-common/std",
+    "ternoa-primitives/std"
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

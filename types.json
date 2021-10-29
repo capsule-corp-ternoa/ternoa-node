@@ -3,7 +3,7 @@
     "Address": "MultiAddress",
     "NFTId": "u32",
     "NFTIdOf": "NFTId",
-    "NFTSeriesId": "u32",
+    "NFTSeriesId": "Text",
     "NFTData": {
         "owner": "AccountId",
         "details": "NFTDetails",

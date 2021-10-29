@@ -1,11 +1,11 @@
 use crate::{self as ternoa_nfts, Config, NegativeImbalanceOf};
+use frame_benchmarking::account;
 use frame_support::parameter_types;
-use frame_support::traits::{Contains, Currency};
+use frame_support::traits::{Contains, Currency, GenesisBuild};
 use sp_core::H256;
-use sp_runtime::{
-    testing::Header,
-    traits::{BlakeTwo256, IdentityLookup},
-};
+use sp_runtime::testing::Header;
+use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -122,10 +122,10 @@ impl Default for ExtBuilder {
 }
 
 impl ExtBuilder {
-    pub fn one_hundred_for_everyone(mut self) -> Self {
-        self.endowed_accounts.push((ALICE, 100));
-        self.endowed_accounts.push((BOB, 100));
-        self.endowed_accounts.push((CHAD, 100));
+    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+        for account in accounts {
+            self.endowed_accounts.push(account);
+        }
         self
     }
 
@@ -146,10 +146,53 @@ impl ExtBuilder {
     }
 }
 
+pub mod help {
+    use super::*;
+    use crate::traits::LockableNFTs;
+    use frame_support::assert_ok;
+    use ternoa_primitives::nfts::{NFTId, NFTSeriesId, NFTString};
+
+    pub fn create(
+        owner: Origin,
+        ipfs_reference: NFTString,
+        series_id: Option<NFTSeriesId>,
+    ) -> NFTId {
+        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
+        return NFTs::nft_id_generator() - 1;
+    }
+
+    pub fn finish_series(owner: Origin, series_id: NFTSeriesId) {
+        assert_ok!(NFTs::finish_series(owner, series_id));
+    }
+
+    pub fn lock(nft_id: NFTId) {
+        assert_ok!(NFTs::lock(nft_id));
+    }
+}
+
 #[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    frame_system::GenesisConfig::default()
+    let mut t = frame_system::GenesisConfig::default()
         .build_storage::<Test>()
-        .unwrap()
-        .into()
+        .unwrap();
+
+    let alice = account("ALICE", 0, 0);
+    let bob = account("BOB", 0, 0);
+    let nft_data = NFTData::new(alice, vec![0], vec![50], false);
+    let series_data = NFTSeriesDetails::new(alice, false);
+
+    pallet_balances::GenesisConfig::<Test> {
+        balances: vec![(alice, 10000), (bob, 10000)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    ternoa_nfts::GenesisConfig::<Test> {
+        nfts: vec![(100, nft_data)],
+        series: vec![(vec![50], series_data)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    t.into()
 }

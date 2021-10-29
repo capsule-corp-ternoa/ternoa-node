@@ -1,13 +1,12 @@
 use crate::{self as ternoa_marketplace, Config, MarketplaceInformation, MarketplaceType};
+use frame_benchmarking::account;
 use frame_support::instances::Instance1;
 use frame_support::parameter_types;
 use frame_support::traits::{Contains, GenesisBuild};
 use sp_core::H256;
-use sp_runtime::{
-    testing::Header,
-    traits::{BlakeTwo256, IdentityLookup},
-};
-use ternoa_primitives::nfts::NFTDetails;
+use sp_runtime::testing::Header;
+use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -23,6 +22,7 @@ frame_support::construct_runtime!(
         NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
         Marketplace: ternoa_marketplace::{Pallet, Call, Event<T>},
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Event<T>},
+        TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
     }
 );
 
@@ -96,7 +96,7 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
-    type AccountStore = System;
+    type AccountStore = TiimeAccountStore;
     type WeightInfo = ();
     type MaxLocks = MaxLocks;
 }
@@ -104,7 +104,7 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 parameter_types! {
     pub const MintFee: u64 = 5;
     pub const MarketplaceFee: u64 = 10;
-    pub const MaxNameLength: u32 = 50;
+    pub const MaxNameLength: u32 = 5;
     pub const MinNameLength: u32 = 1;
 }
 
@@ -114,6 +114,10 @@ impl ternoa_nfts::Config for Test {
     type Currency = Balances;
     type MintFee = MintFee;
     type FeesCollector = ();
+}
+
+impl ternoa_account_store::Config for Test {
+    type AccountData = pallet_balances::AccountData<u64>;
 }
 
 impl Config for Test {
@@ -128,15 +132,13 @@ impl Config for Test {
     type MinNameLength = MinNameLength;
 }
 
-// Do not use the `0` account id since this would be the default value
-// for our account id. This would mess with some tests.
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 pub const DAVE: u64 = 3;
 
 pub struct ExtBuilder {
-    nfts: Vec<(u64, NFTDetails)>,
-    series: Vec<(u64, u32)>,
+    nfts: Vec<(u32, NFTData<u64>)>,
+    series: Vec<(Vec<u8>, NFTSeriesDetails<u64>)>,
     caps_endowed_accounts: Vec<(u64, u64)>,
     tiime_endowed_accounts: Vec<(u64, u64)>,
     marketplaces: Vec<(u64, MarketplaceType, u8, Vec<u8>)>,
@@ -155,16 +157,6 @@ impl Default for ExtBuilder {
 }
 
 impl ExtBuilder {
-    pub fn nfts(mut self, accounts: Vec<(u64, u64)>) -> Self {
-        for account in accounts {
-            for _ in 0..account.1 {
-                self.nfts.push((account.0, NFTDetails::default()));
-            }
-        }
-
-        self
-    }
-
     pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
         for account in accounts {
             self.caps_endowed_accounts.push(account);
@@ -175,13 +167,6 @@ impl ExtBuilder {
     pub fn tiime(mut self, accounts: Vec<(u64, u64)>) -> Self {
         for account in accounts {
             self.tiime_endowed_accounts.push(account);
-        }
-        self
-    }
-
-    pub fn marketplace(mut self, markets: Vec<(u64, MarketplaceType, u8, Vec<u8>)>) -> Self {
-        for market in markets {
-            self.marketplaces.push(market);
         }
         self
     }
@@ -253,6 +238,61 @@ impl ExtBuilder {
     }
 }
 
+pub mod help {
+    use crate::{MarketplaceId, MarketplaceString};
+
+    use super::*;
+    use frame_support::assert_ok;
+    use ternoa_nfts::traits::LockableNFTs;
+    use ternoa_primitives::nfts::{NFTId, NFTSeriesId, NFTString};
+
+    pub fn create_nft(
+        owner: Origin,
+        ipfs_reference: NFTString,
+        series_id: Option<NFTSeriesId>,
+    ) -> NFTId {
+        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
+        return NFTs::nft_id_generator() - 1;
+    }
+
+    pub fn create_nft_and_lock_series(
+        owner: Origin,
+        ipfs_reference: NFTString,
+        series_id: NFTSeriesId,
+    ) -> NFTId {
+        let nft_id = help::create_nft(owner.clone(), ipfs_reference, Some(series_id.clone()));
+        help::finish_series(owner.clone(), series_id.clone());
+
+        nft_id
+    }
+
+    pub fn create_mkp(
+        owner: Origin,
+        kind: MarketplaceType,
+        fee: u8,
+        name: MarketplaceString,
+        allow_list: Vec<u64>,
+    ) -> MarketplaceId {
+        assert_ok!(Marketplace::create(owner.clone(), kind, fee, name));
+        let mkp_id = Marketplace::marketplace_id_generator();
+
+        for acc in allow_list {
+            let ok = Marketplace::add_account_to_allow_list(owner.clone(), mkp_id, acc);
+            assert_ok!(ok);
+        }
+
+        return Marketplace::marketplace_id_generator();
+    }
+
+    pub fn finish_series(owner: Origin, series_id: Vec<u8>) {
+        assert_ok!(NFTs::finish_series(owner, series_id));
+    }
+
+    pub fn lock(nft_id: NFTId) {
+        assert_ok!(NFTs::lock(nft_id));
+    }
+}
+
 #[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut t = frame_system::GenesisConfig::default()
@@ -271,6 +311,24 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
                 "Ternoa Marketplace".into(),
             ),
         )],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    let alice = account("ALICE", 0, 0);
+    let bob = account("BOB", 0, 0);
+    let nft_data = NFTData::new(alice, vec![0], vec![50], false);
+    let series_data = NFTSeriesDetails::new(alice, false);
+
+    pallet_balances::GenesisConfig::<Test> {
+        balances: vec![(alice, 10000), (bob, 10000)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    ternoa_nfts::GenesisConfig::<Test> {
+        nfts: vec![(100, nft_data)],
+        series: vec![(vec![50], series_data)],
     }
     .assimilate_storage(&mut t)
     .unwrap();

@@ -1,139 +1,117 @@
+#![cfg(feature = "runtime-benchmarks")]
+
 use crate::{
-    BalanceCaps, Call, Config, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency,
+    Call, Config, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency,
     NFTCurrencyId, NFTsForSale, Pallet,
 };
-use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
-use frame_support::traits::Currency;
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::RawOrigin;
-use sp_runtime::traits::{Bounded, StaticLookup};
+use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
-use ternoa_common::traits::NFTs;
-use ternoa_primitives::nfts::NFTId;
+use ternoa_nfts::traits::NFTs;
 
 use crate::Pallet as Marketplace;
 
-fn create_nft<T: Config>(caller: &T::AccountId) -> NFTId {
-    T::NFTs::create(
-        caller,
-        <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
-    )
-    .expect("shall not fail with a clean state")
-}
-
 benchmarks! {
-    buy {
-        let buyer: T::AccountId = account("buyer", 0, 0);
-        let seller: T::AccountId = account("seller", 0, 0);
-
-        T::CurrencyCaps::make_free_balance_be(&buyer, BalanceCaps::<T>::max_value());
-        T::CurrencyCaps::make_free_balance_be(&seller, T::CurrencyCaps::minimum_balance());
-
-        let id = create_nft::<T>(&seller);
-        let price = NFTCurrency::Caps(1u32.into());
-
-        drop(Marketplace::<T>::list(RawOrigin::Signed(seller.clone()).into(), id, price, None));
-    }: _(RawOrigin::Signed(buyer.clone().into()), id, NFTCurrencyId::Caps)
-    verify {
-        assert_eq!(T::NFTs::owner(id), buyer);
-        assert_eq!(NFTsForSale::<T>::contains_key(id), false);
-    }
-
     list {
-        let caller: T::AccountId = whitelisted_caller();
-        T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
+        let alice: T::AccountId = frame_benchmarking::account("ALICE", 0, 0);
 
-        let nft_id = create_nft::<T>(&caller);
-
+        let nft_id = 100;
         let price = NFTCurrency::Caps(100u32.into());
-
-    }: _(RawOrigin::Signed(caller.clone().into()), nft_id, price, None)
+    }: _(RawOrigin::Signed(alice.clone()), nft_id, price, None)
     verify {
-        assert_eq!(T::NFTs::owner(nft_id), caller);
+        assert_eq!(T::NFTs::owner(nft_id), Some(alice));
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), true);
     }
 
     unlist {
-        let caller: T::AccountId = whitelisted_caller();
-        T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
+        let alice: T::AccountId = frame_benchmarking::account("ALICE", 0, 0);
 
-        let nft_id = create_nft::<T>(&caller);
-
+        let nft_id = 100;
         let price = NFTCurrency::Caps(100u32.into());
+        drop(Marketplace::<T>::list(RawOrigin::Signed(alice.clone()).into(), nft_id, price, None));
 
-        drop(Marketplace::<T>::list(RawOrigin::Signed(caller.clone()).into(), nft_id, price, None));
-    }: _(RawOrigin::Signed(caller.clone().into()), nft_id)
+    }: _(RawOrigin::Signed(alice.clone().into()), nft_id)
     verify {
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);
     }
 
-    create {
-        let caller: T::AccountId = whitelisted_caller();
-        T::CurrencyCaps::make_free_balance_be(&caller, BalanceCaps::<T>::max_value());
+    buy {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
 
-    }: _(RawOrigin::Signed(caller.clone().into()), MarketplaceType::Public, 0, "".into())
+        let nft_id = 100;
+        let price = NFTCurrency::Caps(100u32.into());
+
+        drop(Marketplace::<T>::list(RawOrigin::Signed(alice.clone()).into(), nft_id, price, None));
+    }: _(RawOrigin::Signed(bob.clone().into()), nft_id, NFTCurrencyId::Caps)
+    verify {
+        assert_eq!(T::NFTs::owner(nft_id), Some(bob));
+        assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);
+    }
+
+    create {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+
+    }: _(RawOrigin::Signed(alice.clone().into()), MarketplaceType::Public, 0, "Hop".into())
     verify {
         assert_eq!(Marketplaces::<T>::contains_key(1), true);
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, caller);
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, alice);
         assert_eq!(MarketplaceIdGenerator::<T>::get(), 1);
     }
 
     add_account_to_allow_list {
-        let owner: T::AccountId = account("owner", 0, 0);
-        let account: T::AccountId = account("account", 0, 0);
-        let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Private, 0, "Hop".into()));
 
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup.into())
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup.into())
     verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().allow_list, vec![account]);
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().allow_list, vec![bob]);
     }
 
     remove_account_from_allow_list {
-        let owner: T::AccountId = account("owner", 0, 0);
-        let account: T::AccountId = account("account", 0, 0);
-        let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
-        drop(Marketplace::<T>::add_account_to_allow_list(RawOrigin::Signed(owner.clone()).into(), 1, account_lookup.clone()));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Private, 0, "Hop".into()));
+        drop(Marketplace::<T>::add_account_to_allow_list(RawOrigin::Signed(alice.clone()).into(), 1, bob_lookup.clone()));
 
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup)
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup)
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().allow_list, vec![]);
     }
 
-    change_owner {
-        let owner: T::AccountId = account("owner", 0, 0);
-        let account: T::AccountId = account("account", 0, 0);
-        let account_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(account.clone());
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
+    set_owner {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Private, 0, "".into()));
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Private, 0, "Hop".into()));
 
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, account_lookup)
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup)
     verify {
-        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, account);
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, bob);
     }
 
-    change_market_type {
-        let owner: T::AccountId = account("owner", 0, 0);
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0, "".into()));
+    set_market_type {
+        let alice: T::AccountId = account("ALICE", 0, 0);
 
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, MarketplaceType::Private)
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Public, 0, "Hop".into()));
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, MarketplaceType::Private)
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().kind, MarketplaceType::Private);
     }
 
     set_name {
-        let owner: T::AccountId = account("owner", 0, 0);
-        T::CurrencyCaps::make_free_balance_be(&owner, BalanceCaps::<T>::max_value());
-        drop(Marketplace::<T>::create(RawOrigin::Signed(owner.clone()).into(), MarketplaceType::Public, 0, "".into()));
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Public, 0, "Hop".into()));
 
-        let new_name: Vec<u8> = "What is love baby dont hurt me".into();
-    }: _(RawOrigin::Signed(owner.clone().into()), 1, new_name.clone())
+        let new_name: Vec<u8> = "poH".into();
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, new_name.clone())
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().name, new_name);
     }

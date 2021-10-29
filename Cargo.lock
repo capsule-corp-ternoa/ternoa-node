@@ -7340,6 +7340,7 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+ "ternoa-account-store",
  "ternoa-common",
  "ternoa-nfts",
  "ternoa-primitives",
@@ -7471,6 +7472,7 @@ dependencies = [
  "sp-std",
  "ternoa-common",
  "ternoa-nfts",
+ "ternoa-primitives",
 ]
 
 [[package]]

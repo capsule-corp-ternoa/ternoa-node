@@ -32,7 +32,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
     use sp_std::vec::Vec;
-    use ternoa_common::traits::{LockableNFTs, NFTs};
+    use ternoa_nfts::traits::{LockableNFTs, NFTs};
 
     pub type BalanceCaps<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -48,8 +48,7 @@ pub mod pallet {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// Pallet managing nfts.
-        type NFTs: LockableNFTs<AccountId = Self::AccountId, NFTId = NFTId>
-            + NFTs<AccountId = Self::AccountId, NFTId = NFTId>;
+        type NFTs: LockableNFTs<AccountId = Self::AccountId> + NFTs<AccountId = Self::AccountId>;
         /// Weight values for this pallet
         type WeightInfo: WeightInfo;
 
@@ -94,29 +93,27 @@ pub mod pallet {
             marketplace_id: Option<MarketplaceId>,
         ) -> DispatchResultWithPostInfo {
             let account_id = ensure_signed(origin)?;
-            let marketplace_id = marketplace_id.unwrap_or(0);
+            let mkp_id = marketplace_id.unwrap_or(0);
 
-            ensure!(
-                T::NFTs::owner(nft_id) == account_id,
-                Error::<T>::NotNftOwner
-            );
+            let is_owner = T::NFTs::owner(nft_id) == Some(account_id.clone());
+            ensure!(is_owner, Error::<T>::NotNftOwner);
 
-            let market_info =
-                Marketplaces::<T>::get(marketplace_id).ok_or(Error::<T>::UnknownMarketplace)?;
+            let is_series_completed = T::NFTs::is_series_completed(nft_id) == Some(true);
+            ensure!(is_series_completed, Error::<T>::SeriesNotCompleted);
 
-            if market_info.kind == MarketplaceType::Private {
-                ensure!(
-                    market_info.allow_list.contains(&account_id),
-                    Error::<T>::NotAllowed
-                );
+            let market = Marketplaces::<T>::get(mkp_id).ok_or(Error::<T>::UnknownMarketplace)?;
+
+            if market.kind == MarketplaceType::Private {
+                let is_on_list = market.allow_list.contains(&account_id);
+                ensure!(is_on_list, Error::<T>::NotAllowed);
             }
 
             T::NFTs::lock(nft_id)?;
 
-            let sale_info = SaleInformation::new(account_id, price.clone(), marketplace_id);
+            let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
 
-            Self::deposit_event(Event::NftListed(nft_id, price, marketplace_id));
+            Self::deposit_event(Event::NftListed(nft_id, price, mkp_id));
 
             Ok(().into())
         }
@@ -126,7 +123,7 @@ pub mod pallet {
         pub fn unlist(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNftOwner);
+            ensure!(T::NFTs::owner(nft_id) == Some(who), Error::<T>::NotNftOwner);
             ensure!(
                 NFTsForSale::<T>::contains_key(nft_id),
                 Error::<T>::NftNotForSale
@@ -149,12 +146,8 @@ pub mod pallet {
             currency: NFTCurrencyId,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
-            ensure!(
-                NFTsForSale::<T>::contains_key(nft_id),
-                Error::<T>::NftNotForSale
-            );
 
-            let sale = NFTsForSale::<T>::get(nft_id);
+            let sale = NFTsForSale::<T>::get(nft_id).ok_or(Error::<T>::NftNotForSale)?;
             ensure!(sale.account_id != caller_id, Error::<T>::NftAlreadyOwned);
 
             // Check if there is any commission fee.
@@ -222,11 +215,15 @@ pub mod pallet {
             origin: OriginFor<T>,
             kind: MarketplaceType,
             commission_fee: u8,
-            name: Vec<u8>,
+            name: MarketplaceString,
         ) -> DispatchResultWithPostInfo {
-            ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
-
             let caller_id = ensure_signed(origin)?;
+
+            ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
+            let lower_bound = name.len() >= T::MinNameLength::get() as usize;
+            let upper_bound = name.len() <= T::MaxNameLength::get() as usize;
+            ensure!(lower_bound, Error::<T>::TooShortName);
+            ensure!(upper_bound, Error::<T>::TooLongName);
 
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
@@ -323,8 +320,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::change_owner())]
-        pub fn change_owner(
+        #[pallet::weight(T::WeightInfo::set_owner())]
+        pub fn set_owner(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             account_id: <T::Lookup as StaticLookup>::Source,
@@ -352,8 +349,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::change_market_type())]
-        pub fn change_market_type(
+        #[pallet::weight(T::WeightInfo::set_market_type())]
+        pub fn set_market_type(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             kind: MarketplaceType,
@@ -384,17 +381,14 @@ pub mod pallet {
         pub fn set_name(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            name: Vec<u8>,
+            name: MarketplaceString,
         ) -> DispatchResult {
-            ensure!(
-                name.len() >= T::MinNameLength::get() as usize,
-                Error::<T>::TooShortName
-            );
-            ensure!(
-                name.len() <= T::MaxNameLength::get() as usize,
-                Error::<T>::TooLongName
-            );
             let caller_id = ensure_signed(origin)?;
+
+            let lower_bound = name.len() >= T::MinNameLength::get() as usize;
+            let upper_bound = name.len() <= T::MaxNameLength::get() as usize;
+            ensure!(lower_bound, Error::<T>::TooShortName);
+            ensure!(upper_bound, Error::<T>::TooLongName);
 
             Marketplaces::<T>::mutate(marketplace_id, |x| {
                 if let Some(market_info) = x {
@@ -419,7 +413,7 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTIdOf<T> = "NFTId", CommonBalanceT<T> = "Balance")]
+    #[pallet::metadata(T::AccountId = "AccountId", CommonBalanceT<T> = "Balance", MarketplaceString = "String")]
     pub enum Event<T: Config> {
         /// A nft has been listed for sale. \[nft id, nft currency, marketplace id\]
         NftListed(
@@ -442,7 +436,7 @@ pub mod pallet {
         /// Marketplace changed type.  \[marketplace id, marketplace type\]
         MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
         /// Marketplace changed name. \[marketplace id, marketplace name\]
-        MarketplaceNameChanged(MarketplaceId, Vec<u8>),
+        MarketplaceNameChanged(MarketplaceId, MarketplaceString),
     }
 
     #[pallet::error]
@@ -471,10 +465,12 @@ pub mod pallet {
         InternalMathError,
         /// Account not on the allow list should not be able to buy gated nfts.
         NotAllowed,
-        /// Too short marketplace name
+        /// Too short marketplace name.
         TooShortName,
-        /// Too long marketplace name
+        /// Too long marketplace name.
         TooLongName,
+        /// Series is not completed.
+        SeriesNotCompleted,
     }
 
     /// Nfts listed on the marketplace
@@ -485,7 +481,7 @@ pub mod pallet {
         Blake2_128Concat,
         NFTId,
         SaleInformation<T::AccountId, BalanceCaps<T>, BalanceTiime<T>>,
-        ValueQuery,
+        OptionQuery,
     >;
 
     #[pallet::storage]

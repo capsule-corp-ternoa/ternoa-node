@@ -7,8 +7,8 @@ pub trait WeightInfo {
     fn create() -> Weight;
     fn add_account_to_allow_list() -> Weight;
     fn remove_account_from_allow_list() -> Weight;
-    fn change_owner() -> Weight;
-    fn change_market_type() -> Weight;
+    fn set_owner() -> Weight;
+    fn set_market_type() -> Weight;
     fn set_name() -> Weight;
 }
 
@@ -57,13 +57,13 @@ impl WeightInfo for () {
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
     // Storage: Marketplace Marketplaces (r:1 w:1)
-    fn change_owner() -> Weight {
+    fn set_owner() -> Weight {
         (24_050_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
     // Storage: Marketplace Marketplaces (r:1 w:1)
-    fn change_market_type() -> Weight {
+    fn set_market_type() -> Weight {
         (22_710_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))

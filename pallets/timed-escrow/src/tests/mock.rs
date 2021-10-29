@@ -1,13 +1,12 @@
 use crate::{self as ternoa_timed_escrow, Config};
-use frame_support::traits::Contains;
-use frame_support::{assert_ok, parameter_types, weights::Weight};
+use frame_benchmarking::account;
+use frame_support::traits::{Contains, GenesisBuild};
+use frame_support::{parameter_types, weights::Weight};
 use frame_system::EnsureRoot;
 use sp_core::H256;
-use sp_runtime::{
-    testing::Header,
-    traits::{BlakeTwo256, IdentityLookup},
-    Perbill,
-};
+use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use sp_runtime::{testing::Header, Perbill};
+use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails, NFTString};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -126,16 +125,85 @@ impl Config for Test {
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 
-pub fn new_test_ext() -> sp_io::TestExternalities {
-    frame_system::GenesisConfig::default()
-        .build_storage::<Test>()
-        .unwrap()
-        .into()
+pub struct ExtBuilder {
+    nfts: Vec<(u32, NFTData<u64>)>,
+    caps_endowed_accounts: Vec<(u64, u64)>,
 }
 
-pub fn create_one_capsule() {
-    assert_ok!(<NFTs as ternoa_common::traits::NFTs>::create(
-        &ALICE,
-        Default::default(),
-    ));
+impl Default for ExtBuilder {
+    fn default() -> Self {
+        ExtBuilder {
+            nfts: Vec::new(),
+            caps_endowed_accounts: Vec::new(),
+        }
+    }
+}
+
+impl ExtBuilder {
+    pub fn build(self) -> sp_io::TestExternalities {
+        let mut t = frame_system::GenesisConfig::default()
+            .build_storage::<Test>()
+            .unwrap();
+
+        ternoa_nfts::GenesisConfig::<Test> {
+            nfts: self.nfts,
+            series: Vec::new(),
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        let mut ext = sp_io::TestExternalities::new(t);
+        ext.execute_with(|| System::set_block_number(1));
+        ext
+    }
+
+    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+        for account in accounts {
+            self.caps_endowed_accounts.push(account);
+        }
+        self
+    }
+}
+
+pub mod help {
+    use super::*;
+    use frame_support::assert_ok;
+    use ternoa_nfts::traits::LockableNFTs;
+    use ternoa_primitives::nfts::NFTId;
+
+    pub fn create(owner: Origin, ipfs_reference: NFTString, series_id: Option<Vec<u8>>) -> NFTId {
+        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
+        return NFTs::nft_id_generator() - 1;
+    }
+
+    pub fn lock(nft_id: NFTId) {
+        assert_ok!(NFTs::lock(nft_id));
+    }
+}
+
+#[allow(dead_code)]
+pub fn new_test_ext() -> sp_io::TestExternalities {
+    let mut t = frame_system::GenesisConfig::default()
+        .build_storage::<Test>()
+        .unwrap();
+
+    let alice = account("ALICE", 0, 0);
+    let bob = account("BOB", 0, 0);
+    let nft_data = NFTData::new(alice, vec![0], vec![50], false);
+    let series_data = NFTSeriesDetails::new(alice, false);
+
+    pallet_balances::GenesisConfig::<Test> {
+        balances: vec![(alice, 10000), (bob, 10000)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    ternoa_nfts::GenesisConfig::<Test> {
+        nfts: vec![(100, nft_data)],
+        series: vec![(vec![50], series_data)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    t.into()
 }
