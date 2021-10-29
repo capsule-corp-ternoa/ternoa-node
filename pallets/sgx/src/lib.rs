@@ -47,6 +47,7 @@ pub mod pallet {
         type Currency: Currency<Self::AccountId>;
 
         /// Host much does it cost to mint enclave (extra fee on top of the tx fees)
+        #[pallet::constant]
         type EnclaveFee: Get<BalanceOf<Self>>;
 
         /// What we do with additional fees

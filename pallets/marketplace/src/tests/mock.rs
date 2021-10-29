@@ -102,9 +102,8 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 }
 
 parameter_types! {
-    pub const MintFee: u64 = 5;
-    pub const MaxNameLength: u32 = 5;
-    pub const MinNameLength: u32 = 1;
+    pub const MaxStringLength: u16 = 5;
+    pub const MinStringLength: u16 = 1;
 }
 
 impl ternoa_nfts::Config for Test {
@@ -112,6 +111,8 @@ impl ternoa_nfts::Config for Test {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = ();
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 
 impl ternoa_account_store::Config for Test {
@@ -125,8 +126,8 @@ impl Config for Test {
     type NFTs = NFTs;
     type WeightInfo = ();
     type FeesCollector = ();
-    type MaxNameLength = MaxNameLength;
-    type MinNameLength = MinNameLength;
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 
 pub const ALICE: u64 = 1;

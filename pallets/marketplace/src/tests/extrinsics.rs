@@ -27,7 +27,7 @@ fn list_happy() {
             // Happy path Public marketplace
             let price = NFTCurrency::Caps(50);
             let series_id = vec![50];
-            let nft_id = help::create_nft(alice.clone(), vec![], Some(series_id.clone()));
+            let nft_id = help::create_nft(alice.clone(), vec![50], Some(series_id.clone()));
             let sale_info = SaleInformation::new(ALICE, price.clone(), 0);
 
             help::finish_series(alice.clone(), series_id);
@@ -39,7 +39,7 @@ fn list_happy() {
             let series_id = vec![51];
             let mkp_id = help::create_mkp(bob.clone(), MPT::Private, 0, vec![1], vec![ALICE]);
             let sale_info = SaleInformation::new(ALICE, price.clone(), mkp_id);
-            let nft_id = help::create_nft(alice.clone(), vec![], Some(series_id.clone()));
+            let nft_id = help::create_nft(alice.clone(), vec![50], Some(series_id.clone()));
 
             help::finish_series(alice.clone(), series_id);
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(mkp_id));
@@ -65,7 +65,7 @@ fn list_unhappy() {
 
             // Unhappy series not completed
             let series_id = vec![50];
-            let nft_id = help::create_nft(alice.clone(), vec![], Some(series_id.clone()));
+            let nft_id = help::create_nft(alice.clone(), vec![50], Some(series_id.clone()));
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
             assert_noop!(ok, Error::<Test>::SeriesNotCompleted);
 
@@ -96,7 +96,7 @@ fn unlist_happy() {
 
             let price = NFTCurrency::Caps(50);
             let series_id = vec![50];
-            let nft_id = help::create_nft(alice.clone(), vec![], Some(series_id.clone()));
+            let nft_id = help::create_nft(alice.clone(), vec![50], Some(series_id.clone()));
 
             // Happy path
             help::finish_series(alice.clone(), series_id);
@@ -120,7 +120,7 @@ fn unlist_unhappy() {
             assert_noop!(ok, Error::<Test>::NotNftOwner);
 
             // Unhappy not listed NFT
-            let nft_id = help::create_nft(alice.clone(), vec![], None);
+            let nft_id = help::create_nft(alice.clone(), vec![50], None);
             let ok = Marketplace::unlist(alice.clone(), nft_id);
             assert_noop!(ok, Error::<Test>::NftNotForSale);
         })
@@ -137,11 +137,11 @@ fn buy_happy() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
             let dave: mock::Origin = RawOrigin::Signed(DAVE).into();
 
-            let nft_id_1 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![50]);
-            let nft_id_2 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![51]);
-            let nft_id_3 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![52]);
-            let nft_id_4 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![53]);
-            let nft_id_5 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![54]);
+            let nft_id_1 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![50]);
+            let nft_id_2 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![51]);
+            let nft_id_3 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![52]);
+            let nft_id_4 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![53]);
+            let nft_id_5 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![54]);
             let mkt_id = help::create_mkp(dave.clone(), MPT::Private, 10, vec![0], vec![ALICE]);
 
             let caps = NFTCurrency::Caps(50);
@@ -232,9 +232,9 @@ fn buy_unhappy() {
             let tiime = NFTCurrency::Tiime(5000);
             let comb = NFTCurrency::Combined(NFTCurrencyCombined::new(5000, 5000));
 
-            let nft_id_1 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![50]);
-            let nft_id_2 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![51]);
-            let nft_id_3 = help::create_nft_and_lock_series(alice.clone(), vec![], vec![52]);
+            let nft_id_1 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![50]);
+            let nft_id_2 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![51]);
+            let nft_id_3 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![52]);
 
             assert_ok!(Marketplace::list(alice.clone(), nft_id_1, caps, None));
             assert_ok!(Marketplace::list(alice.clone(), nft_id_2, tiime, None));
@@ -311,11 +311,11 @@ fn create_unhappy() {
 
             // Unhappy too short name
             let ok = Marketplace::create(alice.clone(), MPT::Public, 0, vec![]);
-            assert_noop!(ok, Error::<Test>::TooShortName);
+            assert_noop!(ok, Error::<Test>::TooShortMarketplaceName);
 
             // Unhappy too long name
             let ok = Marketplace::create(alice.clone(), MPT::Public, 0, vec![1, 2, 3, 4, 5, 6]);
-            assert_noop!(ok, Error::<Test>::TooLongName);
+            assert_noop!(ok, Error::<Test>::TooLongMarketplaceName);
 
             // Unhappy not enough funds
             let ok = Marketplace::create(alice.clone(), MPT::Public, 5, vec![50]);
@@ -515,11 +515,11 @@ fn set_name_unhappy() {
 
             // Unhappy too short name
             let ok = Marketplace::set_name(bob.clone(), 0, vec![]);
-            assert_noop!(ok, Error::<Test>::TooShortName);
+            assert_noop!(ok, Error::<Test>::TooShortMarketplaceName);
 
             // Unhappy too long name
             let ok = Marketplace::set_name(bob.clone(), 0, vec![1, 2, 3, 4, 5, 6]);
-            assert_noop!(ok, Error::<Test>::TooLongName);
+            assert_noop!(ok, Error::<Test>::TooLongMarketplaceName);
 
             // Unhappy unknown marketplace
             let ok = Marketplace::set_name(bob.clone(), 1001, vec![51]);

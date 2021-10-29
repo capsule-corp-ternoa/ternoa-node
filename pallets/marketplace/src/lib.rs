@@ -59,13 +59,13 @@ pub mod pallet {
         /// Place where the marketplace fees go.
         type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
 
-        /// The minimum length a name may be.
+        /// The minimum length a string may be.
         #[pallet::constant]
-        type MinNameLength: Get<u32>;
+        type MinStringLength: Get<u16>;
 
-        /// The maximum length a name may be.
+        /// The maximum length a string may be.
         #[pallet::constant]
-        type MaxNameLength: Get<u32>;
+        type MaxStringLength: Get<u16>;
     }
 
     #[pallet::pallet]
@@ -218,10 +218,10 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
 
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
-            let lower_bound = name.len() >= T::MinNameLength::get() as usize;
-            let upper_bound = name.len() <= T::MaxNameLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortName);
-            ensure!(upper_bound, Error::<T>::TooLongName);
+            let lower_bound = name.len() >= T::MinStringLength::get() as usize;
+            let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
+            ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
+            ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
@@ -383,10 +383,10 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            let lower_bound = name.len() >= T::MinNameLength::get() as usize;
-            let upper_bound = name.len() <= T::MaxNameLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortName);
-            ensure!(upper_bound, Error::<T>::TooLongName);
+            let lower_bound = name.len() >= T::MinStringLength::get() as usize;
+            let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
+            ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
+            ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
             Marketplaces::<T>::mutate(marketplace_id, |x| {
                 if let Some(market_info) = x {
@@ -479,10 +479,10 @@ pub mod pallet {
         InternalMathError,
         /// Account not on the allow list should not be able to buy gated nfts.
         NotAllowed,
-        /// Too short marketplace name.
-        TooShortName,
-        /// Too long marketplace name.
-        TooLongName,
+        /// Marketplace name is too short.
+        TooShortMarketplaceName,
+        /// Marketplace name is too long.
+        TooLongMarketplaceName,
         /// Series is not completed.
         SeriesNotCompleted,
     }

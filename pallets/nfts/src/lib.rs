@@ -35,11 +35,22 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
         type WeightInfo: WeightInfo;
+
         /// Currency used to bill minting fees
         type Currency: Currency<Self::AccountId>;
+
         /// What we do with additional fees
         type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
+
+        /// The minimum length a string may be.
+        #[pallet::constant]
+        type MinStringLength: Get<u16>;
+
+        /// The maximum length a string may be.
+        #[pallet::constant]
+        type MaxStringLength: Get<u16>;
     }
 
     type BalanceOf<T> =
@@ -75,6 +86,11 @@ pub mod pallet {
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
+
+            let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
+            let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
+            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
+            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
 
             // Checks
             // The Caller needs to pay the NFT Mint fee.
@@ -244,6 +260,10 @@ pub mod pallet {
         SeriesNotFound,
         /// No NFT was found with that NFT id.
         InvalidNFTId,
+        /// Ipfs reference is too short.
+        TooShortIpfsReference,
+        /// Ipfs reference is too long.
+        TooLongIpfsReference,
     }
 
     /// The number of NFTs managed by this pallet

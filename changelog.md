@@ -5,6 +5,7 @@
 - If series id is not specified when an NFT is created, the blockchain will generate and use a random series id. 
 # Changed
 - Series Id is now a string type instead of a number.
+- NFT Mint Fee and Marketplace Mint Fee are not changeable.
 
 # 0.2.0 Release
 This is the initial release for the Ternoa Testnet.

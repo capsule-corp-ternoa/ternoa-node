@@ -102,13 +102,16 @@ impl pallet_scheduler::Config for Test {
 }
 
 parameter_types! {
-    pub const MintFee: u64 = 0;
+    pub const MaxStringLength: u16 = 1000;
+    pub const MinStringLength: u16 = 1;
 }
 impl ternoa_nfts::Config for Test {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = ();
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 impl Config for Test {
     type Event = Event;
