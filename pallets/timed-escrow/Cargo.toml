@@ -9,6 +9,8 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 ternoa-common = { default-features = false, path = "../../common" }
+ternoa-primitives = { default-features = false, path = "../../primitives" }
+ternoa-nfts = { default-features = false, path = "../nfts" }
 serde = { optional = true, version = "1.0.126" }
 codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.2.0" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev" }
@@ -18,7 +20,6 @@ sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-feat
 sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 
 [dev-dependencies]
-ternoa-nfts = { path = "../nfts" }
 pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 pallet-scheduler = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -34,7 +35,9 @@ std = [
     "serde",
     "sp-runtime/std",
     "sp-std/std",
-    "ternoa-common/std"
+    "ternoa-common/std",
+    "ternoa-primitives/std",
+    "ternoa-nfts/std",
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

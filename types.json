@@ -1,24 +1,25 @@
 {
     "AccountDataOf": "AccountData",
     "Address": "MultiAddress",
+    "LookupSource": "MultiAddress",
+    "ShardIdentifier": "Hash",
+    "Url": "Vec<u8>",
+    "ClusterId": "u32",
+    "EnclaveId": "u32",
+    "MarketplaceId": "u32",
+    "MarketplaceString": "Text",
     "NFTId": "u32",
-    "NFTIdOf": "NFTId",
-    "NFTSeriesId": "u32",
+    "NFTString": "Text",
+    "NFTSeriesId": "Text",
     "NFTData": {
         "owner": "AccountId",
-        "details": "NFTDetails",
-        "sealed": "bool",
+        "ipfs_reference": "NFTString",
+        "series_id": "NFTSeriesId",
         "locked": "bool"
     },
-    "NFTDetails": {
-        "offchain_uri": "Vec<u8>",
-        "series_id": "NFTSeriesId",
-        "is_capsule": "bool"
-    },
-    "LookupSource": "MultiAddress",
     "NFTSeriesDetails": {
         "owner": "AccountId",
-        "nfts": "Vec<NFTId>"
+        "draft": "bool"
     },
     "NFTCurrencyCombined": {
         "caps": "Balance",
@@ -37,22 +38,10 @@
             "Tiime"
         ]
     },
-    "Request": {
-        "shard": "ShardIdentifier",
-        "cyphertext": "Vec<u8>"
-    },
-    "ShardIdentifier": "Hash",
-    "MarketplaceId": "u32",
     "SaleInformation": {
         "account_id": "AccountId",
         "price": "NFTCurrency",
         "marketplace_id": "MarketplaceId"
-    },
-    "Status": {
-        "_enum": [
-            "Free",
-            "Reserved"
-        ]
     },
     "MarketplaceType": {
         "_enum": [
@@ -65,15 +54,22 @@
         "commission_fee": "u8",
         "owner": "AccountId",
         "allow_list": "Vec<AccountId>",
-        "name": "Vec<u8>"
+        "name": "MarketplaceString"
     },
-    "ClusterId": "u32",
-    "EnclaveId": "u32",
     "Cluster": {
         "enclaves": "Vec<EnclaveId>"
     },
-    "Url": "Vec<u8>",
     "Enclave": {
         "api_url": "Url"
+    },
+    "Status": {
+        "_enum": [
+            "Free",
+            "Reserved"
+        ]
+    },
+    "Request": {
+        "shard": "ShardIdentifier",
+        "cyphertext": "Vec<u8>"
     }
 }

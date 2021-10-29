@@ -20,7 +20,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     // and set impl_version to 0. If only runtime
     // implementation changes and behavior does not, then leave spec_version as
     // is and increment impl_version.
-    spec_version: 40,
+    spec_version: 41,
 
     // The version of the implementation of the specification. Nodes are
     // free to ignore this; it serves only as an indication that the code is
@@ -35,7 +35,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     // been changed; extrinsics or pallets have been removed; or the pallet order in
     // the construct_runtime! macro or extrinsic order in a pallet has been changed.
     // If this number is updated, then the spec_version must also be updated.
-    transaction_version: 4,
+    transaction_version: 5,
 
     // Is a list of supported runtime APIs along with their versions.
     apis: RUNTIME_API_VERSIONS,

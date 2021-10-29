@@ -1,6 +1,5 @@
 use super::mock::*;
-use crate::GenesisConfig;
-use crate::NFTDetails;
+use crate::{GenesisConfig, NFTData};
 use frame_support::traits::GenesisBuild;
 
 #[test]
@@ -9,8 +8,11 @@ fn register_nfts() {
         .build_storage::<Test>()
         .unwrap();
 
+    let nft_id = 100;
+    let data = NFTData::new(ALICE, vec![1], vec![48], false);
+
     GenesisConfig::<Test> {
-        nfts: vec![(ALICE, NFTDetails::new(vec![1], 0, false))],
+        nfts: vec![(nft_id, data.clone())],
         series: vec![],
     }
     .assimilate_storage(&mut t)
@@ -18,10 +20,8 @@ fn register_nfts() {
 
     let mut ext = sp_io::TestExternalities::new(t);
     ext.execute_with(|| {
-        assert_eq!(NFTs::nft_id_generator(), 1);
-        assert_eq!(NFTs::data(0).owner, ALICE);
-        assert_eq!(NFTs::data(0).details, NFTDetails::new(vec![1], 0, false));
-        assert_eq!(NFTs::data(0).locked, false);
-        assert_eq!(NFTs::data(0).sealed, false);
+        assert_eq!(NFTs::nft_id_generator(), nft_id + 1);
+        assert_eq!(NFTs::series_id_generator(), 0);
+        assert_eq!(NFTs::data(nft_id), Some(data));
     });
 }

@@ -1,59 +1,54 @@
-use crate::{Call, Config, NFTIdOf, Pallet};
-use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
+#![cfg(feature = "runtime-benchmarks")]
+
+use crate::{Call, Config, Pallet};
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::{Pallet as SystemModule, RawOrigin};
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
-use ternoa_common::traits::{LockableNFTs, NFTs};
+use ternoa_nfts::traits::{LockableNFTs, NFTs};
 
 use crate::Pallet as TimedEscrow;
 
-fn create_nft<T: Config>(caller: &T::AccountId) -> NFTIdOf<T> {
-    T::NFTs::create(
-        caller,
-        <<T::NFTs as NFTs>::NFTDetails as Default>::default(),
-    )
-    .expect("shall not fail with a clean state")
-}
-
 benchmarks! {
     create {
-        let at = SystemModule::<T>::block_number() + 10u32.into();
-        let receiver: T::AccountId = account("receiver", 0, 0);
-        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
-        let caller: T::AccountId = whitelisted_caller();
-        let nft_id = create_nft::<T>(&caller);
-    }: _(RawOrigin::Signed(caller), nft_id, receiver_lookup, at)
+        let nft_id = 100;
+        let at = SystemModule::<T>::block_number() + 10u32.into();
+
+    }: _(RawOrigin::Signed(alice), nft_id, bob_lookup, at)
     verify {
-        assert!(T::NFTs::locked(nft_id));
+        assert_eq!(T::NFTs::locked(nft_id), Some(true));
     }
 
     cancel {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
+
+        let nft_id = 100;
         let at = SystemModule::<T>::block_number() + 10u32.into();
-        let receiver: T::AccountId = account("receiver", 0, 0);
-        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
-        let caller: T::AccountId = whitelisted_caller();
-        let nft_id = create_nft::<T>(&caller);
-
-        drop(TimedEscrow::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
-    }: _(RawOrigin::Signed(caller), nft_id)
+        drop(TimedEscrow::<T>::create(RawOrigin::Signed(alice.clone()).into(), nft_id, bob_lookup, at));
+    }: _(RawOrigin::Signed(alice), nft_id)
     verify {
-        assert!(!T::NFTs::locked(nft_id));
+        assert_eq!(T::NFTs::locked(nft_id), Some(false));
     }
 
     complete_transfer {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
+
+        let nft_id = 100;
         let at = SystemModule::<T>::block_number() + 10u32.into();
-        let receiver: T::AccountId = account("receiver", 0, 0);
-        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
 
-        let caller: T::AccountId = whitelisted_caller();
-        let nft_id = create_nft::<T>(&caller);
-
-        drop(TimedEscrow::<T>::create(RawOrigin::Signed(caller.clone()).into(), nft_id, receiver_lookup, at));
-    }: _(RawOrigin::Root, receiver.clone(), nft_id)
+        drop(TimedEscrow::<T>::create(RawOrigin::Signed(alice).into(), nft_id, bob_lookup, at));
+    }: _(RawOrigin::Root, bob.clone(), nft_id)
     verify {
-        assert_eq!(T::NFTs::owner(nft_id), receiver);
+        assert_eq!(T::NFTs::owner(nft_id), Some(bob));
     }
 }
 

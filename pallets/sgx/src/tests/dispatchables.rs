@@ -6,6 +6,7 @@ use crate::{
 };
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
+use pallet_balances::Error as BalanceError;
 use sp_runtime::traits::BadOrigin;
 
 #[test]
@@ -41,7 +42,7 @@ fn register_enclave() {
 
             // Bob should NOT be able to create an enclave if the doesn't have enough tokens.
             let ok = Sgx::register_enclave(bob, Default::default());
-            assert_noop!(ok, pallet_balances::Error::<Test>::InsufficientBalance);
+            assert_noop!(ok, BalanceError::<Test>::InsufficientBalance);
 
             // Dave should NOT be able to create an enclave if the url is too long.
             let ok = Sgx::register_enclave(dave, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);

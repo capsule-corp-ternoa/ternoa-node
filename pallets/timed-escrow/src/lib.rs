@@ -10,6 +10,7 @@ pub use pallet::*;
 
 use frame_support::traits::LockIdentifier;
 use frame_support::weights::Weight;
+use ternoa_primitives::nfts::NFTId;
 
 /// Used for derivating scheduled tasks IDs
 const ESCROW_ID: LockIdentifier = *b"escrow  ";
@@ -28,17 +29,14 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use frame_system::RawOrigin;
     use sp_runtime::traits::{Dispatchable, StaticLookup};
-    use ternoa_common::traits::{LockableNFTs, NFTs};
-
-    pub type NFTIdOf<T> = <<T as Config>::NFTs as LockableNFTs>::NFTId;
+    use ternoa_nfts::traits::{LockableNFTs, NFTs};
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// Pallet managing NFTs.
-        type NFTs: LockableNFTs<AccountId = Self::AccountId>
-            + NFTs<AccountId = Self::AccountId, NFTId = NFTIdOf<Self>>;
+        type NFTs: LockableNFTs<AccountId = Self::AccountId> + NFTs<AccountId = Self::AccountId>;
         /// Scheduler instance which we use to schedule actual transfer calls. This way, we have
         /// all scheduled calls accross all pallets in one place.
         type Scheduler: ScheduleNamed<Self::BlockNumber, Self::PalletsCall, Self::PalletsOrigin>;
@@ -63,12 +61,12 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::create())]
         pub fn create(
             origin: OriginFor<T>,
-            nft_id: NFTIdOf<T>,
+            nft_id: NFTId,
             to: <T::Lookup as StaticLookup>::Source,
             at: T::BlockNumber,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNFTOwner);
+            ensure!(T::NFTs::owner(nft_id) == Some(who), Error::<T>::NotNFTOwner);
 
             let to_unlookup = T::Lookup::lookup(to)?;
             T::NFTs::lock(nft_id)?;
@@ -95,9 +93,9 @@ pub mod pallet {
 
         /// Cancel a transfer that was previously created and unlocks the capsule.
         #[pallet::weight(T::WeightInfo::cancel())]
-        pub fn cancel(origin: OriginFor<T>, nft_id: NFTIdOf<T>) -> DispatchResultWithPostInfo {
+        pub fn cancel(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            ensure!(T::NFTs::owner(nft_id) == who, Error::<T>::NotNFTOwner);
+            ensure!(T::NFTs::owner(nft_id) == Some(who), Error::<T>::NotNFTOwner);
 
             ensure!(
                 T::Scheduler::cancel_named((ESCROW_ID, nft_id).encode()).is_ok(),
@@ -115,7 +113,7 @@ pub mod pallet {
         pub fn complete_transfer(
             origin: OriginFor<T>,
             to: T::AccountId,
-            nft_id: NFTIdOf<T>,
+            nft_id: NFTId,
         ) -> DispatchResultWithPostInfo {
             // We do not verify anything else as the only way for this function
             // to be called is if it was scheduled via either root action (trusted)
@@ -136,15 +134,15 @@ pub mod pallet {
     #[pallet::metadata(
         T::AccountId = "AccountId",
         T::BlockNumber = "BlockNumber",
-        NFTIdOf<T> = "NFTId"
+        NFTId = "NFT Id"
     )]
     pub enum Event<T: Config> {
         /// A transfer has been scheduled. \[capsule id, destination, block of transfer\]
-        TransferScheduled(NFTIdOf<T>, T::AccountId, T::BlockNumber),
+        TransferScheduled(NFTId, T::AccountId, T::BlockNumber),
         /// A transfer has been canceled. \[capsule id\]
-        TransferCanceled(NFTIdOf<T>),
+        TransferCanceled(NFTId),
         /// A transfer was executed and finalized. \[capsule id\]
-        TransferCompleted(NFTIdOf<T>),
+        TransferCompleted(NFTId),
     }
 
     #[pallet::error]

@@ -1,6 +1,7 @@
-use crate::{Call, Config, NFTData, NFTDetails, NFTId, NFTSeriesDetails, NFTSeriesId, Pallet};
-use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
-use frame_support::traits::{Currency, Get};
+#![cfg(feature = "runtime-benchmarks")]
+
+use crate::{Call, Config, Pallet};
+use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
@@ -9,93 +10,43 @@ use crate::Pallet as NFTs;
 
 benchmarks! {
     create {
-        let caller: T::AccountId = whitelisted_caller();
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-    }: _(RawOrigin::Signed(caller.clone()), NFTDetails::default())
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let nft_id = NFTs::<T>::nft_id_generator();
+
+    }: _(RawOrigin::Signed(alice.clone()), vec![55], None)
     verify {
-        let series = NFTSeriesDetails::new(caller, sp_std::vec![NFTId::from(0u32)]);
-        assert_eq!(NFTs::<T>::nft_id_generator(), NFTId::from(1u32));
-    }
-
-    create_with_series {
-        let caller: T::AccountId = whitelisted_caller();
-        let series_id = NFTSeriesId::from(1u32);
-        let details = NFTDetails::new(vec![], series_id, false);
-
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-    }: create(RawOrigin::Signed(caller.clone()), details)
-    verify {
-        let series = NFTSeriesDetails::new(caller, sp_std::vec![NFTId::from(0u32)]);
-        assert_eq!(NFTs::<T>::nft_id_generator(), NFTId::from(1u32));
-        assert_eq!(NFTs::<T>::series(series_id), Some(series));
-    }
-
-    mutate {
-        let caller: T::AccountId = whitelisted_caller();
-
-        // There is no code to optimize when the new details are the same
-        // than before so calling mutate with the same values (default) will
-        // always do the same work and thus keep the benchmark relevant.
-
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-        drop(NFTs::<T>::create(RawOrigin::Signed(caller.clone()).into(), NFTDetails::default()));
-    }: _(RawOrigin::Signed(caller), NFTId::from(0u32), Default::default())
-    verify {
-        // Absence of error should be enough but we also check the
-        // details values so that a unit test is generated.
-        assert_eq!(NFTs::<T>::data(NFTId::from(0u32)).details, Default::default());
-    }
-
-    seal {
-        let caller: T::AccountId = whitelisted_caller();
-
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-        drop(NFTs::<T>::create(RawOrigin::Signed(caller.clone()).into(), NFTDetails::default()));
-    }: _(RawOrigin::Signed(caller), NFTId::from(0u32))
-    verify {
-        assert_eq!(NFTs::<T>::data(NFTId::from(0u32)).sealed, true);
+        assert_eq!(NFTs::<T>::data(nft_id).unwrap().owner, alice);
     }
 
     transfer {
-        let receiver: T::AccountId = account("receiver", 0, 0);
-        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
+        let nft_id = 100;
 
-        let caller: T::AccountId = whitelisted_caller();
-
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-        drop(NFTs::<T>::create(RawOrigin::Signed(caller.clone()).into(), NFTDetails::default()));
-    }: _(RawOrigin::Signed(caller), NFTId::from(0u32), receiver_lookup)
+    }: _(RawOrigin::Signed(alice.clone()), nft_id, bob_lookup)
     verify {
-        assert_eq!(NFTs::<T>::data(NFTId::from(0u32)).owner, receiver);
+        assert_eq!(NFTs::<T>::data(nft_id).unwrap().owner, bob);
     }
 
     burn {
-        let caller: T::AccountId = whitelisted_caller();
-        let series_id = NFTSeriesId::from(1u32);
-        let details = NFTDetails::new(vec![], series_id, false);
-        let nft_id = NFTId::from(0u32);
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let nft_id = 100;
 
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-        drop(NFTs::<T>::create(RawOrigin::Signed(caller.clone()).into(), details));
-    }: _(RawOrigin::Signed(caller), nft_id)
+    }: _(RawOrigin::Signed(alice), nft_id)
     verify {
-        assert_eq!(NFTs::<T>::data(nft_id), NFTData::default());
+        assert_eq!(NFTs::<T>::data(nft_id), None);
     }
 
-    transfer_series {
-        let receiver: T::AccountId = account("receiver", 0, 0);
-        let receiver_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(receiver.clone());
+    finish_series {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let series_id: Vec<u8> = vec![51];
 
-        let caller: T::AccountId = whitelisted_caller();
-        let series_id = NFTSeriesId::from(1u32);
-        let details = NFTDetails::new(vec![], series_id, false);
-
-        T::Currency::make_free_balance_be(&caller, T::MintFee::get() + T::Currency::minimum_balance());
-        drop(NFTs::<T>::create(RawOrigin::Signed(caller.clone()).into(), details));
-    }: _(RawOrigin::Signed(caller), series_id, receiver_lookup)
+        drop(NFTs::<T>::create(RawOrigin::Signed(alice.clone()).into(), vec![], Some(series_id.clone())));
+    }: _(RawOrigin::Signed(alice.clone()), series_id.clone())
     verify {
-        let series = NFTSeriesDetails::new(receiver, sp_std::vec![NFTId::from(0u32)]);
-        assert_eq!(NFTs::<T>::series(series_id), Some(series));
+        assert_eq!(NFTs::<T>::series(&series_id).unwrap().draft, false);
+        assert_eq!(NFTs::<T>::series(&series_id).unwrap().owner, alice);
     }
 }
 

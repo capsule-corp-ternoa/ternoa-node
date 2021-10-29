@@ -46,54 +46,37 @@ pub mod nfts {
     /// How NFT IDs are encoded.
     pub type NFTId = u32;
 
-    /// How NFT IDs are encoded.
-    pub type NFTSeriesId = u32;
+    /// How NFT IDs are encoded. In the JSON Types this should be "Text" and not "Vec<8>".
+    pub type NFTSeriesId = Vec<u8>;
 
-    /// Data related to NFTs on the Ternoa Chain.
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
-    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    pub struct NFTDetails {
-        /// ASCII encoded URI to fetch additional metadata.
-        pub offchain_uri: Vec<u8>,
-        /// The series id that this nft belongs to.
-        pub series_id: NFTSeriesId,
-        /// Capsule flag.
-        pub is_capsule: bool,
-    }
-
-    impl NFTDetails {
-        pub fn new(offchain_uri: Vec<u8>, series_id: NFTSeriesId, is_capsule: bool) -> Self {
-            Self {
-                offchain_uri,
-                is_capsule,
-                series_id,
-            }
-        }
-
-        /// Checks if the nft is a part of an unique series.
-        pub fn unique_series(&self) -> bool {
-            self.series_id != NFTSeriesId::default()
-        }
-    }
+    // String type
+    pub type NFTString = Vec<u8>;
 
     /// Data related to an NFT, such as who is its owner.
     #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub struct NFTData<AccountId> {
+        // NFT owner
         pub owner: AccountId,
-        pub details: NFTDetails,
-        /// Set to true to prevent further modifications to the details struct
-        pub sealed: bool,
-        /// Set to true to prevent changes to the owner variable
+        // IPFS reference
+        pub ipfs_reference: NFTString,
+        // Series ID
+        pub series_id: NFTSeriesId,
+        // Is Locked
         pub locked: bool,
     }
 
     impl<AccountId> NFTData<AccountId> {
-        pub fn new(owner: AccountId, details: NFTDetails, sealed: bool, locked: bool) -> Self {
+        pub fn new(
+            owner: AccountId,
+            ipfs_reference: NFTString,
+            series_id: NFTSeriesId,
+            locked: bool,
+        ) -> Self {
             Self {
                 owner,
-                details,
-                sealed,
+                ipfs_reference,
+                series_id,
                 locked,
             }
         }
@@ -102,16 +85,14 @@ pub mod nfts {
     /// Data related to an NFT Series.
     #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    pub struct NFTSeriesDetails<AccountId, NFTId> {
-        // Series owner.
-        pub owner: AccountId,
-        // NFTs that are part of the same series.
-        pub nfts: Vec<NFTId>,
+    pub struct NFTSeriesDetails<AccountId> {
+        pub owner: AccountId, // Series Owner
+        pub draft: bool, // If Yes, the owner can add new nfts to that series but cannot list that nft for sale
     }
 
-    impl<AccountId, NFTId> NFTSeriesDetails<AccountId, NFTId> {
-        pub fn new(owner: AccountId, nfts: Vec<NFTId>) -> Self {
-            Self { owner, nfts }
+    impl<AccountId> NFTSeriesDetails<AccountId> {
+        pub fn new(owner: AccountId, draft: bool) -> Self {
+            Self { owner, draft }
         }
     }
 }

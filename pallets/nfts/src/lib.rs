@@ -8,29 +8,28 @@ mod tests;
 
 mod default_weights;
 mod migrations;
+pub mod traits;
 
 pub use default_weights::WeightInfo;
 pub use pallet::*;
 
-use frame_support::pallet_prelude::{ensure, DispatchError};
+use frame_support::pallet_prelude::ensure;
 use frame_support::traits::{Get, StorageVersion};
 use sp_runtime::DispatchResult;
-use sp_std::result;
+use sp_std::vec;
 use sp_std::vec::Vec;
-use ternoa_common::traits::{LockableNFTs, NFTs};
-use ternoa_primitives::nfts::{NFTData, NFTDetails, NFTId, NFTSeriesDetails, NFTSeriesId};
+use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId, NFTString};
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(5);
 
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
+    use frame_support::traits::ExistenceRequirement::KeepAlive;
     use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
     use frame_support::{pallet_prelude::*, transactional};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
-    use sp_runtime::DispatchResult;
-    use ternoa_common::traits::NFTs;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -68,42 +67,45 @@ pub mod pallet {
         /// Create a new NFT with the provided details. An ID will be auto
         /// generated and logged as an event, The caller of this function
         /// will become the owner of the new NFT.
-        #[pallet::weight(if details.series_id == NFTSeriesId::default() {T::WeightInfo::create()} else {T::WeightInfo::create_with_series()})]
+        #[pallet::weight(T::WeightInfo::create())]
         // have to be transactional otherwise we could make people pay the mint
         // even if the creation fails.
         #[transactional]
-        pub fn create(origin: OriginFor<T>, details: NFTDetails) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-
-            let imbalance = T::Currency::withdraw(
-                &who,
-                T::MintFee::get(),
-                WithdrawReasons::FEE,
-                frame_support::traits::ExistenceRequirement::KeepAlive,
-            )?;
-            T::FeesCollector::on_unbalanced(imbalance);
-
-            let _id = <Self as NFTs>::create(&who, details)?;
-
-            Ok(().into())
-        }
-
-        /// Update the details included in an NFT. Must be called by the owner of
-        /// the NFT and while the NFT is not sealed.
-        #[pallet::weight(T::WeightInfo::mutate())]
-        pub fn mutate(
+        pub fn create(
             origin: OriginFor<T>,
-            id: NFTId,
-            details: NFTDetails,
+            ipfs_reference: NFTString,
+            series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            <Self as NFTs>::mutate(id, |owner, dets| -> DispatchResult {
-                ensure!(owner == &who, Error::<T>::NotOwner);
 
-                *dets = details;
+            // Checks
+            // The Caller needs to pay the NFT Mint fee.
+            let fee = T::MintFee::get();
+            let reason = WithdrawReasons::FEE;
+            let imbalance = T::Currency::withdraw(&who, fee, reason, KeepAlive)?;
+            T::FeesCollector::on_unbalanced(imbalance);
 
-                Ok(())
-            })?;
+            // Check if the series exists. If it exists and the caller is not the owner throw error.
+            let series_exits = Self::series_exists(&who, &series_id)?;
+
+            // Execute
+            let nft_id = Self::generate_nft_id();
+            let series_id = series_id.unwrap_or_else(|| Self::generate_series_id());
+
+            let value = NFTData::new(
+                who.clone(),
+                ipfs_reference.clone(),
+                series_id.clone(),
+                false,
+            );
+
+            // Save
+            Data::<T>::insert(nft_id, value);
+            if !series_exits {
+                Series::<T>::insert(series_id.clone(), NFTSeriesDetails::new(who.clone(), true));
+            }
+
+            Self::deposit_event(Event::Created(nft_id, who, series_id, ipfs_reference));
 
             Ok(().into())
         }
@@ -117,34 +119,19 @@ pub mod pallet {
             to: <T::Lookup as StaticLookup>::Source,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let to_unlookup = T::Lookup::lookup(to)?;
-            let mut data = Data::<T>::get(id);
+            let to = T::Lookup::lookup(to)?;
+
+            let mut data = Data::<T>::get(id).ok_or(Error::<T>::InvalidNFTId)?;
+            let series = Series::<T>::get(&data.series_id).ok_or(Error::<T>::SeriesNotFound)?;
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
             ensure!(!data.locked, Error::<T>::Locked);
+            ensure!(!series.draft, Error::<T>::SeriesIsInDraft);
 
-            data.owner = to_unlookup.clone();
+            data.owner = to.clone();
             Data::<T>::insert(id, data);
 
-            Self::deposit_event(Event::Transfer(id, who, to_unlookup));
-
-            Ok(().into())
-        }
-
-        /// Mark an NFT as sealed, thus disabling further details modifications (but
-        /// not preventing future transfers). Must be called by the owner of the NFT.
-        #[pallet::weight(T::WeightInfo::seal())]
-        pub fn seal(origin: OriginFor<T>, id: NFTId) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-            let mut data = Data::<T>::get(id);
-
-            ensure!(!data.sealed, Error::<T>::Sealed);
-            ensure!(data.owner == who, Error::<T>::NotOwner);
-
-            data.sealed = true;
-            Data::<T>::insert(id, data);
-
-            Self::deposit_event(Event::Sealed(id));
+            Self::deposit_event(Event::Transfer(id, who, to));
 
             Ok(().into())
         }
@@ -156,38 +143,44 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::burn())]
         pub fn burn(origin: OriginFor<T>, id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let data = Data::<T>::get(id);
+            let data = Data::<T>::get(id).ok_or(Error::<T>::InvalidNFTId)?;
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
             ensure!(!data.locked, Error::<T>::Locked);
-            <Self as NFTs>::burn(id).expect("Call to Burn function should never fail!");
+
+            Data::<T>::remove(id);
+            Self::deposit_event(Event::Burned(id));
 
             Ok(().into())
         }
 
-        /// Transfer an NFT series from one account to another one. Must be called by the
-        /// actual owner of the NFT series.
-        #[pallet::weight(T::WeightInfo::transfer_series())]
-        pub fn transfer_series(
+        /// Makes the series completed. This means that is not anymore
+        /// possible to add new NFTs to the series.
+        #[pallet::weight(T::WeightInfo::finish_series())]
+        pub fn finish_series(
             origin: OriginFor<T>,
-            id: NFTSeriesId,
-            to: <T::Lookup as StaticLookup>::Source,
+            series_id: NFTSeriesId,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let to_unlookup = T::Lookup::lookup(to)?;
 
-            ensure!(id != NFTSeriesId::default(), Error::<T>::NotSeriesOwner);
-            Series::<T>::mutate(id, |series| {
-                if let Some(series) = series {
-                    ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
-                    series.owner = to_unlookup.clone();
+            Series::<T>::mutate(&series_id, |x| {
+                if let Some(series) = x {
+                    if series.owner != who {
+                        return Err(Error::<T>::NotSeriesOwner);
+                    }
+                    if !series.draft {
+                        return Err(Error::<T>::SeriesIsCompleted);
+                    }
+
+                    series.draft = false;
+
                     Ok(())
                 } else {
-                    Err(Error::<T>::NFTSeriesNotFound)
+                    Err(Error::<T>::SeriesNotFound)?
                 }
             })?;
 
-            Self::deposit_event(Event::SeriesTransfer(id, who, to_unlookup));
+            Self::deposit_event(Event::SeriesFinished(series_id));
 
             Ok(().into())
         }
@@ -195,10 +188,10 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId")]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId", NFTString = "String")]
     pub enum Event<T: Config> {
-        /// A new NFT was created. \[nft id, owner, series id, uri\]
-        Created(NFTId, T::AccountId, NFTSeriesId, Vec<u8>),
+        /// A new NFT was created. \[nft id, owner, series id, ipfs reference\]
+        Created(NFTId, T::AccountId, NFTSeriesId, NFTString),
         /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
         Transfer(NFTId, T::AccountId, T::AccountId),
         /// An NFT was updated by its owner. \[nft id\]
@@ -210,10 +203,10 @@ pub mod pallet {
         Locked(NFTId),
         /// A locked NFT has been unlocked. \[nft id\]
         Unlocked(NFTId),
-        /// An NFT that was burned. \[nft id\]
+        /// An NFT was burned. \[nft id\]
         Burned(NFTId),
-        /// An NFT Series was transferred to someone else. \[nft series id, old owner, new owner\]
-        SeriesTransfer(NFTSeriesId, T::AccountId, T::AccountId),
+        /// A series has been completed. \[series id\]
+        SeriesFinished(NFTSeriesId),
     }
 
     #[pallet::error]
@@ -229,10 +222,14 @@ pub mod pallet {
         Locked,
         /// Cannot add nfts to a series that is not owned.
         NotSeriesOwner,
-        /// No one can be the owner the of the default series id.
-        NFTSeriesLocked,
-        /// No series was found with that given id.
-        NFTSeriesNotFound,
+        /// The operation is not allowed because the series is in draft.
+        SeriesIsInDraft,
+        /// The operation is not allowed because the series is completed.
+        SeriesIsCompleted,
+        /// Series not Found
+        SeriesNotFound,
+        /// No NFT was found with that NFT id.
+        InvalidNFTId,
     }
 
     /// The number of NFTs managed by this pallet
@@ -244,23 +241,22 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn data)]
     pub type Data<T: Config> =
-        StorageMap<_, Blake2_128Concat, NFTId, NFTData<T::AccountId>, ValueQuery>;
+        StorageMap<_, Blake2_128Concat, NFTId, NFTData<T::AccountId>, OptionQuery>;
 
     /// Data related to NFT Series.
     #[pallet::storage]
     #[pallet::getter(fn series)]
-    pub type Series<T: Config> = StorageMap<
-        _,
-        Blake2_128Concat,
-        NFTSeriesId,
-        NFTSeriesDetails<T::AccountId, NFTId>,
-        OptionQuery,
-    >;
+    pub type Series<T: Config> =
+        StorageMap<_, Blake2_128Concat, NFTSeriesId, NFTSeriesDetails<T::AccountId>, OptionQuery>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn series_id_generator)]
+    pub type SeriesIdGenerator<T: Config> = StorageValue<_, u32, ValueQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub nfts: Vec<(T::AccountId, NFTDetails)>,
-        pub series: Vec<(T::AccountId, NFTSeriesId)>,
+        pub nfts: Vec<(NFTId, NFTData<T::AccountId>)>,
+        pub series: Vec<(NFTSeriesId, NFTSeriesDetails<T::AccountId>)>,
     }
 
     #[cfg(feature = "std")]
@@ -279,191 +275,168 @@ pub mod pallet {
             self.series
                 .clone()
                 .into_iter()
-                .for_each(|(account, series_id)| {
-                    drop(<Pallet<T> as NFTs>::set_series_owner(series_id, &account));
+                .for_each(|(series_id, series)| {
+                    Series::<T>::insert(series_id, series);
                 });
 
-            self.nfts
-                .clone()
-                .into_iter()
-                .for_each(|(account, details)| {
-                    drop(<Pallet<T> as NFTs>::create(&account, details))
-                });
+            let mut current_nft_id: NFTId = 0;
+            self.nfts.clone().into_iter().for_each(|(nft_id, data)| {
+                Data::<T>::insert(nft_id, data);
+                current_nft_id = current_nft_id.max(nft_id);
+            });
+
+            if !self.nfts.is_empty() {
+                current_nft_id += 1;
+            }
+
+            NftIdGenerator::<T>::put(current_nft_id);
+            SeriesIdGenerator::<T>::put(0);
         }
     }
 }
 
-impl<T: Config> NFTs for Pallet<T> {
+impl<T: Config> traits::NFTs for Pallet<T> {
     type AccountId = T::AccountId;
-    type NFTDetails = NFTDetails;
-    type NFTSeriesId = NFTSeriesId;
-    type NFTId = NFTId;
 
-    fn create(
-        owner: &Self::AccountId,
-        details: Self::NFTDetails,
-    ) -> result::Result<Self::NFTId, DispatchError> {
-        // Check for series prerequisites.
-        let series_id = details.series_id;
-        let mut nft_series = Self::get_nft_series_data(owner, series_id)?;
-
-        // Get current and next nft id.
-        let (nft_id, next_nft_id) = Self::get_next_nft_id()?;
-
-        if details.unique_series() {
-            nft_series.push(nft_id);
-            Series::<T>::insert(series_id, NFTSeriesDetails::new(owner.clone(), nft_series));
-        }
-
-        let uri = details.offchain_uri.clone();
-        let value = NFTData::new(owner.clone(), details, false, false);
-
-        Data::<T>::insert(nft_id, value);
-        NftIdGenerator::<T>::put(next_nft_id);
-
-        Self::deposit_event(Event::Created(nft_id, owner.clone(), series_id, uri));
-
-        Ok(nft_id)
-    }
-
-    fn mutate<F: FnOnce(&Self::AccountId, &mut Self::NFTDetails) -> DispatchResult>(
-        id: Self::NFTId,
-        f: F,
-    ) -> DispatchResult {
-        let mut data = Data::<T>::get(id);
-        let mut details = data.details;
-
-        ensure!(!data.sealed, Error::<T>::Sealed);
-        f(&data.owner, &mut details)?;
-
-        data.details = details;
-        Data::<T>::insert(id, data);
-
-        Self::deposit_event(Event::Mutated(id));
-        Ok(())
-    }
-
-    fn set_owner(id: Self::NFTId, owner: &Self::AccountId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> DispatchResult {
-            ensure!(!data.locked, Error::<T>::Locked);
-            (*data).owner = owner.clone();
-            Ok(())
+    fn set_owner(id: NFTId, owner: &Self::AccountId) -> DispatchResult {
+        Data::<T>::try_mutate(id, |data| {
+            if let Some(data) = data {
+                ensure!(!data.locked, Error::<T>::Locked);
+                (*data).owner = owner.clone();
+                Ok(())
+            } else {
+                Err(Error::<T>::InvalidNFTId)
+            }
         })?;
 
         Ok(())
     }
 
-    fn details(id: Self::NFTId) -> Self::NFTDetails {
-        Data::<T>::get(id).details
+    fn owner(id: NFTId) -> Option<Self::AccountId> {
+        Some(Data::<T>::get(id)?.owner)
     }
 
-    fn owner(id: Self::NFTId) -> Self::AccountId {
-        Data::<T>::get(id).owner
+    fn is_series_completed(id: NFTId) -> Option<bool> {
+        let series_id = Data::<T>::get(id)?.series_id;
+        Some(!Series::<T>::get(series_id)?.draft)
     }
 
-    fn seal(id: Self::NFTId) -> DispatchResult {
-        Data::<T>::mutate(id, |d| (*d).sealed = true);
-        Self::deposit_event(Event::Sealed(id));
-        Ok(())
-    }
-
-    fn sealed(id: Self::NFTId) -> bool {
-        Data::<T>::get(id).sealed
-    }
-
-    fn burn(id: Self::NFTId) -> DispatchResult {
-        if let Some(series_id) = Self::series_id(id) {
-            Series::<T>::mutate(series_id, |series| {
-                if let Some(series) = series {
-                    if let Some(index) = series.nfts.iter().position(|x| *x == id) {
-                        series.nfts.remove(index);
-                    }
-                }
-            });
-        }
-
-        Data::<T>::remove(id);
-        Self::deposit_event(Event::Burned(id));
-
-        Ok(())
-    }
-
-    fn series_id(id: Self::NFTId) -> Option<Self::NFTSeriesId> {
-        if Data::<T>::contains_key(id) {
-            Some(Data::<T>::get(id).details.series_id)
-        } else {
-            None
-        }
-    }
-
-    fn series_length(id: Self::NFTSeriesId) -> Option<usize> {
-        Some(Series::<T>::get(id)?.nfts.len())
-    }
-
-    fn series_owner(id: Self::NFTSeriesId) -> Option<Self::AccountId> {
-        Some(Series::<T>::get(id)?.owner)
-    }
-
-    fn set_series_owner(id: Self::NFTSeriesId, owner: &Self::AccountId) -> DispatchResult {
-        ensure!(id != NFTSeriesId::default(), Error::<T>::NFTSeriesLocked);
-
-        Series::<T>::mutate(id, |series| {
-            if let Some(series) = series {
-                series.owner = owner.clone();
-            } else {
-                *series = Some(NFTSeriesDetails::new(owner.clone(), sp_std::vec![]));
-            }
-        });
-
-        Ok(())
-    }
-
-    fn is_capsule(id: Self::NFTId) -> bool {
-        Data::<T>::get(id).details.is_capsule
-    }
+    /*     fn create_nft(
+        owner: Self::AccountId,
+        ipfs_reference: NFTString,
+        series_id: Option<NFTSeriesId>,
+    ) -> Result<NFTId, DispatchErrorWithPostInfo> {
+        Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
+        return Ok(Self::nft_id_generator() - 1);
+    } */
 }
 
-impl<T: Config> LockableNFTs for Pallet<T> {
+impl<T: Config> traits::LockableNFTs for Pallet<T> {
     type AccountId = T::AccountId;
-    type NFTId = NFTId;
 
-    fn lock(id: Self::NFTId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> DispatchResult {
-            ensure!(!d.locked, Error::<T>::Locked);
-            (*d).locked = true;
-            Ok(())
+    fn lock(id: NFTId) -> DispatchResult {
+        Data::<T>::try_mutate(id, |d| {
+            if let Some(d) = d {
+                ensure!(!d.locked, Error::<T>::Locked);
+                (*d).locked = true;
+                Ok(())
+            } else {
+                Err(Error::<T>::InvalidNFTId)
+            }
+        })?;
+
+        Ok(())
+    }
+
+    fn unlock(id: NFTId) -> bool {
+        Data::<T>::mutate(id, |d| {
+            if let Some(d) = d {
+                (*d).locked = false;
+                return true;
+            } else {
+                return false;
+            }
         })
     }
 
-    fn unlock(id: Self::NFTId) {
-        Data::<T>::mutate(id, |d| (*d).locked = false);
-    }
-
-    fn locked(id: Self::NFTId) -> bool {
-        Data::<T>::get(id).locked
+    fn locked(id: NFTId) -> Option<bool> {
+        Some(Data::<T>::get(id)?.locked)
     }
 }
 
 impl<T: Config> Pallet<T> {
-    fn get_nft_series_data(
+    fn generate_nft_id() -> NFTId {
+        let nft_id = NftIdGenerator::<T>::get();
+        let next_id = nft_id
+            .checked_add(1)
+            .expect("If u32 is not enough we should crash for safety; qed.");
+        NftIdGenerator::<T>::put(next_id);
+
+        return nft_id;
+    }
+
+    fn generate_series_id() -> NFTSeriesId {
+        let mut id = SeriesIdGenerator::<T>::get();
+        loop {
+            let id_vec = u32_to_text(id);
+            if !Series::<T>::contains_key(&id_vec) {
+                break;
+            }
+            id = id
+                .checked_add(1)
+                .expect("If u32 is not enough we should crash for safety; qed.");
+        }
+        SeriesIdGenerator::<T>::put(
+            id.checked_add(1)
+                .expect("If u32 is not enough we should crash for safety; qed."),
+        );
+
+        return u32_to_text(id);
+    }
+
+    fn series_exists(
         owner: &T::AccountId,
-        series_id: NFTSeriesId,
-    ) -> Result<Vec<NFTId>, Error<T>> {
-        let mut nft_series = sp_std::vec![];
-        if series_id != NFTSeriesId::default() {
-            if let Some(series) = Series::<T>::get(series_id) {
-                ensure!(series.owner == *owner, Error::<T>::NotSeriesOwner);
-                nft_series = series.nfts;
+        series_id: &Option<NFTSeriesId>,
+    ) -> Result<bool, Error<T>> {
+        if let Some(id) = series_id {
+            if let Some(series) = Series::<T>::get(id) {
+                if series.owner != *owner {
+                    return Err(Error::<T>::NotSeriesOwner);
+                }
+                if !series.draft {
+                    return Err(Error::<T>::SeriesIsCompleted);
+                }
+
+                return Ok(true);
             }
         }
 
-        Ok(nft_series)
+        return Ok(false);
+    }
+}
+
+fn u32_to_text(num: u32) -> Vec<u8> {
+    let mut vec: Vec<u8> = vec![];
+    let mut dc: usize = 0;
+
+    fn inner(n: u32, vec: &mut Vec<u8>, dc: &mut usize) {
+        *dc += 1;
+        if n >= 10 {
+            inner(n / 10, vec, dc);
+        }
+
+        if vec.is_empty() {
+            *vec = Vec::with_capacity(*dc);
+        }
+
+        let char = u8_to_char((n % 10) as u8);
+        vec.push(char);
     }
 
-    fn get_next_nft_id() -> Result<(NFTId, NFTId), Error<T>> {
-        let nft_id = NftIdGenerator::<T>::get();
-        let next_id = nft_id.checked_add(1).ok_or(Error::<T>::NFTIdOverflow)?;
+    inner(num, &mut vec, &mut dc);
+    vec
+}
 
-        Ok((nft_id, next_id))
-    }
+const fn u8_to_char(num: u8) -> u8 {
+    return num + 48;
 }
