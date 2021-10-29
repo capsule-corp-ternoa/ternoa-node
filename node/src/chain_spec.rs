@@ -14,8 +14,8 @@ use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::constants::currency::UNIT;
 use ternoa_runtime::{
     wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, GenesisConfig,
-    GrandpaConfig, ImOnlineConfig, MarketplaceConfig, SessionConfig, SessionKeys, SgxConfig,
-    StakerStatus, StakingConfig, SystemConfig, TechnicalMembershipConfig,
+    GrandpaConfig, ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys,
+    SgxConfig, StakerStatus, StakingConfig, SystemConfig, TechnicalMembershipConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -161,7 +161,11 @@ pub fn testnet_genesis(
         },
 
         // Ternoa
-        nfts: Default::default(),
+        nfts: NftsConfig {
+            nfts: Default::default(),
+            series: Default::default(),
+            nft_mint_fee: 10000000000000000000,
+        },
         marketplace: MarketplaceConfig {
             nfts_for_sale: Default::default(),
             marketplaces: vec![(
@@ -175,6 +179,7 @@ pub fn testnet_genesis(
                     "Ternoa Marketplace".into(),
                 ),
             )],
+            marketplace_mint_fee: 10000000000000000000000,
         },
         sgx: SgxConfig {
             clusters: Default::default(),

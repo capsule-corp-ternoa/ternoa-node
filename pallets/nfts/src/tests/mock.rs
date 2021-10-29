@@ -91,7 +91,6 @@ impl Config for Test {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
-    type MintFee = MintFee;
     type FeesCollector = MockFeeCollector;
 }
 
@@ -136,6 +135,14 @@ impl ExtBuilder {
 
         pallet_balances::GenesisConfig::<Test> {
             balances: self.endowed_accounts,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        ternoa_nfts::GenesisConfig::<Test> {
+            nfts: Default::default(),
+            series: Default::default(),
+            nft_mint_fee: 10,
         }
         .assimilate_storage(&mut t)
         .unwrap();
@@ -190,6 +197,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     ternoa_nfts::GenesisConfig::<Test> {
         nfts: vec![(100, nft_data)],
         series: vec![(vec![50], series_data)],
+        nft_mint_fee: 10,
     }
     .assimilate_storage(&mut t)
     .unwrap();

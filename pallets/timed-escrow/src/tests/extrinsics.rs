@@ -104,19 +104,22 @@ fn complete_transfer_happy() {
 
 #[test]
 fn complete_transfer_unhappy() {
-    ExtBuilder::default().caps(vec![]).build().execute_with(|| {
-        let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-        let root: mock::Origin = RawOrigin::Root.into();
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            let root: mock::Origin = RawOrigin::Root.into();
 
-        let nft_id = help::create(alice.clone(), vec![0], None);
-        assert_ok!(TimedEscrow::create(alice.clone(), nft_id, BOB, 10));
+            let nft_id = help::create(alice.clone(), vec![0], None);
+            assert_ok!(TimedEscrow::create(alice.clone(), nft_id, BOB, 10));
 
-        // Unhappy not root
-        let ok = TimedEscrow::complete_transfer(alice.clone(), BOB, nft_id);
-        assert_noop!(ok, BadOrigin);
+            // Unhappy not root
+            let ok = TimedEscrow::complete_transfer(alice.clone(), BOB, nft_id);
+            assert_noop!(ok, BadOrigin);
 
-        // Unhappy failed to set owner because wrong id was given
-        let ok = TimedEscrow::complete_transfer(root, BOB, 1001);
-        assert_noop!(ok, ternoa_nfts::Error::<Test>::InvalidNFTId);
-    });
+            // Unhappy failed to set owner because wrong id was given
+            let ok = TimedEscrow::complete_transfer(root, BOB, 1001);
+            assert_noop!(ok, ternoa_nfts::Error::<Test>::InvalidNFTId);
+        });
 }

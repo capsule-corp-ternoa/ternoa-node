@@ -9,11 +9,13 @@ fn register_nfts() {
         .unwrap();
 
     let nft_id = 100;
+    let mint_fee = 10;
     let data = NFTData::new(ALICE, vec![1], vec![48], false);
 
     GenesisConfig::<Test> {
         nfts: vec![(nft_id, data.clone())],
         series: vec![],
+        nft_mint_fee: mint_fee,
     }
     .assimilate_storage(&mut t)
     .unwrap();
@@ -23,5 +25,6 @@ fn register_nfts() {
         assert_eq!(NFTs::nft_id_generator(), nft_id + 1);
         assert_eq!(NFTs::series_id_generator(), 0);
         assert_eq!(NFTs::data(nft_id), Some(data));
+        assert_eq!(NFTs::nft_mint_fee(), mint_fee);
     });
 }

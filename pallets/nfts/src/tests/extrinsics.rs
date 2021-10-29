@@ -1,7 +1,7 @@
 use super::mock::*;
 use crate::tests::mock;
-use crate::Config;
 use crate::{Error, NFTData, NFTSeriesDetails};
+use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
@@ -36,7 +36,7 @@ fn create_happy() {
             assert_eq!(NFTs::series_id_generator(), 0);
             assert_eq!(
                 Balances::free_balance(ALICE),
-                alice_balance - <Test as Config>::MintFee::get()
+                alice_balance - NFTs::nft_mint_fee()
             );
 
             // Happy path NFT without series
@@ -221,5 +221,33 @@ fn finish_series_unhappy() {
             assert_ok!(NFTs::finish_series(alice.clone(), series_id.clone()));
             let ok = NFTs::finish_series(alice.clone(), series_id);
             assert_noop!(ok, Error::<Test>::SeriesIsCompleted);
+        })
+}
+
+#[test]
+fn set_nft_mint_fee_happy() {
+    ExtBuilder::default().build().execute_with(|| {
+        // Happy path
+        let old_mint_fee = NFTs::nft_mint_fee();
+        let new_mint_fee = 654u64;
+        assert_eq!(NFTs::nft_mint_fee(), old_mint_fee);
+
+        let ok = NFTs::set_nft_mint_fee(mock::Origin::root(), new_mint_fee);
+        assert_ok!(ok);
+        assert_eq!(NFTs::nft_mint_fee(), new_mint_fee);
+    })
+}
+
+#[test]
+fn set_nft_mint_fee_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Unhappy non root user tries to modify the mint fee
+            let ok = NFTs::set_nft_mint_fee(alice.clone(), 654);
+            assert_noop!(ok, BadOrigin);
         })
 }

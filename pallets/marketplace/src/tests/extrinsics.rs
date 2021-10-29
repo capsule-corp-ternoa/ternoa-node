@@ -4,6 +4,7 @@ use crate::{
     Error, MarketplaceInformation, MarketplaceType, NFTCurrency, NFTCurrencyCombined,
     NFTCurrencyId, SaleInformation,
 };
+use frame_support::error::BadOrigin;
 use frame_support::instances::Instance1;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
@@ -272,13 +273,14 @@ fn buy_unhappy() {
 #[test]
 fn create_happy() {
     ExtBuilder::default()
-        .caps(vec![(ALICE, 1000)])
+        .caps(vec![(ALICE, 10000)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             assert_eq!(Marketplace::marketplace_id_generator(), 0);
             assert_eq!(Marketplace::marketplaces(1), None);
+            let balance = Balances::free_balance(ALICE);
             let fee = 25;
             let name = vec![50];
             let kind = MPT::Public;
@@ -288,6 +290,10 @@ fn create_happy() {
             assert_ok!(Marketplace::create(alice.clone(), kind, fee, name));
             assert_eq!(Marketplace::marketplace_id_generator(), 1);
             assert_eq!(Marketplace::marketplaces(1), Some(info));
+            assert_eq!(
+                Balances::free_balance(ALICE),
+                balance - Marketplace::marketplace_mint_fee()
+            );
         })
 }
 
@@ -522,5 +528,33 @@ fn set_name_unhappy() {
             // Unhappy not marketplace owner
             let ok = Marketplace::set_name(bob.clone(), 0, vec![51]);
             assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+        })
+}
+
+#[test]
+fn set_marketplace_mint_fee_happy() {
+    ExtBuilder::default().build().execute_with(|| {
+        // Happy path
+        let old_mint_fee = Marketplace::marketplace_mint_fee();
+        let new_mint_fee = 654u64;
+        assert_eq!(Marketplace::marketplace_mint_fee(), old_mint_fee);
+
+        let ok = Marketplace::set_marketplace_mint_fee(mock::Origin::root(), new_mint_fee);
+        assert_ok!(ok);
+        assert_eq!(Marketplace::marketplace_mint_fee(), new_mint_fee);
+    })
+}
+
+#[test]
+fn set_marketplace_mint_fee_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Unhappy non root user tries to modify the mint fee
+            let ok = Marketplace::set_marketplace_mint_fee(alice.clone(), 654);
+            assert_noop!(ok, BadOrigin);
         })
 }

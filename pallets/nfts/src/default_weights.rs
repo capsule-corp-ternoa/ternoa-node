@@ -5,6 +5,7 @@ pub trait WeightInfo {
     fn transfer() -> Weight;
     fn burn() -> Weight;
     fn finish_series() -> Weight;
+    fn set_nft_mint_fee() -> Weight;
 }
 
 impl WeightInfo for () {
@@ -31,6 +32,13 @@ impl WeightInfo for () {
     // Storage: Nfts Data (r:1 w:1)
     // Storage: Nfts Series (r:1 w:1)
     fn finish_series() -> Weight {
+        (36_081_000 as Weight)
+            .saturating_add(DbWeight::get().reads(2 as Weight))
+            .saturating_add(DbWeight::get().writes(2 as Weight))
+    }
+    // Storage: Nfts Data (r:1 w:1)
+    // Storage: Nfts Series (r:1 w:1)
+    fn set_nft_mint_fee() -> Weight {
         (36_081_000 as Weight)
             .saturating_add(DbWeight::get().reads(2 as Weight))
             .saturating_add(DbWeight::get().writes(2 as Weight))
