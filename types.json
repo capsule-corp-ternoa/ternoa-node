@@ -8,6 +8,7 @@
     "EnclaveId": "u32",
     "MarketplaceId": "u32",
     "MarketplaceString": "Text",
+    "BalanceCaps": "Balance",
     "NFTId": "u32",
     "NFTString": "Text",
     "NFTSeriesId": "Text",
