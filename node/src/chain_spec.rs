@@ -179,7 +179,7 @@ pub fn testnet_genesis(
                     "Ternoa Marketplace".into(),
                 ),
             )],
-            marketplace_mint_fee: 1000000000000000000000,
+            marketplace_mint_fee: 10000000000000000000000,
         },
         sgx: SgxConfig {
             clusters: Default::default(),

@@ -48,6 +48,16 @@ benchmarks! {
         assert_eq!(NFTs::<T>::series(&series_id).unwrap().draft, false);
         assert_eq!(NFTs::<T>::series(&series_id).unwrap().owner, alice);
     }
+
+    set_nft_mint_fee {
+        let old_mint_fee = NFTs::<T>::nft_mint_fee();
+        let new_mint_fee = 1000u32;
+
+    }: _(RawOrigin::Root, new_mint_fee.clone().into())
+    verify {
+        assert_ne!(old_mint_fee, new_mint_fee.clone().into());
+        assert_eq!(NFTs::<T>::nft_mint_fee(), new_mint_fee.into());
+    }
 }
 
 impl_benchmark_test_suite!(

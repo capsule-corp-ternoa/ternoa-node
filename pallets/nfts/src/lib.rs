@@ -182,6 +182,20 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::set_nft_mint_fee())]
+        pub fn set_nft_mint_fee(
+            origin: OriginFor<T>,
+            mint_fee: BalanceOf<T>,
+        ) -> DispatchResultWithPostInfo {
+            ensure_root(origin)?;
+
+            NftMintFee::<T>::put(mint_fee);
+
+            Self::deposit_event(Event::NftMintFeeChanged(mint_fee));
+
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -205,6 +219,8 @@ pub mod pallet {
         Burned(NFTId),
         /// A series has been completed. \[series id\]
         SeriesFinished(NFTSeriesId),
+        /// Nft mint fee changed. \[mint fee\]
+        NftMintFeeChanged(BalanceOf<T>),
     }
 
     #[pallet::error]

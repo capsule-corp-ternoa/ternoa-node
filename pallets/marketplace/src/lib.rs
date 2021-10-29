@@ -380,7 +380,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             name: MarketplaceString,
-        ) -> DispatchResult {
+        ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
             let lower_bound = name.len() >= T::MinNameLength::get() as usize;
@@ -405,7 +405,21 @@ pub mod pallet {
             let event = Event::MarketplaceNameChanged(marketplace_id, name);
             Self::deposit_event(event);
 
-            Ok(())
+            Ok(().into())
+        }
+
+        #[pallet::weight(T::WeightInfo::set_marketplace_mint_fee())]
+        pub fn set_marketplace_mint_fee(
+            origin: OriginFor<T>,
+            mint_fee: BalanceCaps<T>,
+        ) -> DispatchResultWithPostInfo {
+            ensure_root(origin)?;
+
+            MarketplaceMintFee::<T>::put(mint_fee);
+
+            Self::deposit_event(Event::MarketplaceMintFeeChanged(mint_fee));
+
+            Ok(().into())
         }
     }
 
@@ -435,6 +449,8 @@ pub mod pallet {
         MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
         /// Marketplace changed name. \[marketplace id, marketplace name\]
         MarketplaceNameChanged(MarketplaceId, MarketplaceString),
+        /// Marketplace mint fee changed. \[mint fee\]
+        MarketplaceMintFeeChanged(BalanceCaps<T>),
     }
 
     #[pallet::error]

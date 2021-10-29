@@ -115,6 +115,16 @@ benchmarks! {
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().name, new_name);
     }
+
+    set_marketplace_mint_fee {
+        let old_mint_fee = Marketplace::<T>::marketplace_mint_fee();
+        let new_mint_fee = 1000u32;
+
+    }: _(RawOrigin::Root, new_mint_fee.clone().into())
+    verify {
+        assert_ne!(old_mint_fee, new_mint_fee.clone().into());
+        assert_eq!(Marketplace::<T>::marketplace_mint_fee(), new_mint_fee.into());
+    }
 }
 
 impl_benchmark_test_suite!(
