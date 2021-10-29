@@ -154,7 +154,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        /// TODO!
+        /// Makes the series completed. This means that is not anymore
+        /// possible to add new NFTs to the series.
         #[pallet::weight(T::WeightInfo::finish_series())]
         pub fn finish_series(
             origin: OriginFor<T>,
@@ -221,9 +222,9 @@ pub mod pallet {
         Locked,
         /// Cannot add nfts to a series that is not owned.
         NotSeriesOwner,
-        /// TODO!
+        /// The operation is not allowed because the series is in draft.
         SeriesIsInDraft,
-        /// TODO!
+        /// The operation is not allowed because the series is completed.
         SeriesIsCompleted,
         /// Series not Found
         SeriesNotFound,
@@ -284,7 +285,11 @@ pub mod pallet {
                 current_nft_id = current_nft_id.max(nft_id);
             });
 
-            NftIdGenerator::<T>::put(current_nft_id + 1);
+            if !self.nfts.is_empty() {
+                current_nft_id += 1;
+            }
+
+            NftIdGenerator::<T>::put(current_nft_id);
             SeriesIdGenerator::<T>::put(0);
         }
     }
