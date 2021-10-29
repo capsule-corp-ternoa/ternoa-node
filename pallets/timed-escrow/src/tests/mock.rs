@@ -108,7 +108,6 @@ impl ternoa_nfts::Config for Test {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
-    type MintFee = MintFee;
     type FeesCollector = ();
 }
 impl Config for Test {
@@ -127,14 +126,14 @@ pub const BOB: u64 = 2;
 
 pub struct ExtBuilder {
     nfts: Vec<(u32, NFTData<u64>)>,
-    caps_endowed_accounts: Vec<(u64, u64)>,
+    endowed_accounts: Vec<(u64, u64)>,
 }
 
 impl Default for ExtBuilder {
     fn default() -> Self {
         ExtBuilder {
             nfts: Vec::new(),
-            caps_endowed_accounts: Vec::new(),
+            endowed_accounts: Vec::new(),
         }
     }
 }
@@ -148,6 +147,13 @@ impl ExtBuilder {
         ternoa_nfts::GenesisConfig::<Test> {
             nfts: self.nfts,
             series: Vec::new(),
+            nft_mint_fee: 10,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
+        pallet_balances::GenesisConfig::<Test> {
+            balances: self.endowed_accounts,
         }
         .assimilate_storage(&mut t)
         .unwrap();
@@ -159,7 +165,7 @@ impl ExtBuilder {
 
     pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
         for account in accounts {
-            self.caps_endowed_accounts.push(account);
+            self.endowed_accounts.push(account);
         }
         self
     }
@@ -201,6 +207,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     ternoa_nfts::GenesisConfig::<Test> {
         nfts: vec![(100, nft_data)],
         series: vec![(vec![50], series_data)],
+        nft_mint_fee: 10,
     }
     .assimilate_storage(&mut t)
     .unwrap();

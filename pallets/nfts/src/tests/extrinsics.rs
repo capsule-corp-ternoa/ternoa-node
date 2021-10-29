@@ -1,6 +1,5 @@
 use super::mock::*;
 use crate::tests::mock;
-use crate::Config;
 use crate::{Error, NFTData, NFTSeriesDetails};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
@@ -36,7 +35,7 @@ fn create_happy() {
             assert_eq!(NFTs::series_id_generator(), 0);
             assert_eq!(
                 Balances::free_balance(ALICE),
-                alice_balance - <Test as Config>::MintFee::get()
+                alice_balance - NFTs::nft_mint_fee()
             );
 
             // Happy path NFT without series

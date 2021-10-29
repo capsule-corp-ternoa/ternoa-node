@@ -56,8 +56,6 @@ pub mod pallet {
         type CurrencyCaps: Currency<Self::AccountId>;
         type CurrencyTiime: Currency<Self::AccountId>;
 
-        /// Host much does it cost to create a marketplace.
-        type MarketplaceFee: Get<BalanceCaps<Self>>;
         /// Place where the marketplace fees go.
         type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
 
@@ -228,7 +226,7 @@ pub mod pallet {
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
                 &caller_id,
-                T::MarketplaceFee::get(),
+                MarketplaceMintFee::<T>::get(),
                 WithdrawReasons::FEE,
                 KeepAlive,
             )?;
@@ -493,6 +491,11 @@ pub mod pallet {
     pub type Marketplaces<T: Config> =
         StorageMap<_, Blake2_128Concat, MarketplaceId, MarketplaceInformation<T>, OptionQuery>;
 
+    /// Host much does it cost to create a marketplace.
+    #[pallet::storage]
+    #[pallet::getter(fn marketplace_mint_fee)]
+    pub type MarketplaceMintFee<T: Config> = StorageValue<_, BalanceCaps<T>, ValueQuery>;
+
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub nfts_for_sale: Vec<(
@@ -500,6 +503,7 @@ pub mod pallet {
             SaleInformation<T::AccountId, BalanceCaps<T>, BalanceTiime<T>>,
         )>,
         pub marketplaces: Vec<(MarketplaceId, MarketplaceInformation<T>)>,
+        pub marketplace_mint_fee: BalanceCaps<T>,
     }
 
     #[cfg(feature = "std")]
@@ -508,6 +512,7 @@ pub mod pallet {
             Self {
                 nfts_for_sale: Default::default(),
                 marketplaces: Default::default(),
+                marketplace_mint_fee: Default::default(),
             }
         }
     }
@@ -528,6 +533,7 @@ pub mod pallet {
                 .for_each(|(market_id, market_info)| {
                     Marketplaces::<T>::insert(market_id, market_info);
                 });
+            MarketplaceMintFee::<T>::put(self.marketplace_mint_fee);
         }
     }
 }

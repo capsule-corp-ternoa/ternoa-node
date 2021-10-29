@@ -14,7 +14,7 @@ pub use default_weights::WeightInfo;
 pub use pallet::*;
 
 use frame_support::pallet_prelude::ensure;
-use frame_support::traits::{Get, StorageVersion};
+use frame_support::traits::StorageVersion;
 use sp_runtime::DispatchResult;
 use sp_std::vec;
 use sp_std::vec::Vec;
@@ -38,8 +38,6 @@ pub mod pallet {
         type WeightInfo: WeightInfo;
         /// Currency used to bill minting fees
         type Currency: Currency<Self::AccountId>;
-        /// Host much does it cost to mint a NFT (extra fee on top of the tx fees)
-        type MintFee: Get<BalanceOf<Self>>;
         /// What we do with additional fees
         type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
     }
@@ -80,7 +78,7 @@ pub mod pallet {
 
             // Checks
             // The Caller needs to pay the NFT Mint fee.
-            let fee = T::MintFee::get();
+            let fee = NftMintFee::<T>::get();
             let reason = WithdrawReasons::FEE;
             let imbalance = T::Currency::withdraw(&who, fee, reason, KeepAlive)?;
             T::FeesCollector::on_unbalanced(imbalance);
@@ -253,10 +251,16 @@ pub mod pallet {
     #[pallet::getter(fn series_id_generator)]
     pub type SeriesIdGenerator<T: Config> = StorageValue<_, u32, ValueQuery>;
 
+    /// Host much does it cost to mint a NFT (extra fee on top of the tx fees)
+    #[pallet::storage]
+    #[pallet::getter(fn nft_mint_fee)]
+    pub type NftMintFee<T: Config> = StorageValue<_, BalanceOf<T>, ValueQuery>;
+
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub nfts: Vec<(NFTId, NFTData<T::AccountId>)>,
         pub series: Vec<(NFTSeriesId, NFTSeriesDetails<T::AccountId>)>,
+        pub nft_mint_fee: BalanceOf<T>,
     }
 
     #[cfg(feature = "std")]
@@ -265,6 +269,7 @@ pub mod pallet {
             Self {
                 nfts: Default::default(),
                 series: Default::default(),
+                nft_mint_fee: Default::default(),
             }
         }
     }
@@ -291,6 +296,7 @@ pub mod pallet {
 
             NftIdGenerator::<T>::put(current_nft_id);
             SeriesIdGenerator::<T>::put(0);
+            NftMintFee::<T>::put(self.nft_mint_fee);
         }
     }
 }

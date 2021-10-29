@@ -103,7 +103,6 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 
 parameter_types! {
     pub const MintFee: u64 = 5;
-    pub const MarketplaceFee: u64 = 10;
     pub const MaxNameLength: u32 = 5;
     pub const MinNameLength: u32 = 1;
 }
@@ -112,7 +111,6 @@ impl ternoa_nfts::Config for Test {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
-    type MintFee = MintFee;
     type FeesCollector = ();
 }
 
@@ -126,7 +124,6 @@ impl Config for Test {
     type CurrencyTiime = TiimeBalances;
     type NFTs = NFTs;
     type WeightInfo = ();
-    type MarketplaceFee = MarketplaceFee;
     type FeesCollector = ();
     type MaxNameLength = MaxNameLength;
     type MinNameLength = MinNameLength;
@@ -191,6 +188,7 @@ impl ExtBuilder {
         ternoa_nfts::GenesisConfig::<Test> {
             nfts: self.nfts,
             series: self.series,
+            nft_mint_fee: 10,
         }
         .assimilate_storage(&mut t)
         .unwrap();
@@ -218,6 +216,7 @@ impl ExtBuilder {
         ternoa_marketplace::GenesisConfig::<Test> {
             nfts_for_sale: Default::default(),
             marketplaces: marketplaces,
+            marketplace_mint_fee: 250,
         }
         .assimilate_storage(&mut t)
         .unwrap();
@@ -311,6 +310,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
                 "Ternoa Marketplace".into(),
             ),
         )],
+        marketplace_mint_fee: 255,
     }
     .assimilate_storage(&mut t)
     .unwrap();
@@ -329,6 +329,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     ternoa_nfts::GenesisConfig::<Test> {
         nfts: vec![(100, nft_data)],
         series: vec![(vec![50], series_data)],
+        nft_mint_fee: 10,
     }
     .assimilate_storage(&mut t)
     .unwrap();

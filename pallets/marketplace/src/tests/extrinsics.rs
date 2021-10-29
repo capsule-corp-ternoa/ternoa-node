@@ -272,13 +272,14 @@ fn buy_unhappy() {
 #[test]
 fn create_happy() {
     ExtBuilder::default()
-        .caps(vec![(ALICE, 1000)])
+        .caps(vec![(ALICE, 10000)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             assert_eq!(Marketplace::marketplace_id_generator(), 0);
             assert_eq!(Marketplace::marketplaces(1), None);
+            let balance = Balances::free_balance(ALICE);
             let fee = 25;
             let name = vec![50];
             let kind = MPT::Public;
@@ -288,6 +289,10 @@ fn create_happy() {
             assert_ok!(Marketplace::create(alice.clone(), kind, fee, name));
             assert_eq!(Marketplace::marketplace_id_generator(), 1);
             assert_eq!(Marketplace::marketplaces(1), Some(info));
+            assert_eq!(
+                Balances::free_balance(ALICE),
+                balance - Marketplace::marketplace_mint_fee()
+            );
         })
 }
 
