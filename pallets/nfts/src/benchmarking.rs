@@ -42,7 +42,7 @@ benchmarks! {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let series_id: Vec<u8> = vec![51];
 
-        drop(NFTs::<T>::create(RawOrigin::Signed(alice.clone()).into(), vec![], Some(series_id.clone())));
+        drop(NFTs::<T>::create(RawOrigin::Signed(alice.clone()).into(), vec![50], Some(series_id.clone())));
     }: _(RawOrigin::Signed(alice.clone()), series_id.clone())
     verify {
         assert_eq!(NFTs::<T>::series(&series_id).unwrap().draft, false);

@@ -85,13 +85,16 @@ impl pallet_balances::Config for Test {
 }
 
 parameter_types! {
-    pub const MintFee: u64 = 10;
+    pub const MaxStringLength: u16 = 5;
+    pub const MinStringLength: u16 = 1;
 }
 impl Config for Test {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = MockFeeCollector;
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 
 pub struct MockFeeCollector;

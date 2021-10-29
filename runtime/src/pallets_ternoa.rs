@@ -7,8 +7,8 @@ use ternoa_primitives::Balance;
 
 parameter_types! {
     pub const EnclaveFee: Balance = 500_000 * UNIT;
-    pub const MaxNameLength: u32 = 1000;
-    pub const MinNameLength: u32 = 0;
+    pub const MaxStringLength: u16 = 1000;
+    pub const MinStringLength: u16 = 1;
     pub const ClusterSize: u32 = 8;
     pub const MaxUrlLength: u32 = 1000;
 }
@@ -18,6 +18,8 @@ impl ternoa_nfts::Config for Runtime {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = Treasury;
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 
 impl ternoa_timed_escrow::Config for Runtime {
@@ -36,8 +38,8 @@ impl ternoa_marketplace::Config for Runtime {
     type NFTs = Nfts;
     type WeightInfo = ();
     type FeesCollector = Treasury;
-    type MaxNameLength = MaxNameLength;
-    type MinNameLength = MinNameLength;
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 
 impl ternoa_sgx::Config for Runtime {

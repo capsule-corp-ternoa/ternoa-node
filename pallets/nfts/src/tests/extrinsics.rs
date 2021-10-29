@@ -66,13 +66,21 @@ fn create_unhappy() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
             let chad: mock::Origin = RawOrigin::Signed(CHAD).into();
 
+            // Unhappy too short name
+            let ok = NFTs::create(alice.clone(), vec![], None);
+            assert_noop!(ok, Error::<Test>::TooShortIpfsReference);
+
+            // Unhappy too long name
+            let ok = NFTs::create(alice.clone(), vec![1, 2, 3, 4, 5, 6], None);
+            assert_noop!(ok, Error::<Test>::TooLongIpfsReference);
+
             // Unhappy not enough caps to mint an NFT
             let ok = NFTs::create(alice.clone(), vec![1], None);
             assert_noop!(ok, BalanceError::<Test>::InsufficientBalance);
 
             // Unhappy not the owner of series
             let series_id = Some(vec![50]);
-            help::create(chad.clone(), Vec::new(), series_id.clone());
+            help::create(chad.clone(), vec![50], series_id.clone());
 
             let ok = NFTs::create(bob.clone(), vec![1], series_id);
             assert_noop!(ok, Error::<Test>::NotSeriesOwner);
@@ -80,7 +88,7 @@ fn create_unhappy() {
 
             // Unhappy cannot create nfts with complete (locked) series
             let series_id = Some(vec![51]);
-            help::create(bob.clone(), Vec::new(), series_id.clone());
+            help::create(bob.clone(), vec![50], series_id.clone());
             help::finish_series(bob.clone(), series_id.clone().unwrap());
 
             let ok = NFTs::create(bob.clone(), vec![1], series_id.clone());
