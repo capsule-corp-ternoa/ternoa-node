@@ -2,7 +2,10 @@
 ## Specification 41 - 2021-10-29 TODO
 # 🚀 New Features
 - NFT series can now be in two states, drafted and completed. 
-- If series id is not specified when an NFT is created, the blockchain will generate and use a random series id. 
+- If series id is not specified when an NFT is created, the blockchain will generate and use a random series id. #
+# Added
+- set_commission_fee marketplace extrinsic
+- set_ipfs_reference nfts extrinsic
 # Changed
 - Series Id is now a string type instead of a number.
 - NFT Mint Fee and Marketplace Mint Fee are not changeable.

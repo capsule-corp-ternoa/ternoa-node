@@ -558,3 +558,44 @@ fn set_marketplace_mint_fee_unhappy() {
             assert_noop!(ok, BadOrigin);
         })
 }
+
+#[test]
+fn set_commission_fee_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let fee = 10;
+            let id = help::create_mkp(alice.clone(), MPT::Public, fee, vec![50], vec![]);
+            assert_eq!(Marketplace::marketplaces(id).unwrap().commission_fee, fee);
+
+            // Happy path
+            let fee = 15;
+            assert_ok!(Marketplace::set_commission_fee(alice.clone(), id, fee));
+            assert_eq!(Marketplace::marketplaces(id).unwrap().commission_fee, fee);
+        })
+}
+
+#[test]
+fn set_commission_fee_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(BOB, 1000)])
+        .build()
+        .execute_with(|| {
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+
+            // Unhappy commission fee is more than 100
+            let ok = Marketplace::set_commission_fee(bob.clone(), 0, 101);
+            assert_noop!(ok, Error::<Test>::InvalidCommissionFeeValue);
+
+            // Unhappy unknown marketplace
+            let ok = Marketplace::set_commission_fee(bob.clone(), 1001, 15);
+            assert_noop!(ok, Error::<Test>::UnknownMarketplace);
+
+            // Unhappy not marketplace owner
+            let ok = Marketplace::set_commission_fee(bob.clone(), 0, 15);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+        })
+}
