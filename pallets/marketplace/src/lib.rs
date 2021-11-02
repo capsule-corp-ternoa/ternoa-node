@@ -421,6 +421,35 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::set_commission_fee())]
+        pub fn set_commission_fee(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            commission_fee: u8,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
+
+            Marketplaces::<T>::mutate(marketplace_id, |x| {
+                if let Some(market) = x {
+                    if market.owner != who {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+
+                    market.commission_fee = commission_fee;
+
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceCommissionFeeChanged(marketplace_id, commission_fee);
+            Self::deposit_event(event);
+
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -451,6 +480,8 @@ pub mod pallet {
         MarketplaceNameChanged(MarketplaceId, MarketplaceString),
         /// Marketplace mint fee changed. \[mint fee\]
         MarketplaceMintFeeChanged(BalanceCaps<T>),
+        /// Marketplace mint fee changed. \[marketplace id, commission fee\]
+        MarketplaceCommissionFeeChanged(MarketplaceId, u8),
     }
 
     #[pallet::error]

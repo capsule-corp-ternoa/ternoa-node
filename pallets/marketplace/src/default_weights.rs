@@ -11,6 +11,7 @@ pub trait WeightInfo {
     fn set_market_type() -> Weight;
     fn set_name() -> Weight;
     fn set_marketplace_mint_fee() -> Weight;
+    fn set_commission_fee() -> Weight;
 }
 
 impl WeightInfo for () {
@@ -75,7 +76,14 @@ impl WeightInfo for () {
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
+    // Storage: Marketplace Marketplaces (r:1 w:1)
     fn set_marketplace_mint_fee() -> Weight {
+        (24_310_000 as Weight)
+            .saturating_add(DbWeight::get().reads(1 as Weight))
+            .saturating_add(DbWeight::get().writes(1 as Weight))
+    }
+    // Storage: Marketplace Marketplaces (r:1 w:1)
+    fn set_commission_fee() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))

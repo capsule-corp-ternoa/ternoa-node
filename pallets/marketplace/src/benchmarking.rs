@@ -99,8 +99,8 @@ benchmarks! {
 
     set_market_type {
         let alice: T::AccountId = account("ALICE", 0, 0);
-
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Public, 0, "Hop".into()));
+
     }: _(RawOrigin::Signed(alice.clone().into()), 1, MarketplaceType::Private)
     verify {
         assert_eq!(Marketplaces::<T>::get(1).unwrap().kind, MarketplaceType::Private);
@@ -124,6 +124,18 @@ benchmarks! {
     verify {
         assert_ne!(old_mint_fee, new_mint_fee.clone().into());
         assert_eq!(Marketplace::<T>::marketplace_mint_fee(), new_mint_fee.into());
+    }
+
+    set_commission_fee {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let commission_fee = 15;
+        let mkp_id = 1;
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Public, 0, "Hop".into()));
+        assert_ne!(Marketplaces::<T>::get(mkp_id).unwrap().commission_fee, commission_fee);
+
+    }: _(RawOrigin::Signed(alice.clone().into()), mkp_id, commission_fee)
+    verify {
+        assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().commission_fee, commission_fee);
     }
 }
 

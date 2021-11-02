@@ -259,3 +259,56 @@ fn set_nft_mint_fee_unhappy() {
             assert_noop!(ok, BadOrigin);
         })
 }
+
+#[test]
+fn set_ipfs_reference_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let ipfs_reference = vec![50];
+            let nft_id = help::create(alice.clone(), ipfs_reference.clone(), None);
+            assert_eq!(NFTs::data(&nft_id).unwrap().ipfs_reference, ipfs_reference);
+
+            // Happy path transfer
+            let ipfs_reference = vec![51];
+            let ok = NFTs::set_ipfs_reference(alice.clone(), nft_id, ipfs_reference.clone());
+            assert_ok!(ok);
+            assert_eq!(NFTs::data(&nft_id).unwrap().ipfs_reference, ipfs_reference);
+        })
+}
+
+#[test]
+fn set_ipfs_reference_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 100), (BOB, 100)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+
+            // Unhappy invalid nft ID
+            let ok = NFTs::set_ipfs_reference(alice.clone(), 10001, vec![60]);
+            assert_noop!(ok, Error::<Test>::InvalidNFTId);
+
+            // Unhappy not nft owner
+            let bob_nft_id = help::create(bob.clone(), vec![50], None);
+            let ok = NFTs::set_ipfs_reference(alice.clone(), bob_nft_id, vec![60]);
+            assert_noop!(ok, Error::<Test>::NotOwner);
+
+            // Unhappy nft locked
+            let nft_id = help::create(alice.clone(), vec![50], None);
+            help::lock(nft_id);
+            let ok = NFTs::set_ipfs_reference(alice.clone(), nft_id, vec![60]);
+            assert_noop!(ok, Error::<Test>::Locked);
+
+            // Unhappy series
+            let series_id = vec![60];
+            let nft_id = help::create(alice.clone(), vec![50], Some(series_id.clone()));
+            assert_ok!(NFTs::finish_series(alice.clone(), series_id.clone()));
+            let ok = NFTs::set_ipfs_reference(alice.clone(), nft_id, vec![60]);
+            assert_noop!(ok, Error::<Test>::SeriesIsCompleted);
+        })
+}

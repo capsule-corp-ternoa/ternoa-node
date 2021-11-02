@@ -58,6 +58,18 @@ benchmarks! {
         assert_ne!(old_mint_fee, new_mint_fee.clone().into());
         assert_eq!(NFTs::<T>::nft_mint_fee(), new_mint_fee.into());
     }
+
+    set_ipfs_reference {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let ipfs_reference = vec![45];
+        drop(NFTs::<T>::create(RawOrigin::Signed(alice.clone()).into(), vec![51], None));
+        let nft_id = NFTs::<T>::nft_id_generator() - 1;
+        assert_ne!(NFTs::<T>::data(nft_id).unwrap().ipfs_reference, ipfs_reference);
+
+    }: _(RawOrigin::Signed(alice.clone()), nft_id, ipfs_reference.clone())
+    verify {
+        assert_eq!(NFTs::<T>::data(nft_id).unwrap().ipfs_reference, ipfs_reference)
+    }
 }
 
 impl_benchmark_test_suite!(
