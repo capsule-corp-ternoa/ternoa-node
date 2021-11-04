@@ -214,6 +214,8 @@ pub mod pallet {
             kind: MarketplaceType,
             commission_fee: u8,
             name: MarketplaceString,
+            uri: Option<URI>,
+            logo_uri: Option<URI>
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -238,6 +240,8 @@ pub mod pallet {
                 caller_id.clone(),
                 Vec::default(),
                 name,
+                uri,
+                logo_uri
             );
 
             let id = MarketplaceIdGenerator::<T>::get();
@@ -450,6 +454,62 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(10000)]
+        pub fn update_uri(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            uri: Vec<u8>,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            ensure!(uri.len() <= 1000 ,Error::<T>::TooLongMarketplaceUri);
+            ensure!(uri.len() >= 1 , Error::<T>::TooShortMarketplaceUri);
+
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
+                if let Some(market) = x {
+                    if market.owner != who {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+                    market.uri = Some(uri.clone());
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceUriUpdated(marketplace_id, uri);
+            Self::deposit_event(event);
+            Ok(().into())
+        }
+
+        #[pallet::weight(10000)]
+        pub fn update_logo_uri(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            logo_uri: Vec<u8>,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            ensure!(logo_uri.len() <= 1000 ,Error::<T>::TooLongMarketplaceLogoUri);
+            ensure!(logo_uri.len() >= 1 , Error::<T>::TooShortMarketplaceLogoUri);
+
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
+                if let Some(market) = x {
+                    if market.owner != who {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+                    market.logo_uri = Some(logo_uri.clone());
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceLogoUriUpdated(marketplace_id, logo_uri);
+            Self::deposit_event(event);
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -482,6 +542,10 @@ pub mod pallet {
         MarketplaceMintFeeChanged(BalanceCaps<T>),
         /// Marketplace mint fee changed. \[marketplace id, commission fee\]
         MarketplaceCommissionFeeChanged(MarketplaceId, u8),
+        /// Marketplace URI updated. \[marketplace id, URI\]
+        MarketplaceUriUpdated(MarketplaceId, URI),
+        /// Marketplace Logo URI updated. \[marketplace id, logo URI\]
+        MarketplaceLogoUriUpdated(MarketplaceId, URI),
     }
 
     #[pallet::error]
@@ -516,6 +580,14 @@ pub mod pallet {
         TooLongMarketplaceName,
         /// Series is not completed.
         SeriesNotCompleted,
+        // Marketplace URI is too long
+        TooLongMarketplaceUri,
+        // Marketplace URI is too short.
+        TooShortMarketplaceUri,
+        // Marketplace Logo URI is too long
+        TooLongMarketplaceLogoUri,
+        // Marketplace Logo URI is too short.
+        TooShortMarketplaceLogoUri,
     }
 
     /// Nfts listed on the marketplace
