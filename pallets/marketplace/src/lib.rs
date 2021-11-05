@@ -225,6 +225,17 @@ pub mod pallet {
             ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
             ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
+            if let Some(uri_value) = uri.clone() {
+                ensure!(uri_value.clone().len() <= 1000 ,Error::<T>::TooLongMarketplaceUri);
+                ensure!(uri_value.clone().len() >= 1 , Error::<T>::TooShortMarketplaceUri);
+            }
+
+            if let Some(logo_uri_value)=logo_uri.clone() {
+                ensure!(logo_uri_value.clone().len() <= 1000 ,Error::<T>::TooLongMarketplaceLogoUri);
+                ensure!(logo_uri_value.clone().len() >= 1 , Error::<T>::TooShortMarketplaceLogoUri);
+            }
+
+
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
                 &caller_id,

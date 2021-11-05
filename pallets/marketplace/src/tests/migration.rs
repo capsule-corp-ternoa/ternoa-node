@@ -87,6 +87,8 @@ mod v6 {
                 ALICE,
                 Vec::default(),
                 "Ternoa Marketplace".into(),
+                None,
+                None
             );
             let market_2 = MarketplaceInformation::<Test>::new(
                 MarketplaceType::Public,
@@ -94,6 +96,8 @@ mod v6 {
                 BOB,
                 Vec::default(),
                 "User Marketplace".into(),
+                None,
+                None
             );
 
             assert_eq!(v6Marketplaces::<Test>::get(0), Some(market_1));
