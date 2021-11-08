@@ -107,7 +107,6 @@ pub mod pallet {
             }
 
             T::NFTs::lock(nft_id)?;
-
             let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
 
@@ -225,24 +224,24 @@ pub mod pallet {
             ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
             ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
-            if let Some(uri_value) = uri.clone() {
+            if let Some(uri_value) = uri.as_ref() {
                 ensure!(
-                    uri_value.clone().len() <= 1000,
+                    uri_value.clone().len() <= T::MaxStringLength::get() as usize,
                     Error::<T>::TooLongMarketplaceUri
                 );
                 ensure!(
-                    uri_value.clone().len() >= 1,
+                    uri_value.clone().len() >= T::MinStringLength::get() as usize,
                     Error::<T>::TooShortMarketplaceUri
                 );
             }
 
-            if let Some(logo_uri_value) = logo_uri.clone() {
+            if let Some(logo_uri_value) = logo_uri.as_ref() {
                 ensure!(
-                    logo_uri_value.clone().len() <= 1000,
+                    logo_uri_value.clone().len() <= T::MaxStringLength::get() as usize,
                     Error::<T>::TooLongMarketplaceLogoUri
                 );
                 ensure!(
-                    logo_uri_value.clone().len() >= 1,
+                    logo_uri_value.clone().len() >= T::MinStringLength::get() as usize,
                     Error::<T>::TooShortMarketplaceLogoUri
                 );
             }
@@ -481,12 +480,18 @@ pub mod pallet {
         pub fn update_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            uri: Vec<u8>,
+            uri: URI,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(uri.len() <= 1000, Error::<T>::TooLongMarketplaceUri);
-            ensure!(uri.len() >= 1, Error::<T>::TooShortMarketplaceUri);
+            ensure!(
+                uri.len() <= T::MaxStringLength::get() as usize,
+                Error::<T>::TooLongMarketplaceUri
+            );
+            ensure!(
+                uri.len() >= T::MinStringLength::get() as usize,
+                Error::<T>::TooShortMarketplaceUri
+            );
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| {
                 if let Some(market) = x {
@@ -509,15 +514,18 @@ pub mod pallet {
         pub fn update_logo_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            logo_uri: Vec<u8>,
+            logo_uri: URI,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
             ensure!(
-                logo_uri.len() <= 1000,
+                logo_uri.len() <= T::MaxStringLength::get() as usize,
                 Error::<T>::TooLongMarketplaceLogoUri
             );
-            ensure!(logo_uri.len() >= 1, Error::<T>::TooShortMarketplaceLogoUri);
+            ensure!(
+                logo_uri.len() >= T::MinStringLength::get() as usize,
+                Error::<T>::TooShortMarketplaceLogoUri
+            );
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| {
                 if let Some(market) = x {

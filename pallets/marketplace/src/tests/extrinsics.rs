@@ -699,24 +699,14 @@ fn update_uri_happy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            assert_eq!(Marketplace::marketplace_id_generator(), 0);
-            assert_eq!(Marketplace::marketplaces(1), None);
 
             let fee = 25;
             let name = vec![50];
             let kind = MPT::Public;
             let uri = Some(vec![66]);
             let updated_uri = Some(vec![67]);
-            let info = MarketplaceInformation::new(
-                kind,
-                fee,
-                ALICE,
-                vec![],
-                name.clone(),
-                uri.clone(),
-                uri.clone(),
-            );
-            let updated_info = MarketplaceInformation::new(
+
+            let updated_info: MarketplaceInformation<Test> = MarketplaceInformation::new(
                 kind,
                 fee,
                 ALICE,
@@ -734,8 +724,10 @@ fn update_uri_happy() {
                 uri.clone(),
                 uri.clone()
             ));
-            assert_eq!(Marketplace::marketplace_id_generator(), 1);
-            assert_eq!(Marketplace::marketplaces(1), Some(info));
+            assert_ne!(
+                Marketplace::marketplaces(1).unwrap().uri,
+                updated_uri.clone()
+            );
             assert_ok!(Marketplace::update_uri(
                 alice.clone(),
                 1,
@@ -752,8 +744,6 @@ fn update_uri_unhappy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            assert_eq!(Marketplace::marketplace_id_generator(), 0);
-            assert_eq!(Marketplace::marketplaces(1), None);
 
             let fee = 25;
             let name = vec![50];
@@ -761,15 +751,6 @@ fn update_uri_unhappy() {
             let uri = Some(vec![66]);
             let raw_too_short_uri: URI = vec![];
             let raw_too_long_uri: URI = [0; 1001].to_vec();
-            let info = MarketplaceInformation::new(
-                kind,
-                fee,
-                ALICE,
-                vec![],
-                name.clone(),
-                uri.clone(),
-                uri.clone(),
-            );
 
             assert_ok!(Marketplace::create(
                 alice.clone(),
@@ -779,8 +760,7 @@ fn update_uri_unhappy() {
                 uri.clone(),
                 uri.clone()
             ));
-            assert_eq!(Marketplace::marketplace_id_generator(), 1);
-            assert_eq!(Marketplace::marketplaces(1), Some(info));
+
             let nok = Marketplace::update_uri(alice.clone(), 1, raw_too_short_uri);
             assert_noop!(nok, Error::<Test>::TooShortMarketplaceUri);
             let nok = Marketplace::update_uri(alice, 1, raw_too_long_uri);
@@ -795,23 +775,13 @@ fn update_logo_uri_happy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            assert_eq!(Marketplace::marketplace_id_generator(), 0);
-            assert_eq!(Marketplace::marketplaces(1), None);
 
             let fee = 25;
             let name = vec![50];
             let kind = MPT::Public;
             let uri = Some(vec![66]);
             let updated_uri = Some(vec![67]);
-            let info = MarketplaceInformation::new(
-                kind,
-                fee,
-                ALICE,
-                vec![],
-                name.clone(),
-                uri.clone(),
-                uri.clone(),
-            );
+
             let updated_info = MarketplaceInformation::new(
                 kind,
                 fee,
@@ -830,8 +800,11 @@ fn update_logo_uri_happy() {
                 uri.clone(),
                 uri.clone()
             ));
-            assert_eq!(Marketplace::marketplace_id_generator(), 1);
-            assert_eq!(Marketplace::marketplaces(1), Some(info));
+            assert_ne!(
+                Marketplace::marketplaces(1).unwrap().uri,
+                updated_uri.clone()
+            );
+
             assert_ok!(Marketplace::update_logo_uri(
                 alice.clone(),
                 1,
@@ -848,8 +821,6 @@ fn update_logo_uri_unhappy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            assert_eq!(Marketplace::marketplace_id_generator(), 0);
-            assert_eq!(Marketplace::marketplaces(1), None);
 
             let fee = 25;
             let name = vec![50];
@@ -857,15 +828,6 @@ fn update_logo_uri_unhappy() {
             let uri = Some(vec![66]);
             let raw_too_short_uri: URI = vec![];
             let raw_too_long_uri: URI = [0; 1001].to_vec();
-            let info = MarketplaceInformation::new(
-                kind,
-                fee,
-                ALICE,
-                vec![],
-                name.clone(),
-                uri.clone(),
-                uri.clone(),
-            );
 
             assert_ok!(Marketplace::create(
                 alice.clone(),
@@ -875,8 +837,7 @@ fn update_logo_uri_unhappy() {
                 uri.clone(),
                 uri.clone()
             ));
-            assert_eq!(Marketplace::marketplace_id_generator(), 1);
-            assert_eq!(Marketplace::marketplaces(1), Some(info));
+
             let nok = Marketplace::update_logo_uri(alice.clone(), 1, raw_too_short_uri);
             assert_noop!(nok, Error::<Test>::TooShortMarketplaceLogoUri);
             let nok = Marketplace::update_logo_uri(alice, 1, raw_too_long_uri);
