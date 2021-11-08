@@ -178,7 +178,7 @@ pub fn testnet_genesis(
                     Default::default(),
                     "Ternoa Marketplace".into(),
                     None,
-                    None
+                    None,
                 ),
             )],
             marketplace_mint_fee: 10000000000000000000000,

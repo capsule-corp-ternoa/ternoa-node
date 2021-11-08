@@ -183,7 +183,7 @@ pub struct MarketplaceInformation<T: Config> {
     pub allow_list: Vec<T::AccountId>,
     pub name: MarketplaceString,
     pub uri: Option<URI>,
-    pub logo_uri: Option<URI>
+    pub logo_uri: Option<URI>,
 }
 
 impl<T: Config> MarketplaceInformation<T> {
@@ -194,7 +194,7 @@ impl<T: Config> MarketplaceInformation<T> {
         allow_list: Vec<T::AccountId>,
         name: MarketplaceString,
         uri: Option<URI>,
-        logo_uri: Option<URI>
+        logo_uri: Option<URI>,
     ) -> MarketplaceInformation<T> {
         Self {
             kind,
@@ -203,7 +203,7 @@ impl<T: Config> MarketplaceInformation<T> {
             allow_list,
             name,
             uri,
-            logo_uri
+            logo_uri,
         }
     }
 }

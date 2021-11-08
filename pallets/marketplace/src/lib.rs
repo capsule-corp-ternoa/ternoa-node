@@ -215,7 +215,7 @@ pub mod pallet {
             commission_fee: u8,
             name: MarketplaceString,
             uri: Option<URI>,
-            logo_uri: Option<URI>
+            logo_uri: Option<URI>,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -226,15 +226,26 @@ pub mod pallet {
             ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
             if let Some(uri_value) = uri.clone() {
-                ensure!(uri_value.clone().len() <= 1000 ,Error::<T>::TooLongMarketplaceUri);
-                ensure!(uri_value.clone().len() >= 1 , Error::<T>::TooShortMarketplaceUri);
+                ensure!(
+                    uri_value.clone().len() <= 1000,
+                    Error::<T>::TooLongMarketplaceUri
+                );
+                ensure!(
+                    uri_value.clone().len() >= 1,
+                    Error::<T>::TooShortMarketplaceUri
+                );
             }
 
-            if let Some(logo_uri_value)=logo_uri.clone() {
-                ensure!(logo_uri_value.clone().len() <= 1000 ,Error::<T>::TooLongMarketplaceLogoUri);
-                ensure!(logo_uri_value.clone().len() >= 1 , Error::<T>::TooShortMarketplaceLogoUri);
+            if let Some(logo_uri_value) = logo_uri.clone() {
+                ensure!(
+                    logo_uri_value.clone().len() <= 1000,
+                    Error::<T>::TooLongMarketplaceLogoUri
+                );
+                ensure!(
+                    logo_uri_value.clone().len() >= 1,
+                    Error::<T>::TooShortMarketplaceLogoUri
+                );
             }
-
 
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
@@ -252,7 +263,7 @@ pub mod pallet {
                 Vec::default(),
                 name,
                 uri,
-                logo_uri
+                logo_uri,
             );
 
             let id = MarketplaceIdGenerator::<T>::get();
@@ -466,7 +477,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10000)]
+        #[pallet::weight(T::WeightInfo::update_uri())]
         pub fn update_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
@@ -474,8 +485,8 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(uri.len() <= 1000 ,Error::<T>::TooLongMarketplaceUri);
-            ensure!(uri.len() >= 1 , Error::<T>::TooShortMarketplaceUri);
+            ensure!(uri.len() <= 1000, Error::<T>::TooLongMarketplaceUri);
+            ensure!(uri.len() >= 1, Error::<T>::TooShortMarketplaceUri);
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| {
                 if let Some(market) = x {
@@ -494,7 +505,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10000)]
+        #[pallet::weight(T::WeightInfo::update_logo_uri())]
         pub fn update_logo_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
@@ -502,8 +513,11 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(logo_uri.len() <= 1000 ,Error::<T>::TooLongMarketplaceLogoUri);
-            ensure!(logo_uri.len() >= 1 , Error::<T>::TooShortMarketplaceLogoUri);
+            ensure!(
+                logo_uri.len() <= 1000,
+                Error::<T>::TooLongMarketplaceLogoUri
+            );
+            ensure!(logo_uri.len() >= 1, Error::<T>::TooShortMarketplaceLogoUri);
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| {
                 if let Some(market) = x {
