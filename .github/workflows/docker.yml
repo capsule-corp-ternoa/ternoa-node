@@ -2,7 +2,7 @@ name: Docker-chaos-tag
 
 on:
   push:
-    branches: main
+    branches: working_old_sgx
 
 jobs:
   docker-build:

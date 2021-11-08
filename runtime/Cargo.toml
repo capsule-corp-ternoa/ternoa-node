@@ -22,10 +22,8 @@ pallet-babe = { git = "https://github.com/paritytech/substrate/", default-featur
 pallet-balances = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-bounties = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-collective = { git = "https://github.com/paritytech/substrate/", default-features = false }
-pallet-curveless-staking = { git = "https://github.com/capsule-corp-ternoa/pallet-curveless-staking", default-features = false, branch = "main" }
 pallet-grandpa = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-im-online = { git = "https://github.com/paritytech/substrate/", default-features = false }
-pallet-mandate = { git = "https://github.com/ETeissonniere/pallet-mandate", branch = "eliott/ternoa-sub-freeze", default-features = false }
 pallet-membership = { git = "https://github.com/paritytech/substrate/", default-features = false }
 pallet-offences = { git = "https://github.com/paritytech/substrate/", default-features = false }
 #pallet-offences-benchmarking = { git = "https://github.com/paritytech/substrate/", default-features = false, optional = true }
@@ -61,6 +59,9 @@ ternoa-marketplace = { default-features = false, path = "../pallets/marketplace"
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
 ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
+pallet-curveless-staking = { git = "https://github.com/markopoloparadox/pallet-curveless-staking", default-features = false, branch = "working_old_sgx" }
+pallet-mandate = { git = "https://github.com/ETeissonniere/pallet-mandate", branch = "eliott/ternoa-sub-freeze", default-features = false }
+
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate/" }
