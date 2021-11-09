@@ -138,6 +138,14 @@ fn transfer_unhappy() {
             let nft_id = help::create(alice.clone(), vec![0], None);
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
             assert_noop!(ok, Error::<Test>::SeriesIsInDraft);
+
+            // Unhappy is capsulized
+            let nft_id = help::create(alice.clone(), vec![0], Some(vec![86]));
+            help::finish_series(alice.clone(), vec![86]);
+            help::capsulize(true);
+            let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
+            assert_noop!(ok, Error::<Test>::NFTIsCapsulized);
+            help::capsulize(false);
         })
 }
 
@@ -182,6 +190,13 @@ fn burn_unhappy() {
 
             let ok = NFTs::burn(alice.clone(), nft_id);
             assert_noop!(ok, Error::<Test>::Locked);
+
+            // Unhappy is capsulized
+            let nft_id = help::create(alice.clone(), vec![1], Some(vec![2]));
+            help::capsulize(true);
+            let ok = NFTs::burn(alice.clone(), nft_id);
+            assert_noop!(ok, Error::<Test>::NFTIsCapsulized);
+            help::capsulize(false);
         })
 }
 

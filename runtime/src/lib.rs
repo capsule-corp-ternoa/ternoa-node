@@ -98,6 +98,7 @@ construct_runtime!(
         Nfts: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
         Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>, Config<T>},
+        Capsules: ternoa_capsules::{Pallet, Call, Storage, Event<T>, Config<T>},
     }
 );
 
@@ -363,6 +364,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_timed_escrow, TimedEscrow);
             list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
             list_benchmark!(list, extra, ternoa_sgx, Sgx);
+            list_benchmark!(list, extra, ternoa_capsules, Capsules);
 
 
             let storage_info = AllPalletsWithSystem::storage_info();
@@ -422,6 +424,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_timed_escrow, TimedEscrow);
             add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
             add_benchmark!(params, batches, ternoa_sgx, Sgx);
+            add_benchmark!(params, batches, ternoa_capsules, Capsules);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

@@ -5,7 +5,7 @@ use crate::{Config, Pallet, Weight};
 use frame_support::traits::StorageVersion;
 
 pub fn migrate<T: Config>() -> Weight {
-    let mut weight: Weight = 0;
+    let weight: Weight = 0;
 
     let storage_version = StorageVersion::get::<Pallet<T>>();
     if storage_version == 6 {
@@ -18,10 +18,10 @@ pub fn migrate<T: Config>() -> Weight {
         StorageVersion::new(5).put::<Pallet<T>>();
     } */
 
-    if storage_version == 5 {
+    /*     if storage_version == 5 {
         weight = v6::migrate::<T>();
         StorageVersion::new(6).put::<Pallet<T>>();
-    }
+    } */
 
     log::info!("Migration done.");
 

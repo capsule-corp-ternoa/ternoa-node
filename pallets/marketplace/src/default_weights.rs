@@ -78,25 +78,25 @@ impl WeightInfo for () {
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
-    // Storage: Marketplace Marketplaces (r:1 w:1)
+    // TODO!
     fn set_marketplace_mint_fee() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
-    // Storage: Marketplace Marketplaces (r:1 w:1)
+    // TODO!
     fn set_commission_fee() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
-    // Storage: Marketplace Marketplaces (r:1 w:1)
+    // TODO!
     fn update_uri() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
-    // Storage: Marketplace Marketplaces (r:1 w:1)
+    // TODO!
     fn update_logo_uri() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))

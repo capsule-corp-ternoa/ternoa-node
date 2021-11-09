@@ -69,8 +69,14 @@ fn list_unhappy() {
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
             assert_noop!(ok, Error::<Test>::SeriesNotCompleted);
 
-            // Unhappy unknown marketplace
+            // Unhappy nft is capsulized
             help::finish_series(alice.clone(), series_id);
+            help::capsulize(true);
+            let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
+            assert_noop!(ok, Error::<Test>::NFTIsCapsulized);
+            help::capsulize(false);
+
+            // Unhappy unknown marketplace
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(10001));
             assert_noop!(ok, Error::<Test>::UnknownMarketplace);
 

@@ -1,8 +1,9 @@
 use crate::constants::currency::UNIT;
 use crate::{
-    Balances, Call, Event, Nfts, OriginCaller, Runtime, Scheduler, TiimeBalances, Treasury,
+    Balances, Call, Capsules, Event, Nfts, OriginCaller, Runtime, Scheduler, TiimeBalances,
+    Treasury,
 };
-use frame_support::parameter_types;
+use frame_support::{parameter_types, PalletId};
 use ternoa_primitives::Balance;
 
 parameter_types! {
@@ -11,6 +12,7 @@ parameter_types! {
     pub const MinStringLength: u16 = 1;
     pub const ClusterSize: u32 = 8;
     pub const MaxUrlLength: u32 = 1000;
+    pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
 }
 
 impl ternoa_nfts::Config for Runtime {
@@ -20,6 +22,7 @@ impl ternoa_nfts::Config for Runtime {
     type FeesCollector = Treasury;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
+    type CapsulesTrait = Capsules;
 }
 
 impl ternoa_timed_escrow::Config for Runtime {
@@ -40,6 +43,7 @@ impl ternoa_marketplace::Config for Runtime {
     type FeesCollector = Treasury;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
+    type CapsulesTrait = Capsules;
 }
 
 impl ternoa_sgx::Config for Runtime {
@@ -50,4 +54,14 @@ impl ternoa_sgx::Config for Runtime {
     type FeesCollector = Treasury;
     type ClusterSize = ClusterSize;
     type MaxUrlLength = MaxUrlLength;
+}
+
+impl ternoa_capsules::Config for Runtime {
+    type Event = Event;
+    type WeightInfo = ();
+    type Currency = Balances;
+    type NFTSTrait = Nfts;
+    type MinStringLength = MinStringLength;
+    type MaxStringLength = MaxStringLength;
+    type PalletId = CapsulePalletId;
 }

@@ -29,7 +29,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use frame_system::RawOrigin;
     use sp_runtime::traits::{Dispatchable, StaticLookup};
-    use ternoa_nfts::traits::{LockableNFTs, NFTs};
+    use ternoa_common::traits::{LockableNFTs, NFTs};
 
     #[pallet::config]
     pub trait Config: frame_system::Config {

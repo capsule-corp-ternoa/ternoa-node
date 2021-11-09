@@ -2,5 +2,4 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-mod nfts;
 pub mod traits;

@@ -1,13 +1,11 @@
-use crate::{self as ternoa_timed_escrow, Config};
+use crate::{self as ternoa_capsules, Config};
 use frame_benchmarking::account;
 use frame_support::traits::{Contains, GenesisBuild};
-use frame_support::{parameter_types, weights::Weight};
-use frame_system::EnsureRoot;
+use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
+use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use sp_runtime::{testing::Header, Perbill};
 use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
-use ternoa_primitives::ternoa;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -19,10 +17,9 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Pallet, Call, Storage, Event<T>},
-        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-        NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
-        TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
+        Balances: pallet_balances::{Pallet, Call, Config<T>, Storage, Event<T>},
+        TernoaNFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
+        TernoaCapsules: ternoa_capsules::{Pallet, Call, Storage, Event<T>, Config<T>},
     }
 );
 
@@ -72,40 +69,27 @@ impl frame_system::Config for Test {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = 0;
+    pub const ExistentialDeposit: u64 = 1;
     pub const MaxLocks: u32 = 50;
     pub const MaxReserves: u32 = 50;
 }
+
 impl pallet_balances::Config for Test {
-    type Balance = u64;
+    type MaxLocks = MaxLocks;
     type MaxReserves = MaxReserves;
     type ReserveIdentifier = [u8; 8];
+    type Balance = u64;
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = System;
     type WeightInfo = ();
-    type MaxLocks = MaxLocks;
 }
 
 parameter_types! {
-    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * BlockWeights::get().max_block;
-}
-
-impl pallet_scheduler::Config for Test {
-    type Event = Event;
-    type Origin = Origin;
-    type PalletsOrigin = OriginCaller;
-    type Call = Call;
-    type MaximumWeight = MaximumSchedulerWeight;
-    type ScheduleOrigin = EnsureRoot<u64>;
-    type MaxScheduledPerBlock = ();
-    type WeightInfo = ();
-}
-
-parameter_types! {
-    pub const MaxStringLength: u16 = 1000;
+    pub const MaxStringLength: u16 = 5;
     pub const MinStringLength: u16 = 1;
+    pub const CapsulePalletId: PalletId = PalletId(*b"mockcaps");
 }
 
 impl ternoa_nfts::Config for Test {
@@ -115,23 +99,17 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = MockCapsulesTrait;
+    type CapsulesTrait = TernoaCapsules;
 }
 
 impl Config for Test {
     type Event = Event;
-    type NFTs = NFTs;
-    type Scheduler = Scheduler;
-    type PalletsOrigin = OriginCaller;
-    type PalletsCall = Call;
     type WeightInfo = ();
-}
-
-pub struct MockCapsulesTrait;
-impl ternoa_common::traits::CapsulesTrait for MockCapsulesTrait {
-    fn is_capsulized(_nft_id: ternoa_primitives::nfts::NFTId) -> bool {
-        todo!()
-    }
+    type Currency = Balances;
+    type NFTSTrait = TernoaNFTs;
+    type PalletId = CapsulePalletId;
+    type MaxStringLength = MaxStringLength;
+    type MinStringLength = MinStringLength;
 }
 
 // Do not use the `0` account id since this would be the default value
@@ -140,35 +118,47 @@ pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 
 pub struct ExtBuilder {
-    nfts: Vec<(u32, NFTData<u64>)>,
     endowed_accounts: Vec<(u64, u64)>,
 }
 
 impl Default for ExtBuilder {
     fn default() -> Self {
         ExtBuilder {
-            nfts: Vec::new(),
             endowed_accounts: Vec::new(),
         }
     }
 }
 
 impl ExtBuilder {
+    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+        for account in accounts {
+            self.endowed_accounts.push(account);
+        }
+        self
+    }
+
     pub fn build(self) -> sp_io::TestExternalities {
         let mut t = frame_system::GenesisConfig::default()
             .build_storage::<Test>()
             .unwrap();
 
+        pallet_balances::GenesisConfig::<Test> {
+            balances: self.endowed_accounts,
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
+
         ternoa_nfts::GenesisConfig::<Test> {
-            nfts: self.nfts,
-            series: Vec::new(),
+            nfts: Default::default(),
+            series: Default::default(),
             nft_mint_fee: 10,
         }
         .assimilate_storage(&mut t)
         .unwrap();
 
-        pallet_balances::GenesisConfig::<Test> {
-            balances: self.endowed_accounts,
+        ternoa_capsules::GenesisConfig::<Test> {
+            capsule_mint_fee: 1000,
+            ..Default::default()
         }
         .assimilate_storage(&mut t)
         .unwrap();
@@ -177,32 +167,36 @@ impl ExtBuilder {
         ext.execute_with(|| System::set_block_number(1));
         ext
     }
-
-    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
-        for account in accounts {
-            self.endowed_accounts.push(account);
-        }
-        self
-    }
 }
 
 pub mod help {
     use super::*;
+    use crate::traits::LockableNFTs;
     use frame_support::assert_ok;
-    use ternoa_common::traits::LockableNFTs;
-    use ternoa_primitives::nfts::NFTId;
+    use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
+    use ternoa_primitives::ternoa;
 
-    pub fn create(
+    pub fn create_capsule_fast(owner: Origin) -> NFTId {
+        let nft_id = create_nft(owner.clone(), vec![50], None);
+        assert_ok!(TernoaCapsules::create_from_nft(owner, nft_id, vec![60]));
+        nft_id
+    }
+
+    pub fn create_nft_fast(owner: Origin) -> NFTId {
+        create_nft(owner, vec![50], None)
+    }
+
+    pub fn create_nft(
         owner: Origin,
         ipfs_reference: ternoa::String,
-        series_id: Option<Vec<u8>>,
+        series_id: Option<NFTSeriesId>,
     ) -> NFTId {
-        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
-        return NFTs::nft_id_generator() - 1;
+        assert_ok!(TernoaNFTs::create(owner, ipfs_reference, series_id));
+        TernoaNFTs::nft_id_generator() - 1
     }
 
     pub fn lock(nft_id: NFTId) {
-        assert_ok!(NFTs::lock(nft_id));
+        assert_ok!(TernoaNFTs::lock(nft_id));
     }
 }
 
@@ -214,7 +208,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 
     let alice = account("ALICE", 0, 0);
     let bob = account("BOB", 0, 0);
-    let nft_data = NFTData::new(alice, vec![0], vec![50], false);
+    let nft_data = NFTData::new(alice, vec![0], vec![11], false);
     let series_data = NFTSeriesDetails::new(alice, false);
 
     pallet_balances::GenesisConfig::<Test> {
@@ -224,8 +218,8 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     .unwrap();
 
     ternoa_nfts::GenesisConfig::<Test> {
-        nfts: vec![(100, nft_data)],
-        series: vec![(vec![50], series_data)],
+        nfts: vec![(0, nft_data)],
+        series: vec![(vec![11], series_data)],
         nft_mint_fee: 10,
     }
     .assimilate_storage(&mut t)

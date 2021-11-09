@@ -8,7 +8,7 @@ use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
-use ternoa_nfts::traits::NFTs;
+use ternoa_common::traits::NFTs;
 
 use crate::Pallet as Marketplace;
 

@@ -1,8 +1,8 @@
 [package]
 edition = "2018"
 license = "Apache 2.0"
-name = "ternoa-marketplace"
-version = "0.4.0"
+name = "ternoa-mock"
+version = "0.1.0"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
@@ -10,11 +10,8 @@ targets = ["x86_64-unknown-linux-gnu"]
 [dependencies]
 ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
-ternoa-account-store = { default-features = false, path = "../account-store" }
-ternoa-nfts = { default-features = false, path = "../nfts" }
 serde = { optional = true,  version = "1.0.126" }
 codec = { package = "parity-scale-codec",  default-features = false, features = ["derive"], version = "2.2.0" }
-frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev" }
 frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -22,26 +19,17 @@ sp-std = { git = "https://github.com/paritytech/substrate.git", default-features
 log = { default-features = false, version = "0.4.14"}
 
 [dev-dependencies]
-pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-ternoa-mock = { default-features = false, path = "../mock" }
 
 [features]
 default = ["std"]
 std = [
     "codec/std",
-    "frame-benchmarking/std",
     "frame-support/std",
     "frame-system/std",
     "serde",
     "sp-runtime/std",
     "sp-std/std",
-    "ternoa-common/std",
-    "ternoa-primitives/std",
-    "ternoa-account-store/std",
-    "ternoa-nfts/std",
-]
-runtime-benchmarks = [
-    "frame-benchmarking",
+    "ternoa-common/std"
 ]

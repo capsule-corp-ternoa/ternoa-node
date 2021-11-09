@@ -5,7 +5,7 @@ use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::{Pallet as SystemModule, RawOrigin};
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
-use ternoa_nfts::traits::{LockableNFTs, NFTs};
+use ternoa_common::traits::{LockableNFTs, NFTs};
 
 use crate::Pallet as TimedEscrow;
 

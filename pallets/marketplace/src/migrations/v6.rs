@@ -1,4 +1,4 @@
-use super::Config;
+/* use super::Config;
 use crate::{MarketplaceInformation, Marketplaces};
 use frame_support::traits::Get;
 use frame_support::weights::Weight;
@@ -34,8 +34,6 @@ pub fn migrate<T: Config>() -> Weight {
                 info.owner,
                 info.allow_list,
                 "Ternoa Marketplace".into(),
-                Default::default(),
-                Default::default(),
             ));
         }
 
@@ -45,10 +43,9 @@ pub fn migrate<T: Config>() -> Weight {
             info.owner,
             info.allow_list,
             "User Marketplace".into(),
-            None,
-            None,
         ));
     });
 
     T::BlockWeights::get().max_block
 }
+ */

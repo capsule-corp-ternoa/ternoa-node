@@ -35,10 +35,17 @@ pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type.
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
 
+pub mod ternoa {
+    use sp_std::vec::Vec;
+
+    pub type String = Vec<u8>;
+}
+
 pub mod nfts {
     #[cfg(feature = "std")]
     use serde::{Deserialize, Serialize};
 
+    use super::ternoa;
     use codec::{Decode, Encode};
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
@@ -49,9 +56,6 @@ pub mod nfts {
     /// How NFT IDs are encoded. In the JSON Types this should be "Text" and not "Vec<8>".
     pub type NFTSeriesId = Vec<u8>;
 
-    // String type
-    pub type NFTString = Vec<u8>;
-
     /// Data related to an NFT, such as who is its owner.
     #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -59,7 +63,7 @@ pub mod nfts {
         // NFT owner
         pub owner: AccountId,
         // IPFS reference
-        pub ipfs_reference: NFTString,
+        pub ipfs_reference: ternoa::String,
         // Series ID
         pub series_id: NFTSeriesId,
         // Is Locked
@@ -69,7 +73,7 @@ pub mod nfts {
     impl<AccountId> NFTData<AccountId> {
         pub fn new(
             owner: AccountId,
-            ipfs_reference: NFTString,
+            ipfs_reference: ternoa::String,
             series_id: NFTSeriesId,
             locked: bool,
         ) -> Self {

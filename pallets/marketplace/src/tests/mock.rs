@@ -11,6 +11,10 @@ use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
+pub const ALICE: u64 = 1;
+pub const BOB: u64 = 2;
+pub const DAVE: u64 = 3;
+
 frame_support::construct_runtime!(
     pub enum Test where
         Block = Block,
@@ -23,6 +27,7 @@ frame_support::construct_runtime!(
         Marketplace: ternoa_marketplace::{Pallet, Call, Event<T>},
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Event<T>},
         TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
+        TernoaMock: ternoa_mock::{Pallet, Call, Storage, Event<T>, Config},
     }
 );
 
@@ -113,10 +118,15 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
+    type CapsulesTrait = TernoaMock;
 }
 
 impl ternoa_account_store::Config for Test {
     type AccountData = pallet_balances::AccountData<u64>;
+}
+
+impl ternoa_mock::Config for Test {
+    type Event = Event;
 }
 
 impl Config for Test {
@@ -128,11 +138,8 @@ impl Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
+    type CapsulesTrait = TernoaMock;
 }
-
-pub const ALICE: u64 = 1;
-pub const BOB: u64 = 2;
-pub const DAVE: u64 = 3;
 
 pub struct ExtBuilder {
     nfts: Vec<(u32, NFTData<u64>)>,
@@ -237,7 +244,7 @@ impl ExtBuilder {
         ext
     }
 
-    pub fn build_v6_migration(self) -> sp_io::TestExternalities {
+    /*     pub fn build_v6_migration(self) -> sp_io::TestExternalities {
         let t = frame_system::GenesisConfig::default()
             .build_storage::<Test>()
             .unwrap();
@@ -245,20 +252,21 @@ impl ExtBuilder {
         let mut ext = sp_io::TestExternalities::new(t);
         ext.execute_with(|| System::set_block_number(1));
         ext
-    }
+    } */
 }
 
 pub mod help {
-    use crate::{MarketplaceId, MarketplaceString};
+    use crate::MarketplaceId;
 
     use super::*;
     use frame_support::assert_ok;
-    use ternoa_nfts::traits::LockableNFTs;
-    use ternoa_primitives::nfts::{NFTId, NFTSeriesId, NFTString};
+    use ternoa_common::traits::LockableNFTs;
+    use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
+    use ternoa_primitives::ternoa;
 
     pub fn create_nft(
         owner: Origin,
-        ipfs_reference: NFTString,
+        ipfs_reference: ternoa::String,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
         assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
@@ -267,7 +275,7 @@ pub mod help {
 
     pub fn create_nft_and_lock_series(
         owner: Origin,
-        ipfs_reference: NFTString,
+        ipfs_reference: ternoa::String,
         series_id: NFTSeriesId,
     ) -> NFTId {
         let nft_id = help::create_nft(owner.clone(), ipfs_reference, Some(series_id.clone()));
@@ -280,7 +288,7 @@ pub mod help {
         owner: Origin,
         kind: MarketplaceType,
         fee: u8,
-        name: MarketplaceString,
+        name: ternoa::String,
         allow_list: Vec<u64>,
     ) -> MarketplaceId {
         assert_ok!(Marketplace::create(
@@ -307,6 +315,10 @@ pub mod help {
 
     pub fn lock(nft_id: NFTId) {
         assert_ok!(NFTs::lock(nft_id));
+    }
+
+    pub fn capsulize(val: bool) {
+        TernoaMock::set_is_capsulized(val);
     }
 }
 
