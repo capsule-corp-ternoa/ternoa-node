@@ -2,7 +2,7 @@
 
 use crate::{
     Call, Config, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency,
-    NFTCurrencyId, NFTsForSale, Pallet,
+    NFTCurrencyId, NFTsForSale, Pallet,URI
 };
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::RawOrigin;
@@ -11,8 +11,6 @@ use sp_std::prelude::*;
 use ternoa_nfts::traits::NFTs;
 
 use crate::Pallet as Marketplace;
-
-const TEST_URI: &str = "uri/path/to/resource/for/benchmark/purpose/";
 
 benchmarks! {
     list {
@@ -54,7 +52,7 @@ benchmarks! {
 
     create {
         let alice: T::AccountId = account("ALICE", 0, 0);
-    }: _(RawOrigin::Signed(alice.clone().into()), MarketplaceType::Public, 0, "Hop".into(),Some(TEST_URI.into()), Some(TEST_URI.into()))
+    }: _(RawOrigin::Signed(alice.clone().into()), MarketplaceType::Public, 0, "Hop".into(),None, None)
     verify {
         assert_eq!(Marketplaces::<T>::contains_key(1), true);
         assert_eq!(Marketplaces::<T>::get(1).unwrap().owner, alice);
@@ -67,7 +65,7 @@ benchmarks! {
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Private, 0, "Hop".into(),
-            Some(TEST_URI.into()), Some(TEST_URI.into())));
+            None, None));
 
     }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup.into())
     verify {
@@ -80,7 +78,7 @@ benchmarks! {
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
-            MarketplaceType::Private, 0, "Hop".into(), Some(TEST_URI.into()), Some(TEST_URI.into())));
+            MarketplaceType::Private, 0, "Hop".into(), None, None));
         drop(Marketplace::<T>::add_account_to_allow_list(RawOrigin::Signed(alice.clone()).into(), 1, bob_lookup.clone()));
 
     }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup)
@@ -94,7 +92,7 @@ benchmarks! {
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
-            MarketplaceType::Private, 0, "Hop".into(),Some(TEST_URI.into()),Some(TEST_URI.into())));
+            MarketplaceType::Private, 0, "Hop".into(),None,None));
 
     }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup)
     verify {
@@ -104,7 +102,7 @@ benchmarks! {
     set_market_type {
         let alice: T::AccountId = account("ALICE", 0, 0);
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
-            MarketplaceType::Public, 0, "Hop".into(),Some(TEST_URI.into()) ,Some(TEST_URI.into())));
+            MarketplaceType::Public, 0, "Hop".into(),None ,None));
 
     }: _(RawOrigin::Signed(alice.clone().into()), 1, MarketplaceType::Private)
     verify {
@@ -114,7 +112,7 @@ benchmarks! {
     set_name {
         let alice: T::AccountId = account("ALICE", 0, 0);
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
-            MarketplaceType::Public, 0, "Hop".into(), Some(TEST_URI.into()),Some(TEST_URI.into())));
+            MarketplaceType::Public, 0, "Hop".into(), None,None));
 
         let new_name: Vec<u8> = "poH".into();
     }: _(RawOrigin::Signed(alice.clone().into()), 1, new_name.clone())
@@ -137,7 +135,7 @@ benchmarks! {
         let commission_fee = 15;
         let mkp_id = 1;
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
-            MarketplaceType::Public, 0, "Hop".into(),Some(TEST_URI.into()),Some(TEST_URI.into())));
+            MarketplaceType::Public, 0, "Hop".into(),None,None));
         assert_ne!(Marketplaces::<T>::get(mkp_id).unwrap().commission_fee, commission_fee);
 
     }: _(RawOrigin::Signed(alice.clone().into()), mkp_id, commission_fee)
@@ -145,28 +143,27 @@ benchmarks! {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().commission_fee, commission_fee);
     }
 
+    
     update_uri {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let mkp_id = 1;
+        let uri: URI= "test".as_bytes().to_vec();
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
             MarketplaceType::Public, 0, "Hop".into(), None, None));
-        assert_ne!(Marketplaces::<T>::get(mkp_id).unwrap().uri, Some(TEST_URI.as_bytes().to_vec()));
-
-    }:_(RawOrigin::Signed(alice.clone().into()), mkp_id, TEST_URI.into())
+    }:_(RawOrigin::Signed(alice.clone().into()), mkp_id, uri.clone())
     verify {
-        assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().uri, Some(TEST_URI.as_bytes().to_vec()));
+        assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().uri, Some(uri));
     }
 
     update_logo_uri {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let mkp_id = 1;
+        let uri: URI= "test".as_bytes().to_vec();
         drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(),
             MarketplaceType::Public, 0, "Hop".into(), None, None));
-        assert_ne!(Marketplaces::<T>::get(mkp_id).unwrap().logo_uri, Some(TEST_URI.as_bytes().to_vec()));
-
-    }:_(RawOrigin::Signed(alice.clone().into()), mkp_id, TEST_URI.into())
+    }:_(RawOrigin::Signed(alice.clone().into()), mkp_id, uri.clone())
     verify {
-        assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().logo_uri, Some(TEST_URI.as_bytes().to_vec()));
+        assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().logo_uri, Some(uri));
     }
 }
 
