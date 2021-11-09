@@ -487,8 +487,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::update_uri())]
-        pub fn update_uri(
+        #[pallet::weight(T::WeightInfo::set_uri())]
+        pub fn set_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             uri: URI,
@@ -521,8 +521,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::update_logo_uri())]
-        pub fn update_logo_uri(
+        #[pallet::weight(T::WeightInfo::set_logo_uri())]
+        pub fn set_logo_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             logo_uri: URI,

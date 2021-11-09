@@ -12,8 +12,8 @@ pub trait WeightInfo {
     fn set_name() -> Weight;
     fn set_marketplace_mint_fee() -> Weight;
     fn set_commission_fee() -> Weight;
-    fn update_uri() -> Weight;
-    fn update_logo_uri() -> Weight;
+    fn set_uri() -> Weight;
+    fn set_logo_uri() -> Weight;
 }
 
 impl WeightInfo for () {
@@ -91,13 +91,13 @@ impl WeightInfo for () {
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
     // TODO!
-    fn update_uri() -> Weight {
+    fn set_uri() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
     // TODO!
-    fn update_logo_uri() -> Weight {
+    fn set_logo_uri() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
