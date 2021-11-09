@@ -2,7 +2,7 @@
 
 use crate::{
     Call, Config, MarketplaceIdGenerator, MarketplaceType, Marketplaces, NFTCurrency,
-    NFTCurrencyId, NFTsForSale, Pallet,URI
+    NFTCurrencyId, NFTsForSale, Pallet, URI,
 };
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::RawOrigin;
@@ -143,7 +143,6 @@ benchmarks! {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().commission_fee, commission_fee);
     }
 
-    
     update_uri {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let mkp_id = 1;
