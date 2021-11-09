@@ -69,8 +69,14 @@ fn list_unhappy() {
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
             assert_noop!(ok, Error::<Test>::SeriesNotCompleted);
 
-            // Unhappy unknown marketplace
+            // Unhappy nft is capsulized
             help::finish_series(alice.clone(), series_id);
+            help::capsulize(true);
+            let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
+            assert_noop!(ok, Error::<Test>::NFTIsCapsulized);
+            help::capsulize(false);
+
+            // Unhappy unknown marketplace
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(10001));
             assert_noop!(ok, Error::<Test>::UnknownMarketplace);
 
@@ -728,11 +734,7 @@ fn update_uri_happy() {
                 Marketplace::marketplaces(1).unwrap().uri,
                 updated_uri.clone()
             );
-            assert_ok!(Marketplace::update_uri(
-                alice.clone(),
-                1,
-                updated_uri.unwrap()
-            ));
+            assert_ok!(Marketplace::set_uri(alice.clone(), 1, updated_uri.unwrap()));
             assert_eq!(Marketplace::marketplaces(1), Some(updated_info));
         })
 }
@@ -761,9 +763,9 @@ fn update_uri_unhappy() {
                 uri.clone()
             ));
 
-            let nok = Marketplace::update_uri(alice.clone(), 1, raw_too_short_uri);
+            let nok = Marketplace::set_uri(alice.clone(), 1, raw_too_short_uri);
             assert_noop!(nok, Error::<Test>::TooShortMarketplaceUri);
-            let nok = Marketplace::update_uri(alice, 1, raw_too_long_uri);
+            let nok = Marketplace::set_uri(alice, 1, raw_too_long_uri);
             assert_noop!(nok, Error::<Test>::TooLongMarketplaceUri);
         })
 }
@@ -805,7 +807,7 @@ fn update_logo_uri_happy() {
                 updated_uri.clone()
             );
 
-            assert_ok!(Marketplace::update_logo_uri(
+            assert_ok!(Marketplace::set_logo_uri(
                 alice.clone(),
                 1,
                 updated_uri.unwrap()
@@ -838,9 +840,9 @@ fn update_logo_uri_unhappy() {
                 uri.clone()
             ));
 
-            let nok = Marketplace::update_logo_uri(alice.clone(), 1, raw_too_short_uri);
+            let nok = Marketplace::set_logo_uri(alice.clone(), 1, raw_too_short_uri);
             assert_noop!(nok, Error::<Test>::TooShortMarketplaceLogoUri);
-            let nok = Marketplace::update_logo_uri(alice, 1, raw_too_long_uri);
+            let nok = Marketplace::set_logo_uri(alice, 1, raw_too_long_uri);
             assert_noop!(nok, Error::<Test>::TooLongMarketplaceLogoUri);
         })
 }

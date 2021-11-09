@@ -23,6 +23,7 @@ ternoa-primitives = { default-features = false, path = "../../primitives" }
 pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+ternoa-mock = { default-features = false, path = "../mock" }
 
 [features]
 default = ["std"]

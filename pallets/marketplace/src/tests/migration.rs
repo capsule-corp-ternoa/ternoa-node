@@ -1,10 +1,11 @@
+/*
 use super::mock::*;
 use crate::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use frame_support::traits::{OnRuntimeUpgrade, StorageVersion};
 use frame_support::Blake2_128Concat;
 use frame_system::Config as FSConfig;
 
-/*
+
 frame_support::generate_storage_alias!(
     Marketplace,  MarketplaceCount => Value<MarketplaceId>
 );
@@ -108,7 +109,7 @@ mod v6 {
         })
     }
 }
-*/
+
 #[test]
 fn upgrade_from_latest_to_latest() {
     ExtBuilder::default().build().execute_with(|| {
@@ -116,3 +117,5 @@ fn upgrade_from_latest_to_latest() {
         assert_eq!(weight, 0);
     })
 }
+
+*/

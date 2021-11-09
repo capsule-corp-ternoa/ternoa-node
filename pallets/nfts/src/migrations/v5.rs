@@ -1,4 +1,4 @@
-use super::Config;
+/* use super::Config;
 use crate::{NFTId, NftIdGenerator};
 use frame_support::traits::Get;
 use frame_support::weights::Weight;
@@ -17,3 +17,4 @@ pub fn migrate<T: Config>() -> Weight {
 
     T::BlockWeights::get().max_block
 }
+ */

@@ -19,6 +19,7 @@ frame_support::construct_runtime!(
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         Balances: pallet_balances::{Pallet, Call, Config<T>, Storage, Event<T>},
         NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
+        TernoaMock: ternoa_mock::{Pallet, Call, Storage, Event<T>, Config},
     }
 );
 
@@ -84,10 +85,15 @@ impl pallet_balances::Config for Test {
     type WeightInfo = ();
 }
 
+impl ternoa_mock::Config for Test {
+    type Event = Event;
+}
+
 parameter_types! {
     pub const MaxStringLength: u16 = 5;
     pub const MinStringLength: u16 = 1;
 }
+
 impl Config for Test {
     type Event = Event;
     type WeightInfo = ();
@@ -95,6 +101,7 @@ impl Config for Test {
     type FeesCollector = MockFeeCollector;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
+    type CapsulesTrait = TernoaMock;
 }
 
 pub struct MockFeeCollector;
@@ -160,11 +167,12 @@ pub mod help {
     use super::*;
     use crate::traits::LockableNFTs;
     use frame_support::assert_ok;
-    use ternoa_primitives::nfts::{NFTId, NFTSeriesId, NFTString};
+    use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
+    use ternoa_primitives::ternoa;
 
     pub fn create(
         owner: Origin,
-        ipfs_reference: NFTString,
+        ipfs_reference: ternoa::String,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
         assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
@@ -177,6 +185,10 @@ pub mod help {
 
     pub fn lock(nft_id: NFTId) {
         assert_ok!(NFTs::lock(nft_id));
+    }
+
+    pub fn capsulize(val: bool) {
+        TernoaMock::set_is_capsulized(val);
     }
 }
 

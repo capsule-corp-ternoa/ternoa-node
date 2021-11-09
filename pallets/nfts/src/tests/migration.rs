@@ -1,12 +1,12 @@
-use super::mock::*;
-use crate::{NFTId, NftIdGenerator};
-use frame_support::traits::{OnRuntimeUpgrade, StorageVersion};
+/* use super::mock::*; */
+use crate::NFTId;
+/* use frame_support::traits::{OnRuntimeUpgrade, StorageVersion}; */
 
 frame_support::generate_storage_alias!(
     Nfts, Total => Value<NFTId>
 );
 
-#[test]
+/* #[test]
 fn upgrade_from_v4_to_v5() {
     ExtBuilder::default().build().execute_with(|| {
         StorageVersion::put::<NFTs>(&StorageVersion::new(4));
@@ -28,3 +28,4 @@ fn upgrade_from_latest_to_latest() {
         assert_eq!(weight, 0);
     })
 }
+ */

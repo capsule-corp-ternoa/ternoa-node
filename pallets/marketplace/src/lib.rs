@@ -18,9 +18,10 @@ use default_weights::WeightInfo;
 use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
 use ternoa_primitives::nfts::NFTId;
+use ternoa_primitives::ternoa;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -32,7 +33,8 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
     use sp_std::vec::Vec;
-    use ternoa_nfts::traits::{LockableNFTs, NFTs};
+    use ternoa_common::traits;
+    use ternoa_common::traits::{CapsulesTrait, LockableNFTs, NFTs};
 
     pub type BalanceCaps<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -52,12 +54,17 @@ pub mod pallet {
         /// Weight values for this pallet
         type WeightInfo: WeightInfo;
 
-        /// Currency used to handle transactions and pay for the nfts.
+        /// Caps Currency
         type CurrencyCaps: Currency<Self::AccountId>;
+
+        /// Tiime Currency
         type CurrencyTiime: Currency<Self::AccountId>;
 
         /// Place where the marketplace fees go.
         type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
+
+        /// Capsule trait
+        type CapsulesTrait: traits::CapsulesTrait;
 
         /// The minimum length a string may be.
         #[pallet::constant]
@@ -99,6 +106,9 @@ pub mod pallet {
             let is_series_completed = T::NFTs::is_series_completed(nft_id) == Some(true);
             ensure!(is_series_completed, Error::<T>::SeriesNotCompleted);
 
+            let is_capsulized = T::CapsulesTrait::is_capsulized(nft_id);
+            ensure!(!is_capsulized, Error::<T>::NFTIsCapsulized);
+
             let market = Marketplaces::<T>::get(mkp_id).ok_or(Error::<T>::UnknownMarketplace)?;
 
             if market.kind == MarketplaceType::Private {
@@ -107,6 +117,7 @@ pub mod pallet {
             }
 
             T::NFTs::lock(nft_id)?;
+
             let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
 
@@ -212,7 +223,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             kind: MarketplaceType,
             commission_fee: u8,
-            name: MarketplaceString,
+            name: ternoa::String,
             uri: Option<URI>,
             logo_uri: Option<URI>,
         ) -> DispatchResultWithPostInfo {
@@ -404,7 +415,7 @@ pub mod pallet {
         pub fn set_name(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            name: MarketplaceString,
+            name: ternoa::String,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -476,8 +487,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::update_uri())]
-        pub fn update_uri(
+        #[pallet::weight(T::WeightInfo::set_uri())]
+        pub fn set_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             uri: URI,
@@ -510,8 +521,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::update_logo_uri())]
-        pub fn update_logo_uri(
+        #[pallet::weight(T::WeightInfo::set_logo_uri())]
+        pub fn set_logo_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
             logo_uri: URI,
@@ -547,7 +558,7 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", CommonBalanceT<T> = "Balance", MarketplaceString = "String")]
+    #[pallet::metadata(T::AccountId = "AccountId", CommonBalanceT<T> = "Balance", ternoa::String = "String")]
     pub enum Event<T: Config> {
         /// A nft has been listed for sale. \[nft id, nft currency, marketplace id\]
         NftListed(
@@ -570,7 +581,7 @@ pub mod pallet {
         /// Marketplace changed type.  \[marketplace id, marketplace type\]
         MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
         /// Marketplace changed name. \[marketplace id, marketplace name\]
-        MarketplaceNameChanged(MarketplaceId, MarketplaceString),
+        MarketplaceNameChanged(MarketplaceId, ternoa::String),
         /// Marketplace mint fee changed. \[mint fee\]
         MarketplaceMintFeeChanged(BalanceCaps<T>),
         /// Marketplace mint fee changed. \[marketplace id, commission fee\]
@@ -621,6 +632,8 @@ pub mod pallet {
         TooLongMarketplaceLogoUri,
         // Marketplace Logo URI is too short.
         TooShortMarketplaceLogoUri,
+        /// Nft is capsulized.
+        NFTIsCapsulized,
     }
 
     /// Nfts listed on the marketplace

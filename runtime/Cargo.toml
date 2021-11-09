@@ -13,6 +13,7 @@ ternoa-marketplace = { default-features = false, path = "../pallets/marketplace"
 ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
 ternoa-sgx = { default-features = false, path = "../pallets/sgx" }
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
+ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
 static_assertions = { version = "1.1.0" }
 serde = { optional = true, version = "1.0.126" }
@@ -113,6 +114,7 @@ std = [
 	"ternoa-primitives/std",
 	"ternoa-timed-escrow/std",
 	"ternoa-sgx/std",
+	"ternoa-capsules/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking",
@@ -138,4 +140,5 @@ runtime-benchmarks = [
 	"ternoa-timed-escrow/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
 	"ternoa-sgx/runtime-benchmarks",
+	"ternoa-capsules/runtime-benchmarks",
 ]

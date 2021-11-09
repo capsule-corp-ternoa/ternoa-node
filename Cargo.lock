@@ -7301,12 +7301,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-capsules"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-nfts",
+ "ternoa-primitives",
+]
+
+[[package]]
 name = "ternoa-common"
 version = "0.2.0"
 dependencies = [
  "frame-support",
  "sp-runtime",
  "sp-std",
+ "ternoa-primitives",
 ]
 
 [[package]]
@@ -7342,7 +7363,25 @@ dependencies = [
  "sp-std",
  "ternoa-account-store",
  "ternoa-common",
+ "ternoa-mock",
  "ternoa-nfts",
+ "ternoa-primitives",
+]
+
+[[package]]
+name = "ternoa-mock"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
  "ternoa-primitives",
 ]
 
@@ -7362,6 +7401,7 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "ternoa-common",
+ "ternoa-mock",
  "ternoa-primitives",
 ]
 
@@ -7428,6 +7468,7 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-account-store",
+ "ternoa-capsules",
  "ternoa-marketplace",
  "ternoa-nfts",
  "ternoa-primitives",

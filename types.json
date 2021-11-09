@@ -3,18 +3,18 @@
     "Address": "MultiAddress",
     "LookupSource": "MultiAddress",
     "ShardIdentifier": "Hash",
-    "Url": "Vec<u8>",
+    "Url": "Text",
+    "URI": "Text",
     "ClusterId": "u32",
     "EnclaveId": "u32",
     "MarketplaceId": "u32",
-    "MarketplaceString": "Text",
     "BalanceCaps": "Balance",
     "NFTId": "u32",
-    "NFTString": "Text",
+    "String": "Text",
     "NFTSeriesId": "Text",
     "NFTData": {
         "owner": "AccountId",
-        "ipfs_reference": "NFTString",
+        "ipfs_reference": "String",
         "series_id": "NFTSeriesId",
         "locked": "bool"
     },
@@ -55,7 +55,9 @@
         "commission_fee": "u8",
         "owner": "AccountId",
         "allow_list": "Vec<AccountId>",
-        "name": "MarketplaceString"
+        "name": "String",
+        "uri": "Option<URI>",
+        "logo_uri": "Option<URI>"
     },
     "Cluster": {
         "enclaves": "Vec<EnclaveId>"
@@ -63,6 +65,11 @@
     "Enclave": {
         "api_url": "Url"
     },
+    "CapsuleData": {
+        "owner": "AccountId",
+        "ipfs_reference": "String"
+    },
+    "CapsuleLedger": "Vec<(NFTId, Balance)>",
     "Status": {
         "_enum": [
             "Free",

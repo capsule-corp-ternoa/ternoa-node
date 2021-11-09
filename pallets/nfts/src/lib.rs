@@ -8,9 +8,10 @@ mod tests;
 
 mod default_weights;
 mod migrations;
-pub mod traits;
 
 pub use default_weights::WeightInfo;
+use frame_support::dispatch::DispatchErrorWithPostInfo;
+use frame_system::Origin;
 pub use pallet::*;
 
 use frame_support::pallet_prelude::ensure;
@@ -18,9 +19,11 @@ use frame_support::traits::StorageVersion;
 use sp_runtime::DispatchResult;
 use sp_std::vec;
 use sp_std::vec::Vec;
-use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId, NFTString};
+use ternoa_common::traits;
+use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
+use ternoa_primitives::ternoa;
 
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(5);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -30,6 +33,7 @@ pub mod pallet {
     use frame_support::{pallet_prelude::*, transactional};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
+    use ternoa_common::traits::CapsulesTrait;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -43,6 +47,9 @@ pub mod pallet {
 
         /// What we do with additional fees
         type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
+
+        /// Capsule trait
+        type CapsulesTrait: traits::CapsulesTrait;
 
         /// The minimum length a string may be.
         #[pallet::constant]
@@ -82,7 +89,7 @@ pub mod pallet {
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
-            ipfs_reference: NFTString,
+            ipfs_reference: ternoa::String,
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -142,6 +149,9 @@ pub mod pallet {
             ensure!(!data.locked, Error::<T>::Locked);
             ensure!(!series.draft, Error::<T>::SeriesIsInDraft);
 
+            let is_capsulized = T::CapsulesTrait::is_capsulized(id);
+            ensure!(!is_capsulized, Error::<T>::NFTIsCapsulized);
+
             data.owner = to.clone();
             Data::<T>::insert(id, data);
 
@@ -161,6 +171,9 @@ pub mod pallet {
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
             ensure!(!data.locked, Error::<T>::Locked);
+
+            let is_capsulized = T::CapsulesTrait::is_capsulized(id);
+            ensure!(!is_capsulized, Error::<T>::NFTIsCapsulized);
 
             Data::<T>::remove(id);
             Self::deposit_event(Event::Burned(id));
@@ -217,7 +230,7 @@ pub mod pallet {
         pub fn set_ipfs_reference(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            ipfs_reference: NFTString,
+            ipfs_reference: ternoa::String,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -252,10 +265,10 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId", NFTString = "String")]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId", ternoa::String = "String")]
     pub enum Event<T: Config> {
         /// A new NFT was created. \[nft id, owner, series id, ipfs reference\]
-        Created(NFTId, T::AccountId, NFTSeriesId, NFTString),
+        Created(NFTId, T::AccountId, NFTSeriesId, ternoa::String),
         /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
         Transfer(NFTId, T::AccountId, T::AccountId),
         /// An NFT was updated by its owner. \[nft id\]
@@ -274,7 +287,7 @@ pub mod pallet {
         /// Nft mint fee changed. \[mint fee\]
         NftMintFeeChanged(BalanceOf<T>),
         /// IPFS reference changed. \[nft id, ipfs reference\]
-        IpfsReferenceChanged(NFTId, NFTString),
+        IpfsReferenceChanged(NFTId, ternoa::String),
     }
 
     #[pallet::error]
@@ -302,6 +315,8 @@ pub mod pallet {
         TooShortIpfsReference,
         /// Ipfs reference is too long.
         TooLongIpfsReference,
+        /// Nft is capsulized.
+        NFTIsCapsulized,
     }
 
     /// The number of NFTs managed by this pallet
@@ -401,14 +416,14 @@ impl<T: Config> traits::NFTs for Pallet<T> {
         Some(!Series::<T>::get(series_id)?.draft)
     }
 
-    /*     fn create_nft(
+    fn create_nft(
         owner: Self::AccountId,
-        ipfs_reference: NFTString,
+        ipfs_reference: ternoa::String,
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo> {
         Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
         return Ok(Self::nft_id_generator() - 1);
-    } */
+    }
 }
 
 impl<T: Config> traits::LockableNFTs for Pallet<T> {

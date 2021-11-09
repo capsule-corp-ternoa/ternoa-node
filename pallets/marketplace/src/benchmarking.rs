@@ -8,7 +8,7 @@ use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
 use frame_system::RawOrigin;
 use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
-use ternoa_nfts::traits::NFTs;
+use ternoa_common::traits::NFTs;
 
 use crate::Pallet as Marketplace;
 
@@ -143,7 +143,7 @@ benchmarks! {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().commission_fee, commission_fee);
     }
 
-    update_uri {
+    set_uri {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let mkp_id = 1;
         let uri: URI= "test".as_bytes().to_vec();
@@ -154,7 +154,7 @@ benchmarks! {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().uri, Some(uri));
     }
 
-    update_logo_uri {
+    set_logo_uri {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let mkp_id = 1;
         let uri: URI= "test".as_bytes().to_vec();
