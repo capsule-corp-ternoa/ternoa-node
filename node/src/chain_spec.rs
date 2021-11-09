@@ -177,6 +177,8 @@ pub fn testnet_genesis(
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     Default::default(),
                     "Ternoa Marketplace".into(),
+                    None,
+                    None,
                 ),
             )],
             marketplace_mint_fee: 10000000000000000000000,

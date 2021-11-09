@@ -7,7 +7,7 @@ use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
 
 pub type MarketplaceString = Vec<u8>;
-
+pub type URI = Vec<u8>;
 /// Structure that stores both NFT currencies at the same time.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -182,6 +182,8 @@ pub struct MarketplaceInformation<T: Config> {
     pub owner: T::AccountId,
     pub allow_list: Vec<T::AccountId>,
     pub name: MarketplaceString,
+    pub uri: Option<URI>,
+    pub logo_uri: Option<URI>,
 }
 
 impl<T: Config> MarketplaceInformation<T> {
@@ -191,6 +193,8 @@ impl<T: Config> MarketplaceInformation<T> {
         owner: T::AccountId,
         allow_list: Vec<T::AccountId>,
         name: MarketplaceString,
+        uri: Option<URI>,
+        logo_uri: Option<URI>,
     ) -> MarketplaceInformation<T> {
         Self {
             kind,
@@ -198,6 +202,8 @@ impl<T: Config> MarketplaceInformation<T> {
             owner,
             allow_list,
             name,
+            uri,
+            logo_uri,
         }
     }
 }

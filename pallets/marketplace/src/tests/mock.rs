@@ -202,13 +202,23 @@ impl ExtBuilder {
                 ALICE,
                 Default::default(),
                 "Ternoa marketplace".into(),
+                None,
+                None,
             ),
         )];
         let mut i = 1;
         for market in self.marketplaces {
             marketplaces.push((
                 i,
-                MarketplaceInformation::new(market.1, market.2, market.0, vec![], market.3),
+                MarketplaceInformation::new(
+                    market.1,
+                    market.2,
+                    market.0,
+                    vec![],
+                    market.3,
+                    None,
+                    None,
+                ),
             ));
 
             i += 1;
@@ -273,7 +283,14 @@ pub mod help {
         name: MarketplaceString,
         allow_list: Vec<u64>,
     ) -> MarketplaceId {
-        assert_ok!(Marketplace::create(owner.clone(), kind, fee, name));
+        assert_ok!(Marketplace::create(
+            owner.clone(),
+            kind,
+            fee,
+            name,
+            None,
+            None
+        ));
         let mkp_id = Marketplace::marketplace_id_generator();
 
         for acc in allow_list {
@@ -309,6 +326,8 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
                 ALICE,
                 Default::default(),
                 "Ternoa Marketplace".into(),
+                None,
+                None,
             ),
         )],
         marketplace_mint_fee: 255,

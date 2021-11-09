@@ -107,7 +107,6 @@ pub mod pallet {
             }
 
             T::NFTs::lock(nft_id)?;
-
             let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
 
@@ -214,6 +213,8 @@ pub mod pallet {
             kind: MarketplaceType,
             commission_fee: u8,
             name: MarketplaceString,
+            uri: Option<URI>,
+            logo_uri: Option<URI>,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -222,6 +223,28 @@ pub mod pallet {
             let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
             ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
             ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
+
+            if let Some(uri_value) = uri.as_ref() {
+                ensure!(
+                    uri_value.len() <= T::MaxStringLength::get() as usize,
+                    Error::<T>::TooLongMarketplaceUri
+                );
+                ensure!(
+                    uri_value.len() >= T::MinStringLength::get() as usize,
+                    Error::<T>::TooShortMarketplaceUri
+                );
+            }
+
+            if let Some(logo_uri_value) = logo_uri.as_ref() {
+                ensure!(
+                    logo_uri_value.len() <= T::MaxStringLength::get() as usize,
+                    Error::<T>::TooLongMarketplaceLogoUri
+                );
+                ensure!(
+                    logo_uri_value.len() >= T::MinStringLength::get() as usize,
+                    Error::<T>::TooShortMarketplaceLogoUri
+                );
+            }
 
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
@@ -238,6 +261,8 @@ pub mod pallet {
                 caller_id.clone(),
                 Vec::default(),
                 name,
+                uri,
+                logo_uri,
             );
 
             let id = MarketplaceIdGenerator::<T>::get();
@@ -450,6 +475,74 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::update_uri())]
+        pub fn update_uri(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            uri: URI,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            ensure!(
+                uri.len() <= T::MaxStringLength::get() as usize,
+                Error::<T>::TooLongMarketplaceUri
+            );
+            ensure!(
+                uri.len() >= T::MinStringLength::get() as usize,
+                Error::<T>::TooShortMarketplaceUri
+            );
+
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
+                if let Some(market) = x {
+                    if market.owner != who {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+                    market.uri = Some(uri.clone());
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceUriUpdated(marketplace_id, uri);
+            Self::deposit_event(event);
+            Ok(().into())
+        }
+
+        #[pallet::weight(T::WeightInfo::update_logo_uri())]
+        pub fn update_logo_uri(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            logo_uri: URI,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            ensure!(
+                logo_uri.len() <= T::MaxStringLength::get() as usize,
+                Error::<T>::TooLongMarketplaceLogoUri
+            );
+            ensure!(
+                logo_uri.len() >= T::MinStringLength::get() as usize,
+                Error::<T>::TooShortMarketplaceLogoUri
+            );
+
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
+                if let Some(market) = x {
+                    if market.owner != who {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+                    market.logo_uri = Some(logo_uri.clone());
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::MarketplaceLogoUriUpdated(marketplace_id, logo_uri);
+            Self::deposit_event(event);
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -482,6 +575,10 @@ pub mod pallet {
         MarketplaceMintFeeChanged(BalanceCaps<T>),
         /// Marketplace mint fee changed. \[marketplace id, commission fee\]
         MarketplaceCommissionFeeChanged(MarketplaceId, u8),
+        /// Marketplace URI updated. \[marketplace id, URI\]
+        MarketplaceUriUpdated(MarketplaceId, URI),
+        /// Marketplace Logo URI updated. \[marketplace id, logo URI\]
+        MarketplaceLogoUriUpdated(MarketplaceId, URI),
     }
 
     #[pallet::error]
@@ -516,6 +613,14 @@ pub mod pallet {
         TooLongMarketplaceName,
         /// Series is not completed.
         SeriesNotCompleted,
+        // Marketplace URI is too long
+        TooLongMarketplaceUri,
+        // Marketplace URI is too short.
+        TooShortMarketplaceUri,
+        // Marketplace Logo URI is too long
+        TooLongMarketplaceLogoUri,
+        // Marketplace Logo URI is too short.
+        TooShortMarketplaceLogoUri,
     }
 
     /// Nfts listed on the marketplace
