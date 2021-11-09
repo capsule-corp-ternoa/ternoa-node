@@ -226,22 +226,22 @@ pub mod pallet {
 
             if let Some(uri_value) = uri.as_ref() {
                 ensure!(
-                    uri_value.clone().len() <= T::MaxStringLength::get() as usize,
+                    uri_value.len() <= T::MaxStringLength::get() as usize,
                     Error::<T>::TooLongMarketplaceUri
                 );
                 ensure!(
-                    uri_value.clone().len() >= T::MinStringLength::get() as usize,
+                    uri_value.len() >= T::MinStringLength::get() as usize,
                     Error::<T>::TooShortMarketplaceUri
                 );
             }
 
             if let Some(logo_uri_value) = logo_uri.as_ref() {
                 ensure!(
-                    logo_uri_value.clone().len() <= T::MaxStringLength::get() as usize,
+                    logo_uri_value.len() <= T::MaxStringLength::get() as usize,
                     Error::<T>::TooLongMarketplaceLogoUri
                 );
                 ensure!(
-                    logo_uri_value.clone().len() >= T::MinStringLength::get() as usize,
+                    logo_uri_value.len() >= T::MinStringLength::get() as usize,
                     Error::<T>::TooShortMarketplaceLogoUri
                 );
             }
