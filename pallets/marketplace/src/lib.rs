@@ -21,7 +21,7 @@ use ternoa_primitives::nfts::NFTId;
 use ternoa_primitives::ternoa;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
 
 #[frame_support::pallet]
 pub mod pallet {

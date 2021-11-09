@@ -23,7 +23,7 @@ use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
 use ternoa_primitives::ternoa;
 
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(5);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
 
 #[frame_support::pallet]
 pub mod pallet {
