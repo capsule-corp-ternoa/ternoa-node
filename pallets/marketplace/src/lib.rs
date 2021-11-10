@@ -271,6 +271,7 @@ pub mod pallet {
                 commission_fee,
                 caller_id.clone(),
                 Vec::default(),
+                Vec::default(),
                 name,
                 uri,
                 logo_uri,
@@ -349,6 +350,77 @@ pub mod pallet {
             })?;
 
             let event = Event::AccountRemovedFromMarketplace(marketplace_id, account_id);
+            Self::deposit_event(event);
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(T::WeightInfo::add_account_to_disallow_list())]
+        pub fn add_account_to_disallow_list(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            account_id: <T::Lookup as StaticLookup>::Source,
+        ) -> DispatchResultWithPostInfo {
+            let caller_id = ensure_signed(origin)?;
+            let account_id = T::Lookup::lookup(account_id)?;
+
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
+                if let Some(market_info) = x {
+                    if market_info.owner != caller_id {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+
+                    if market_info.kind != MarketplaceType::Public {
+                        return Err(Error::<T>::UnsupportedMarketplace);
+                    }
+
+                    market_info.disallow_list.push(account_id.clone());
+
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::AccountBlacklistedFromMarketplace(marketplace_id, account_id);
+            Self::deposit_event(event);
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(T::WeightInfo::remove_account_from_disallow_list())]
+        pub fn remove_account_from_disallow_list(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            account_id: <T::Lookup as StaticLookup>::Source,
+        ) -> DispatchResultWithPostInfo {
+            let caller_id = ensure_signed(origin)?;
+            let account_id = T::Lookup::lookup(account_id)?;
+
+            Marketplaces::<T>::mutate(marketplace_id, |x| {
+                if let Some(market_info) = x {
+                    if market_info.owner != caller_id {
+                        return Err(Error::<T>::NotMarketplaceOwner);
+                    }
+
+                    if market_info.kind != MarketplaceType::Public {
+                        return Err(Error::<T>::UnsupportedMarketplace);
+                    }
+
+                    let index = market_info
+                        .disallow_list
+                        .iter()
+                        .position(|x| *x == account_id);
+                    let index = index.ok_or(Error::<T>::AccountNotFound)?;
+                    market_info.disallow_list.swap_remove(index);
+
+                    Ok(())
+                } else {
+                    Err(Error::<T>::UnknownMarketplace)
+                }
+            })?;
+
+            let event = Event::AccountUnBlacklistedFromMarketplace(marketplace_id, account_id);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -590,6 +662,10 @@ pub mod pallet {
         MarketplaceUriUpdated(MarketplaceId, URI),
         /// Marketplace Logo URI updated. \[marketplace id, logo URI\]
         MarketplaceLogoUriUpdated(MarketplaceId, URI),
+        /// Account added to disallow list for a marketplace.  \[marketplace id, account\]
+        AccountBlacklistedFromMarketplace(MarketplaceId, T::AccountId),
+        /// Account removed from disallow list for a marketplace.  \[marketplace id, account\]
+        AccountUnBlacklistedFromMarketplace(MarketplaceId, T::AccountId),
     }
 
     #[pallet::error]

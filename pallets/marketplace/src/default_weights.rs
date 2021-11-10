@@ -14,6 +14,8 @@ pub trait WeightInfo {
     fn set_commission_fee() -> Weight;
     fn set_uri() -> Weight;
     fn set_logo_uri() -> Weight;
+    fn add_account_to_disallow_list() -> Weight;
+    fn remove_account_from_disallow_list() -> Weight;
 }
 
 impl WeightInfo for () {
@@ -98,6 +100,20 @@ impl WeightInfo for () {
     }
     // TODO!
     fn set_logo_uri() -> Weight {
+        (24_310_000 as Weight)
+            .saturating_add(DbWeight::get().reads(1 as Weight))
+            .saturating_add(DbWeight::get().writes(1 as Weight))
+    }
+
+    // TODO!
+    fn add_account_to_disallow_list() -> Weight {
+        (24_310_000 as Weight)
+            .saturating_add(DbWeight::get().reads(1 as Weight))
+            .saturating_add(DbWeight::get().writes(1 as Weight))
+    }
+
+    // TODO!
+    fn remove_account_from_disallow_list() -> Weight {
         (24_310_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))

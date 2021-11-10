@@ -297,6 +297,7 @@ fn create_happy() {
                 fee,
                 ALICE,
                 vec![],
+                vec![],
                 name.clone(),
                 uri.clone(),
                 logo_uri.clone(),
@@ -717,6 +718,7 @@ fn update_uri_happy() {
                 fee,
                 ALICE,
                 vec![],
+                vec![],
                 name.clone(),
                 updated_uri.clone(),
                 uri.clone(),
@@ -789,6 +791,7 @@ fn update_logo_uri_happy() {
                 fee,
                 ALICE,
                 vec![],
+                vec![],
                 name.clone(),
                 uri.clone(),
                 updated_uri.clone(),
@@ -844,5 +847,103 @@ fn update_logo_uri_unhappy() {
             assert_noop!(nok, Error::<Test>::TooShortMarketplaceLogoUri);
             let nok = Marketplace::set_logo_uri(alice, 1, raw_too_long_uri);
             assert_noop!(nok, Error::<Test>::TooLongMarketplaceLogoUri);
+        })
+}
+
+#[test]
+fn add_account_to_disallow_list_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let list = vec![];
+            let mkp_1 = help::create_mkp(alice.clone(), MPT::Public, 0, vec![50], list.clone());
+            assert_eq!(
+                Marketplace::marketplaces(mkp_1).unwrap().disallow_list,
+                list
+            );
+
+            let ok = Marketplace::add_account_to_disallow_list(alice.clone(), mkp_1, BOB);
+            assert_ok!(ok);
+            let list = vec![BOB];
+            assert_eq!(
+                Marketplace::marketplaces(mkp_1).unwrap().disallow_list,
+                list
+            );
+        })
+}
+
+#[test]
+fn add_account_to_disallow_list_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(BOB, 1000), (DAVE, 1000)])
+        .build()
+        .execute_with(|| {
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+
+            // Unhappy unknown marketplace
+            let ok = Marketplace::add_account_to_disallow_list(bob.clone(), 1001, DAVE);
+            assert_noop!(ok, Error::<Test>::UnknownMarketplace);
+
+            // Unhappy not marketplace owner
+            let ok = Marketplace::add_account_to_disallow_list(bob.clone(), 0, DAVE);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+
+            // Unhappy unsupported marketplace type
+            let mkp_id = help::create_mkp(bob.clone(), MPT::Private, 0, vec![50], vec![]);
+            let ok = Marketplace::add_account_to_disallow_list(bob.clone(), mkp_id, DAVE);
+            assert_noop!(ok, Error::<Test>::UnsupportedMarketplace);
+        })
+}
+
+#[test]
+fn remove_account_from_disallow_list_happy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 1000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            // Happy path
+            let list = vec![BOB];
+            let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 0, vec![50], list.clone());
+            assert_eq!(
+                Marketplace::marketplaces(mkp_id).unwrap().disallow_list,
+                list
+            );
+
+            let ok = Marketplace::remove_account_from_disallow_list(alice.clone(), mkp_id, BOB);
+            assert_ok!(ok);
+            let list: Vec<u64> = vec![];
+            assert_eq!(
+                Marketplace::marketplaces(mkp_id).unwrap().disallow_list,
+                list
+            );
+        })
+}
+
+#[test]
+fn remove_account_from_disallow_list_unhappy() {
+    ExtBuilder::default()
+        .caps(vec![(BOB, 1000), (DAVE, 1000)])
+        .build()
+        .execute_with(|| {
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+
+            // Unhappy unknown marketplace
+            let ok = Marketplace::remove_account_from_disallow_list(bob.clone(), 1001, DAVE);
+            assert_noop!(ok, Error::<Test>::UnknownMarketplace);
+
+            // Unhappy not marketplace owner
+            let ok = Marketplace::remove_account_from_disallow_list(bob.clone(), 0, DAVE);
+            assert_noop!(ok, Error::<Test>::NotMarketplaceOwner);
+
+            // Unhappy unsupported marketplace type
+            let mkp_id = help::create_mkp(bob.clone(), MPT::Private, 0, vec![50], vec![]);
+            let ok = Marketplace::remove_account_from_disallow_list(bob.clone(), mkp_id, DAVE);
+            assert_noop!(ok, Error::<Test>::UnsupportedMarketplace);
         })
 }
