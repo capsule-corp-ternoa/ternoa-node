@@ -314,7 +314,7 @@ pub mod pallet {
                 }
             })?;
 
-            let event = Event::AccountAddedToMarketplace(marketplace_id, account_id);
+            let event = Event::AccountAddedToAllowList(marketplace_id, account_id);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -349,7 +349,7 @@ pub mod pallet {
                 }
             })?;
 
-            let event = Event::AccountRemovedFromMarketplace(marketplace_id, account_id);
+            let event = Event::AccountRemovedFromAllowList(marketplace_id, account_id);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -644,10 +644,10 @@ pub mod pallet {
         NftSold(NFTId, T::AccountId),
         /// A marketplace has been created.  \[marketplace id, new owner\]
         MarketplaceCreated(MarketplaceId, T::AccountId),
-        /// Account added to marketplace.  \[marketplace id, account\]
-        AccountAddedToMarketplace(MarketplaceId, T::AccountId),
-        /// Account removed from marketplace.  \[marketplace id, account\]
-        AccountRemovedFromMarketplace(MarketplaceId, T::AccountId),
+        /// Account added to marketplace allow list.  \[marketplace id, account\]
+        AccountAddedToAllowList(MarketplaceId, T::AccountId),
+        /// Account removed from marketplace allow list.  \[marketplace id, account\]
+        AccountRemovedFromAllowList(MarketplaceId, T::AccountId),
         /// Marketplace changed owner.  \[marketplace id, new owner\]
         MarketplaceChangedOwner(MarketplaceId, T::AccountId),
         /// Marketplace changed type.  \[marketplace id, marketplace type\]
