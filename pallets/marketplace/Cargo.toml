@@ -41,6 +41,7 @@ std = [
     "ternoa-primitives/std",
     "ternoa-account-store/std",
     "ternoa-nfts/std",
+    "ternoa-mock/std",
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

@@ -164,6 +164,33 @@ benchmarks! {
     verify {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().logo_uri, Some(uri));
     }
+
+  add_account_to_disallow_list {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
+
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Public, 0, "Hop".into(),
+            None, None));
+
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup.into())
+    verify {
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().disallow_list, vec![bob]);
+    }
+
+    remove_account_from_disallow_list {
+        let alice: T::AccountId = account("ALICE", 0, 0);
+        let bob: T::AccountId = account("BOB", 0, 0);
+        let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
+
+        drop(Marketplace::<T>::create(RawOrigin::Signed(alice.clone()).into(), MarketplaceType::Public, 0, "Hop".into(),
+            None, None));
+        drop(Marketplace::<T>::add_account_to_disallow_list(RawOrigin::Signed(alice.clone()).into(), 1, bob_lookup.clone()));
+
+    }: _(RawOrigin::Signed(alice.clone().into()), 1, bob_lookup.into())
+    verify {
+        assert_eq!(Marketplaces::<T>::get(1).unwrap().disallow_list, vec![]);
+    }
 }
 
 impl_benchmark_test_suite!(

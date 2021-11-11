@@ -176,6 +176,7 @@ pub fn testnet_genesis(
                     // Alice
                     get_account_id_from_seed::<sr25519::Public>("Alice"),
                     Default::default(),
+                    Default::default(),
                     "Ternoa Marketplace".into(),
                     None,
                     None,
