@@ -382,7 +382,7 @@ pub mod pallet {
                 }
             })?;
 
-            let event = Event::AccountBlacklistedFromMarketplace(marketplace_id, account_id);
+            let event = Event::AccountAddedToDisallowList(marketplace_id, account_id);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -420,7 +420,7 @@ pub mod pallet {
                 }
             })?;
 
-            let event = Event::AccountUnBlacklistedFromMarketplace(marketplace_id, account_id);
+            let event = Event::AccountRemovedFromDisallowList(marketplace_id, account_id);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -663,9 +663,9 @@ pub mod pallet {
         /// Marketplace Logo URI updated. \[marketplace id, logo URI\]
         MarketplaceLogoUriUpdated(MarketplaceId, URI),
         /// Account added to disallow list for a marketplace.  \[marketplace id, account\]
-        AccountBlacklistedFromMarketplace(MarketplaceId, T::AccountId),
+        AccountAddedToDisallowList(MarketplaceId, T::AccountId),
         /// Account removed from disallow list for a marketplace.  \[marketplace id, account\]
-        AccountUnBlacklistedFromMarketplace(MarketplaceId, T::AccountId),
+        AccountRemovedFromDisallowList(MarketplaceId, T::AccountId),
     }
 
     #[pallet::error]

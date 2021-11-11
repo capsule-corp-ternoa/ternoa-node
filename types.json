@@ -55,6 +55,7 @@
         "commission_fee": "u8",
         "owner": "AccountId",
         "allow_list": "Vec<AccountId>",
+        "disallow_list": "Vec<AccountId>",
         "name": "String",
         "uri": "Option<URI>",
         "logo_uri": "Option<URI>"
