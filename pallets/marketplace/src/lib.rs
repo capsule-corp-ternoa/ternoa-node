@@ -296,22 +296,18 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    if market_info.kind != MarketplaceType::Private {
-                        return Err(Error::<T>::UnsupportedMarketplace);
-                    }
-
-                    market_info.allow_list.push(account_id.clone());
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                ensure!(
+                    market_info.kind == MarketplaceType::Private,
+                    Error::<T>::UnsupportedMarketplace
+                );
+                market_info.allow_list.push(account_id.clone());
+                Ok(())
             })?;
 
             let event = Event::AccountAddedToAllowList(marketplace_id, account_id);
@@ -329,24 +325,20 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    if market_info.kind != MarketplaceType::Private {
-                        return Err(Error::<T>::UnsupportedMarketplace);
-                    }
-
-                    let index = market_info.allow_list.iter().position(|x| *x == account_id);
-                    let index = index.ok_or(Error::<T>::AccountNotFound)?;
-                    market_info.allow_list.swap_remove(index);
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                ensure!(
+                    market_info.kind == MarketplaceType::Private,
+                    Error::<T>::UnsupportedMarketplace
+                );
+                let index = market_info.allow_list.iter().position(|x| *x == account_id);
+                let index = index.ok_or(Error::<T>::AccountNotFound)?;
+                market_info.allow_list.swap_remove(index);
+                Ok(())
             })?;
 
             let event = Event::AccountRemovedFromAllowList(marketplace_id, account_id);
@@ -364,22 +356,18 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    if market_info.kind != MarketplaceType::Public {
-                        return Err(Error::<T>::UnsupportedMarketplace);
-                    }
-
-                    market_info.disallow_list.push(account_id.clone());
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                ensure!(
+                    market_info.kind == MarketplaceType::Public,
+                    Error::<T>::UnsupportedMarketplace
+                );
+                market_info.disallow_list.push(account_id.clone());
+                Ok(())
             })?;
 
             let event = Event::AccountAddedToDisallowList(marketplace_id, account_id);
@@ -397,27 +385,23 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    if market_info.kind != MarketplaceType::Public {
-                        return Err(Error::<T>::UnsupportedMarketplace);
-                    }
-
-                    let index = market_info
-                        .disallow_list
-                        .iter()
-                        .position(|x| *x == account_id);
-                    let index = index.ok_or(Error::<T>::AccountNotFound)?;
-                    market_info.disallow_list.swap_remove(index);
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                ensure!(
+                    market_info.kind == MarketplaceType::Public,
+                    Error::<T>::UnsupportedMarketplace
+                );
+                let index = market_info
+                    .disallow_list
+                    .iter()
+                    .position(|x| *x == account_id);
+                let index = index.ok_or(Error::<T>::AccountNotFound)?;
+                market_info.disallow_list.swap_remove(index);
+                Ok(())
             })?;
 
             let event = Event::AccountRemovedFromDisallowList(marketplace_id, account_id);
@@ -435,18 +419,14 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    market_info.owner = account_id.clone();
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                market_info.owner = account_id.clone();
+                Ok(())
             })?;
 
             let event = Event::MarketplaceChangedOwner(marketplace_id, account_id);
@@ -463,18 +443,14 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    market_info.kind = kind;
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                market_info.kind = kind;
+                Ok(())
             })?;
 
             let event = Event::MarketplaceTypeChanged(marketplace_id, kind);
@@ -496,18 +472,14 @@ pub mod pallet {
             ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
             ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market_info) = x {
-                    if market_info.owner != caller_id {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    market_info.name = name.clone();
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(
+                    market_info.owner == caller_id,
+                    Error::<T>::NotMarketplaceOwner
+                );
+                market_info.name = name.clone();
+                Ok(())
             })?;
 
             let event = Event::MarketplaceNameChanged(marketplace_id, name);
@@ -539,18 +511,11 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| {
-                if let Some(market) = x {
-                    if market.owner != who {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-
-                    market.commission_fee = commission_fee;
-
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
+                market_info.commission_fee = commission_fee;
+                Ok(())
             })?;
 
             let event = Event::MarketplaceCommissionFeeChanged(marketplace_id, commission_fee);
@@ -576,16 +541,11 @@ pub mod pallet {
                 Error::<T>::TooShortMarketplaceUri
             );
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
-                if let Some(market) = x {
-                    if market.owner != who {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-                    market.uri = Some(uri.clone());
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
+                market_info.uri = Some(uri.clone());
+                Ok(())
             })?;
 
             let event = Event::MarketplaceUriUpdated(marketplace_id, uri);
@@ -610,16 +570,11 @@ pub mod pallet {
                 Error::<T>::TooShortMarketplaceLogoUri
             );
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| {
-                if let Some(market) = x {
-                    if market.owner != who {
-                        return Err(Error::<T>::NotMarketplaceOwner);
-                    }
-                    market.logo_uri = Some(logo_uri.clone());
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownMarketplace)
-                }
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
+                market_info.logo_uri = Some(logo_uri.clone());
+                Ok(())
             })?;
 
             let event = Event::MarketplaceLogoUriUpdated(marketplace_id, logo_uri);
