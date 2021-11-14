@@ -296,7 +296,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -325,7 +325,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -356,7 +356,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -385,7 +385,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -402,7 +402,6 @@ pub mod pallet {
                 let index = index.ok_or(Error::<T>::AccountNotFound)?;
                 market_info.disallow_list.swap_remove(index);
                 Ok(())
-                
             })?;
 
             let event = Event::AccountRemovedFromDisallowList(marketplace_id, account_id);
@@ -420,7 +419,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -444,7 +443,7 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -473,7 +472,7 @@ pub mod pallet {
             ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
             ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -512,7 +511,7 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
 
-            Marketplaces::<T>::mutate(marketplace_id, |x|-> Result<(), Error<T>> {
+            Marketplaces::<T>::mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
                 market_info.commission_fee = commission_fee;
@@ -542,7 +541,7 @@ pub mod pallet {
                 Error::<T>::TooShortMarketplaceUri
             );
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>>{
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
                 market_info.uri = Some(uri.clone());
