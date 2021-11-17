@@ -9,6 +9,7 @@
 # Changed
 - Series Id is now a string type instead of a number.
 - NFT Mint Fee and Marketplace Mint Fee are not changeable.
+- Created types folder
 
 # 0.2.0 Release
 This is the initial release for the Ternoa Testnet.
