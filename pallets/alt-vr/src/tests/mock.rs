@@ -107,9 +107,7 @@ pub struct ExtBuilder {
 
 impl Default for ExtBuilder {
     fn default() -> Self {
-        ExtBuilder {
-            altvrs: Vec::new(),
-        }
+        ExtBuilder { altvrs: Vec::new() }
     }
 }
 
