@@ -13,6 +13,8 @@ parameter_types! {
     pub const ClusterSize: u32 = 8;
     pub const MaxUrlLength: u32 = 1000;
     pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
+    pub const MinNameLength : u8 = 1;
+    pub const MaxNameLength : u8 = 20;
 }
 
 impl ternoa_nfts::Config for Runtime {
@@ -64,4 +66,11 @@ impl ternoa_capsules::Config for Runtime {
     type MinStringLength = MinStringLength;
     type MaxStringLength = MaxStringLength;
     type PalletId = CapsulePalletId;
+}
+
+impl ternoa_altvr::Config for Runtime {
+    type Event = Event;
+    type WeightInfo = ();
+    type MinNameLength = MinNameLength;
+    type MaxNameLength = MaxNameLength;
 }

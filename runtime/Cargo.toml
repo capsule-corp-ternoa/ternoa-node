@@ -8,13 +8,17 @@ build = "build.rs"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
+# Ternoa pallets and commons
 ternoa-account-store = { default-features = false, path = "../pallets/account-store" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
 ternoa-sgx = { default-features = false, path = "../pallets/sgx" }
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
+ternoa-altvr = { default-features = false, path = "../pallets/alt-vr" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
+
+# Frame
 static_assertions = { version = "1.1.0" }
 serde = { optional = true, version = "1.0.126" }
 hex-literal = { optional = true, version = "0.3.1" }
@@ -115,6 +119,7 @@ std = [
 	"ternoa-timed-escrow/std",
 	"ternoa-sgx/std",
 	"ternoa-capsules/std",
+	"ternoa-altvr/std"
 ]
 runtime-benchmarks = [
 	"frame-benchmarking",
@@ -141,4 +146,5 @@ runtime-benchmarks = [
 	"ternoa-marketplace/runtime-benchmarks",
 	"ternoa-sgx/runtime-benchmarks",
 	"ternoa-capsules/runtime-benchmarks",
+	"ternoa-altvr/runtime-benchmarks",
 ]

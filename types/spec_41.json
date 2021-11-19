@@ -80,5 +80,9 @@
     "Request": {
         "shard": "ShardIdentifier",
         "cyphertext": "Vec<u8>"
+    },
+    "AltvrData": {
+        "username": "String",
+        "vchatname": "String"
     }
 }
