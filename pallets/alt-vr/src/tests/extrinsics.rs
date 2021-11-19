@@ -25,6 +25,6 @@ fn create_altvr_happy() {
                 user_name.clone(),
                 vchat_name.clone()
             ));
-            // assert_eq!(Altvr::altvrs(alice), Some(altvr_data));
+            //assert_eq!(Altvr::altvrs(alice), Some(altvr_data));
         });
 }

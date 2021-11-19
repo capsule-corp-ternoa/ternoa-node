@@ -102,14 +102,12 @@ impl Config for Test {
 }
 
 pub struct ExtBuilder {
-    //marketplaces: Vec<(u64, MarketplaceType, u8, Vec<u8>)>,
     altvrs: Vec<(u8, Vec<u8>, Vec<u8>)>,
 }
 
 impl Default for ExtBuilder {
     fn default() -> Self {
         ExtBuilder {
-            //marketplaces: Vec::new(),
             altvrs: Vec::new(),
         }
     }

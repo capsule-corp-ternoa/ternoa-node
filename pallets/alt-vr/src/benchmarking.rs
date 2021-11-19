@@ -46,12 +46,4 @@ benchmarks! {
     verify {
         assert_eq!(Altvr::<T>::altvrs(alice).unwrap().vchatname, updated_vchat_name);
     }
-
-
 }
-
-impl_benchmark_test_suite!(
-    NFTs,
-    crate::tests::mock::new_test_ext(),
-    crate::tests::mock::Test
-);
