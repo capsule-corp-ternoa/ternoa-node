@@ -122,7 +122,7 @@ pub mod pallet {
             let username_upper_bound = vchatname.len() <= T::MaxNameLength::get() as usize;
 
             ensure!(username_lower_bound, Error::<T>::TooShortUsername);
-            ensure!(username_upper_bound, Error::<T>::TooLongUsername);
+            ensure!(username_upper_bound, Error::<T>::TooLongVchatname);
 
             Altvrs::<T>::try_mutate(owner.clone(), |res| -> Result<(), Error<T>> {
                 let altvrdata = res.as_mut().ok_or(Error::<T>::UserNotFound)?;
