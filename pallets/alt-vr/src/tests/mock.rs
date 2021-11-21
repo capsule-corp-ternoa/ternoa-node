@@ -77,12 +77,12 @@ impl Config for Test {
 }
 
 pub struct ExtBuilder {
-    altvrs: Vec<(u8, Vec<u8>, Vec<u8>)>,
+    users: Vec<(u64, Vec<u8>, Vec<u8>)>,
 }
 
 impl Default for ExtBuilder {
     fn default() -> Self {
-        ExtBuilder { altvrs: Vec::new() }
+        ExtBuilder { users: Vec::new() }
     }
 }
 
@@ -93,7 +93,7 @@ impl ExtBuilder {
             .unwrap();
 
         ternoa_altvr::GenesisConfig::<Test> {
-            altvrs: Default::default(),
+            users: Default::default(),
         }
         .assimilate_storage(&mut t)
         .unwrap();

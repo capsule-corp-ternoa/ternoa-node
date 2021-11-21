@@ -10,10 +10,9 @@ mod default_weights;
 mod types;
 
 pub use default_weights::WeightInfo;
+use frame_support::traits::{Get, StorageVersion};
 pub use pallet::*;
 pub use types::*;
-
-use frame_support::traits::{Get, StorageVersion};
 
 use ternoa_primitives::ternoa;
 
@@ -22,9 +21,7 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-
     use frame_support::{ensure, pallet_prelude::*, transactional};
-
     use frame_system::pallet_prelude::*;
 
     #[pallet::config]
@@ -53,10 +50,10 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// Creates altvr informations.
-        #[pallet::weight(T::WeightInfo::create_altvr())]
+        /// Creates user informations.
+        #[pallet::weight(T::WeightInfo::create_user())]
         #[transactional]
-        pub fn create_altvr(
+        pub fn create_user(
             origin: OriginFor<T>,
             username: ternoa::String,
             vchatname: ternoa::String,
@@ -72,20 +69,25 @@ pub mod pallet {
             ensure!(username_upper_bound, Error::<T>::TooLongUsername);
             ensure!(vchatname_lower_bound, Error::<T>::TooShortVchatname);
             ensure!(vchatname_upper_bound, Error::<T>::TooLongVchatname);
+            ensure!(
+                !Users::<T>::contains_key(owner.clone()),
+                Error::<T>::UserAlreadyExist
+            );
 
-            // Create Altvr data
-            Self::new_altvr(&owner, &username, &vchatname);
+            // Create User data
+            let data = AltvrUser::new(username.clone(), vchatname.clone());
+            Users::<T>::insert(owner.clone(), data);
 
-            let event = Event::AltvrCreated(owner, username, vchatname);
+            let event = Event::AltvrUserCreated(owner, username, vchatname);
             Self::deposit_event(event);
 
             Ok(().into())
         }
 
         /// Update Altvr username of the caller
-        #[pallet::weight(T::WeightInfo::update_username())]
+        #[pallet::weight(T::WeightInfo::set_username())]
         #[transactional]
-        pub fn update_username(
+        pub fn set_username(
             origin: OriginFor<T>,
             username: ternoa::String,
         ) -> DispatchResultWithPostInfo {
@@ -97,22 +99,22 @@ pub mod pallet {
             ensure!(username_lower_bound, Error::<T>::TooShortUsername);
             ensure!(username_upper_bound, Error::<T>::TooLongUsername);
 
-            Altvrs::<T>::try_mutate(owner.clone(), |res| -> Result<(), Error<T>> {
-                let altvrdata = res.as_mut().ok_or(Error::<T>::UserNotFound)?;
-                altvrdata.username = username.clone();
+            Users::<T>::try_mutate(owner.clone(), |res| -> Result<(), Error<T>> {
+                let altvruser = res.as_mut().ok_or(Error::<T>::UserNotFound)?;
+                altvruser.username = username.clone();
                 Ok(())
             })?;
 
-            let event = Event::AltvrUsernameUpdated(owner, username);
+            let event = Event::UsernameChanged(owner, username);
             Self::deposit_event(event);
 
             Ok(().into())
         }
 
         /// Update Altvr vchatname of the caller
-        #[pallet::weight(T::WeightInfo::update_vchatname())]
+        #[pallet::weight(T::WeightInfo::set_vchatname())]
         #[transactional]
-        pub fn update_vchatname(
+        pub fn set_vchatname(
             origin: OriginFor<T>,
             vchatname: ternoa::String,
         ) -> DispatchResultWithPostInfo {
@@ -124,13 +126,13 @@ pub mod pallet {
             ensure!(username_lower_bound, Error::<T>::TooShortUsername);
             ensure!(username_upper_bound, Error::<T>::TooLongVchatname);
 
-            Altvrs::<T>::try_mutate(owner.clone(), |res| -> Result<(), Error<T>> {
-                let altvrdata = res.as_mut().ok_or(Error::<T>::UserNotFound)?;
-                altvrdata.vchatname = vchatname.clone();
+            Users::<T>::try_mutate(owner.clone(), |res| -> Result<(), Error<T>> {
+                let altvruser = res.as_mut().ok_or(Error::<T>::UserNotFound)?;
+                altvruser.vchatname = vchatname.clone();
                 Ok(())
             })?;
 
-            let event = Event::AltvrVchatnameUpdated(owner, vchatname);
+            let event = Event::VchatnameChanged(owner, vchatname);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -140,12 +142,12 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// Altvr was created. \[owner, username, vchatname\]
-        AltvrCreated(T::AccountId, ternoa::String, ternoa::String),
+        /// Altvr user was created. \[owner, username, vchatname\]
+        AltvrUserCreated(T::AccountId, ternoa::String, ternoa::String),
         /// Altvr username updated  \[owner, username\]
-        AltvrUsernameUpdated(T::AccountId, ternoa::String),
+        UsernameChanged(T::AccountId, ternoa::String),
         /// Altvr vchatname updated  \[owner, vchatname\]
-        AltvrVchatnameUpdated(T::AccountId, ternoa::String),
+        VchatnameChanged(T::AccountId, ternoa::String),
     }
 
     #[pallet::error]
@@ -160,24 +162,26 @@ pub mod pallet {
         TooLongVchatname,
         /// User not found
         UserNotFound,
+        /// User already exist
+        UserAlreadyExist,
     }
 
     /// List of Altvr datas create.
     #[pallet::storage]
-    #[pallet::getter(fn altvrs)]
-    pub type Altvrs<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, AltvrData, OptionQuery>;
+    #[pallet::getter(fn users)]
+    pub type Users<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::AccountId, AltvrUser, OptionQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub altvrs: Vec<(T::AccountId, ternoa::String, ternoa::String)>,
+        pub users: Vec<(T::AccountId, ternoa::String, ternoa::String)>,
     }
 
     #[cfg(feature = "std")]
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
             Self {
-                altvrs: Default::default(),
+                users: Default::default(),
             }
         }
     }
@@ -185,19 +189,12 @@ pub mod pallet {
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            self.altvrs
+            self.users
                 .clone()
                 .into_iter()
                 .for_each(|(owner, username, vchatname)| {
-                    Altvrs::<T>::insert(owner.clone(), AltvrData::new(username, vchatname));
+                    Users::<T>::insert(owner.clone(), AltvrUser::new(username, vchatname));
                 });
         }
-    }
-}
-
-impl<T: Config> Pallet<T> {
-    fn new_altvr(owner: &T::AccountId, username: &ternoa::String, vchatname: &ternoa::String) {
-        let data = AltvrData::new(username.clone(), vchatname.clone());
-        Altvrs::<T>::insert(owner, data);
     }
 }

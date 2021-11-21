@@ -194,7 +194,7 @@ pub fn testnet_genesis(
             ..Default::default()
         },
         altvr: AltvrConfig {
-            altvrs: vec![(
+            users: vec![(
                 get_account_id_from_seed::<sr25519::Public>("Alice"),
                 Default::default(),
                 Default::default(),

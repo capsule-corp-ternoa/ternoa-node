@@ -1,49 +1,48 @@
 #![cfg(feature = "runtime-benchmarks")]
 
 use crate::{Call, Config, Pallet};
-use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
+use frame_benchmarking::{account, benchmarks};
 use frame_system::RawOrigin;
-use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
 
 use crate::Pallet as Altvr;
 
 benchmarks! {
-    create_altvr {
+    create_user {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let user_name: Vec<u8> = "jean".into();
         let vchat_name: Vec<u8> = "misterj".into();
 
     }: _(RawOrigin::Signed(alice.clone()), user_name.clone(), vchat_name)
     verify {
-        assert_eq!(Altvr::<T>::altvrs(alice).unwrap().username, user_name);
+        assert_eq!(Altvr::<T>::users(alice).unwrap().username, user_name);
     }
 
-    update_username {
+    set_username {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let user_name: Vec<u8> = "jean".into();
         let vchat_name: Vec<u8> = "misterj".into();
         let updated_user_name: Vec<u8> = "paul".into();
 
-        drop(Altvr::<T>::create_altvr(RawOrigin::Signed(alice.clone()).into(),
+        drop(Altvr::<T>::create_user(RawOrigin::Signed(alice.clone()).into(),
         user_name, vchat_name));
 
     }: _(RawOrigin::Signed(alice.clone()), updated_user_name.clone())
     verify {
-        assert_eq!(Altvr::<T>::altvrs(alice).unwrap().username, updated_user_name);
+        assert_eq!(Altvr::<T>::users(alice).unwrap().username, updated_user_name);
     }
 
-    update_vchatname {
+    set_vchatname {
         let alice: T::AccountId = account("ALICE", 0, 0);
         let user_name: Vec<u8> = "jean".into();
         let vchat_name: Vec<u8> = "misterj".into();
         let updated_vchat_name: Vec<u8> = "mrjean".into();
 
-        drop(Altvr::<T>::create_altvr(RawOrigin::Signed(alice.clone()).into(),
+        drop(Altvr::<T>::create_user(RawOrigin::Signed(alice.clone()).into(),
         user_name, vchat_name));
 
     }: _(RawOrigin::Signed(alice.clone()), updated_vchat_name.clone())
     verify {
-        assert_eq!(Altvr::<T>::altvrs(alice).unwrap().vchatname, updated_vchat_name);
+        assert_eq!(Altvr::<T>::users(alice).unwrap().vchatname, updated_vchat_name);
     }
 }

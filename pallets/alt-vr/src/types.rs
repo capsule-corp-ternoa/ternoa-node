@@ -7,13 +7,13 @@ use ternoa_primitives::ternoa;
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct AltvrData {
+pub struct AltvrUser {
     pub username: ternoa::String,
     pub vchatname: ternoa::String,
 }
 
-impl AltvrData {
-    pub fn new(username: ternoa::String, vchatname: ternoa::String) -> AltvrData {
+impl AltvrUser {
+    pub fn new(username: ternoa::String, vchatname: ternoa::String) -> AltvrUser {
         Self {
             username,
             vchatname,
