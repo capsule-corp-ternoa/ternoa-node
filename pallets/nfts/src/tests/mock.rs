@@ -1,11 +1,9 @@
 use crate::{self as ternoa_nfts, Config, NegativeImbalanceOf};
-use frame_benchmarking::account;
 use frame_support::parameter_types;
 use frame_support::traits::{Contains, Currency, GenesisBuild};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;

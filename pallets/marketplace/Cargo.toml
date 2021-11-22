@@ -12,6 +12,7 @@ ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
 ternoa-account-store = { default-features = false, path = "../account-store" }
 ternoa-nfts = { default-features = false, path = "../nfts" }
+ternoa-mock = { default-features = false, path = "../mock" }
 serde = { optional = true,  version = "1.0.126" }
 codec = { package = "parity-scale-codec",  default-features = false, features = ["derive"], version = "2.2.0" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev" }
@@ -25,7 +26,6 @@ log = { default-features = false, version = "0.4.14"}
 pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-ternoa-mock = { default-features = false, path = "../mock" }
 
 [features]
 default = ["std"]

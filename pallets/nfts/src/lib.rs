@@ -424,6 +424,12 @@ impl<T: Config> traits::NFTs for Pallet<T> {
         Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
         return Ok(Self::nft_id_generator() - 1);
     }
+
+    fn benchmark_lock_series(series_id: NFTSeriesId) {
+        Series::<T>::mutate(&series_id, |x| {
+            x.as_mut().unwrap().draft = false;
+        });
+    }
 }
 
 impl<T: Config> traits::LockableNFTs for Pallet<T> {

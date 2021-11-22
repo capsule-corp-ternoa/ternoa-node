@@ -1,7 +1,6 @@
 #![cfg(feature = "runtime-benchmarks")]
 
 use super::*;
-use crate::{Call, Config, Pallet};
 use frame_benchmarking::{account as benchmark_account, benchmarks, impl_benchmark_test_suite};
 use frame_support::assert_ok;
 use frame_support::traits::Currency;
@@ -15,8 +14,8 @@ const SERIES_ID: u8 = 20;
 const NFT_ID: u32 = 0;
 
 pub fn prepare_benchmarks<T: Config>() {
-    let alice: T::AccountId = benchmark_account("ALICE", 0, 0);
-    let bob: T::AccountId = benchmark_account("BOB", 0, 0);
+    let alice: T::AccountId = get_account::<T>("ALICE");
+    let bob: T::AccountId = get_account::<T>("BOB");
 
     // Give them enough caps
     T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
