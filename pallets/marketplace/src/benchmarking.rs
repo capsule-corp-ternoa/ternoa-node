@@ -63,23 +63,23 @@ pub fn get_origin<T: Config>(name: &'static str) -> RawOrigin<T::AccountId> {
 
 benchmarks! {
     list {
-        let (_, _, nft_id) = prepare_benchmarks::<T>();
+        let (mkp_id, _, nft_id) = prepare_benchmarks::<T>();
 
         let alice: T::AccountId = get_account::<T>("ALICE");
         let price = NFTCurrency::Caps(100u32.into());
 
-    }: _(RawOrigin::Signed(alice.clone()), nft_id, price, None)
+    }: _(RawOrigin::Signed(alice.clone()), nft_id, price, Some(mkp_id))
     verify {
         assert_eq!(T::NFTs::owner(nft_id), Some(alice));
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), true);
     }
 
     unlist {
-        let (_, _, nft_id) = prepare_benchmarks::<T>();
+        let (mkp_id, _, nft_id) = prepare_benchmarks::<T>();
 
         let alice = get_origin::<T>("ALICE");
         let price = NFTCurrency::Caps(100u32.into());
-        drop(Marketplace::<T>::list(alice.clone().into(), nft_id, price, None));
+        drop(Marketplace::<T>::list(alice.clone().into(), nft_id, price, Some(mkp_id)));
 
     }: _(alice.clone(), nft_id)
     verify {
@@ -87,12 +87,12 @@ benchmarks! {
     }
 
     buy {
-        let (_, _, nft_id) = prepare_benchmarks::<T>();
+        let (mkp_id, _, nft_id) = prepare_benchmarks::<T>();
 
         let bob: T::AccountId = get_account::<T>("BOB");
-        let price = NFTCurrency::Caps(100u32.into());
+        let price = NFTCurrency::Caps(0u32.into());
 
-        drop(Marketplace::<T>::list(get_origin::<T>("ALICE").into(), nft_id, price, None));
+        drop(Marketplace::<T>::list(get_origin::<T>("ALICE").into(), nft_id, price, Some(mkp_id)));
     }: _(RawOrigin::Signed(bob.clone().into()), nft_id, NFTCurrencyId::Caps)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), Some(bob));
