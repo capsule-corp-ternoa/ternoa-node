@@ -1,11 +1,9 @@
 use crate::{self as ternoa_capsules, Config};
-use frame_benchmarking::account;
 use frame_support::traits::{Contains, GenesisBuild};
 use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -202,28 +200,8 @@ pub mod help {
 
 #[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    let mut t = frame_system::GenesisConfig::default()
+    let t = frame_system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap();
-
-    let alice = account("ALICE", 0, 0);
-    let bob = account("BOB", 0, 0);
-    let nft_data = NFTData::new(alice, vec![0], vec![11], false);
-    let series_data = NFTSeriesDetails::new(alice, false);
-
-    pallet_balances::GenesisConfig::<Test> {
-        balances: vec![(alice, 10000), (bob, 10000)],
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-
-    ternoa_nfts::GenesisConfig::<Test> {
-        nfts: vec![(0, nft_data)],
-        series: vec![(vec![11], series_data)],
-        nft_mint_fee: 10,
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-
     t.into()
 }
