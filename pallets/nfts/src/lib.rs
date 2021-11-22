@@ -60,7 +60,7 @@ pub mod pallet {
         type MaxStringLength: Get<u16>;
     }
 
-    type BalanceOf<T> =
+    pub type BalanceOf<T> =
         <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
     pub(crate) type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
         <T as frame_system::Config>::AccountId,

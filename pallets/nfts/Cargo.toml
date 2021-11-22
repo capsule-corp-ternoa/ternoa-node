@@ -36,7 +36,8 @@ std = [
     "sp-runtime/std",
     "sp-std/std",
     "ternoa-common/std",
-    "ternoa-primitives/std"
+    "ternoa-primitives/std",
+    "ternoa-mock/std",
 ]
 runtime-benchmarks = [
     "frame-benchmarking",
