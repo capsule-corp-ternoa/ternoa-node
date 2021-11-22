@@ -1,4 +1,4 @@
-name: Docker-chaos-tag
+name: Manually Docker-chaos-tag
 
 on:
   workflow_dispatch:
