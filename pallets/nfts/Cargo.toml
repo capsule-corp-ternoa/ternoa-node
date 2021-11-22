@@ -12,6 +12,7 @@ codec = { package = "parity-scale-codec", default-features = false, features = [
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev" }
 frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+ternoa-mock = { default-features = false, path = "../mock" }
 serde = { optional = true, version = "1.0.126" }
 sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -23,7 +24,6 @@ ternoa-primitives = { default-features = false, path = "../../primitives" }
 pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
 sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-ternoa-mock = { default-features = false, path = "../mock" }
 
 [features]
 default = ["std"]
@@ -36,7 +36,8 @@ std = [
     "sp-runtime/std",
     "sp-std/std",
     "ternoa-common/std",
-    "ternoa-primitives/std"
+    "ternoa-primitives/std",
+    "ternoa-mock/std",
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

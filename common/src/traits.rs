@@ -14,11 +14,15 @@ pub trait NFTs {
     /// Is series completed(locked)
     fn is_series_completed(id: NFTId) -> Option<bool>;
 
+    /// Create NFT
     fn create_nft(
         owner: Self::AccountId,
         ipfs_reference: ternoa::String,
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo>;
+
+    /// Lock series WARNING: Only for benchmark purposes!
+    fn benchmark_lock_series(series_id: NFTSeriesId);
 }
 
 /// Implemented by a pallet where it is possible to lock NFTs.
