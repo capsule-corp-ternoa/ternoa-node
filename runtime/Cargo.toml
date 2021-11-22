@@ -15,7 +15,7 @@ ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escro
 ternoa-sgx = { default-features = false, path = "../pallets/sgx" }
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
-ternoa-altvr = { default-features = false, path = "../pallets/alt-vr" }
+ternoa-associated-accounts = { default-features = false, path = "../pallets/associated-accounts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
 
 # Frame
@@ -119,7 +119,7 @@ std = [
 	"ternoa-timed-escrow/std",
 	"ternoa-sgx/std",
 	"ternoa-capsules/std",
-	"ternoa-altvr/std"
+	"ternoa-associated-accounts/std"
 ]
 runtime-benchmarks = [
 	"frame-benchmarking",
@@ -146,5 +146,5 @@ runtime-benchmarks = [
 	"ternoa-marketplace/runtime-benchmarks",
 	"ternoa-sgx/runtime-benchmarks",
 	"ternoa-capsules/runtime-benchmarks",
-	"ternoa-altvr/runtime-benchmarks",
+	"ternoa-associated-accounts/runtime-benchmarks",
 ]

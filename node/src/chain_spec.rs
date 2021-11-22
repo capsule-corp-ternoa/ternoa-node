@@ -13,10 +13,10 @@ use ternoa_marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::constants::currency::UNIT;
 use ternoa_runtime::{
-    wasm_binary_unwrap, AltvrConfig, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig,
-    CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, MarketplaceConfig, NftsConfig,
-    SessionConfig, SessionKeys, SgxConfig, StakerStatus, StakingConfig, SystemConfig,
-    TechnicalMembershipConfig,
+    wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
+    BalancesConfig, CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
+    MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig, StakerStatus,
+    StakingConfig, SystemConfig, TechnicalMembershipConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -193,8 +193,8 @@ pub fn testnet_genesis(
             capsule_mint_fee: 1000000000000000000000,
             ..Default::default()
         },
-        altvr: AltvrConfig {
-            users: Default::default(),
+        associated_accounts: AssociatedAccountsConfig {
+            ..Default::default()
         },
     }
 }
