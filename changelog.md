@@ -6,6 +6,7 @@
 # Added
 - set_commission_fee marketplace extrinsic
 - set_ipfs_reference nfts extrinsic
+- associated-accounts pallet
 # Changed
 - Series Id is now a string type instead of a number.
 - NFT Mint Fee and Marketplace Mint Fee are not changeable.
