@@ -1,6 +1,6 @@
-use crate::{self as ternoa_altvr, Config};
+use crate::{self as ternoa_associated_accounts, Config};
 use frame_support::parameter_types;
-use frame_support::traits::{Contains, GenesisBuild};
+use frame_support::traits::Contains;
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
@@ -17,7 +17,7 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        Altvr: ternoa_altvr::{Pallet, Call, Storage, Event<T>},
+        TernoaAssociatedAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Event<T>},
     }
 );
 
@@ -76,27 +76,19 @@ impl Config for Test {
     type MinNameLength = MinNameLength;
 }
 
-pub struct ExtBuilder {
-    users: Vec<(u64, Vec<u8>, Vec<u8>)>,
-}
+pub struct ExtBuilder {}
 
 impl Default for ExtBuilder {
     fn default() -> Self {
-        ExtBuilder { users: Vec::new() }
+        ExtBuilder {}
     }
 }
 
 impl ExtBuilder {
     pub fn build(self) -> sp_io::TestExternalities {
-        let mut t = frame_system::GenesisConfig::default()
+        let t = frame_system::GenesisConfig::default()
             .build_storage::<Test>()
             .unwrap();
-
-        ternoa_altvr::GenesisConfig::<Test> {
-            users: Default::default(),
-        }
-        .assimilate_storage(&mut t)
-        .unwrap();
 
         let mut ext = sp_io::TestExternalities::new(t);
         ext.execute_with(|| System::set_block_number(1));

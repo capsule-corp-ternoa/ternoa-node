@@ -68,7 +68,7 @@ impl ternoa_capsules::Config for Runtime {
     type PalletId = CapsulePalletId;
 }
 
-impl ternoa_altvr::Config for Runtime {
+impl ternoa_associated_accounts::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();
     type MinNameLength = MinNameLength;

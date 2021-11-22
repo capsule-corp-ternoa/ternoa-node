@@ -99,7 +99,7 @@ construct_runtime!(
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
         Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>, Config<T>},
         Capsules: ternoa_capsules::{Pallet, Call, Storage, Event<T>, Config<T>},
-        Altvr: ternoa_altvr::{Pallet, Call, Storage, Config<T>, Event<T> },
+        AssociatedAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Config<T>, Event<T> },
     }
 );
 
@@ -366,7 +366,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
             list_benchmark!(list, extra, ternoa_sgx, Sgx);
             list_benchmark!(list, extra, ternoa_capsules, Capsules);
-            list_benchmark!(list, extra, ternoa_altvr, Altvr);
+            list_benchmark!(list, extra, ternoa_associated_accounts, AssociatedAccounts);
 
             let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -426,7 +426,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
             add_benchmark!(params, batches, ternoa_sgx, Sgx);
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
-            add_benchmark!(params, batches, ternoa_altvr, Altvr);
+            add_benchmark!(params, batches, ternoa_associated_accounts, AssociatedAccounts);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

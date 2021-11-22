@@ -7301,7 +7301,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ternoa-altvr"
+name = "ternoa-associated-accounts"
 version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
@@ -7487,7 +7487,7 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-account-store",
- "ternoa-altvr",
+ "ternoa-associated-accounts",
  "ternoa-capsules",
  "ternoa-marketplace",
  "ternoa-nfts",
