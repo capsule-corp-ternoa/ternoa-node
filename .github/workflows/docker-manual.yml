@@ -1,8 +1,12 @@
 name: Docker-chaos-tag
 
 on:
-  push:
-    branches: main
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Person to greet'
+        required: true
+        default: 'Mona the Octocat'
 
 jobs:
   docker-build:
