@@ -1,4 +1,5 @@
 mod v5;
+mod v6;
 
 use crate::Config;
 /* use frame_support::traits::StorageVersion; */
