@@ -7,7 +7,6 @@ use frame_support::weights::Weight;
 
 pub fn migrate<T: Config>() -> Weight {
     let mut weight: Weight = 0;
-
     let storage_version = StorageVersion::get::<Pallet<T>>();
 
     if storage_version == 6 {
@@ -16,12 +15,12 @@ pub fn migrate<T: Config>() -> Weight {
     }
 
     if storage_version == 5 {
-        log::info!("Migrating nfts pallet to StorageVersion::V6");
+        log::info!(target: "runtime::nfts", "Migrating nfts pallet to StorageVersion V6");
 
         weight = v6::migrate::<T>();
         StorageVersion::new(6).put::<Pallet<T>>();
 
-        log::info!("Migration done.");
+        log::info!(target: "runtime::nfts", "Migration done.");
     }
 
     weight

@@ -5,8 +5,6 @@ use frame_support::weights::Weight;
 use sp_std::vec::Vec;
 
 pub mod v6 {
-    use std::convert::TryInto;
-
     use crate::Config;
     use codec::{Decode, Encode};
     use frame_support::traits::Currency;
@@ -15,6 +13,7 @@ pub mod v6 {
     use serde::{Deserialize, Serialize};
     use sp_runtime::RuntimeDebug;
     use sp_std::collections::btree_map::BTreeMap;
+    use sp_std::convert::TryInto;
     use sp_std::vec::Vec;
 
     // Define all types that are used for v6
