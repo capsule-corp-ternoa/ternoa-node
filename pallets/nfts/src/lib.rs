@@ -292,11 +292,11 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
-        /// We do not have any NFT id left, a runtime upgrade is necessary.
+        /// An NFT id owerflow occured  (runtime upgrade necessary).
         NFTIdOverflow,
-        /// This function can only be called by the owner of the nft.
+        /// The caller is not the owner of the nft.
         NotOwner,
-        /// NFT is sealed and no longer accepts mutations.
+        /// NFT is sealed and can no longer be mutated.
         Sealed,
         /// NFT is locked and thus its owner cannot be changed until it
         /// is unlocked.
@@ -311,9 +311,11 @@ pub mod pallet {
         SeriesNotFound,
         /// No NFT was found with that NFT id.
         InvalidNFTId,
-        /// Ipfs reference lengthis short.
+        /// Ipfs reference length is shorter than what
+        /// is defined in MinStringLength.
         ShortIpfsReferenceLength,
-        /// Ipfs reference length is long.
+        /// Ipfs reference length is longer than what.
+        /// is defined in MaxStringLength
         LongIpfsReferenceLength,
         /// Nft is capsulized.
         NFTIsCapsulized,

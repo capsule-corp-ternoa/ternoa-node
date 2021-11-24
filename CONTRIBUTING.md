@@ -46,6 +46,11 @@ Branch names should use the following convention: `features/jira-number-issue-na
 
 Example: `features/67-add-minting-fee-to-capsules`
 
+## Tense
+
+Past tense is prefered for events
+Example: `Created` event deposited when an item has been created
+
 ## Documentation
 Any piece of code that will be used by a third party needs to be well documented and this includes but is not limited to the following:
 - Dispatchable functions

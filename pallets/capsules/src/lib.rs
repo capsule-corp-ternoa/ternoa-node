@@ -266,11 +266,11 @@ pub mod pallet {
     pub enum Error<T> {
         /// This should never happen.
         ArithmeticError,
-        /// Callers is not the NFT owner.
+        /// The caller is not the NFT owner.
         NotOwner,
-        /// Ipfs reference length is short.
+        /// Ipfs reference length is shorter than what is defined in MinStringLength.
         ShortIpfsReferenceLength,
-        /// Ipfs reference length is long.
+        /// Ipfs reference length is longer than what is defined in MinStringLength.
         LongIpfsReferenceLength,
         /// Capsule already exists.
         CapsuleAlreadyExists,

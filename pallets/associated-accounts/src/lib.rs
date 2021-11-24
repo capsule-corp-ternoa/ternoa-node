@@ -30,11 +30,11 @@ pub mod pallet {
 
         type WeightInfo: WeightInfo;
 
-        /// The minimum length a username string may be.
+        /// The minimum length of a username string.
         #[pallet::constant]
         type MinNameLength: Get<u8>;
 
-        /// The maximum length a username may be.
+        /// The maximum length of a username string.
         #[pallet::constant]
         type MaxNameLength: Get<u8>;
     }
@@ -65,7 +65,7 @@ pub mod pallet {
 
             AltVRUsers::<T>::insert(owner.clone(), value.clone());
 
-            let event = Event::AltVRUsernameChanged(owner, value);
+            let event = Event::AltVRUsernameCreated(owner, value);
             Self::deposit_event(event);
 
             Ok(().into())
@@ -75,15 +75,15 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// Altvr username updated  \[owner, username\]
-        AltVRUsernameChanged(T::AccountId, ternoa::String),
+        /// Altvr username created  \[owner, username\]
+        AltVRUsernameCreated(T::AccountId, ternoa::String),
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        /// Altvr username length is short.
+        /// Altvr username length is short (less than what is defined in MinNameLength).
         ShortUsernameLength,
-        /// Altvr username length is long.
+        /// Altvr username length is long (more than what is defined in MaxNameLength).
         LongUsernameLength,
     }
 

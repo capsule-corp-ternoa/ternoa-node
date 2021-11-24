@@ -341,7 +341,7 @@ fn create_unhappy() {
                 normal_uri.clone(),
                 normal_uri.clone(),
             );
-            assert_noop!(ok, Error::<Test>::InvalidCommissionFeeValue);
+            assert_noop!(ok, Error::<Test>::HighCommissionFeeValue);
 
             // Unhappy short name length
             let ok = Marketplace::create(
@@ -687,7 +687,7 @@ fn set_commission_fee_unhappy() {
 
             // Unhappy commission fee is more than 100
             let ok = Marketplace::set_commission_fee(bob.clone(), 0, 101);
-            assert_noop!(ok, Error::<Test>::InvalidCommissionFeeValue);
+            assert_noop!(ok, Error::<Test>::HighCommissionFeeValue);
 
             // Unhappy unknown marketplace
             let ok = Marketplace::set_commission_fee(bob.clone(), 1001, 15);

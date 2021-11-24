@@ -229,7 +229,7 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
+            ensure!(commission_fee <= 100, Error::<T>::HighCommissionFeeValue);
             let lower_bound = name.len() >= T::MinStringLength::get() as usize;
             let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
             ensure!(lower_bound, Error::<T>::ShortMarketplaceNameLength);
@@ -509,7 +509,7 @@ pub mod pallet {
             commission_fee: u8,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
+            ensure!(commission_fee <= 100, Error::<T>::HighCommissionFeeValue);
 
             Marketplaces::<T>::mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
@@ -625,33 +625,33 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
-        /// This function is reserved to the owner of a nft.
+        /// The caller is not the nft owner.
         NotNftOwner,
-        /// Nft is not present on the marketplace.
+        /// Nft is not for sale.
         NftNotForSale,
-        /// Yot cannot buy your own nft.
+        /// You cannot buy your own nft.
         NftAlreadyOwned,
-        /// Used wrong currency to buy an nft.
+        /// Currency not supported for buy this the nft.
         WrongCurrencyUsed,
-        /// We do not have any marketplace ids left, a runtime upgrade is necessary.
+        /// A marketlace id owerflow occured  (runtime upgrade necessary).
         MarketplaceIdOverflow,
         /// No marketplace found with that Id.
         UnknownMarketplace,
-        /// Commission fee cannot be more then 100.
-        InvalidCommissionFeeValue,
-        /// This function is reserved to the owner of a marketplace.
+        /// Commission fee cannot be higher than 100.
+        HighCommissionFeeValue,
+        /// The caller is not the marketplace owner.
         NotMarketplaceOwner,
-        /// This marketplace does not allow for this operation to be executed.
+        /// The operation cannot be executed with the current marketplace type
         UnsupportedMarketplace,
         /// Account not found.
         AccountNotFound,
         /// Internal math error.
         InternalMathError,
-        /// Account not on the allow list should not be able to buy gated nfts.
+        /// The caller is not on the allow list for buying gated nfts.
         NotAllowed,
-        /// Marketplace name length is short.
+        /// Marketplace name length is shorter than what is defined in MinStringLength.
         ShortMarketplaceNameLength,
-        /// Marketplace name length is long.
+        /// Marketplace name length is longer than what is defined in MaxStringLength.
         LongMarketplaceNameLength,
         /// Series is not completed.
         SeriesNotCompleted,
