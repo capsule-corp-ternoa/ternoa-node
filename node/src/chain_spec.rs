@@ -16,6 +16,7 @@ use ternoa_runtime::{
     wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, CapsulesConfig,
     GenesisConfig, GrandpaConfig, ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig,
     SessionKeys, SgxConfig, StakerStatus, StakingConfig, SystemConfig, TechnicalMembershipConfig,
+    TeerexConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -191,6 +192,9 @@ pub fn testnet_genesis(
         capsules: CapsulesConfig {
             capsule_mint_fee: 1000000000000000000000,
             ..Default::default()
+        },
+        teerex: TeerexConfig {
+            allow_sgx_debug_mode: true,
         },
     }
 }

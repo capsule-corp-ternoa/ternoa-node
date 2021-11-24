@@ -18,7 +18,9 @@ ternoa-primitives = { default-features = false, path = "../primitives" }
 static_assertions = { version = "1.1.0" }
 serde = { optional = true, version = "1.0.126" }
 hex-literal = { optional = true, version = "0.3.1" }
-codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.2.0" }
+codec = { package = "parity-scale-codec", default-features = false, features = [
+	"derive",
+], version = "2.2.0" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev" }
 frame-executive = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -40,7 +42,9 @@ pallet-offences = { git = "https://github.com/paritytech/substrate.git", default
 #pallet-offences-benchmarking = { git = "https://github.com/paritytech/substrate/", default-features = false, optional = true }
 pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-scheduler = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-pallet-session = { git = "https://github.com/paritytech/substrate.git", features = ["historical"], default-features = false, version = "4.0.0-dev" }
+pallet-session = { git = "https://github.com/paritytech/substrate.git", features = [
+	"historical",
+], default-features = false, version = "4.0.0-dev" }
 #pallet-session-benchmarking = { git = "https://github.com/paritytech/substrate/",  default-features = false, optional = true }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -61,6 +65,8 @@ sp-std = { git = "https://github.com/paritytech/substrate.git", default-features
 sp-tracing = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-version = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+
+pallet-teerex = { git = "https://github.com/tdelabro/pallets", branch = "tdelabro/teerex-moved-to-frame-v2", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev" }
@@ -115,6 +121,7 @@ std = [
 	"ternoa-timed-escrow/std",
 	"ternoa-sgx/std",
 	"ternoa-capsules/std",
+	"pallet-teerex/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking",

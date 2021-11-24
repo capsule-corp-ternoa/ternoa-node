@@ -30,6 +30,7 @@ pub mod constants;
 mod pallets_core;
 mod pallets_economy;
 mod pallets_governance;
+mod pallets_sgx;
 mod pallets_ternoa;
 mod pallets_time;
 mod pallets_treasury;
@@ -99,6 +100,9 @@ construct_runtime!(
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
         Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>, Config<T>},
         Capsules: ternoa_capsules::{Pallet, Call, Storage, Event<T>, Config<T>},
+
+        // SGX
+        Teerex: pallet_teerex::{Pallet, Call, Storage, Event<T>, Config},
     }
 );
 
@@ -366,6 +370,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_sgx, Sgx);
             list_benchmark!(list, extra, ternoa_capsules, Capsules);
 
+            list_benchmark!(list, extra, pallet_teerex, Teerex);
 
             let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -425,6 +430,8 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
             add_benchmark!(params, batches, ternoa_sgx, Sgx);
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
+
+            add_benchmark!(params, batches, pallet_teerex, Teerex);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)
