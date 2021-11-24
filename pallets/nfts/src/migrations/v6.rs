@@ -1,111 +1,21 @@
+use super::v5::v5;
 use super::Config;
-use codec::{Decode, Encode};
 use frame_support::traits::Get;
 use frame_support::weights::Weight;
-use frame_support::Blake2_128Concat;
-#[cfg(feature = "std")]
-use serde::{Deserialize, Serialize};
-use sp_runtime::RuntimeDebug;
-use sp_std::collections::btree_map::BTreeMap;
 use sp_std::vec::Vec;
 
-pub mod v5 {
-    use super::*;
-
-    // Define all types that were used for v5
-
-    pub type NFTSeriesId = u32;
-    pub type NFTId = u32;
-
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
-    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    pub struct NFTSeriesDetails<AccountId, NFTId> {
-        // Series owner.
-        pub owner: AccountId,
-        // NFTs that are part of the same series.
-        pub nfts: Vec<NFTId>,
-    }
-
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
-    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    pub struct NFTData<AccountId> {
-        pub owner: AccountId,
-        pub details: NFTDetails,
-        /// Set to true to prevent further modifications to the details struct
-        pub sealed: bool,
-        /// Set to true to prevent changes to the owner variable
-        pub locked: bool,
-    }
-
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, Debug)]
-    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    pub struct NFTDetails {
-        /// ASCII encoded URI to fetch additional metadata.
-        pub offchain_uri: Vec<u8>,
-        /// The series id that this nft belongs to.
-        pub series_id: NFTSeriesId,
-        /// Capsule flag.
-        pub is_capsule: bool,
-    }
-
-    frame_support::generate_storage_alias!(
-        Nfts, Series<T: Config> => Map<
-            (Blake2_128Concat, NFTSeriesId),
-            NFTSeriesDetails<T::AccountId, NFTId>
-        >
-    );
-
-    frame_support::generate_storage_alias!(
-        Nfts, Data<T: Config> => Map<
-            (Blake2_128Concat, NFTId),
-            NFTData<T::AccountId>
-        >
-    );
-
-    // Define types that we are going to return
-    pub struct OldNFTDetails<AccountId> {
-        owner: AccountId,
-        offchain_uri: Vec<u8>,
-        series_id: NFTSeriesId,
-        locked: bool,
-    }
-    pub type OldSeriesData<AccountId> = BTreeMap<NFTSeriesId, AccountId>;
-    pub type OldNftData<AccountId> = BTreeMap<NFTId, OldNFTDetails<AccountId>>;
-
-    //
-    pub fn series<T: Config>() -> OldSeriesData<T::AccountId> {
-        let mut old_values: OldSeriesData<T::AccountId> = Default::default();
-        for (key, value) in Series::<T>::iter() {
-            old_values.insert(key, value.owner);
-        }
-
-        old_values
-    }
-
-    pub fn data<T: Config>() -> OldNftData<T::AccountId> {
-        let mut old_values: OldNftData<T::AccountId> = Default::default();
-        for (key, value) in Data::<T>::iter() {
-            let details = OldNFTDetails {
-                owner: value.owner,
-                offchain_uri: value.details.offchain_uri,
-                series_id: value.details.series_id,
-                locked: value.locked,
-            };
-            old_values.insert(key, details);
-        }
-
-        old_values
-    }
-
-    pub fn kill_storage<T: Config>() {
-        Series::<T>::remove_all(None);
-        Data::<T>::remove_all(None);
-        /*         let a = map![22u32 => 3u32, 33u32 => 4u32]; */
-    }
-}
-
 pub mod v6 {
-    use super::*;
+    use std::convert::TryInto;
+
+    use crate::Config;
+    use codec::{Decode, Encode};
+    use frame_support::traits::Currency;
+    use frame_support::Blake2_128Concat;
+    #[cfg(feature = "std")]
+    use serde::{Deserialize, Serialize};
+    use sp_runtime::RuntimeDebug;
+    use sp_std::collections::btree_map::BTreeMap;
+    use sp_std::vec::Vec;
 
     // Define all types that are used for v6
 
@@ -132,6 +42,9 @@ pub mod v6 {
         pub locked: bool,
     }
 
+    pub type BalanceOf<T> =
+        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+
     frame_support::generate_storage_alias!(
         Nfts, Series<T: Config> => Map<
             (Blake2_128Concat, NFTSeriesId),
@@ -146,27 +59,57 @@ pub mod v6 {
         >
     );
 
-    // Define types that we are going to receive
-    pub type NewSeriesData<AccountId> = BTreeMap<NFTSeriesId, NFTSeriesDetails<AccountId>>;
-    pub type NewNFTData<AccountId> = BTreeMap<NFTId, NFTData<AccountId>>;
+    frame_support::generate_storage_alias!(
+        Nfts, SeriesIdGenerator => Value<u32>
+    );
 
-    pub fn series<T: Config>(data_map: NewSeriesData<T::AccountId>) {
+    frame_support::generate_storage_alias!(
+        Nfts, NftMintFee<T: Config> => Value<BalanceOf<T>>
+    );
+
+    // Define types that we are going to receive
+    pub type NewSeries<AccountId> = BTreeMap<NFTSeriesId, NFTSeriesDetails<AccountId>>;
+    pub type NewData<AccountId> = BTreeMap<NFTId, NFTData<AccountId>>;
+
+    pub fn set_series<T: Config>(data_map: NewSeries<T::AccountId>) {
         for data in data_map {
             Series::<T>::insert(data.0, data.1);
         }
     }
 
-    pub fn data<T: Config>(data_map: NewNFTData<T::AccountId>) {
+    pub fn set_data<T: Config>(data_map: NewData<T::AccountId>) {
         for data in data_map {
             Data::<T>::insert(data.0, data.1);
         }
     }
+
+    pub fn set_series_id_generator<T: Config>(value: u32) {
+        SeriesIdGenerator::put(value);
+    }
+
+    pub fn is_series_id_free<T: Config>(value: &NFTSeriesId) -> bool {
+        Series::<T>::contains_key(value)
+    }
+
+    pub fn create_nft_mint_fee<T: Config>() {
+        let fee: BalanceOf<T> = 10000000000000000000u128.try_into().ok().unwrap();
+        NftMintFee::<T>::put(fee);
+    }
 }
 
 pub fn migrate<T: Config>() -> Weight {
-    log::info!("Migrating nfts to StorageVersion::V6");
+    let old_series = v5::get_series::<T>();
+    let old_data = v5::get_data::<T>();
 
-    // Convert to new data
+    // Kill old storage
+    v5::kill_storage::<T>();
+
+    // migrate series and data
+    migrate_series::<T>(old_series);
+    migrate_data::<T>(old_data);
+
+    // Create NftMintFee
+    v6::create_nft_mint_fee::<T>();
 
     // Insert it
 
@@ -180,19 +123,66 @@ pub fn migrate<T: Config>() -> Weight {
     T::BlockWeights::get().max_block
 }
 
-/* fn migrate_series<T: Config>() {
-    // Get old data
-    let old_data = v5::get_old_series_data::<T>();
+fn migrate_series<T: Config>(old_series: v5::OldSeries<T::AccountId>) {
+    let mut new_series: v6::NewSeries<T::AccountId> = Default::default();
 
-    // Kill Old storage
-    v5::kill_storage::<T>();
+    // Migrate from old to new data
+    for entry in old_series {
+        let details = v6::NFTSeriesDetails {
+            owner: entry.1,
+            draft: false,
+        };
+        new_series.insert(u32_to_text(entry.0), details);
+    }
 
-    // Convert data
-    let mut series_id_generator = 0u32;
+    // Insert new data
+    v6::set_series::<T>(new_series);
 }
- */
+
+fn migrate_data<T: Config>(old_data: v5::OldData<T::AccountId>) {
+    let mut new_data: v6::NewData<T::AccountId> = Default::default();
+    let mut last_serial_generated_id = 0u32;
+
+    // Migrate from old to new data
+    for entry in old_data {
+        // Convert series to string
+        let old_series_id: v5::NFTSeriesId = entry.1.series_id;
+
+        let new_series_id = if old_series_id != 0 {
+            u32_to_text(old_series_id)
+        } else {
+            // If the old series id was zero, we need to generate a new unique one for it!
+            generate_session_id::<T>(&mut last_serial_generated_id)
+        };
+
+        let details = v6::NFTData {
+            owner: entry.1.owner,
+            ipfs_reference: entry.1.offchain_uri,
+            series_id: new_series_id,
+            locked: entry.1.locked,
+        };
+
+        new_data.insert(entry.0, details);
+    }
+
+    // Insert new data
+    v6::set_data::<T>(new_data);
+    v6::set_series_id_generator::<T>(last_serial_generated_id);
+}
+
+fn generate_session_id<T: Config>(current_value: &mut u32) -> Vec<u8> {
+    loop {
+        let series_id = u32_to_text(*current_value);
+        *current_value += 1;
+
+        if v6::is_series_id_free::<T>(&series_id) {
+            return series_id;
+        }
+    }
+}
+
 fn u32_to_text(num: u32) -> Vec<u8> {
-    let mut vec: Vec<u8> = vec![];
+    let mut vec: Vec<u8> = Default::default();
     let mut dc: usize = 0;
 
     fn inner(n: u32, vec: &mut Vec<u8>, dc: &mut usize) {
