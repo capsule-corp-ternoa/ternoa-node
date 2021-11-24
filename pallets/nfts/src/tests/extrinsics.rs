@@ -66,13 +66,13 @@ fn create_unhappy() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
             let chad: mock::Origin = RawOrigin::Signed(CHAD).into();
 
-            // Unhappy too short name
+            // Unhappy short ipfs reference length
             let ok = NFTs::create(alice.clone(), vec![], None);
-            assert_noop!(ok, Error::<Test>::TooShortIpfsReference);
+            assert_noop!(ok, Error::<Test>::ShortIpfsReferenceLength);
 
-            // Unhappy too long name
+            // Unhappy long name length
             let ok = NFTs::create(alice.clone(), vec![1, 2, 3, 4, 5, 6], None);
-            assert_noop!(ok, Error::<Test>::TooLongIpfsReference);
+            assert_noop!(ok, Error::<Test>::LongIpfsReferenceLength);
 
             // Unhappy not enough caps to mint an NFT
             let ok = NFTs::create(alice.clone(), vec![1], None);

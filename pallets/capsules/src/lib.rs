@@ -88,8 +88,8 @@ pub mod pallet {
 
             let lower_bound = capsule_ipfs_reference.len() >= T::MinStringLength::get() as usize;
             let upper_bound = capsule_ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            ensure!(lower_bound, Error::<T>::ShortIpfsReferenceLength);
+            ensure!(upper_bound, Error::<T>::LongIpfsReferenceLength);
 
             // Reserve funds
             let amount = CapsuleMintFee::<T>::get();
@@ -117,8 +117,8 @@ pub mod pallet {
 
             let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
             let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            ensure!(lower_bound, Error::<T>::ShortIpfsReferenceLength);
+            ensure!(upper_bound, Error::<T>::LongIpfsReferenceLength);
 
             let nft_owner = T::NFTSTrait::owner(nft_id).ok_or(Error::<T>::NotOwner)?;
             ensure!(who == nft_owner, Error::<T>::NotOwner);
@@ -214,8 +214,8 @@ pub mod pallet {
 
             let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
             let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            ensure!(lower_bound, Error::<T>::ShortIpfsReferenceLength);
+            ensure!(upper_bound, Error::<T>::LongIpfsReferenceLength);
 
             Capsules::<T>::mutate(nft_id, |x| -> DispatchResult {
                 let data = x.as_mut().ok_or(Error::<T>::NotOwner)?;
@@ -268,10 +268,10 @@ pub mod pallet {
         ArithmeticError,
         /// Callers is not the NFT owner.
         NotOwner,
-        /// Ipfs reference is too short.
-        TooShortIpfsReference,
-        /// Ipfs reference is too long.
-        TooLongIpfsReference,
+        /// Ipfs reference length is short.
+        ShortIpfsReferenceLength,
+        /// Ipfs reference length is long.
+        LongIpfsReferenceLength,
         /// Capsule already exists.
         CapsuleAlreadyExists,
         /// This should never happen.

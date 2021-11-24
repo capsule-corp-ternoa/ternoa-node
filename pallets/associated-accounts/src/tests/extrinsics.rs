@@ -42,12 +42,12 @@ fn set_altvr_username_unhappy() {
 
         let too_long_name: Vec<u8> = "this_is_a_too_long_name".into();
 
-        // Unhappy too long Username
+        // Unhappy long Username lenght
         let ok = TernoaAssociatedAccounts::set_altvr_username(alice.clone(), too_long_name);
-        assert_noop!(ok, Error::<Test>::TooLongUsername);
+        assert_noop!(ok, Error::<Test>::LongUsernameLength);
 
-        // Unhappy too short Username
+        // Unhappy short Username length
         let ok = TernoaAssociatedAccounts::set_altvr_username(alice.clone(), vec![]);
-        assert_noop!(ok, Error::<Test>::TooShortUsername);
+        assert_noop!(ok, Error::<Test>::ShortUsernameLength);
     });
 }

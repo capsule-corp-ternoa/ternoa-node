@@ -343,7 +343,7 @@ fn create_unhappy() {
             );
             assert_noop!(ok, Error::<Test>::InvalidCommissionFeeValue);
 
-            // Unhappy too short name
+            // Unhappy short name length
             let ok = Marketplace::create(
                 alice.clone(),
                 MPT::Public,
@@ -352,9 +352,9 @@ fn create_unhappy() {
                 normal_uri.clone(),
                 normal_uri.clone(),
             );
-            assert_noop!(ok, Error::<Test>::TooShortMarketplaceName);
+            assert_noop!(ok, Error::<Test>::ShortMarketplaceNameLength);
 
-            // Unhappy too long name
+            // Unhappy long name length
             let ok = Marketplace::create(
                 alice.clone(),
                 MPT::Public,
@@ -363,7 +363,7 @@ fn create_unhappy() {
                 normal_uri.clone(),
                 normal_uri.clone(),
             );
-            assert_noop!(ok, Error::<Test>::TooLongMarketplaceName);
+            assert_noop!(ok, Error::<Test>::LongMarketplaceNameLength);
 
             // Unhappy not enough funds
             let ok = Marketplace::create(
@@ -376,7 +376,7 @@ fn create_unhappy() {
             );
             assert_noop!(ok, BalanceError::<Test>::InsufficientBalance);
 
-            // Unhappy too short uri
+            // Unhappy short uri length
             let ok = Marketplace::create(
                 alice.clone(),
                 MPT::Public,
@@ -385,9 +385,9 @@ fn create_unhappy() {
                 too_short_uri.clone(),
                 normal_uri.clone(),
             );
-            assert_noop!(ok, Error::<Test>::TooShortMarketplaceUri);
+            assert_noop!(ok, Error::<Test>::ShortMarketplaceUriLength);
 
-            // Unhappy too long uri
+            // Unhappy long uri length
             let ok = Marketplace::create(
                 alice.clone(),
                 MPT::Public,
@@ -396,9 +396,9 @@ fn create_unhappy() {
                 too_long_uri.clone(),
                 normal_uri.clone(),
             );
-            assert_noop!(ok, Error::<Test>::TooLongMarketplaceUri);
+            assert_noop!(ok, Error::<Test>::LongMarketplaceUriLength);
 
-            // Unhappy too short logo uri
+            // Unhappy short logo uri length
             let ok = Marketplace::create(
                 alice.clone(),
                 MPT::Public,
@@ -407,9 +407,9 @@ fn create_unhappy() {
                 normal_uri.clone(),
                 too_short_uri,
             );
-            assert_noop!(ok, Error::<Test>::TooShortMarketplaceLogoUri);
+            assert_noop!(ok, Error::<Test>::ShortMarketplaceLogoUriLength);
 
-            // Unhappy too long logo uri
+            // Unhappy logo uri length
             let ok = Marketplace::create(
                 alice.clone(),
                 MPT::Public,
@@ -418,7 +418,7 @@ fn create_unhappy() {
                 normal_uri,
                 too_long_uri,
             );
-            assert_noop!(ok, Error::<Test>::TooLongMarketplaceLogoUri);
+            assert_noop!(ok, Error::<Test>::LongMarketplaceLogoUriLength);
         })
 }
 
@@ -612,13 +612,13 @@ fn set_name_unhappy() {
         .execute_with(|| {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
-            // Unhappy too short name
+            // Unhappy short name length
             let ok = Marketplace::set_name(bob.clone(), 0, vec![]);
-            assert_noop!(ok, Error::<Test>::TooShortMarketplaceName);
+            assert_noop!(ok, Error::<Test>::ShortMarketplaceNameLength);
 
-            // Unhappy too long name
+            // Unhappy long name length
             let ok = Marketplace::set_name(bob.clone(), 0, vec![1, 2, 3, 4, 5, 6]);
-            assert_noop!(ok, Error::<Test>::TooLongMarketplaceName);
+            assert_noop!(ok, Error::<Test>::LongMarketplaceNameLength);
 
             // Unhappy unknown marketplace
             let ok = Marketplace::set_name(bob.clone(), 1001, vec![51]);
@@ -766,9 +766,9 @@ fn update_uri_unhappy() {
             ));
 
             let nok = Marketplace::set_uri(alice.clone(), 1, raw_too_short_uri);
-            assert_noop!(nok, Error::<Test>::TooShortMarketplaceUri);
+            assert_noop!(nok, Error::<Test>::ShortMarketplaceUriLength);
             let nok = Marketplace::set_uri(alice, 1, raw_too_long_uri);
-            assert_noop!(nok, Error::<Test>::TooLongMarketplaceUri);
+            assert_noop!(nok, Error::<Test>::LongMarketplaceUriLength);
         })
 }
 
@@ -844,9 +844,9 @@ fn update_logo_uri_unhappy() {
             ));
 
             let nok = Marketplace::set_logo_uri(alice.clone(), 1, raw_too_short_uri);
-            assert_noop!(nok, Error::<Test>::TooShortMarketplaceLogoUri);
+            assert_noop!(nok, Error::<Test>::ShortMarketplaceLogoUriLength);
             let nok = Marketplace::set_logo_uri(alice, 1, raw_too_long_uri);
-            assert_noop!(nok, Error::<Test>::TooLongMarketplaceLogoUri);
+            assert_noop!(nok, Error::<Test>::LongMarketplaceLogoUriLength);
         })
 }
 

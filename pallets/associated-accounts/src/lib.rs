@@ -60,8 +60,8 @@ pub mod pallet {
             let username_lower_bound = value.len() >= T::MinNameLength::get() as usize;
             let username_upper_bound = value.len() <= T::MaxNameLength::get() as usize;
 
-            ensure!(username_lower_bound, Error::<T>::TooShortUsername);
-            ensure!(username_upper_bound, Error::<T>::TooLongUsername);
+            ensure!(username_lower_bound, Error::<T>::ShortUsernameLength);
+            ensure!(username_upper_bound, Error::<T>::LongUsernameLength);
 
             AltVRUsers::<T>::insert(owner.clone(), value.clone());
 
@@ -81,10 +81,10 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
-        /// Altvr username is too short.
-        TooShortUsername,
-        /// Altvr username is too long.
-        TooLongUsername,
+        /// Altvr username length is short.
+        ShortUsernameLength,
+        /// Altvr username length is long.
+        LongUsernameLength,
     }
 
     /// List of Altvr datas create.

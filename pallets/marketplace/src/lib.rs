@@ -232,28 +232,28 @@ pub mod pallet {
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
             let lower_bound = name.len() >= T::MinStringLength::get() as usize;
             let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
-            ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
+            ensure!(lower_bound, Error::<T>::ShortMarketplaceNameLength);
+            ensure!(upper_bound, Error::<T>::LongMarketplaceNameLength);
 
             if let Some(uri_value) = uri.as_ref() {
                 ensure!(
                     uri_value.len() <= T::MaxStringLength::get() as usize,
-                    Error::<T>::TooLongMarketplaceUri
+                    Error::<T>::LongMarketplaceUriLength
                 );
                 ensure!(
                     uri_value.len() >= T::MinStringLength::get() as usize,
-                    Error::<T>::TooShortMarketplaceUri
+                    Error::<T>::ShortMarketplaceUriLength
                 );
             }
 
             if let Some(logo_uri_value) = logo_uri.as_ref() {
                 ensure!(
                     logo_uri_value.len() <= T::MaxStringLength::get() as usize,
-                    Error::<T>::TooLongMarketplaceLogoUri
+                    Error::<T>::LongMarketplaceLogoUriLength
                 );
                 ensure!(
                     logo_uri_value.len() >= T::MinStringLength::get() as usize,
-                    Error::<T>::TooShortMarketplaceLogoUri
+                    Error::<T>::ShortMarketplaceLogoUriLength
                 );
             }
 
@@ -469,8 +469,8 @@ pub mod pallet {
 
             let lower_bound = name.len() >= T::MinStringLength::get() as usize;
             let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
-            ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
+            ensure!(lower_bound, Error::<T>::ShortMarketplaceNameLength);
+            ensure!(upper_bound, Error::<T>::LongMarketplaceNameLength);
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
@@ -534,11 +534,11 @@ pub mod pallet {
 
             ensure!(
                 uri.len() <= T::MaxStringLength::get() as usize,
-                Error::<T>::TooLongMarketplaceUri
+                Error::<T>::LongMarketplaceUriLength
             );
             ensure!(
                 uri.len() >= T::MinStringLength::get() as usize,
-                Error::<T>::TooShortMarketplaceUri
+                Error::<T>::ShortMarketplaceUriLength
             );
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
@@ -563,11 +563,11 @@ pub mod pallet {
 
             ensure!(
                 logo_uri.len() <= T::MaxStringLength::get() as usize,
-                Error::<T>::TooLongMarketplaceLogoUri
+                Error::<T>::LongMarketplaceLogoUriLength
             );
             ensure!(
                 logo_uri.len() >= T::MinStringLength::get() as usize,
-                Error::<T>::TooShortMarketplaceLogoUri
+                Error::<T>::ShortMarketplaceLogoUriLength
             );
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
@@ -649,20 +649,20 @@ pub mod pallet {
         InternalMathError,
         /// Account not on the allow list should not be able to buy gated nfts.
         NotAllowed,
-        /// Marketplace name is too short.
-        TooShortMarketplaceName,
-        /// Marketplace name is too long.
-        TooLongMarketplaceName,
+        /// Marketplace name length is short.
+        ShortMarketplaceNameLength,
+        /// Marketplace name length is long.
+        LongMarketplaceNameLength,
         /// Series is not completed.
         SeriesNotCompleted,
-        // Marketplace URI is too long
-        TooLongMarketplaceUri,
-        // Marketplace URI is too short.
-        TooShortMarketplaceUri,
-        // Marketplace Logo URI is too long
-        TooLongMarketplaceLogoUri,
-        // Marketplace Logo URI is too short.
-        TooShortMarketplaceLogoUri,
+        // Marketplace URI length is long
+        LongMarketplaceUriLength,
+        // Marketplace URI length is short.
+        ShortMarketplaceUriLength,
+        // Marketplace Logo URI length is long
+        LongMarketplaceLogoUriLength,
+        // Marketplace Logo URI  length is short.
+        ShortMarketplaceLogoUriLength,
         /// Nft is capsulized.
         NFTIsCapsulized,
     }

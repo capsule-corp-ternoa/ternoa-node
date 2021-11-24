@@ -96,8 +96,8 @@ pub mod pallet {
 
             let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
             let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            ensure!(lower_bound, Error::<T>::ShortIpfsReferenceLength);
+            ensure!(upper_bound, Error::<T>::LongIpfsReferenceLength);
 
             // Checks
             // The Caller needs to pay the NFT Mint fee.
@@ -311,10 +311,10 @@ pub mod pallet {
         SeriesNotFound,
         /// No NFT was found with that NFT id.
         InvalidNFTId,
-        /// Ipfs reference is too short.
-        TooShortIpfsReference,
-        /// Ipfs reference is too long.
-        TooLongIpfsReference,
+        /// Ipfs reference lengthis short.
+        ShortIpfsReferenceLength,
+        /// Ipfs reference length is long.
+        LongIpfsReferenceLength,
         /// Nft is capsulized.
         NFTIsCapsulized,
     }
