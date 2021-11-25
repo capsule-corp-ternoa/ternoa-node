@@ -10,17 +10,17 @@ pub fn migrate<T: Config>() -> Weight {
     let storage_version = StorageVersion::get::<Pallet<T>>();
 
     if storage_version == 6 {
-        log::info!(target: "runtime::nfts", "No migration was run. Current storage version {:?}", storage_version);
+        log::info!(target: "runtime::nfts", "Nfts pallet: migration was run",);
         return weight;
     }
 
     if storage_version == 5 {
-        log::info!(target: "runtime::nfts", "Migrating nfts pallet to StorageVersion V6");
+        log::info!(target: "runtime::nfts", "Nfts pallet: migrating to StorageVersion V6");
 
         weight = v6::migrate::<T>();
         StorageVersion::new(6).put::<Pallet<T>>();
 
-        log::info!(target: "runtime::nfts", "Migration done.");
+        log::info!(target: "runtime::nfts", "Nfts pallet: migration to StorageVersion V6 done");
     }
 
     weight

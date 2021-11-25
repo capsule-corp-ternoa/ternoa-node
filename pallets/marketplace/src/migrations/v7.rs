@@ -75,7 +75,7 @@ mod v7 {
     }
 
     pub fn create_marketplace_mint_fee<T: Config>() {
-        let fee: BalanceCaps<T> = 10000000000000000000u128.try_into().ok().unwrap();
+        let fee: BalanceCaps<T> = 10000000000000000000000u128.try_into().ok().unwrap();
         MarketplaceMintFee::<T>::put(fee);
     }
 }

@@ -110,15 +110,6 @@ pub fn migrate<T: Config>() -> Weight {
     // Create NftMintFee
     v6::create_nft_mint_fee::<T>();
 
-    // Insert it
-
-    // Get all old series data
-
-    /*     let total = Total::take().unwrap_or(0);
-    Total::kill(); */
-    /*
-    NftIdGenerator::<T>::set(total); */
-
     T::BlockWeights::get().max_block
 }
 
@@ -131,6 +122,7 @@ fn migrate_series<T: Config>(old_series: v5::OldSeries<T::AccountId>) {
             owner: entry.1,
             draft: false,
         };
+
         new_series.insert(u32_to_text(entry.0), details);
     }
 
