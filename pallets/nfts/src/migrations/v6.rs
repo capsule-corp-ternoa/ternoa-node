@@ -87,7 +87,7 @@ pub mod v6 {
     }
 
     pub fn is_series_id_free<T: Config>(value: &NFTSeriesId) -> bool {
-        Series::<T>::contains_key(value)
+        !Series::<T>::contains_key(value)
     }
 
     pub fn create_nft_mint_fee<T: Config>() {
