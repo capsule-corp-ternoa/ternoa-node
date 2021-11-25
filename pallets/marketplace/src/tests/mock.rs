@@ -1,5 +1,4 @@
 use crate::{self as ternoa_marketplace, Config, MarketplaceInformation, MarketplaceType};
-use frame_benchmarking::account;
 use frame_support::instances::Instance1;
 use frame_support::parameter_types;
 use frame_support::traits::{Contains, GenesisBuild};
@@ -334,48 +333,9 @@ pub mod help {
 
 #[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    let mut t = frame_system::GenesisConfig::default()
+    let t = frame_system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap();
-
-    ternoa_marketplace::GenesisConfig::<Test> {
-        nfts_for_sale: Default::default(),
-        marketplaces: vec![(
-            0,
-            MarketplaceInformation::new(
-                MarketplaceType::Public,
-                0,
-                ALICE,
-                Default::default(),
-                Default::default(),
-                "Ternoa Marketplace".into(),
-                None,
-                None,
-            ),
-        )],
-        marketplace_mint_fee: 255,
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-
-    let alice = account("ALICE", 0, 0);
-    let bob = account("BOB", 0, 0);
-    let nft_data = NFTData::new(alice, vec![0], vec![50], false);
-    let series_data = NFTSeriesDetails::new(alice, false);
-
-    pallet_balances::GenesisConfig::<Test> {
-        balances: vec![(alice, 10000), (bob, 10000)],
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-
-    ternoa_nfts::GenesisConfig::<Test> {
-        nfts: vec![(100, nft_data)],
-        series: vec![(vec![50], series_data)],
-        nft_mint_fee: 10,
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
 
     t.into()
 }

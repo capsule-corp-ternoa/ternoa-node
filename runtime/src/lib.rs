@@ -100,6 +100,7 @@ construct_runtime!(
         TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
         Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>, Config<T>},
         Capsules: ternoa_capsules::{Pallet, Call, Storage, Event<T>, Config<T>},
+        AssociatedAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Config<T>, Event<T> },
 
         // SGX
         Teerex: pallet_teerex::{Pallet, Call, Storage, Event<T>, Config},
@@ -369,8 +370,8 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
             list_benchmark!(list, extra, ternoa_sgx, Sgx);
             list_benchmark!(list, extra, ternoa_capsules, Capsules);
-
             list_benchmark!(list, extra, pallet_teerex, Teerex);
+            list_benchmark!(list, extra, ternoa_associated_accounts, AssociatedAccounts);
 
             let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -430,6 +431,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
             add_benchmark!(params, batches, ternoa_sgx, Sgx);
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
+            add_benchmark!(params, batches, ternoa_associated_accounts, AssociatedAccounts);
 
             add_benchmark!(params, batches, pallet_teerex, Teerex);
 

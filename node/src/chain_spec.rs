@@ -13,10 +13,10 @@ use ternoa_marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::constants::currency::UNIT;
 use ternoa_runtime::{
-    wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, CapsulesConfig,
-    GenesisConfig, GrandpaConfig, ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig,
-    SessionKeys, SgxConfig, StakerStatus, StakingConfig, SystemConfig, TechnicalMembershipConfig,
-    TeerexConfig,
+    wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
+    BalancesConfig, CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
+    MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig, StakerStatus,
+    StakingConfig, SystemConfig, TechnicalMembershipConfig, TeerexConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -194,7 +194,10 @@ pub fn testnet_genesis(
             ..Default::default()
         },
         teerex: TeerexConfig {
-            allow_sgx_debug_mode: true,
+            allow_sgx_debug_mode: Default::default(),
+        },
+        associated_accounts: AssociatedAccountsConfig {
+            ..Default::default()
         },
     }
 }
