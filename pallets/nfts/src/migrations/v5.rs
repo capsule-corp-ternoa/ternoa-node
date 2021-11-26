@@ -93,10 +93,38 @@ pub mod v5 {
         old_values
     }
 
+    #[allow(dead_code)]
+    pub fn insert_series<T: Config>(
+        series_id: NFTSeriesId,
+        details: NFTSeriesDetails<T::AccountId, NFTId>,
+    ) {
+        Series::<T>::insert(series_id, details);
+    }
+
+    #[allow(dead_code)]
+    pub fn insert_nft<T: Config>(
+        owner: T::AccountId,
+        nft_id: NFTId,
+        offchain_uri: Vec<u8>,
+        series_id: NFTSeriesId,
+    ) {
+        let details = NFTDetails {
+            offchain_uri,
+            series_id,
+            is_capsule: false,
+        };
+        let data = NFTData {
+            owner,
+            details,
+            locked: false,
+            sealed: false,
+        };
+
+        Data::<T>::insert(nft_id, data);
+    }
+
     pub fn kill_storage<T: Config>() {
         Series::<T>::remove_all(None);
         Data::<T>::remove_all(None);
-
-        /*         let a = map![22u32 => 3u32, 33u32 => 4u32]; */
     }
 }

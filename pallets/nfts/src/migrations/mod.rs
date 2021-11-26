@@ -1,5 +1,5 @@
-mod v5;
-mod v6;
+pub mod v5;
+pub mod v6;
 
 use crate::{Config, Pallet};
 use frame_support::traits::StorageVersion;

@@ -94,6 +94,32 @@ pub mod v6 {
         let fee: BalanceOf<T> = 10000000000000000000u128.try_into().ok().unwrap();
         NftMintFee::<T>::put(fee);
     }
+
+    pub fn insert_new_series<T: Config>(owner: T::AccountId, series_id: NFTSeriesId) {
+        let details = NFTSeriesDetails {
+            owner,
+            draft: false,
+        };
+        Series::<T>::insert(series_id, details);
+    }
+
+    #[allow(dead_code)]
+    pub fn get_series<T: Config>() -> BTreeMap<NFTSeriesId, NFTSeriesDetails<T::AccountId>> {
+        let mut map: BTreeMap<NFTSeriesId, NFTSeriesDetails<T::AccountId>> = Default::default();
+        Series::<T>::iter().for_each(|x| {
+            map.insert(x.0, x.1);
+        });
+        map
+    }
+
+    #[allow(dead_code)]
+    pub fn get_nfts<T: Config>() -> BTreeMap<NFTId, NFTData<T::AccountId>> {
+        let mut map: BTreeMap<NFTId, NFTData<T::AccountId>> = Default::default();
+        Data::<T>::iter().for_each(|x| {
+            map.insert(x.0, x.1);
+        });
+        map
+    }
 }
 
 pub fn migrate<T: Config>() -> Weight {
@@ -138,22 +164,28 @@ fn migrate_data<T: Config>(old_data: v5::OldData<T::AccountId>) {
     for entry in old_data {
         // Convert series to string
         let old_series_id: v5::NFTSeriesId = entry.1.series_id;
+        let mut new_series = false;
 
         let new_series_id = if old_series_id != 0 {
             u32_to_text(old_series_id)
         } else {
+            new_series = true;
             // If the old series id was zero, we need to generate a new unique one for it!
             generate_session_id::<T>(&mut last_serial_generated_id)
         };
 
         let details = v6::NFTData {
-            owner: entry.1.owner,
+            owner: entry.1.owner.clone(),
             ipfs_reference: entry.1.offchain_uri,
-            series_id: new_series_id,
+            series_id: new_series_id.clone(),
             locked: entry.1.locked,
         };
 
         new_data.insert(entry.0, details);
+
+        if new_series {
+            v6::insert_new_series::<T>(entry.1.owner, new_series_id)
+        }
     }
 
     // Insert new data
