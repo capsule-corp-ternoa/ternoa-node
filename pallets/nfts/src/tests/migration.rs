@@ -1,4 +1,4 @@
-use super::mock::*;
+/* use super::mock::*;
 use crate::NFTId;
 use frame_support::traits::{OnRuntimeUpgrade, StorageVersion};
 
@@ -23,7 +23,7 @@ mod version_6 {
             assert_ne!(weight, 0);
         })
     }
-}
+} */
 
 /* #[test]
 fn upgrade_from_v4_to_v5() {
