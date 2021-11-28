@@ -2,15 +2,17 @@ use super::Config;
 use frame_support::traits::Get;
 use frame_support::weights::Weight;
 
-mod v7 {
+pub mod v7 {
     use super::super::v6::v6;
     use crate::Config;
     use codec::{Decode, Encode};
+    use frame_support::pallet_prelude::{OptionQuery, ValueQuery};
     use frame_support::traits::Currency;
     use frame_support::Blake2_128Concat;
     #[cfg(feature = "std")]
     use serde::{Deserialize, Serialize};
     use sp_runtime::RuntimeDebug;
+    use sp_std::collections::btree_map::BTreeMap;
     use sp_std::convert::TryInto;
     use sp_std::vec::Vec;
 
@@ -51,13 +53,17 @@ mod v7 {
     frame_support::generate_storage_alias!(
         Marketplace, Marketplaces<T: Config> => Map<
             (Blake2_128Concat, MarketplaceId),
-            MarketplaceInformation<T>
+            MarketplaceInformation<T>,
+            OptionQuery
         >
     );
 
     frame_support::generate_storage_alias!(
-        Marketplace, MarketplaceMintFee<T: Config> => Value<BalanceCaps<T>>
+        Marketplace, MarketplaceMintFee<T: Config> => Value<BalanceCaps<T>, ValueQuery>
     );
+
+    // Define helper types
+    pub type StorageMarketplaces<T> = BTreeMap<MarketplaceId, MarketplaceInformation<T>>;
 
     pub fn migrate_marketplaces<T: Config>() {
         Marketplaces::<T>::translate::<v6::MarketplaceInformation<T>, _>(|_, value| {
@@ -77,6 +83,16 @@ mod v7 {
     pub fn create_marketplace_mint_fee<T: Config>() {
         let fee: BalanceCaps<T> = 10000000000000000000000u128.try_into().ok().unwrap();
         MarketplaceMintFee::<T>::put(fee);
+    }
+
+    #[allow(dead_code)]
+    pub fn get_marketplaces<T: Config>() -> StorageMarketplaces<T> {
+        Marketplaces::<T>::iter().map(|x| x).collect()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_nft_mint_fee<T: Config>() -> BalanceCaps<T> {
+        MarketplaceMintFee::<T>::get()
     }
 }
 

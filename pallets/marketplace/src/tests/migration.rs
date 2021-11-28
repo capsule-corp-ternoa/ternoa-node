@@ -1,111 +1,75 @@
-/*
 use super::mock::*;
-use crate::{MarketplaceId, MarketplaceInformation, MarketplaceType};
+use crate::migrations::v6::v6;
+use crate::migrations::v7::v7;
 use frame_support::traits::{OnRuntimeUpgrade, StorageVersion};
-use frame_support::Blake2_128Concat;
-use frame_system::Config as FSConfig;
 
+pub type MPT6 = v6::MarketplaceType;
+pub type MPT7 = v7::MarketplaceType;
 
-frame_support::generate_storage_alias!(
-    Marketplace,  MarketplaceCount => Value<MarketplaceId>
-);
-
-frame_support::generate_storage_alias!(
-    Marketplace,  MarketplaceOwners<T: FSConfig> => Map<(Blake2_128Concat, MarketplaceId), T::AccountId>
-);
-
-#[test]
-fn upgrade_from_v4_to_v5() {
-    ExtBuilder::default().build().execute_with(|| {
-        StorageVersion::put::<Marketplace>(&StorageVersion::new(4));
-
-        MarketplaceCount::put(3);
-        MarketplaceOwners::<Test>::insert(1, ALICE);
-        MarketplaceOwners::<Test>::insert(2, BOB);
-        let market_id_gen = 2;
-
-        let weight = <Marketplace as OnRuntimeUpgrade>::on_runtime_upgrade();
-
-        let market_1 =
-            MarketplaceInformation::<Test>::new(MarketplaceType::Public, 0, ALICE, Vec::default());
-        let market_2 =
-            MarketplaceInformation::<Test>::new(MarketplaceType::Public, 0, BOB, Vec::default());
-
-        assert!(MarketplaceCount::get().is_none());
-        assert_eq!(MarketplaceOwners::<Test>::iter().count(), 0);
-        assert_eq!(MarketplaceIdGenerator::<Test>::get(), market_id_gen);
-        assert_eq!(
-            Marketplaces::<Test>::iter().count() as u32,
-            (market_id_gen + 1)
-        );
-        assert_eq!(Marketplaces::<Test>::get(1), Some(market_1));
-        assert_eq!(Marketplaces::<Test>::get(2), Some(market_2));
-        assert_eq!(StorageVersion::get::<Marketplace>(), 5);
-
-        assert_ne!(weight, 0);
-    })
-}
-
-mod v6 {
+mod version_7 {
     use super::*;
-    use crate::migrations::v6::v5::MarketplaceInformation as v5MarketplaceInformation;
-    use crate::Marketplaces as v6Marketplaces;
 
-    frame_support::generate_storage_alias!(
-        Marketplace,  Marketplaces<T: FSConfig> => Map<(Blake2_128Concat, MarketplaceId), v5MarketplaceInformation<T>>
-    );
+    fn create_mp(
+        id: v6::MarketplaceId,
+        owner: u64,
+        kind: v6::MarketplaceType,
+        fee: u8,
+        list: Vec<u64>,
+        name: Vec<u8>,
+    ) {
+        v6::insert_marketplace::<Test>(id, owner, kind, fee, list, name);
+    }
+
+    fn check_mp(
+        id: v6::MarketplaceId,
+        owner: u64,
+        kind: v7::MarketplaceType,
+        fee: u8,
+        list: Vec<u64>,
+        name: Vec<u8>,
+        map: &v7::StorageMarketplaces<Test>,
+    ) {
+        let empty: Vec<u64> = vec![];
+
+        // Old
+        assert_eq!(map.get(&id).unwrap().owner, owner);
+        assert_eq!(map.get(&id).unwrap().kind, kind);
+        assert_eq!(map.get(&id).unwrap().commission_fee, fee);
+        assert_eq!(map.get(&id).unwrap().allow_list, list);
+        assert_eq!(map.get(&id).unwrap().name, name);
+
+        // New
+        assert_eq!(map.get(&id).unwrap().disallow_list, empty);
+        assert_eq!(map.get(&id).unwrap().uri, None);
+        assert_eq!(map.get(&id).unwrap().logo_uri, None);
+    }
 
     #[test]
-    fn upgrade_from_v5_to_v6() {
-        ExtBuilder::default().build_v6_migration().execute_with(|| {
-            StorageVersion::put::<Marketplace>(&StorageVersion::new(5));
+    fn upgrade_from_v6_to_v7() {
+        ExtBuilder::default().build().execute_with(|| {
+            create_mp(0, ALICE, MPT6::Private, 0, vec![], "Charma".into());
+            create_mp(1, ALICE, MPT6::Public, 1, vec![1], "Charme".into());
+            create_mp(2, ALICE, MPT6::Private, 2, vec![2], "Chari".into());
+            create_mp(3, BOB, MPT6::Public, 3, vec![3], "Squirt".into());
+            create_mp(4, BOB, MPT6::Private, 4, vec![4], "Wartor".into());
 
-            Marketplaces::<Test>::insert(
-                0,
-                v5MarketplaceInformation {
-                    kind: MarketplaceType::Public,
-                    commission_fee: Default::default(),
-                    owner: ALICE,
-                    allow_list: Default::default(),
-                },
-            );
-
-            Marketplaces::<Test>::insert(
-                1,
-                v5MarketplaceInformation {
-                    kind: MarketplaceType::Public,
-                    commission_fee: Default::default(),
-                    owner: BOB,
-                    allow_list: Default::default(),
-                },
-            );
-
+            StorageVersion::put::<Marketplace>(&StorageVersion::new(6));
             let weight = <Marketplace as OnRuntimeUpgrade>::on_runtime_upgrade();
-
-            let market_1 = MarketplaceInformation::<Test>::new(
-                MarketplaceType::Public,
-                0,
-                ALICE,
-                Vec::default(),
-                "Ternoa Marketplace".into(),
-                None,
-                None,
-            );
-            let market_2 = MarketplaceInformation::<Test>::new(
-                MarketplaceType::Public,
-                0,
-                BOB,
-                Vec::default(),
-                "User Marketplace".into(),
-                None,
-                None,
-            );
-
-            assert_eq!(v6Marketplaces::<Test>::get(0), Some(market_1));
-            assert_eq!(v6Marketplaces::<Test>::get(1), Some(market_2));
-            assert_eq!(StorageVersion::get::<Marketplace>(), 6);
-
             assert_ne!(weight, 0);
+
+            let mps = v7::get_marketplaces::<Test>();
+            let mp_mint_fee = v7::get_nft_mint_fee::<Test>();
+
+            // Check Marketplaces
+            assert_eq!(mps.len(), 5);
+            check_mp(0, ALICE, MPT7::Private, 0, vec![], "Charma".into(), &mps);
+            check_mp(1, ALICE, MPT7::Public, 1, vec![1], "Charme".into(), &mps);
+            check_mp(2, ALICE, MPT7::Private, 2, vec![2], "Chari".into(), &mps);
+            check_mp(3, BOB, MPT7::Public, 3, vec![3], "Squirt".into(), &mps);
+            check_mp(4, BOB, MPT7::Private, 4, vec![4], "Wartor".into(), &mps);
+
+            // Check NFT mint fee
+            assert_eq!(mp_mint_fee, 10000000000000000000000);
         })
     }
 }
@@ -113,9 +77,7 @@ mod v6 {
 #[test]
 fn upgrade_from_latest_to_latest() {
     ExtBuilder::default().build().execute_with(|| {
-        let weight = <Marketplace as OnRuntimeUpgrade>::on_runtime_upgrade();
+        let weight = <NFTs as OnRuntimeUpgrade>::on_runtime_upgrade();
         assert_eq!(weight, 0);
     })
 }
-
-*/

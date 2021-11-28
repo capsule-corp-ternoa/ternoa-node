@@ -635,7 +635,7 @@ fn set_marketplace_mint_fee_happy() {
     ExtBuilder::default().build().execute_with(|| {
         // Happy path
         let old_mint_fee = Marketplace::marketplace_mint_fee();
-        let new_mint_fee = 654u64;
+        let new_mint_fee = 654u128;
         assert_eq!(Marketplace::marketplace_mint_fee(), old_mint_fee);
 
         let ok = Marketplace::set_marketplace_mint_fee(mock::Origin::root(), new_mint_fee);

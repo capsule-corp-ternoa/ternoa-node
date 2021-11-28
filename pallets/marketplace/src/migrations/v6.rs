@@ -33,4 +33,24 @@ pub mod v6 {
             MarketplaceInformation<T>
         >
     );
+
+    #[allow(dead_code)]
+    pub fn insert_marketplace<T: Config>(
+        id: MarketplaceId,
+        owner: T::AccountId,
+        kind: MarketplaceType,
+        commission_fee: u8,
+        allow_list: Vec<T::AccountId>,
+        name: Vec<u8>,
+    ) {
+        let data = MarketplaceInformation {
+            kind,
+            commission_fee,
+            owner,
+            allow_list,
+            name,
+        };
+
+        Marketplaces::<T>::insert(id, data);
+    }
 }

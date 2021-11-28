@@ -61,7 +61,6 @@ pub mod v5 {
     pub type StorageSeries<AccountId> = BTreeMap<NFTSeriesId, NFTSeriesDetails<AccountId, NFTId>>;
     pub type StorageNFTs<AccountId> = BTreeMap<NFTId, NFTData<AccountId>>;
 
-    //
     pub fn get_series<T: Config>() -> StorageSeries<T::AccountId> {
         Series::<T>::iter().map(|x| x).collect()
     }
