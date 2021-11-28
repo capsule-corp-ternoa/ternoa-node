@@ -77,6 +77,8 @@ pub mod pallet {
             if !CapsuleMintFee::<T>::exists() {
                 let fee: BalanceOf<T> = 1000000000000000000000u128.try_into().ok().unwrap();
                 CapsuleMintFee::<T>::put(fee);
+
+                return 1;
             }
 
             0

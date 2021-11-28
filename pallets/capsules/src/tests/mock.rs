@@ -58,7 +58,7 @@ impl frame_system::Config for Test {
     type BlockHashCount = BlockHashCount;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = pallet_balances::AccountData<u64>;
+    type AccountData = pallet_balances::AccountData<u128>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
@@ -67,7 +67,7 @@ impl frame_system::Config for Test {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = 1;
+    pub const ExistentialDeposit: u128 = 1;
     pub const MaxLocks: u32 = 50;
     pub const MaxReserves: u32 = 50;
 }
@@ -76,7 +76,7 @@ impl pallet_balances::Config for Test {
     type MaxLocks = MaxLocks;
     type MaxReserves = MaxReserves;
     type ReserveIdentifier = [u8; 8];
-    type Balance = u64;
+    type Balance = u128;
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
@@ -116,7 +116,7 @@ pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 
 pub struct ExtBuilder {
-    endowed_accounts: Vec<(u64, u64)>,
+    endowed_accounts: Vec<(u64, u128)>,
 }
 
 impl Default for ExtBuilder {
@@ -128,7 +128,7 @@ impl Default for ExtBuilder {
 }
 
 impl ExtBuilder {
-    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+    pub fn caps(mut self, accounts: Vec<(u64, u128)>) -> Self {
         for account in accounts {
             self.endowed_accounts.push(account);
         }

@@ -394,7 +394,7 @@ fn set_capsule_mint_fee_happy() {
     ExtBuilder::default().build().execute_with(|| {
         // Happy path
         let old_mint_fee = TernoaCapsules::capsule_mint_fee();
-        let new_mint_fee = 654u64;
+        let new_mint_fee = 654u128;
         assert_eq!(TernoaCapsules::capsule_mint_fee(), old_mint_fee);
 
         let ok = TernoaCapsules::set_capsule_mint_fee(mock::Origin::root(), new_mint_fee);
