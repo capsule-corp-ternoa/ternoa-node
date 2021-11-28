@@ -14,9 +14,9 @@ use frame_support::dispatch::DispatchResult;
 pub use pallet::*;
 pub use types::*;
 
-use frame_support::traits::ExistenceRequirement;
 use frame_support::traits::ExistenceRequirement::{AllowDeath, KeepAlive};
 use frame_support::traits::{Currency, Get, StorageVersion};
+use frame_support::traits::{ExistenceRequirement, WithdrawReasons};
 use frame_support::PalletId;
 use sp_runtime::traits::AccountIdConversion;
 use sp_std::vec;
@@ -99,6 +99,7 @@ pub mod pallet {
             let nft_id = T::NFTSTrait::create_nft(who.clone(), nft_ipfs_reference, series_id)?;
             Self::new_capsule(&who, nft_id, capsule_ipfs_reference.clone(), amount);
 
+            Self::deposit_event(Event::CapsuleDeposit(amount));
             let event = Event::CapsuleCreated(who, nft_id, amount);
             Self::deposit_event(event);
 
@@ -136,6 +137,7 @@ pub mod pallet {
             // Create capsule
             Self::new_capsule(&who, nft_id, ipfs_reference.clone(), amount);
 
+            Self::deposit_event(Event::CapsuleDeposit(amount));
             let event = Event::CapsuleCreated(who, nft_id, amount);
             Self::deposit_event(event);
 
@@ -260,6 +262,8 @@ pub mod pallet {
         CapsuleCreated(T::AccountId, NFTId, BalanceOf<T>),
         /// Capsule mint fee has been changed. \[balance\]
         CapsuleMintFeeChanged(BalanceOf<T>),
+        /// Some funds have been deposited. \[deposit\]
+        CapsuleDeposit(BalanceOf<T>),
     }
 
     #[pallet::error]
@@ -366,7 +370,8 @@ impl<T: Config> Pallet<T> {
         amount: BalanceOf<T>,
         liveness: ExistenceRequirement,
     ) -> DispatchResult {
-        T::Currency::transfer(sender, receiver, amount, liveness)?;
+        let imbalance = T::Currency::withdraw(&sender, amount, WithdrawReasons::FEE, liveness)?;
+        T::Currency::resolve_creating(receiver, imbalance);
 
         Ok(())
     }
