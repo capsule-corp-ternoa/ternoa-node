@@ -58,39 +58,16 @@ pub mod v5 {
         >
     );
 
-    // Define types that we are going to return
-    pub struct OldNFTDetails<AccountId> {
-        pub owner: AccountId,
-        pub offchain_uri: Vec<u8>,
-        pub series_id: NFTSeriesId,
-        pub locked: bool,
-    }
-    pub type OldSeries<AccountId> = BTreeMap<NFTSeriesId, AccountId>;
-    pub type OldData<AccountId> = BTreeMap<NFTId, OldNFTDetails<AccountId>>;
+    pub type StorageSeries<AccountId> = BTreeMap<NFTSeriesId, NFTSeriesDetails<AccountId, NFTId>>;
+    pub type StorageNFTs<AccountId> = BTreeMap<NFTId, NFTData<AccountId>>;
 
     //
-    pub fn get_series<T: Config>() -> OldSeries<T::AccountId> {
-        let mut old_values: OldSeries<T::AccountId> = Default::default();
-        for (key, value) in Series::<T>::iter() {
-            old_values.insert(key, value.owner);
-        }
-
-        old_values
+    pub fn get_series<T: Config>() -> StorageSeries<T::AccountId> {
+        Series::<T>::iter().map(|x| x).collect()
     }
 
-    pub fn get_data<T: Config>() -> OldData<T::AccountId> {
-        let mut old_values: OldData<T::AccountId> = Default::default();
-        for (key, value) in Data::<T>::iter() {
-            let details = OldNFTDetails {
-                owner: value.owner,
-                offchain_uri: value.details.offchain_uri,
-                series_id: value.details.series_id,
-                locked: value.locked,
-            };
-            old_values.insert(key, details);
-        }
-
-        old_values
+    pub fn get_nfts<T: Config>() -> StorageNFTs<T::AccountId> {
+        Data::<T>::iter().map(|x| x).collect()
     }
 
     #[allow(dead_code)]

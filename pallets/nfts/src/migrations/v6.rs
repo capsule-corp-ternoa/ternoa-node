@@ -7,6 +7,7 @@ use sp_std::vec::Vec;
 pub mod v6 {
     use crate::Config;
     use codec::{Decode, Encode};
+    use frame_support::pallet_prelude::{OptionQuery, ValueQuery};
     use frame_support::traits::Currency;
     use frame_support::Blake2_128Concat;
     #[cfg(feature = "std")]
@@ -47,40 +48,30 @@ pub mod v6 {
     frame_support::generate_storage_alias!(
         Nfts, Series<T: Config> => Map<
             (Blake2_128Concat, NFTSeriesId),
-            NFTSeriesDetails<T::AccountId>
+            NFTSeriesDetails<T::AccountId>,
+            OptionQuery
         >
     );
 
     frame_support::generate_storage_alias!(
         Nfts, Data<T: Config> => Map<
             (Blake2_128Concat, NFTId),
-            NFTData<T::AccountId>
+            NFTData<T::AccountId>,
+            OptionQuery
         >
     );
 
     frame_support::generate_storage_alias!(
-        Nfts, SeriesIdGenerator => Value<u32>
+        Nfts, SeriesIdGenerator => Value<u32, ValueQuery>
     );
 
     frame_support::generate_storage_alias!(
-        Nfts, NftMintFee<T: Config> => Value<BalanceOf<T>>
+        Nfts, NftMintFee<T: Config> => Value<BalanceOf<T>, ValueQuery>
     );
 
-    // Define types that we are going to receive
-    pub type NewSeries<AccountId> = BTreeMap<NFTSeriesId, NFTSeriesDetails<AccountId>>;
-    pub type NewData<AccountId> = BTreeMap<NFTId, NFTData<AccountId>>;
-
-    pub fn set_series<T: Config>(data_map: NewSeries<T::AccountId>) {
-        for data in data_map {
-            Series::<T>::insert(data.0, data.1);
-        }
-    }
-
-    pub fn set_data<T: Config>(data_map: NewData<T::AccountId>) {
-        for data in data_map {
-            Data::<T>::insert(data.0, data.1);
-        }
-    }
+    // Define helper types
+    pub type StorageSeries<AccountId> = BTreeMap<NFTSeriesId, NFTSeriesDetails<AccountId>>;
+    pub type StorageNFTs<AccountId> = BTreeMap<NFTId, NFTData<AccountId>>;
 
     pub fn set_series_id_generator<T: Config>(value: u32) {
         SeriesIdGenerator::put(value);
@@ -95,43 +86,40 @@ pub mod v6 {
         NftMintFee::<T>::put(fee);
     }
 
-    pub fn insert_new_series<T: Config>(owner: T::AccountId, series_id: NFTSeriesId) {
-        let details = NFTSeriesDetails {
-            owner,
-            draft: false,
-        };
-        Series::<T>::insert(series_id, details);
+    pub fn insert_series<T: Config>(id: NFTSeriesId, data: NFTSeriesDetails<T::AccountId>) {
+        Series::<T>::insert(id, data);
+    }
+
+    pub fn insert_nft<T: Config>(id: NFTId, data: NFTData<T::AccountId>) {
+        Data::<T>::insert(id, data);
     }
 
     #[allow(dead_code)]
-    pub fn get_series<T: Config>() -> BTreeMap<NFTSeriesId, NFTSeriesDetails<T::AccountId>> {
-        let mut map: BTreeMap<NFTSeriesId, NFTSeriesDetails<T::AccountId>> = Default::default();
-        Series::<T>::iter().for_each(|x| {
-            map.insert(x.0, x.1);
-        });
-        map
+    pub fn get_series<T: Config>() -> StorageSeries<T::AccountId> {
+        Series::<T>::iter().map(|x| x).collect()
     }
 
     #[allow(dead_code)]
-    pub fn get_nfts<T: Config>() -> BTreeMap<NFTId, NFTData<T::AccountId>> {
-        let mut map: BTreeMap<NFTId, NFTData<T::AccountId>> = Default::default();
-        Data::<T>::iter().for_each(|x| {
-            map.insert(x.0, x.1);
-        });
-        map
+    pub fn get_nfts<T: Config>() -> StorageNFTs<T::AccountId> {
+        Data::<T>::iter().map(|x| x).collect()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_nft_mint_fee<T: Config>() -> BalanceOf<T> {
+        NftMintFee::<T>::get()
     }
 }
 
 pub fn migrate<T: Config>() -> Weight {
     let old_series = v5::get_series::<T>();
-    let old_data = v5::get_data::<T>();
+    let old_nfts = v5::get_nfts::<T>();
 
     // Kill old storage
     v5::kill_storage::<T>();
 
-    // migrate series and data
+    // migrate series and nfts
     migrate_series::<T>(old_series);
-    migrate_data::<T>(old_data);
+    migrate_nfts::<T>(old_nfts);
 
     // Create NftMintFee
     v6::create_nft_mint_fee::<T>();
@@ -139,67 +127,63 @@ pub fn migrate<T: Config>() -> Weight {
     T::BlockWeights::get().max_block
 }
 
-fn migrate_series<T: Config>(old_series: v5::OldSeries<T::AccountId>) {
-    let mut new_series: v6::NewSeries<T::AccountId> = Default::default();
-
-    // Migrate from old to new data
+fn migrate_series<T: Config>(old_series: v5::StorageSeries<T::AccountId>) {
+    // Migrate from old to new series
     for entry in old_series {
-        let details = v6::NFTSeriesDetails {
-            owner: entry.1,
+        let id = u32_to_text(entry.0);
+        let data = v6::NFTSeriesDetails {
+            owner: entry.1.owner,
             draft: false,
         };
 
-        new_series.insert(u32_to_text(entry.0), details);
+        v6::insert_series::<T>(id, data)
     }
-
-    // Insert new data
-    v6::set_series::<T>(new_series);
 }
 
-fn migrate_data<T: Config>(old_data: v5::OldData<T::AccountId>) {
-    let mut new_data: v6::NewData<T::AccountId> = Default::default();
-    let mut last_serial_generated_id = 0u32;
+fn migrate_nfts<T: Config>(old_nfts: v5::StorageNFTs<T::AccountId>) {
+    let mut stored_series_id = 0u32;
 
-    // Migrate from old to new data
-    for entry in old_data {
-        // Convert series to string
-        let old_series_id: v5::NFTSeriesId = entry.1.series_id;
-        let mut new_series = false;
+    // Migrate from old to new nfts
+    for entry in old_nfts {
+        let old_series_id: v5::NFTSeriesId = entry.1.details.series_id;
+        let (new_series_id, exists) = convert_series_id::<T>(old_series_id, &mut stored_series_id);
 
-        let new_series_id = if old_series_id != 0 {
-            u32_to_text(old_series_id)
-        } else {
-            new_series = true;
-            // If the old series id was zero, we need to generate a new unique one for it!
-            generate_session_id::<T>(&mut last_serial_generated_id)
-        };
+        let (owner, locked) = (entry.1.owner, entry.1.locked);
+        let offchain_uri = entry.1.details.offchain_uri;
 
-        let details = v6::NFTData {
-            owner: entry.1.owner.clone(),
-            ipfs_reference: entry.1.offchain_uri,
+        let data = v6::NFTData {
+            owner: owner.clone(),
+            ipfs_reference: offchain_uri,
             series_id: new_series_id.clone(),
-            locked: entry.1.locked,
+            locked,
         };
 
-        new_data.insert(entry.0, details);
+        v6::insert_nft::<T>(entry.0, data);
 
-        if new_series {
-            v6::insert_new_series::<T>(entry.1.owner, new_series_id)
+        if !exists {
+            let draft = false;
+            let data = v6::NFTSeriesDetails { owner, draft };
+            v6::insert_series::<T>(new_series_id, data)
         }
     }
 
-    // Insert new data
-    v6::set_data::<T>(new_data);
-    v6::set_series_id_generator::<T>(last_serial_generated_id);
+    v6::set_series_id_generator::<T>(stored_series_id);
 }
 
-fn generate_session_id<T: Config>(current_value: &mut u32) -> Vec<u8> {
+fn convert_series_id<T: Config>(
+    old_series_id: v5::NFTSeriesId,
+    stored_series_id: &mut u32,
+) -> (Vec<u8>, bool) {
+    if old_series_id != 0 {
+        return (u32_to_text(old_series_id), true);
+    }
+
     loop {
-        let series_id = u32_to_text(*current_value);
-        *current_value += 1;
+        let series_id = u32_to_text(*stored_series_id);
+        *stored_series_id += 1;
 
         if v6::is_series_id_free::<T>(&series_id) {
-            return series_id;
+            return (series_id, false);
         }
     }
 }
