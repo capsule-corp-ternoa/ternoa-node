@@ -1,3 +1,29 @@
+# 0.2.1 Release
+This is the second release for the Ternoa Testnet.
+The two major features are the two new pallets capsule and associated-accounts.
+
+# 🚀 New Features
+The two major features are the two new pallets **capsule** and **associated-accounts** respectivelify for
+ - capsules management (creation/update/removal...).
+ - usernames management. 
+
+# Added
+- create extrinsic **(capsules)** 
+- create_from_nft extrinsic **(capsules)**
+- remove extrinsic **(capsules)**
+- add_funds extrinsic **(capsules)**
+- set_ipfs_reference extrinsic **(capsules)**
+- set_capsule_mint_fee extrinsic **(capsules)**
+- set_altvr_username  extrinsic **(associated-accounts)**
+- set_uri extrinsic **(marketplace)**
+- set_logo_uri extrinsic **(marketplace)**
+- add_account_to_disallow_list extrinsic **(marketplace)**
+- remove_account_from_disallow_list extrinsic **(marketplace)**
+
+# Changed
+- spec_41.json
+- uri and logo_uri properties added to marketplace information  **(marketplace)**
+
 # 0.2.XX-dev
 ## Specification 41 - 2021-10-29 TODO
 # 🚀 New Features
