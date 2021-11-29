@@ -10,40 +10,53 @@ pub trait WeightInfo {
 }
 
 impl WeightInfo for () {
-    // TODO!
+    // Storage: Capsules CapsuleMintFee (r:1 w:0)
+    // Storage: System Account (r:2 w:2)
+    // Storage: Nfts NftMintFee (r:1 w:0)
+    // Storage: Nfts NftIdGenerator (r:1 w:1)
+    // Storage: Nfts SeriesIdGenerator (r:1 w:1)
+    // Storage: Nfts Series (r:1 w:1)
+    // Storage: Capsules Ledgers (r:1 w:1)
+    // Storage: Capsules Capsules (r:0 w:1)
+    // Storage: Nfts Data (r:0 w:1)
     fn create() -> Weight {
-        (100_000_000 as Weight)
-            .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(2 as Weight))
+        (241_761_000 as Weight)
+            .saturating_add(DbWeight::get().reads(8 as Weight))
+            .saturating_add(DbWeight::get().writes(8 as Weight))
     }
-    // TODO!
+    // Storage: Nfts Data (r:1 w:0)
+    // Storage: Capsules Capsules (r:1 w:1)
+    // Storage: Capsules CapsuleMintFee (r:1 w:0)
+    // Storage: System Account (r:2 w:2)
+    // Storage: Capsules Ledgers (r:1 w:1)
     fn create_from_nft() -> Weight {
-        (100_000_000 as Weight)
-            .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(2 as Weight))
+        (86_590_000 as Weight)
+            .saturating_add(DbWeight::get().reads(6 as Weight))
+            .saturating_add(DbWeight::get().writes(4 as Weight))
     }
-    // TODO!
+    // Storage: Capsules Ledgers (r:1 w:1)
+    // Storage: System Account (r:2 w:2)
+    // Storage: Capsules Capsules (r:1 w:1)
     fn remove() -> Weight {
-        (100_000_000 as Weight)
-            .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(2 as Weight))
+        (101_271_000 as Weight)
+            .saturating_add(DbWeight::get().reads(4 as Weight))
+            .saturating_add(DbWeight::get().writes(4 as Weight))
     }
-    // TODO!
+    // Storage: Capsules Ledgers (r:1 w:1)
+    // Storage: System Account (r:2 w:2)
     fn add_funds() -> Weight {
-        (100_000_000 as Weight)
-            .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(2 as Weight))
+        (79_300_000 as Weight)
+            .saturating_add(DbWeight::get().reads(3 as Weight))
+            .saturating_add(DbWeight::get().writes(3 as Weight))
     }
-    // TODO!
+    // Storage: Capsules Capsules (r:1 w:1)
     fn set_ipfs_reference() -> Weight {
-        (100_000_000 as Weight)
+        (27_960_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(2 as Weight))
+            .saturating_add(DbWeight::get().writes(1 as Weight))
     }
-    // TODO!
+    // Storage: Capsules CapsuleMintFee (r:0 w:1)
     fn set_capsule_mint_fee() -> Weight {
-        (100_000_000 as Weight)
-            .saturating_add(DbWeight::get().reads(1 as Weight))
-            .saturating_add(DbWeight::get().writes(2 as Weight))
+        (19_951_000 as Weight).saturating_add(DbWeight::get().writes(1 as Weight))
     }
 }
