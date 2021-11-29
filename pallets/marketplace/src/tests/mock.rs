@@ -67,7 +67,7 @@ impl frame_system::Config for Test {
     type BlockHashCount = BlockHashCount;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = pallet_balances::AccountData<u64>;
+    type AccountData = pallet_balances::AccountData<u128>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
@@ -82,7 +82,7 @@ parameter_types! {
 }
 
 impl pallet_balances::Config for Test {
-    type Balance = u64;
+    type Balance = u128;
     type MaxReserves = MaxReserves;
     type ReserveIdentifier = [u8; 8];
     type DustRemoval = ();
@@ -94,7 +94,7 @@ impl pallet_balances::Config for Test {
 }
 
 impl pallet_balances::Config<pallet_balances::Instance1> for Test {
-    type Balance = u64;
+    type Balance = u128;
     type MaxReserves = MaxReserves;
     type ReserveIdentifier = [u8; 8];
     type DustRemoval = ();
@@ -121,7 +121,7 @@ impl ternoa_nfts::Config for Test {
 }
 
 impl ternoa_account_store::Config for Test {
-    type AccountData = pallet_balances::AccountData<u64>;
+    type AccountData = pallet_balances::AccountData<u128>;
 }
 
 impl ternoa_mock::Config for Test {
@@ -143,8 +143,8 @@ impl Config for Test {
 pub struct ExtBuilder {
     nfts: Vec<(u32, NFTData<u64>)>,
     series: Vec<(Vec<u8>, NFTSeriesDetails<u64>)>,
-    caps_endowed_accounts: Vec<(u64, u64)>,
-    tiime_endowed_accounts: Vec<(u64, u64)>,
+    caps_endowed_accounts: Vec<(u64, u128)>,
+    tiime_endowed_accounts: Vec<(u64, u128)>,
     marketplaces: Vec<(u64, MarketplaceType, u8, Vec<u8>)>,
 }
 
@@ -161,14 +161,14 @@ impl Default for ExtBuilder {
 }
 
 impl ExtBuilder {
-    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+    pub fn caps(mut self, accounts: Vec<(u64, u128)>) -> Self {
         for account in accounts {
             self.caps_endowed_accounts.push(account);
         }
         self
     }
 
-    pub fn tiime(mut self, accounts: Vec<(u64, u64)>) -> Self {
+    pub fn tiime(mut self, accounts: Vec<(u64, u128)>) -> Self {
         for account in accounts {
             self.tiime_endowed_accounts.push(account);
         }

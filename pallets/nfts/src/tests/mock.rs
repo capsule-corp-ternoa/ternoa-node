@@ -116,6 +116,8 @@ pub const BOB: u64 = 2;
 pub const CHAD: u64 = 3;
 pub const COLLECTOR: u64 = 99;
 
+pub const NFT_MINT_FEE: u64 = 10;
+
 pub struct ExtBuilder {
     endowed_accounts: Vec<(u64, u64)>,
 }
@@ -150,7 +152,7 @@ impl ExtBuilder {
         ternoa_nfts::GenesisConfig::<Test> {
             nfts: Default::default(),
             series: Default::default(),
-            nft_mint_fee: 10,
+            nft_mint_fee: NFT_MINT_FEE,
         }
         .assimilate_storage(&mut t)
         .unwrap();

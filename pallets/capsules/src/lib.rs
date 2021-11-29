@@ -34,6 +34,7 @@ pub mod pallet {
     use frame_support::{ensure, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::CheckedAdd;
+    use sp_std::convert::TryInto;
     use ternoa_common::traits::{LockableNFTs, NFTs};
 
     #[pallet::config]
@@ -71,7 +72,18 @@ pub mod pallet {
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_runtime_upgrade() -> frame_support::weights::Weight {
+            if !CapsuleMintFee::<T>::exists() {
+                let fee: BalanceOf<T> = 1000000000000000000000u128.try_into().ok().unwrap();
+                CapsuleMintFee::<T>::put(fee);
+
+                return 1;
+            }
+
+            0
+        }
+    }
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {

@@ -1,29 +1,26 @@
-pub mod v5;
 pub mod v6;
+pub mod v7;
 
 use crate::{Config, Pallet, Weight};
 use frame_support::traits::StorageVersion;
 
 pub fn migrate<T: Config>() -> Weight {
-    let weight: Weight = 0;
-
+    let mut weight: Weight = 0;
     let storage_version = StorageVersion::get::<Pallet<T>>();
-    if storage_version == 6 {
-        log::info!(target: "runtime::marketplace", "No migration was run. Current storage version {:?}", storage_version);
+
+    if storage_version == 7 {
+        log::info!(target: "runtime::marketplace", "Marketplace pallet: no migration was run.");
         return weight;
     }
 
-    /*     if storage_version == 4 {
-        weight = v5::migrate::<T>();
-        StorageVersion::new(5).put::<Pallet<T>>();
-    } */
+    if storage_version == 6 {
+        log::info!(target: "runtime::marketplace", "Marketplace pallet: migrating to StorageVersion V7");
 
-    /*     if storage_version == 5 {
-        weight = v6::migrate::<T>();
-        StorageVersion::new(6).put::<Pallet<T>>();
-    } */
+        weight = v7::migrate::<T>();
+        StorageVersion::new(7).put::<Pallet<T>>();
 
-    log::info!("Migration done.");
+        log::info!(target: "runtime::marketplace", "Marketplace pallet: migration to StorageVersion V7 done");
+    }
 
     weight
 }
