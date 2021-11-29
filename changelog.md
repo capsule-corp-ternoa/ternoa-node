@@ -1,24 +1,28 @@
 # 0.2.1 Release
 This is the second release for the Ternoa Testnet.
-The two major features are the two new pallets capsule and associated-accounts.
+Two new modules have been added :
+ - capsule for creating capsules from an NFT
+ - associated-accounts for linking third party accounts to main account
+Also a marketplaces can now have a link to a website and also a link for the marketplace's logo
 
 # 🚀 New Features
-The two major features are the two new pallets **capsule** and **associated-accounts** respectivelify for
- - capsules management (creation/update/removal...).
- - usernames management. 
+ - Add a link to a marketplace website
+ - Link third party accounts with your main account
 
 # Added
-- create extrinsic **(capsules)** 
-- create_from_nft extrinsic **(capsules)**
-- remove extrinsic **(capsules)**
-- add_funds extrinsic **(capsules)**
-- set_ipfs_reference extrinsic **(capsules)**
-- set_capsule_mint_fee extrinsic **(capsules)**
-- set_altvr_username  extrinsic **(associated-accounts)**
-- set_uri extrinsic **(marketplace)**
-- set_logo_uri extrinsic **(marketplace)**
-- add_account_to_disallow_list extrinsic **(marketplace)**
-- remove_account_from_disallow_list extrinsic **(marketplace)**
+- new pallet: capsules - enables you to create a capsule out of a NFT
+- new pallet: associated-accounts - enables you to link third party accounts with your main account
+- new capsules extrinsic: create - enables you to create a capsule
+- new capsules extrinsic: create_from_nft - enables you turn an nft to a capsule
+- new capsules extrinsic: remove - Converts back a capsule into nft
+- new capsules extrinsic: add_funds - enables you to add additional funds to a capsule
+- new capsules extrinsic: set_ipfs_reference - enables you to change a capsule's ipfs reference.
+- new capsules extrinsic: set_capsule_mint_fee - enables you to set a capsule mint fee.
+- new associated-accounts extrinsic: set_altvr_username - enables you set an altvr username
+- new marketplace extrinsic: set_uri - Allows you to store the link to your marketpklace
+- new marketplace extrinsic: set_logo_uri - Allows you to store the link of your marketpklace logo
+- new marketplace extrinsic: add_account_to_disallow_list - enables you add an account to the disallow_list to buy from public marketplaces
+- new marketplace extrinsic: remove_account_from_disallow_list - enables you remove an account from the disallow_list
 
 # Changed
 - spec_41.json
