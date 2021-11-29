@@ -15,7 +15,7 @@ impl WeightInfo for () {
     // Storage: Sgx EnclaveIdGenerator (r:1 w:1)
     // Storage: Sgx EnclaveRegistry (r:0 w:1)
     fn register_enclave() -> Weight {
-        (67_000_000 as Weight)
+        (66_551_000 as Weight)
             .saturating_add(DbWeight::get().reads(2 as Weight))
             .saturating_add(DbWeight::get().writes(3 as Weight))
     }
@@ -23,7 +23,7 @@ impl WeightInfo for () {
     // Storage: Sgx ClusterIndex (r:1 w:1)
     // Storage: Sgx ClusterRegistry (r:1 w:1)
     fn assign_enclave() -> Weight {
-        (34_450_000 as Weight)
+        (33_980_000 as Weight)
             .saturating_add(DbWeight::get().reads(3 as Weight))
             .saturating_add(DbWeight::get().writes(2 as Weight))
     }
@@ -31,21 +31,21 @@ impl WeightInfo for () {
     // Storage: Sgx ClusterIndex (r:1 w:1)
     // Storage: Sgx ClusterRegistry (r:1 w:1)
     fn unassign_enclave() -> Weight {
-        (35_380_000 as Weight)
+        (34_610_000 as Weight)
             .saturating_add(DbWeight::get().reads(3 as Weight))
             .saturating_add(DbWeight::get().writes(2 as Weight))
     }
     // Storage: Sgx EnclaveIndex (r:1 w:0)
     // Storage: Sgx EnclaveRegistry (r:1 w:1)
     fn update_enclave() -> Weight {
-        (28_410_000 as Weight)
+        (28_110_000 as Weight)
             .saturating_add(DbWeight::get().reads(2 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
     // Storage: Sgx EnclaveIndex (r:2 w:2)
     // Storage: Sgx EnclaveRegistry (r:1 w:0)
     fn change_enclave_owner() -> Weight {
-        (36_440_000 as Weight)
+        (35_830_000 as Weight)
             .saturating_add(DbWeight::get().reads(3 as Weight))
             .saturating_add(DbWeight::get().writes(2 as Weight))
     }
@@ -53,13 +53,13 @@ impl WeightInfo for () {
     // Storage: Sgx ClusterIdGenerator (r:0 w:1)
     // Storage: Sgx ClusterRegistry (r:0 w:1)
     fn create_cluster() -> Weight {
-        (21_550_000 as Weight)
+        (21_880_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(2 as Weight))
     }
     // Storage: Sgx ClusterRegistry (r:1 w:1)
     fn remove_cluster() -> Weight {
-        (24_320_000 as Weight)
+        (23_880_000 as Weight)
             .saturating_add(DbWeight::get().reads(1 as Weight))
             .saturating_add(DbWeight::get().writes(1 as Weight))
     }
