@@ -142,3 +142,13 @@ A guideline about contributing to Ternoa chain can be found in the [`CONTRIBUTIN
 - Staking slashes and remainders are burned, you may want to send them to a treasury later.
 - We kept the runtime slim and did not include less core pallets such as `recovery`, `utility` or `vesting`.
 - weights were computed on an Apple M1 macbook, once validators starts coming in and that we have some reference hardware we will want to recompute those.
+
+# Useful external tools
+
+[Substrate JS utilities](https://www.shawntabrizi.com/substrate-js-utilities/)
+
+[Subwasm](https://github.com/chevdor/subwasm)
+
+# Useful external documentation
+
+[Querying Substrate Storage via RPC](https://www.shawntabrizi.com/substrate/querying-substrate-storage-via-rpc/)
