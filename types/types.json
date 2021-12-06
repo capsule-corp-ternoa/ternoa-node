@@ -1,7 +1,8 @@
 [
     {
         "spec": 40,
-        "name": "spec_40.json"
+        "name": "spec_40.json",
+        "lastBlock": "884099"
     },
     {
         "spec": 41,
