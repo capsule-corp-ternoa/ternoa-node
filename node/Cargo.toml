@@ -2,7 +2,7 @@
 build = "build.rs"
 edition = "2018"
 name = "ternoa"
-version = "0.2.0"
+version = "0.2.2"
 
 [[bin]]
 name = "ternoa"

@@ -5,7 +5,7 @@ use crate::Config;
 use codec::{Decode, Encode};
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 /// TODO!
 pub type URI = Vec<u8>;
@@ -184,7 +184,7 @@ pub struct MarketplaceInformation<T: Config> {
     pub owner: T::AccountId,
     pub allow_list: Vec<T::AccountId>,
     pub disallow_list: Vec<T::AccountId>,
-    pub name: ternoa::String,
+    pub name: TernoaString,
     pub uri: Option<URI>,
     pub logo_uri: Option<URI>,
 }
@@ -196,7 +196,7 @@ impl<T: Config> MarketplaceInformation<T> {
         owner: T::AccountId,
         allow_list: Vec<T::AccountId>,
         disallow_list: Vec<T::AccountId>,
-        name: ternoa::String,
+        name: TernoaString,
         uri: Option<URI>,
         logo_uri: Option<URI>,
     ) -> MarketplaceInformation<T> {

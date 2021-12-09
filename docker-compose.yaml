@@ -2,8 +2,8 @@ version: '3'
 
 services:
   ternoa:
-    image: "ternoa/ternoa-chain:0.2.0"
-    command: '--chain test-net --base-path /data/db --name MyDockerComposeNode'
+    image: "ternoa/ternoa-chain:0.2.2"
+    command: '--chain test-net --base-path /data --name MyDockerComposeNode'
     user: "0:0" # fix disk permissions by setting the docker user ID to be the one from the host system (typically 1000:1000 or 0:0)
     restart: always
     volumes:

@@ -18,7 +18,7 @@ use default_weights::WeightInfo;
 use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
 use ternoa_primitives::nfts::NFTId;
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
@@ -223,7 +223,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             kind: MarketplaceType,
             commission_fee: u8,
-            name: ternoa::String,
+            name: TernoaString,
             uri: Option<URI>,
             logo_uri: Option<URI>,
         ) -> DispatchResultWithPostInfo {
@@ -463,7 +463,7 @@ pub mod pallet {
         pub fn set_name(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            name: ternoa::String,
+            name: TernoaString,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -585,7 +585,7 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", CommonBalanceT<T> = "Balance", ternoa::String = "String")]
+    #[pallet::metadata(T::AccountId = "AccountId", CommonBalanceT<T> = "Balance")]
     pub enum Event<T: Config> {
         /// A nft has been listed for sale. \[nft id, nft currency, marketplace id\]
         NftListed(
@@ -608,7 +608,7 @@ pub mod pallet {
         /// Marketplace changed type.  \[marketplace id, marketplace type\]
         MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
         /// Marketplace changed name. \[marketplace id, marketplace name\]
-        MarketplaceNameChanged(MarketplaceId, ternoa::String),
+        MarketplaceNameChanged(MarketplaceId, TernoaString),
         /// Marketplace mint fee changed. \[mint fee\]
         MarketplaceMintFeeChanged(BalanceCaps<T>),
         /// Marketplace mint fee changed. \[marketplace id, commission fee\]
