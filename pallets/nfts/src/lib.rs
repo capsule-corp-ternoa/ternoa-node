@@ -21,7 +21,7 @@ use sp_std::vec;
 use sp_std::vec::Vec;
 use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
 
@@ -89,7 +89,7 @@ pub mod pallet {
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
-            ipfs_reference: ternoa::String,
+            ipfs_reference: TernoaString,
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -230,7 +230,7 @@ pub mod pallet {
         pub fn set_ipfs_reference(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            ipfs_reference: ternoa::String,
+            ipfs_reference: TernoaString,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -265,10 +265,10 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId", ternoa::String = "String")]
+    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId")]
     pub enum Event<T: Config> {
         /// A new NFT was created. \[nft id, owner, series id, ipfs reference\]
-        Created(NFTId, T::AccountId, NFTSeriesId, ternoa::String),
+        Created(NFTId, T::AccountId, NFTSeriesId, TernoaString),
         /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
         Transfer(NFTId, T::AccountId, T::AccountId),
         /// An NFT was updated by its owner. \[nft id\]
@@ -287,7 +287,7 @@ pub mod pallet {
         /// Nft mint fee changed. \[mint fee\]
         NftMintFeeChanged(BalanceOf<T>),
         /// IPFS reference changed. \[nft id, ipfs reference\]
-        IpfsReferenceChanged(NFTId, ternoa::String),
+        IpfsReferenceChanged(NFTId, TernoaString),
     }
 
     #[pallet::error]
@@ -418,7 +418,7 @@ impl<T: Config> traits::NFTs for Pallet<T> {
 
     fn create_nft(
         owner: Self::AccountId,
-        ipfs_reference: ternoa::String,
+        ipfs_reference: TernoaString,
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo> {
         Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;

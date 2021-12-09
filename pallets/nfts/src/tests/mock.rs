@@ -168,11 +168,11 @@ pub mod help {
     use crate::traits::LockableNFTs;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-    use ternoa_primitives::ternoa;
+    use ternoa_primitives::TernoaString;
 
     pub fn create(
         owner: Origin,
-        ipfs_reference: ternoa::String,
+        ipfs_reference: TernoaString,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
         assert_ok!(NFTs::create(owner, ipfs_reference, series_id));

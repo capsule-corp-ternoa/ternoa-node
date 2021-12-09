@@ -7,5 +7,9 @@
     {
         "spec": 41,
         "name": "spec_41.json"
+    },
+    {
+        "spec": 42,
+        "name": "spec_42.json"
     }
 ]

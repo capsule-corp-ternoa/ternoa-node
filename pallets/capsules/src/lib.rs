@@ -22,7 +22,7 @@ use sp_runtime::traits::AccountIdConversion;
 use sp_std::vec;
 use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
@@ -92,8 +92,8 @@ pub mod pallet {
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
-            nft_ipfs_reference: ternoa::String,
-            capsule_ipfs_reference: ternoa::String,
+            nft_ipfs_reference: TernoaString,
+            capsule_ipfs_reference: TernoaString,
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -124,7 +124,7 @@ pub mod pallet {
         pub fn create_from_nft(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            ipfs_reference: ternoa::String,
+            ipfs_reference: TernoaString,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -222,7 +222,7 @@ pub mod pallet {
         pub fn set_ipfs_reference(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            ipfs_reference: ternoa::String,
+            ipfs_reference: TernoaString,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -265,7 +265,7 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// A capsule ipfs reference was changed. \[nft id, ipfs reference\]
-        CapsuleIpfsReferenceChanged(NFTId, ternoa::String),
+        CapsuleIpfsReferenceChanged(NFTId, TernoaString),
         /// Additional funds were added to a capsule. \[nft id, balance\]
         CapsuleFundsAdded(NFTId, BalanceOf<T>),
         /// A capsule was convert into an NFT. \[nft id, balance\]
@@ -316,7 +316,7 @@ pub mod pallet {
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub capsule_mint_fee: BalanceOf<T>,
-        pub capsules: Vec<(NFTId, T::AccountId, ternoa::String)>,
+        pub capsules: Vec<(NFTId, T::AccountId, TernoaString)>,
         pub ledgers: Vec<(T::AccountId, Vec<(NFTId, BalanceOf<T>)>)>,
     }
 
@@ -357,7 +357,7 @@ impl<T: Config> Pallet<T> {
     fn new_capsule(
         owner: &T::AccountId,
         nft_id: NFTId,
-        ipfs_reference: ternoa::String,
+        ipfs_reference: TernoaString,
         funds: BalanceOf<T>,
     ) {
         let data = CapsuleData::new(owner.clone(), ipfs_reference.clone());

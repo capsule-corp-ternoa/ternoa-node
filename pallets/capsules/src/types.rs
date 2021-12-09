@@ -5,7 +5,7 @@ use ternoa_primitives::nfts::NFTId;
 use codec::{Decode, Encode};
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -14,14 +14,14 @@ where
     AccountId: Clone + Default,
 {
     pub owner: AccountId,
-    pub ipfs_reference: ternoa::String,
+    pub ipfs_reference: TernoaString,
 }
 
 impl<AccountId> CapsuleData<AccountId>
 where
     AccountId: Clone + Default,
 {
-    pub fn new(owner: AccountId, ipfs_reference: ternoa::String) -> CapsuleData<AccountId> {
+    pub fn new(owner: AccountId, ipfs_reference: TernoaString) -> CapsuleData<AccountId> {
         Self {
             owner,
             ipfs_reference,

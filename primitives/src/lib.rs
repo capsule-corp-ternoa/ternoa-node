@@ -7,6 +7,7 @@ use sp_runtime::{
     traits::{BlakeTwo256, IdentifyAccount, Verify},
     MultiSignature, OpaqueExtrinsic,
 };
+use sp_std::vec::Vec;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -35,17 +36,13 @@ pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type.
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
 
-pub mod ternoa {
-    use sp_std::vec::Vec;
-
-    pub type String = Vec<u8>;
-}
+pub type TernoaString = Vec<u8>;
 
 pub mod nfts {
     #[cfg(feature = "std")]
     use serde::{Deserialize, Serialize};
 
-    use super::ternoa;
+    use super::TernoaString;
     use codec::{Decode, Encode};
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
@@ -63,7 +60,7 @@ pub mod nfts {
         // NFT owner
         pub owner: AccountId,
         // IPFS reference
-        pub ipfs_reference: ternoa::String,
+        pub ipfs_reference: TernoaString,
         // Series ID
         pub series_id: NFTSeriesId,
         // Is Locked
@@ -73,7 +70,7 @@ pub mod nfts {
     impl<AccountId> NFTData<AccountId> {
         pub fn new(
             owner: AccountId,
-            ipfs_reference: ternoa::String,
+            ipfs_reference: TernoaString,
             series_id: NFTSeriesId,
             locked: bool,
         ) -> Self {

@@ -1,3 +1,7 @@
+# 🚀 0.2.2 Release
+Replaced faulty ternoa::String type with TernoaString
+
+
 # 🚀 0.2.1 Release
 This is the second release for the Ternoa Testnet.
 This release incorporates two large features, a couple of small improvements and a large list of fixes.
@@ -11,7 +15,7 @@ This is how it looks now:
 ```rust
 struct NFTData {
     owner: AccountId,
-    ipfs_reference: ternoa::String,
+    ipfs_reference: TernoaString,
     series_id: NFTSeriesId,
     locked: bool,
 }
@@ -67,7 +71,7 @@ struct MarketplaceInformation {
     owner: AccountId,
     allow_list: Vec<AccountId>,
     disallow_list: Vec<AccountId>,
-    name: ternoa::String,
+    name: TernoaString,
     uri: Option<URI>,
     logo_uri: Option<URI>,
 }

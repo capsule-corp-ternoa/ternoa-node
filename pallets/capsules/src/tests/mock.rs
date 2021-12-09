@@ -172,7 +172,7 @@ pub mod help {
     use crate::traits::LockableNFTs;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-    use ternoa_primitives::ternoa;
+    use ternoa_primitives::TernoaString;
 
     pub fn create_capsule_fast(owner: Origin) -> NFTId {
         let nft_id = create_nft(owner.clone(), vec![50], None);
@@ -186,7 +186,7 @@ pub mod help {
 
     pub fn create_nft(
         owner: Origin,
-        ipfs_reference: ternoa::String,
+        ipfs_reference: TernoaString,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
         assert_ok!(TernoaNFTs::create(owner, ipfs_reference, series_id));

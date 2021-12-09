@@ -1,6 +1,6 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 pub trait NFTs {
     type AccountId;
@@ -17,7 +17,7 @@ pub trait NFTs {
     /// Create NFT
     fn create_nft(
         owner: Self::AccountId,
-        ipfs_reference: ternoa::String,
+        ipfs_reference: TernoaString,
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo>;
 

@@ -7,7 +7,7 @@ use sp_core::H256;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
 use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
-use ternoa_primitives::ternoa;
+use ternoa_primitives::TernoaString;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -194,7 +194,7 @@ pub mod help {
 
     pub fn create(
         owner: Origin,
-        ipfs_reference: ternoa::String,
+        ipfs_reference: TernoaString,
         series_id: Option<Vec<u8>>,
     ) -> NFTId {
         assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
