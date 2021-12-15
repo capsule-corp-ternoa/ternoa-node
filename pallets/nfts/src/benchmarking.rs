@@ -92,16 +92,6 @@ benchmarks! {
         assert_ne!(old_mint_fee, new_mint_fee.clone().into());
         assert_eq!(NFTs::<T>::nft_mint_fee(), new_mint_fee.into());
     }
-
-    set_ipfs_reference {
-        prepare_benchmarks::<T>();
-
-        let ipfs_reference = vec![45];
-
-    }: _(get_origin::<T>("ALICE"), NFT_ID, ipfs_reference.clone())
-    verify {
-        assert_eq!(NFTs::<T>::data(NFT_ID).unwrap().ipfs_reference, ipfs_reference)
-    }
 }
 
 impl_benchmark_test_suite!(
