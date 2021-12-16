@@ -225,42 +225,6 @@ pub mod pallet {
 
             Ok(().into())
         }
-
-        #[pallet::weight(T::WeightInfo::set_ipfs_reference())]
-        pub fn set_ipfs_reference(
-            origin: OriginFor<T>,
-            nft_id: NFTId,
-            ipfs_reference: TernoaString,
-        ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
-
-            Data::<T>::mutate(nft_id, |x| {
-                if let Some(data) = x {
-                    if data.owner != who {
-                        return Err(Error::<T>::NotOwner);
-                    }
-                    if data.locked {
-                        return Err(Error::<T>::Locked);
-                    }
-
-                    let series =
-                        Series::<T>::get(&data.series_id).ok_or(Error::<T>::SeriesNotFound)?;
-
-                    if !series.draft {
-                        return Err(Error::<T>::SeriesIsCompleted);
-                    }
-
-                    data.ipfs_reference = ipfs_reference.clone();
-                    Ok(())
-                } else {
-                    Err(Error::<T>::InvalidNFTId)
-                }
-            })?;
-
-            Self::deposit_event(Event::IpfsReferenceChanged(nft_id, ipfs_reference));
-
-            Ok(().into())
-        }
     }
 
     #[pallet::event]
@@ -286,8 +250,6 @@ pub mod pallet {
         SeriesFinished(NFTSeriesId),
         /// Nft mint fee changed. \[mint fee\]
         NftMintFeeChanged(BalanceOf<T>),
-        /// IPFS reference changed. \[nft id, ipfs reference\]
-        IpfsReferenceChanged(NFTId, TernoaString),
     }
 
     #[pallet::error]
