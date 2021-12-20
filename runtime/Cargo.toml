@@ -37,7 +37,7 @@ pallet-bounties = { git = "https://github.com/paritytech/substrate.git", default
 pallet-collective = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-grandpa = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-im-online = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-pallet-mandate = { git = "https://github.com/ETeissonniere/pallet-mandate", branch = "eliott/ternoa-sub-freeze", default-features = false }
+pallet-sudo = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-membership = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-offences = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 #pallet-offences-benchmarking = { git = "https://github.com/paritytech/substrate/", default-features = false, optional = true }
@@ -96,7 +96,7 @@ std = [
 	"pallet-staking/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
-	"pallet-mandate/std",
+	"pallet-sudo/std",
 	"pallet-membership/std",
 	"pallet-offences/std",
 	"pallet-randomness-collective-flip/std",

@@ -16,7 +16,7 @@ use ternoa_runtime::{
     wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
     MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig, StakerStatus,
-    StakingConfig, SystemConfig, TechnicalMembershipConfig,
+    StakingConfig, SudoConfig, SystemConfig, TechnicalMembershipConfig,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -100,6 +100,7 @@ pub fn testnet_genesis(
             get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
         ]
     });
+    let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
 
     const ENDOWMENT: Balance = UNIT * 1_000_000;
     const STASH: Balance = UNIT * 10_000;
@@ -155,6 +156,7 @@ pub fn testnet_genesis(
         treasury: Default::default(),
         elections: Default::default(),
         indices: Default::default(),
+        sudo: SudoConfig { key: root_key },
 
         // Governance
         technical_committee: Default::default(),
