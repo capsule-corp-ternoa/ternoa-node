@@ -35,6 +35,7 @@ pub fn prepare_benchmarks<T: Config>() -> (MarketplaceId, MarketplaceId, NFTId) 
         vec![50],
         None,
         None,
+        None,
     ));
     let public_id = Marketplace::<T>::marketplace_id_generator();
 
@@ -44,6 +45,7 @@ pub fn prepare_benchmarks<T: Config>() -> (MarketplaceId, MarketplaceId, NFTId) 
         MarketplaceType::Private,
         0,
         vec![51],
+        None,
         None,
         None,
     ));
@@ -104,7 +106,7 @@ benchmarks! {
 
         let alice: T::AccountId = get_account::<T>("ALICE");
         let mkp_id = Marketplace::<T>::marketplace_id_generator() + 1;
-    }: _(RawOrigin::Signed(alice.clone().into()), MarketplaceType::Public, 0, "Hop".into(), None, None)
+    }: _(RawOrigin::Signed(alice.clone().into()), MarketplaceType::Public, 0, "Hop".into(), None, None, None)
     verify {
         assert_eq!(Marketplaces::<T>::contains_key(mkp_id), true);
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().owner, alice);
