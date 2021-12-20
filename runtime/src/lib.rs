@@ -80,6 +80,7 @@ construct_runtime!(
         Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>},
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Utility: pallet_utility::{Pallet, Call, Storage, Event},
+        Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
 
         TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Config<T>, Event<T>},

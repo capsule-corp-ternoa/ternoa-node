@@ -3880,6 +3880,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-multisig"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate.git#5be50ac14b23147c6f120745c2205a86a2675169"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-offences"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate.git#5be50ac14b23147c6f120745c2205a86a2675169"
@@ -7459,6 +7472,7 @@ dependencies = [
  "pallet-im-online",
  "pallet-mandate",
  "pallet-membership",
+ "pallet-multisig",
  "pallet-offences",
  "pallet-randomness-collective-flip",
  "pallet-scheduler",

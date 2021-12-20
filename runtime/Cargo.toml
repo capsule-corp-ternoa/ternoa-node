@@ -51,6 +51,7 @@ pallet-transaction-payment = { git = "https://github.com/paritytech/substrate.gi
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-treasury = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-utility = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+pallet-multisig = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-api = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-block-builder = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -119,7 +120,8 @@ std = [
 	"ternoa-timed-escrow/std",
 	"ternoa-sgx/std",
 	"ternoa-capsules/std",
-	"ternoa-associated-accounts/std"
+	"ternoa-associated-accounts/std",
+	"pallet-multisig/std"
 ]
 runtime-benchmarks = [
 	"frame-benchmarking",
