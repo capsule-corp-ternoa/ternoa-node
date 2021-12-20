@@ -73,6 +73,14 @@ pub mod pallet {
         /// The maximum length a string may be.
         #[pallet::constant]
         type MaxStringLength: Get<u16>;
+
+        /// The minimum length a description may be.
+        #[pallet::constant]
+        type MinDescriptionLength: Get<u16>;
+
+        /// The maximum length a description may be.
+        #[pallet::constant]
+        type MaxDescriptionLength: Get<u16>;
     }
 
     #[pallet::pallet]
@@ -226,6 +234,7 @@ pub mod pallet {
             name: TernoaString,
             uri: Option<URI>,
             logo_uri: Option<URI>,
+            description: Option<TernoaString>,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -257,6 +266,17 @@ pub mod pallet {
                 );
             }
 
+            if let Some(description_value) = description.as_ref() {
+                ensure!(
+                    description_value.len() >= T::MinDescriptionLength::get() as usize,
+                    Error::<T>::TooShortMarketplaceDescription
+                );
+                ensure!(
+                    description_value.len() <= T::MaxDescriptionLength::get() as usize,
+                    Error::<T>::TooLongMarketplaceDescription
+                );
+            }
+
             // Needs to have enough money
             let imbalance = T::CurrencyCaps::withdraw(
                 &caller_id,
@@ -275,6 +295,7 @@ pub mod pallet {
                 name,
                 uri,
                 logo_uri,
+                description,
             );
 
             let id = MarketplaceIdGenerator::<T>::get();
@@ -581,6 +602,35 @@ pub mod pallet {
             Self::deposit_event(event);
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::set_logo_uri())]
+        pub fn set_description(
+            origin: OriginFor<T>,
+            marketplace_id: MarketplaceId,
+            description: TernoaString,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            ensure!(
+                description.len() <= T::MaxDescriptionLength::get() as usize,
+                Error::<T>::TooShortMarketplaceDescription
+            );
+            ensure!(
+                description.len() >= T::MinDescriptionLength::get() as usize,
+                Error::<T>::TooLongMarketplaceDescription
+            );
+
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+                let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
+                ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
+                market_info.description = Some(description.clone());
+                Ok(())
+            })?;
+
+            let event = Event::MarketplaceDescriptionUpdated(marketplace_id);
+            Self::deposit_event(event);
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -621,6 +671,8 @@ pub mod pallet {
         AccountAddedToDisallowList(MarketplaceId, T::AccountId),
         /// Account removed from disallow list for a marketplace.  \[marketplace id, account\]
         AccountRemovedFromDisallowList(MarketplaceId, T::AccountId),
+        /// Marketplace description updated. \[marketplace id\]
+        MarketplaceDescriptionUpdated(MarketplaceId),
     }
 
     #[pallet::error]
@@ -655,16 +707,20 @@ pub mod pallet {
         TooLongMarketplaceName,
         /// Series is not completed.
         SeriesNotCompleted,
-        // Marketplace URI is too long
+        // Marketplace URI is too long.
         TooLongMarketplaceUri,
         // Marketplace URI is too short.
         TooShortMarketplaceUri,
-        // Marketplace Logo URI is too long
+        // Marketplace Logo URI is too long.
         TooLongMarketplaceLogoUri,
         // Marketplace Logo URI is too short.
         TooShortMarketplaceLogoUri,
         /// Nft is capsulized.
         NFTIsCapsulized,
+        /// Marketplace Description in too short.
+        TooShortMarketplaceDescription,
+        /// Marketplace Description in too long.
+        TooLongMarketplaceDescription,
     }
 
     /// Nfts listed on the marketplace
