@@ -187,6 +187,7 @@ pub struct MarketplaceInformation<T: Config> {
     pub name: TernoaString,
     pub uri: Option<URI>,
     pub logo_uri: Option<URI>,
+    pub description: Option<TernoaString>,
 }
 
 impl<T: Config> MarketplaceInformation<T> {
@@ -199,6 +200,7 @@ impl<T: Config> MarketplaceInformation<T> {
         name: TernoaString,
         uri: Option<URI>,
         logo_uri: Option<URI>,
+        description: Option<TernoaString>,
     ) -> MarketplaceInformation<T> {
         Self {
             kind,
@@ -209,6 +211,7 @@ impl<T: Config> MarketplaceInformation<T> {
             name,
             uri,
             logo_uri,
+            description,
         }
     }
 }

@@ -15,6 +15,8 @@ parameter_types! {
     pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
     pub const MinNameLength : u8 = 1;
     pub const MaxNameLength : u8 = 20;
+    pub const MinDescriptionLength: u16 = 1;
+    pub const MaxDescriptionLength: u16 = 500;
 }
 
 impl ternoa_nfts::Config for Runtime {
@@ -46,6 +48,8 @@ impl ternoa_marketplace::Config for Runtime {
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
     type CapsulesTrait = Capsules;
+    type MaxDescriptionLength = MaxDescriptionLength;
+    type MinDescriptionLength = MinDescriptionLength;
 }
 
 impl ternoa_sgx::Config for Runtime {
