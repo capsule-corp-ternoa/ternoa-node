@@ -16,35 +16,26 @@ use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_inherents::{CheckInherentsResult, InherentData};
-use sp_runtime::{
-    generic,
-    traits::{BlakeTwo256, Block as BlockT, NumberFor},
-    transaction_validity::{TransactionSource, TransactionValidity},
-    ApplyExtrinsicResult,
-};
-use sp_std::prelude::*; // Stuff like Vec<> and Box<>
+use sp_runtime::traits::{BlakeTwo256, Block as BlockT, NumberFor};
+use sp_runtime::transaction_validity::{TransactionSource, TransactionValidity};
+use sp_runtime::{generic, ApplyExtrinsicResult};
+use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 
 pub mod constants;
-mod pallets_core;
-mod pallets_economy;
-mod pallets_governance;
-mod pallets_ternoa;
-mod pallets_time;
-mod pallets_treasury;
-mod pallets_validators;
+mod pallets;
 mod version;
 
 // Re-exports added for compatibility with SubstraTee
 pub use pallet_balances::Call as BalancesCall;
 
 use constants::time::PRIMARY_PROBABILITY;
-use pallets_validators::EpochDuration;
-pub use pallets_validators::SessionKeys;
+use pallets::EpochDuration;
+pub use pallets::SessionKeys;
 #[cfg(any(feature = "std", test))]
-pub use pallets_validators::StakerStatus;
-pub use pallets_validators::BABE_GENESIS_EPOCH_CONFIG;
+pub use pallets::StakerStatus;
+pub use pallets::BABE_GENESIS_EPOCH_CONFIG;
 #[cfg(feature = "std")]
 pub use version::native_version;
 pub use version::VERSION;
