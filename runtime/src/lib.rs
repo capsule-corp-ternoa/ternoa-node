@@ -82,6 +82,11 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
         Utility: pallet_utility::{Pallet, Call, Storage, Event},
         Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
+        Indices: pallet_indices::{Pallet, Call, Storage, Config<T>, Event<T>},
+        Identity: pallet_identity::{Pallet, Call, Storage, Event<T>},
+        Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>},
+        Tips: pallet_tips::{Pallet, Call, Storage, Event<T>},
+        Elections: pallet_elections_phragmen::{Pallet, Call, Storage, Event<T>, Config<T>},
 
         TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Config<T>, Event<T>},

@@ -5,15 +5,16 @@ use crate::constants::time::{
 };
 use crate::{
     AuthorityDiscovery, Babe, Balances, Bounties, Call, Capsules, ElectionProviderMultiPhase,
-    Event, Grandpa, Historical, ImOnline, Nfts, Offences, Origin, OriginCaller, PalletInfo,
-    Runtime, Scheduler, Session, Signature, SignedPayload, Staking, System, TechnicalCommittee,
-    TiimeAccountStore, TiimeBalances, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic,
-    VERSION,
+    Elections, Event, Grandpa, Historical, ImOnline, Nfts, Offences, Origin, OriginCaller,
+    PalletInfo, Runtime, Scheduler, Session, Signature, SignedPayload, Staking, System,
+    TechnicalCommittee, TiimeAccountStore, TiimeBalances, Timestamp, TransactionPayment, Treasury,
+    UncheckedExtrinsic, VERSION,
 };
-use codec::Encode;
+use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
 use frame_support::traits::{
-    Currency, Imbalance, KeyOwnerProofSystem, OnUnbalanced, U128CurrencyToVote,
+    Currency, Imbalance, InstanceFilter, KeyOwnerProofSystem, LockIdentifier, OnUnbalanced,
+    U128CurrencyToVote,
 };
 use frame_support::weights::constants::{
     BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
@@ -33,13 +34,14 @@ use sp_runtime::generic::{self, Era};
 use sp_runtime::traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup};
 use sp_runtime::transaction_validity::TransactionPriority;
 use sp_runtime::{
-    impl_opaque_keys, FixedPointNumber, Perbill, Percent, Permill, Perquintill, SaturatedConversion,
+    impl_opaque_keys, FixedPointNumber, Perbill, Percent, Permill, Perquintill, RuntimeDebug,
+    SaturatedConversion,
 };
 use sp_std::vec;
 use sp_std::vec::Vec;
 use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
-use ternoa_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
+use ternoa_primitives::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
@@ -724,4 +726,152 @@ impl pallet_multisig::Config for Runtime {
     type DepositFactor = DepositFactor;
     type MaxSignatories = MaxSignatories;
     type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
+    pub const IndexDeposit: Balance = 1 * UNIT;
+}
+
+impl pallet_indices::Config for Runtime {
+    type AccountIndex = AccountIndex;
+    type Currency = Balances;
+    type Deposit = IndexDeposit;
+    type Event = Event;
+    type WeightInfo = pallet_indices::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
+    pub const BasicDeposit: Balance = 10 * UNIT;       // 258 bytes on-chain
+    pub const FieldDeposit: Balance = 250 * CENTS;        // 66 bytes on-chain
+    pub const SubAccountDeposit: Balance = 2 * UNIT;   // 53 bytes on-chain
+    pub const MaxSubAccounts: u32 = 100;
+    pub const MaxAdditionalFields: u32 = 100;
+    pub const MaxRegistrars: u32 = 20;
+}
+
+impl pallet_identity::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type BasicDeposit = BasicDeposit;
+    type FieldDeposit = FieldDeposit;
+    type SubAccountDeposit = SubAccountDeposit;
+    type MaxSubAccounts = MaxSubAccounts;
+    type MaxAdditionalFields = MaxAdditionalFields;
+    type MaxRegistrars = MaxRegistrars;
+    type Slashed = Treasury;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    type RegistrarOrigin = EnsureRoot<AccountId>;
+    type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
+    // One storage item; key size 32, value size 8; .
+    pub const ProxyDepositBase: Balance = deposit(1, 8);
+    // Additional storage item size of 33 bytes.
+    pub const ProxyDepositFactor: Balance = deposit(0, 33);
+    pub const MaxProxies: u16 = 32;
+    pub const AnnouncementDepositBase: Balance = deposit(1, 8);
+    pub const AnnouncementDepositFactor: Balance = deposit(0, 66);
+    pub const MaxPending: u16 = 32;
+}
+
+/// The type used to represent the kinds of proxying allowed.
+#[derive(
+    Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, RuntimeDebug, MaxEncodedLen,
+)]
+pub enum ProxyType {
+    Any,
+    NonTransfer,
+    Governance,
+    Staking,
+}
+impl Default for ProxyType {
+    fn default() -> Self {
+        Self::Any
+    }
+}
+impl InstanceFilter<Call> for ProxyType {
+    fn filter(&self, c: &Call) -> bool {
+        match self {
+            ProxyType::Any => true,
+            ProxyType::NonTransfer => !matches!(
+                c,
+                Call::Balances(..) | Call::Indices(pallet_indices::Call::transfer(..))
+            ),
+            ProxyType::Governance => {
+                matches!(c, Call::TechnicalCommittee(..))
+            }
+            ProxyType::Staking => matches!(c, Call::Staking(..)),
+        }
+    }
+    fn is_superset(&self, o: &Self) -> bool {
+        match (self, o) {
+            (x, y) if x == y => true,
+            (ProxyType::Any, _) => true,
+            (_, ProxyType::Any) => false,
+            (ProxyType::NonTransfer, _) => true,
+            _ => false,
+        }
+    }
+}
+
+impl pallet_proxy::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type Currency = Balances;
+    type ProxyType = ProxyType;
+    type ProxyDepositBase = ProxyDepositBase;
+    type ProxyDepositFactor = ProxyDepositFactor;
+    type MaxProxies = MaxProxies;
+    type WeightInfo = pallet_proxy::weights::SubstrateWeight<Runtime>;
+    type MaxPending = MaxPending;
+    type CallHasher = BlakeTwo256;
+    type AnnouncementDepositBase = AnnouncementDepositBase;
+    type AnnouncementDepositFactor = AnnouncementDepositFactor;
+}
+
+impl pallet_tips::Config for Runtime {
+    type Event = Event;
+    type DataDepositPerByte = DataDepositPerByte;
+    type MaximumReasonLength = MaximumReasonLength;
+    type Tippers = Elections;
+    type TipCountdown = TipCountdown;
+    type TipFindersFee = TipFindersFee;
+    type TipReportDepositBase = TipReportDepositBase;
+    type WeightInfo = pallet_tips::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
+    pub const CandidacyBond: Balance = 10 * UNIT;
+    // 1 storage item created, key size is 32 bytes, value size is 16+16.
+    pub const VotingBondBase: Balance = deposit(1, 64);
+    // additional data per vote is 32 bytes (account id).
+    pub const VotingBondFactor: Balance = deposit(0, 32);
+    pub const TermDuration: BlockNumber = 7 * DAYS;
+    pub const DesiredMembers: u32 = 13;
+    pub const DesiredRunnersUp: u32 = 7;
+    pub const ElectionsPhragmenPalletId: LockIdentifier = *b"phrelect";
+}
+
+// Make sure that there are no more than `MaxMembers` members elected via elections-phragmen.
+const_assert!(DesiredMembers::get() <= MaxMembers::get());
+
+impl pallet_elections_phragmen::Config for Runtime {
+    type Event = Event;
+    type PalletId = ElectionsPhragmenPalletId;
+    type Currency = Balances;
+    type ChangeMembers = TechnicalCommittee;
+    // NOTE: this implies that council's genesis members cannot be set directly and must come from
+    // this module.
+    type InitializeMembers = TechnicalCommittee;
+    type CurrencyToVote = U128CurrencyToVote;
+    type CandidacyBond = CandidacyBond;
+    type VotingBondBase = VotingBondBase;
+    type VotingBondFactor = VotingBondFactor;
+    type LoserCandidate = ();
+    type KickedMember = ();
+    type DesiredMembers = DesiredMembers;
+    type DesiredRunnersUp = DesiredRunnersUp;
+    type TermDuration = TermDuration;
+    type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
 }

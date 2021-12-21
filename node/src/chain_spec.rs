@@ -153,6 +153,8 @@ pub fn testnet_genesis(
             ..Default::default()
         },
         treasury: Default::default(),
+        elections: Default::default(),
+        indices: Default::default(),
 
         // Governance
         technical_committee: Default::default(),
