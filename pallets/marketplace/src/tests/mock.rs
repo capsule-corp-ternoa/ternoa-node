@@ -108,6 +108,8 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 parameter_types! {
     pub const MaxStringLength: u16 = 5;
     pub const MinStringLength: u16 = 1;
+    pub const MinDescriptionLength: u16 = 1;
+    pub const MaxDescriptionLength: u16 = 500;
 }
 
 impl ternoa_nfts::Config for Test {
@@ -138,6 +140,8 @@ impl Config for Test {
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
     type CapsulesTrait = TernoaMock;
+    type MinDescriptionLength = MinDescriptionLength;
+    type MaxDescriptionLength = MaxDescriptionLength;
 }
 
 pub struct ExtBuilder {
@@ -211,6 +215,7 @@ impl ExtBuilder {
                 "Ternoa marketplace".into(),
                 None,
                 None,
+                None,
             ),
         )];
         let mut i = 1;
@@ -224,6 +229,7 @@ impl ExtBuilder {
                     vec![],
                     vec![],
                     market.3,
+                    None,
                     None,
                     None,
                 ),
@@ -298,7 +304,8 @@ pub mod help {
             fee,
             name,
             None,
-            None
+            None,
+            None,
         ));
         let mkp_id = Marketplace::marketplace_id_generator();
 
