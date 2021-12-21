@@ -55,6 +55,11 @@ pallet-staking = { git = "https://github.com/paritytech/substrate.git", default-
 pallet-staking-reward-curve = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 pallet-election-provider-multi-phase = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 frame-election-provider-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+pallet-elections-phragmen = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0-dev" }
+pallet-indices = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+pallet-identity = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+pallet-proxy = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+pallet-tips = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-api = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-block-builder = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
@@ -70,7 +75,6 @@ sp-tracing = { git = "https://github.com/paritytech/substrate.git", default-feat
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-version = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 sp-npos-elections = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev" }
@@ -130,7 +134,13 @@ std = [
 	"pallet-election-provider-multi-phase/std",
 	"frame-election-provider-support/std",
 	"sp-npos-elections/std",
+	"pallet-indices/std",
+	"pallet-identity/std",
+	"pallet-proxy/std",
+	"pallet-tips/std",
+	"pallet-elections-phragmen/std",
 ]
+
 runtime-benchmarks = [
 	"frame-benchmarking",
 	"frame-support/runtime-benchmarks",
