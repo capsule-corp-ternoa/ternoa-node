@@ -1,8 +1,8 @@
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 
-use crate::Config;
 use codec::{Decode, Encode};
+use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
 use ternoa_primitives::TernoaString;
@@ -11,7 +11,7 @@ use ternoa_primitives::TernoaString;
 pub type URI = Vec<u8>;
 
 /// Structure that stores both NFT currencies at the same time.
-#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct NFTCurrencyCombined<BalanceCaps, BalanceTiime>
 where
@@ -48,7 +48,7 @@ where
 }
 
 /// Currency combination that can be used to set a price of an NFT.
-#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrency<BalanceCaps, BalanceTiime>
 where
@@ -108,7 +108,7 @@ where
 }
 
 /// Currency ID
-#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, Debug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum NFTCurrencyId {
     Caps,
@@ -123,7 +123,7 @@ impl Default for NFTCurrencyId {
 
 pub type MarketplaceId = u32;
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct SaleInformation<AccountId, BalanceCaps, BalanceTiime>
 where
@@ -169,39 +169,39 @@ where
     }
 }
 
-#[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum MarketplaceType {
     Public,
     Private,
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub struct MarketplaceInformation<T: Config> {
+pub struct MarketplaceInformation<AccountId> {
     pub kind: MarketplaceType,
     pub commission_fee: u8,
-    pub owner: T::AccountId,
-    pub allow_list: Vec<T::AccountId>,
-    pub disallow_list: Vec<T::AccountId>,
+    pub owner: AccountId,
+    pub allow_list: Vec<AccountId>,
+    pub disallow_list: Vec<AccountId>,
     pub name: TernoaString,
     pub uri: Option<URI>,
     pub logo_uri: Option<URI>,
     pub description: Option<TernoaString>,
 }
 
-impl<T: Config> MarketplaceInformation<T> {
+impl<AccountId> MarketplaceInformation<AccountId> {
     pub fn new(
         kind: MarketplaceType,
         commission_fee: u8,
-        owner: T::AccountId,
-        allow_list: Vec<T::AccountId>,
-        disallow_list: Vec<T::AccountId>,
+        owner: AccountId,
+        allow_list: Vec<AccountId>,
+        disallow_list: Vec<AccountId>,
         name: TernoaString,
         uri: Option<URI>,
         logo_uri: Option<URI>,
         description: Option<TernoaString>,
-    ) -> MarketplaceInformation<T> {
+    ) -> MarketplaceInformation<AccountId> {
         Self {
             kind,
             commission_fee,

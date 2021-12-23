@@ -26,7 +26,7 @@ impl Contains<Call> for TestBaseCallFilter {
     fn contains(c: &Call) -> bool {
         match *c {
             // For benchmarking, this acts as a noop call
-            Call::System(frame_system::Call::remark(..)) => true,
+            Call::System(frame_system::Call::remark { .. }) => true,
             // For tests
             _ => false,
         }

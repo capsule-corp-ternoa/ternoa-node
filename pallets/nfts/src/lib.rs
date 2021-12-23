@@ -126,7 +126,12 @@ pub mod pallet {
                 Series::<T>::insert(series_id.clone(), NFTSeriesDetails::new(who.clone(), true));
             }
 
-            Self::deposit_event(Event::Created(nft_id, who, series_id, ipfs_reference));
+            Self::deposit_event(Event::Created {
+                nft_id,
+                owner: who,
+                series_id,
+                ipfs_reference,
+            });
 
             Ok(().into())
         }
@@ -155,7 +160,11 @@ pub mod pallet {
             data.owner = to.clone();
             Data::<T>::insert(id, data);
 
-            Self::deposit_event(Event::Transfer(id, who, to));
+            Self::deposit_event(Event::Transfer {
+                nft_id: id,
+                old_owner: who,
+                new_owner: to,
+            });
 
             Ok(().into())
         }
@@ -176,7 +185,7 @@ pub mod pallet {
             ensure!(!is_capsulized, Error::<T>::NFTIsCapsulized);
 
             Data::<T>::remove(id);
-            Self::deposit_event(Event::Burned(id));
+            Self::deposit_event(Event::Burned { nft_id: id });
 
             Ok(().into())
         }
@@ -207,7 +216,7 @@ pub mod pallet {
                 }
             })?;
 
-            Self::deposit_event(Event::SeriesFinished(series_id));
+            Self::deposit_event(Event::SeriesFinished { series_id });
 
             Ok(().into())
         }
@@ -221,7 +230,7 @@ pub mod pallet {
 
             NftMintFee::<T>::put(mint_fee);
 
-            Self::deposit_event(Event::NftMintFeeChanged(mint_fee));
+            Self::deposit_event(Event::NftMintFeeChanged { fee: mint_fee });
 
             Ok(().into())
         }
@@ -229,27 +238,34 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", NFTId = "NFTId")]
     pub enum Event<T: Config> {
-        /// A new NFT was created. \[nft id, owner, series id, ipfs reference\]
-        Created(NFTId, T::AccountId, NFTSeriesId, TernoaString),
-        /// An NFT was transferred to someone else. \[nft id, old owner, new owner\]
-        Transfer(NFTId, T::AccountId, T::AccountId),
-        /// An NFT was updated by its owner. \[nft id\]
-        Mutated(NFTId),
-        /// An NFT was sealed, preventing any new mutations. \[nft id\]
-        Sealed(NFTId),
+        /// A new NFT was created.
+        Created {
+            nft_id: NFTId,
+            owner: T::AccountId,
+            series_id: NFTSeriesId,
+            ipfs_reference: TernoaString,
+        },
+        /// An NFT was transferred to someone else.
+        Transfer {
+            nft_id: NFTId,
+            old_owner: T::AccountId,
+            new_owner: T::AccountId,
+        },
+        /// An NFT was updated by its owner.
+        Mutated { nft_id: NFTId },
+        /// An NFT was sealed, preventing any new mutations.
+        Sealed { nft_id: NFTId },
         /// An NFT has been locked, preventing transfers until it is unlocked.
-        /// \[nft id\]
-        Locked(NFTId),
-        /// A locked NFT has been unlocked. \[nft id\]
-        Unlocked(NFTId),
-        /// An NFT was burned. \[nft id\]
-        Burned(NFTId),
-        /// A series has been completed. \[series id\]
-        SeriesFinished(NFTSeriesId),
-        /// Nft mint fee changed. \[mint fee\]
-        NftMintFeeChanged(BalanceOf<T>),
+        Locked { nft_id: NFTId },
+        /// A locked NFT has been unlocked.
+        Unlocked { nft_id: NFTId },
+        /// An NFT was burned.
+        Burned { nft_id: NFTId },
+        /// A series has been completed.
+        SeriesFinished { series_id: NFTSeriesId },
+        /// Nft mint fee changed.
+        NftMintFeeChanged { fee: BalanceOf<T> },
     }
 
     #[pallet::error]

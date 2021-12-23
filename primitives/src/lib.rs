@@ -33,6 +33,7 @@ pub type Hash = sp_core::H256;
 
 /// Header type.
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
+
 /// Block type.
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
 
@@ -47,6 +48,7 @@ pub mod nfts {
 
     use super::TernoaString;
     use codec::{Decode, Encode};
+    use scale_info::TypeInfo;
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
 
@@ -57,7 +59,7 @@ pub mod nfts {
     pub type NFTSeriesId = Vec<u8>;
 
     /// Data related to an NFT, such as who is its owner.
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
+    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub struct NFTData<AccountId> {
         // NFT owner
@@ -87,7 +89,7 @@ pub mod nfts {
     }
 
     /// Data related to an NFT Series.
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug)]
+    #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub struct NFTSeriesDetails<AccountId> {
         pub owner: AccountId, // Series Owner

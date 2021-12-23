@@ -104,7 +104,11 @@ pub mod pallet {
             EnclaveRegistry::<T>::insert(enclave_id, enclave);
             EnclaveIdGenerator::<T>::put(new_id);
 
-            Self::deposit_event(Event::AddedEnclave(account, api_url, enclave_id));
+            Self::deposit_event(Event::AddedEnclave {
+                account,
+                api_url,
+                enclave_id,
+            });
             Ok(().into())
         }
 
@@ -136,7 +140,10 @@ pub mod pallet {
                 }
             })?;
 
-            Self::deposit_event(Event::AssignedEnclave(enclave_id, cluster_id));
+            Self::deposit_event(Event::AssignedEnclave {
+                enclave_id,
+                cluster_id,
+            });
             Ok(().into())
         }
 
@@ -162,7 +169,7 @@ pub mod pallet {
                 }
             })?;
 
-            Self::deposit_event(Event::UnAssignedEnclave(enclave_id));
+            Self::deposit_event(Event::UnAssignedEnclave { enclave_id });
             Ok(().into())
         }
 
@@ -180,7 +187,10 @@ pub mod pallet {
                 }
             })?;
 
-            Self::deposit_event(Event::UpdatedEnclave(enclave_id, api_url));
+            Self::deposit_event(Event::UpdatedEnclave {
+                enclave_id,
+                api_url,
+            });
             Ok(().into())
         }
 
@@ -208,7 +218,10 @@ pub mod pallet {
             EnclaveIndex::<T>::remove(old_owner);
             EnclaveIndex::<T>::insert(new_owner.clone(), enclave_id);
 
-            Self::deposit_event(Event::NewEnclaveOwner(enclave_id, new_owner));
+            Self::deposit_event(Event::NewEnclaveOwner {
+                enclave_id,
+                owner: new_owner,
+            });
             Ok(().into())
         }
 
@@ -226,7 +239,7 @@ pub mod pallet {
             ClusterRegistry::<T>::insert(id, cluster);
             ClusterIdGenerator::<T>::put(new_id);
 
-            Self::deposit_event(Event::AddedCluster(id));
+            Self::deposit_event(Event::AddedCluster { cluster_id: id });
             Ok(().into())
         }
 
@@ -251,24 +264,42 @@ pub mod pallet {
             })?;
             ClusterRegistry::<T>::take(cluster_id);
 
-            Self::deposit_event(Event::RemovedCluster(cluster_id));
+            Self::deposit_event(Event::RemovedCluster { cluster_id });
             Ok(().into())
         }
     }
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId")]
     pub enum Event<T: Config> {
         // Enclave
-        AddedEnclave(T::AccountId, Url, EnclaveId),
-        AssignedEnclave(EnclaveId, ClusterId),
-        UnAssignedEnclave(EnclaveId),
-        UpdatedEnclave(EnclaveId, Url),
-        NewEnclaveOwner(EnclaveId, T::AccountId),
+        AddedEnclave {
+            account: T::AccountId,
+            api_url: Url,
+            enclave_id: EnclaveId,
+        },
+        AssignedEnclave {
+            enclave_id: EnclaveId,
+            cluster_id: ClusterId,
+        },
+        UnAssignedEnclave {
+            enclave_id: EnclaveId,
+        },
+        UpdatedEnclave {
+            enclave_id: EnclaveId,
+            api_url: Url,
+        },
+        NewEnclaveOwner {
+            enclave_id: EnclaveId,
+            owner: T::AccountId,
+        },
         // Cluster
-        AddedCluster(ClusterId),
-        RemovedCluster(ClusterId),
+        AddedCluster {
+            cluster_id: ClusterId,
+        },
+        RemovedCluster {
+            cluster_id: ClusterId,
+        },
     }
 
     #[pallet::error]

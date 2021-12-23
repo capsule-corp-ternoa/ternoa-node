@@ -65,7 +65,10 @@ pub mod pallet {
 
             AltVRUsers::<T>::insert(owner.clone(), value.clone());
 
-            let event = Event::AltVRUsernameChanged(owner, value);
+            let event = Event::AltVRUsernameChanged {
+                owner,
+                username: value,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -75,8 +78,11 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// Altvr username updated  \[owner, username\]
-        AltVRUsernameChanged(T::AccountId, TernoaString),
+        /// Altvr username updated.
+        AltVRUsernameChanged {
+            owner: T::AccountId,
+            username: TernoaString,
+        },
     }
 
     #[pallet::error]

@@ -129,7 +129,11 @@ pub mod pallet {
             let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
 
-            Self::deposit_event(Event::NftListed(nft_id, price, mkp_id));
+            Self::deposit_event(Event::NftListed {
+                nft_id,
+                price,
+                marketplace_id: mkp_id,
+            });
 
             Ok(().into())
         }
@@ -148,7 +152,7 @@ pub mod pallet {
             T::NFTs::unlock(nft_id);
             NFTsForSale::<T>::remove(nft_id);
 
-            Self::deposit_event(Event::NftUnlisted(nft_id));
+            Self::deposit_event(Event::NftUnlisted { nft_id });
 
             Ok(().into())
         }
@@ -220,7 +224,10 @@ pub mod pallet {
             T::NFTs::set_owner(nft_id, &caller_id)?;
             NFTsForSale::<T>::remove(nft_id);
 
-            Self::deposit_event(Event::NftSold(nft_id, caller_id));
+            Self::deposit_event(Event::NftSold {
+                nft_id,
+                owner: caller_id,
+            });
 
             Ok(().into())
         }
@@ -303,7 +310,10 @@ pub mod pallet {
 
             Marketplaces::<T>::insert(id, marketplace);
             MarketplaceIdGenerator::<T>::set(id);
-            Self::deposit_event(Event::MarketplaceCreated(id, caller_id));
+            Self::deposit_event(Event::MarketplaceCreated {
+                marketplace_id: id,
+                owner: caller_id,
+            });
 
             Ok(().into())
         }
@@ -331,7 +341,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::AccountAddedToAllowList(marketplace_id, account_id);
+            let event = Event::AccountAddedToAllowList {
+                marketplace_id,
+                owner: account_id,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -362,7 +375,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::AccountRemovedFromAllowList(marketplace_id, account_id);
+            let event = Event::AccountRemovedFromAllowList {
+                marketplace_id,
+                owner: account_id,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -391,7 +407,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::AccountAddedToDisallowList(marketplace_id, account_id);
+            let event = Event::AccountAddedToDisallowList {
+                marketplace_id,
+                account_id,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -425,7 +444,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::AccountRemovedFromDisallowList(marketplace_id, account_id);
+            let event = Event::AccountRemovedFromDisallowList {
+                marketplace_id,
+                account_id,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -450,7 +472,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceChangedOwner(marketplace_id, account_id);
+            let event = Event::MarketplaceChangedOwner {
+                marketplace_id,
+                owner: account_id,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -474,7 +499,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceTypeChanged(marketplace_id, kind);
+            let event = Event::MarketplaceTypeChanged {
+                marketplace_id,
+                kind,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -503,7 +531,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceNameChanged(marketplace_id, name);
+            let event = Event::MarketplaceNameChanged {
+                marketplace_id,
+                name,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -518,7 +549,7 @@ pub mod pallet {
 
             MarketplaceMintFee::<T>::put(mint_fee);
 
-            Self::deposit_event(Event::MarketplaceMintFeeChanged(mint_fee));
+            Self::deposit_event(Event::MarketplaceMintFeeChanged { fee: mint_fee });
 
             Ok(().into())
         }
@@ -539,7 +570,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceCommissionFeeChanged(marketplace_id, commission_fee);
+            let event = Event::MarketplaceCommissionFeeChanged {
+                marketplace_id,
+                fee: commission_fee,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -569,7 +603,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceUriUpdated(marketplace_id, uri);
+            let event = Event::MarketplaceUriUpdated {
+                marketplace_id,
+                uri,
+            };
             Self::deposit_event(event);
             Ok(().into())
         }
@@ -598,7 +635,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceLogoUriUpdated(marketplace_id, logo_uri);
+            let event = Event::MarketplaceLogoUriUpdated {
+                marketplace_id,
+                uri: logo_uri,
+            };
             Self::deposit_event(event);
             Ok(().into())
         }
@@ -627,7 +667,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::MarketplaceDescriptionUpdated(marketplace_id);
+            let event = Event::MarketplaceDescriptionUpdated {
+                marketplace_id,
+                description,
+            };
             Self::deposit_event(event);
             Ok(().into())
         }
@@ -635,44 +678,79 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(T::AccountId = "AccountId", CommonBalanceT<T> = "Balance")]
     pub enum Event<T: Config> {
-        /// A nft has been listed for sale. \[nft id, nft currency, marketplace id\]
-        NftListed(
-            NFTId,
-            NFTCurrency<BalanceCaps<T>, BalanceTiime<T>>,
-            MarketplaceId,
-        ),
-        /// A nft is removed from the marketplace by its owner. \[nft id\]
-        NftUnlisted(NFTId),
-        /// A nft has been sold. \[nft id, new owner\]
-        NftSold(NFTId, T::AccountId),
-        /// A marketplace has been created.  \[marketplace id, new owner\]
-        MarketplaceCreated(MarketplaceId, T::AccountId),
-        /// Account added to marketplace allow list.  \[marketplace id, account\]
-        AccountAddedToAllowList(MarketplaceId, T::AccountId),
-        /// Account removed from marketplace allow list.  \[marketplace id, account\]
-        AccountRemovedFromAllowList(MarketplaceId, T::AccountId),
-        /// Marketplace changed owner.  \[marketplace id, new owner\]
-        MarketplaceChangedOwner(MarketplaceId, T::AccountId),
-        /// Marketplace changed type.  \[marketplace id, marketplace type\]
-        MarketplaceTypeChanged(MarketplaceId, MarketplaceType),
-        /// Marketplace changed name. \[marketplace id, marketplace name\]
-        MarketplaceNameChanged(MarketplaceId, TernoaString),
-        /// Marketplace mint fee changed. \[mint fee\]
-        MarketplaceMintFeeChanged(BalanceCaps<T>),
-        /// Marketplace mint fee changed. \[marketplace id, commission fee\]
-        MarketplaceCommissionFeeChanged(MarketplaceId, u8),
-        /// Marketplace URI updated. \[marketplace id, URI\]
-        MarketplaceUriUpdated(MarketplaceId, URI),
-        /// Marketplace Logo URI updated. \[marketplace id, logo URI\]
-        MarketplaceLogoUriUpdated(MarketplaceId, URI),
-        /// Account added to disallow list for a marketplace.  \[marketplace id, account\]
-        AccountAddedToDisallowList(MarketplaceId, T::AccountId),
-        /// Account removed from disallow list for a marketplace.  \[marketplace id, account\]
-        AccountRemovedFromDisallowList(MarketplaceId, T::AccountId),
-        /// Marketplace description updated. \[marketplace id\]
-        MarketplaceDescriptionUpdated(MarketplaceId),
+        /// A nft has been listed for sale.
+        NftListed {
+            nft_id: NFTId,
+            price: NFTCurrency<BalanceCaps<T>, BalanceTiime<T>>,
+            marketplace_id: MarketplaceId,
+        },
+        /// A nft is removed from the marketplace by its owner.
+        NftUnlisted { nft_id: NFTId },
+        /// A nft has been sold.
+        NftSold { nft_id: NFTId, owner: T::AccountId },
+        /// A marketplace has been created.
+        MarketplaceCreated {
+            marketplace_id: MarketplaceId,
+            owner: T::AccountId,
+        },
+        /// Account added to marketplace allow list.
+        AccountAddedToAllowList {
+            marketplace_id: MarketplaceId,
+            owner: T::AccountId,
+        },
+        /// Account removed from marketplace allow list.
+        AccountRemovedFromAllowList {
+            marketplace_id: MarketplaceId,
+            owner: T::AccountId,
+        },
+        /// Marketplace changed owner.
+        MarketplaceChangedOwner {
+            marketplace_id: MarketplaceId,
+            owner: T::AccountId,
+        },
+        /// Marketplace changed type.
+        MarketplaceTypeChanged {
+            marketplace_id: MarketplaceId,
+            kind: MarketplaceType,
+        },
+        /// Marketplace changed name.
+        MarketplaceNameChanged {
+            marketplace_id: MarketplaceId,
+            name: TernoaString,
+        },
+        /// Marketplace mint fee changed.
+        MarketplaceMintFeeChanged { fee: BalanceCaps<T> },
+        /// Marketplace mint fee changed.
+        MarketplaceCommissionFeeChanged {
+            marketplace_id: MarketplaceId,
+            fee: u8,
+        },
+        /// Marketplace URI updated.
+        MarketplaceUriUpdated {
+            marketplace_id: MarketplaceId,
+            uri: URI,
+        },
+        /// Marketplace Logo URI updated.
+        MarketplaceLogoUriUpdated {
+            marketplace_id: MarketplaceId,
+            uri: URI,
+        },
+        /// Account added to disallow list for a marketplace.
+        AccountAddedToDisallowList {
+            marketplace_id: MarketplaceId,
+            account_id: T::AccountId,
+        },
+        /// Account removed from disallow list for a marketplace.
+        AccountRemovedFromDisallowList {
+            marketplace_id: MarketplaceId,
+            account_id: T::AccountId,
+        },
+        /// Marketplace description updated.
+        MarketplaceDescriptionUpdated {
+            marketplace_id: MarketplaceId,
+            description: TernoaString,
+        },
     }
 
     #[pallet::error]
@@ -740,8 +818,13 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn marketplaces)]
-    pub type Marketplaces<T: Config> =
-        StorageMap<_, Blake2_128Concat, MarketplaceId, MarketplaceInformation<T>, OptionQuery>;
+    pub type Marketplaces<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        MarketplaceId,
+        MarketplaceInformation<T::AccountId>,
+        OptionQuery,
+    >;
 
     /// Host much does it cost to create a marketplace.
     #[pallet::storage]
@@ -754,7 +837,7 @@ pub mod pallet {
             NFTId,
             SaleInformation<T::AccountId, BalanceCaps<T>, BalanceTiime<T>>,
         )>,
-        pub marketplaces: Vec<(MarketplaceId, MarketplaceInformation<T>)>,
+        pub marketplaces: Vec<(MarketplaceId, MarketplaceInformation<T::AccountId>)>,
         pub marketplace_mint_fee: BalanceCaps<T>,
     }
 

@@ -3,9 +3,11 @@
 /// Money matters.
 pub mod currency {
     use ternoa_primitives::Balance;
-    pub const MILLICENTS: Balance = 10_000_000_000_000;
-    pub const CENTS: Balance = 1_000 * MILLICENTS;
-    pub const UNIT: Balance = 100 * CENTS;
+
+    pub const UNITS: Balance = 1_000_000_000_000_000_000;
+    pub const EUROS: Balance = UNITS;
+    pub const CENTS: Balance = UNITS / 100;
+    pub const MILLICENTS: Balance = CENTS / 1_000;
 
     pub const fn deposit(items: u32, bytes: u32) -> Balance {
         items as Balance * 15 * CENTS + (bytes as Balance) * 6 * CENTS
@@ -34,22 +36,15 @@ pub mod time {
     ///
     /// <https://research.web3.foundation/en/latest/polkadot/block-production/Babe.html#-6.-practical-results>
     pub const MILLISECS_PER_BLOCK: Moment = 6000;
-    pub const SECS_PER_BLOCK: Moment = MILLISECS_PER_BLOCK / 1000;
-
     pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
+    pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = 4 * HOURS;
+
+    // These time units are defined in number of blocks.
+    pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
+    pub const HOURS: BlockNumber = MINUTES * 60;
+    pub const DAYS: BlockNumber = HOURS * 24;
+    pub const WEEKS: BlockNumber = DAYS * 7;
 
     // 1 in 4 blocks (on average, not counting collisions) will be primary BABE blocks.
     pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
-
-    pub const EPOCH_DURATION_IN_BLOCKS: BlockNumber = 10 * MINUTES;
-    pub const EPOCH_DURATION_IN_SLOTS: u64 = {
-        const SLOT_FILL_RATE: f64 = MILLISECS_PER_BLOCK as f64 / SLOT_DURATION as f64;
-
-        (EPOCH_DURATION_IN_BLOCKS as f64 * SLOT_FILL_RATE) as u64
-    };
-
-    // These time units are defined in number of blocks.
-    pub const MINUTES: BlockNumber = 60 / (SECS_PER_BLOCK as BlockNumber);
-    pub const HOURS: BlockNumber = MINUTES * 60;
-    pub const DAYS: BlockNumber = HOURS * 24;
 }

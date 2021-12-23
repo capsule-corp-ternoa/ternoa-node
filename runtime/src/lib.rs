@@ -26,19 +26,20 @@ use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 pub mod constants;
 mod pallets;
 mod version;
+mod voter_bags;
 
-// Re-exports added for compatibility with SubstraTee
 pub use pallet_balances::Call as BalancesCall;
-
-use constants::time::PRIMARY_PROBABILITY;
 use pallets::EpochDuration;
 pub use pallets::SessionKeys;
-#[cfg(any(feature = "std", test))]
-pub use pallets::StakerStatus;
 pub use pallets::BABE_GENESIS_EPOCH_CONFIG;
+pub use pallets::MAX_NOMINATIONS;
+pub use version::VERSION;
+
 #[cfg(feature = "std")]
 pub use version::native_version;
-pub use version::VERSION;
+
+#[cfg(any(feature = "std", test))]
+pub use pallets::StakerStatus;
 
 // Make the WASM binary available.
 #[cfg(feature = "std")]
@@ -49,8 +50,8 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 pub fn wasm_binary_unwrap() -> &'static [u8] {
     WASM_BINARY.expect(
         "Development wasm binary is not available. This means the client is built with \
-            `SKIP_WASM_BUILD` flag and it is only usable for production chains. Please rebuild with \
-            the flag disabled.",
+        `SKIP_WASM_BUILD` flag and it is only usable for production chains. Please rebuild with \
+        the flag disabled.",
     )
 }
 
@@ -60,44 +61,70 @@ construct_runtime!(
         NodeBlock = ternoa_primitives::Block,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
-        AuthorityDiscovery: pallet_authority_discovery::{Pallet, Config},
-        Authorship: pallet_authorship::{Pallet, Call, Storage, Inherent},
-        Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned},
-        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-        Bounties: pallet_bounties::{Pallet, Call, Storage, Event<T>},
-        Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned},
-        Historical: pallet_session_historical::{Pallet},
-        ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
-        Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
-        Offences: pallet_offences::{Pallet, Storage, Event},
-        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
-        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-        Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>},
-        ElectionProviderMultiPhase: pallet_election_provider_multi_phase::{Pallet, Call, Storage, Event<T>, ValidateUnsigned},
-        Staking: pallet_staking::{Pallet, Call, Config<T>, Storage, Event<T>},
-        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        TechnicalCommittee: pallet_collective::<DefaultInstance>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>},
-        TechnicalMembership: pallet_membership::{Pallet, Call, Storage, Event<T>, Config<T>},
-        Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>},
-        TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
-        Utility: pallet_utility::{Pallet, Call, Storage, Event},
-        Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>},
-        Indices: pallet_indices::{Pallet, Call, Storage, Config<T>, Event<T>},
-        Identity: pallet_identity::{Pallet, Call, Storage, Event<T>},
-        Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>},
-        Tips: pallet_tips::{Pallet, Call, Storage, Event<T>},
-        Elections: pallet_elections_phragmen::{Pallet, Call, Storage, Event<T>, Config<T>},
+        // Basic stuff; balances is uncallable initially
+        System: frame_system,
+        Scheduler: pallet_scheduler,
+        RandomnessCollectiveFlip: pallet_randomness_collective_flip,
 
-        TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
-        TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Config<T>, Event<T>},
+         // Babe must be before session.
+        Babe: pallet_babe,
 
-        Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-        Marketplace: ternoa_marketplace::{Pallet, Call, Storage, Event<T>, Config<T>},
-        Nfts: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
-        TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
-        Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>, Config<T>},
-        Capsules: ternoa_capsules::{Pallet, Call, Storage, Event<T>, Config<T>},
-        AssociatedAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Config<T>, Event<T> },
+        Timestamp: pallet_timestamp,
+        Indices: pallet_indices,
+        Balances: pallet_balances,
+        TiimeBalances: pallet_balances::<Instance1>,
+        TiimeAccountStore: ternoa_account_store,
+        TransactionPayment: pallet_transaction_payment,
+
+        // Consensus support.
+        // Authorship must be before session in order to note author in the correct session and era
+        // for im-online and staking.
+        Authorship: pallet_authorship,
+        Staking: pallet_staking,
+        Offences: pallet_offences,
+        Historical: pallet_session_historical,
+        Session: pallet_session,
+        Grandpa: pallet_grandpa,
+        ImOnline: pallet_im_online,
+        AuthorityDiscovery: pallet_authority_discovery,
+
+        // Governance stuff. uncallable initially
+        Sudo: pallet_sudo,
+        TechnicalCommittee: pallet_collective::<Instance1>,
+        TechnicalMembership: pallet_membership,
+        Treasury: pallet_treasury,
+        Elections: pallet_elections_phragmen,
+
+        // Cunning utilities. Usable initially.
+        Utility: pallet_utility,
+
+        // Identity. Late addition.
+        Identity: pallet_identity,
+
+        // Bounties module.
+        Bounties: pallet_bounties,
+
+        // Tips module.
+        Tips: pallet_tips,
+
+        // Election pallet. Only works with staking, but placed here to maintain indices.
+        ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
+
+        // Provides a semi-sorted list of nominators for staking.
+        BagsList: pallet_bags_list,
+
+        Mmr: pallet_mmr,
+
+        Multisig: pallet_multisig,
+        Proxy: pallet_proxy,
+
+        // Ternoa
+        Nfts: ternoa_nfts = 100,
+        Capsules: ternoa_capsules = 102,
+        Marketplace: ternoa_marketplace = 103,
+        Sgx: ternoa_sgx = 104,
+        TimedEscrow: ternoa_timed_escrow = 105,
+        AssociatedAccounts: ternoa_associated_accounts = 106,
     }
 );
 
@@ -140,7 +167,15 @@ pub type Executive = frame_executive::Executive<
     AllPallets,
 >;
 
-impl pallet_randomness_collective_flip::Config for Runtime {}
+/// MMR helper types.
+mod mmr {
+    use super::Runtime;
+    pub use pallet_mmr::primitives::*;
+
+    pub type Leaf = <<Runtime as pallet_mmr::Config>::LeafData as LeafDataProvider>::LeafData;
+    pub type Hash = <Runtime as pallet_mmr::Config>::Hash;
+    pub type Hashing = <Runtime as pallet_mmr::Config>::Hashing;
+}
 
 impl_runtime_apis! {
     impl sp_api::Core<Block> for Runtime {
@@ -159,7 +194,7 @@ impl_runtime_apis! {
 
     impl sp_api::Metadata<Block> for Runtime {
         fn metadata() -> OpaqueMetadata {
-            Runtime::metadata().into()
+            OpaqueMetadata::new(Runtime::metadata().into())
         }
     }
 
@@ -243,10 +278,10 @@ impl_runtime_apis! {
             sp_consensus_babe::BabeGenesisConfiguration {
                 slot_duration: Babe::slot_duration(),
                 epoch_length: EpochDuration::get(),
-                c: PRIMARY_PROBABILITY,
-                genesis_authorities: Babe::authorities(),
+                c: BABE_GENESIS_EPOCH_CONFIG.c,
+                genesis_authorities: Babe::authorities().to_vec(),
                 randomness: Babe::randomness(),
-                allowed_slots: sp_consensus_babe::AllowedSlots::PrimaryAndSecondaryPlainSlots,
+                allowed_slots: BABE_GENESIS_EPOCH_CONFIG.allowed_slots,
             }
         }
 
@@ -308,6 +343,37 @@ impl_runtime_apis! {
 
         fn query_fee_details(uxt: <Block as BlockT>::Extrinsic, len: u32) -> FeeDetails<Balance> {
             TransactionPayment::query_fee_details(uxt, len)
+        }
+    }
+
+    impl pallet_mmr::primitives::MmrApi<
+        Block,
+        mmr::Hash,
+    > for Runtime {
+        fn generate_proof(leaf_index: pallet_mmr::primitives::LeafIndex)
+            -> Result<(mmr::EncodableOpaqueLeaf, mmr::Proof<mmr::Hash>), mmr::Error>
+        {
+            Mmr::generate_proof(leaf_index)
+                .map(|(leaf, proof)| (mmr::EncodableOpaqueLeaf::from_leaf(&leaf), proof))
+        }
+
+        fn verify_proof(leaf: mmr::EncodableOpaqueLeaf, proof: mmr::Proof<mmr::Hash>)
+            -> Result<(), mmr::Error>
+        {
+            let leaf: mmr::Leaf = leaf
+                .into_opaque_leaf()
+                .try_decode()
+                .ok_or(mmr::Error::Verify)?;
+            Mmr::verify_leaf(leaf, proof)
+        }
+
+        fn verify_proof_stateless(
+            root: mmr::Hash,
+            leaf: mmr::EncodableOpaqueLeaf,
+            proof: mmr::Proof<mmr::Hash>
+        ) -> Result<(), mmr::Error> {
+            let node = mmr::DataOrHash::Data(leaf.into_opaque_leaf());
+            pallet_mmr::verify_leaf_proof::<mmr::Hashing, _>(root, node, proof)
         }
     }
 

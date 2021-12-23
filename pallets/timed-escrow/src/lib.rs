@@ -80,13 +80,21 @@ pub mod pallet {
                     // upgrades and democracy calls
                     100,
                     RawOrigin::Root.into(),
-                    Call::complete_transfer(to_unlookup.clone(), nft_id).into()
+                    Call::complete_transfer {
+                        to: to_unlookup.clone(),
+                        nft_id: nft_id
+                    }
+                    .into()
                 )
                 .is_ok(),
                 Error::<T>::SchedulingFailed
             );
 
-            Self::deposit_event(Event::TransferScheduled(nft_id, to_unlookup, at));
+            Self::deposit_event(Event::TransferScheduled {
+                nft_id,
+                destination: to_unlookup,
+                block_number: at,
+            });
 
             Ok(().into())
         }
@@ -103,7 +111,7 @@ pub mod pallet {
             );
             T::NFTs::unlock(nft_id);
 
-            Self::deposit_event(Event::TransferCanceled(nft_id));
+            Self::deposit_event(Event::TransferCanceled { nft_id });
 
             Ok(().into())
         }
@@ -123,7 +131,7 @@ pub mod pallet {
             T::NFTs::unlock(nft_id);
             T::NFTs::set_owner(nft_id, &to)?;
 
-            Self::deposit_event(Event::TransferCompleted(nft_id));
+            Self::deposit_event(Event::TransferCompleted { nft_id });
 
             Ok(().into())
         }
@@ -131,18 +139,17 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    #[pallet::metadata(
-        T::AccountId = "AccountId",
-        T::BlockNumber = "BlockNumber",
-        NFTId = "NFT Id"
-    )]
     pub enum Event<T: Config> {
-        /// A transfer has been scheduled. \[capsule id, destination, block of transfer\]
-        TransferScheduled(NFTId, T::AccountId, T::BlockNumber),
-        /// A transfer has been canceled. \[capsule id\]
-        TransferCanceled(NFTId),
-        /// A transfer was executed and finalized. \[capsule id\]
-        TransferCompleted(NFTId),
+        /// A transfer has been scheduled.
+        TransferScheduled {
+            nft_id: NFTId,
+            destination: T::AccountId,
+            block_number: T::BlockNumber,
+        },
+        /// A transfer has been canceled.
+        TransferCanceled { nft_id: NFTId },
+        /// A transfer was executed and finalized.
+        TransferCompleted { nft_id: NFTId },
     }
 
     #[pallet::error]
