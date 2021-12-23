@@ -119,7 +119,6 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaMock;
 }
 
 impl ternoa_account_store::Config for Test {
@@ -139,7 +138,6 @@ impl Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaMock;
     type MinDescriptionLength = MinDescriptionLength;
     type MaxDescriptionLength = MaxDescriptionLength;
 }
@@ -267,7 +265,7 @@ pub mod help {
 
     use super::*;
     use frame_support::assert_ok;
-    use ternoa_common::traits::LockableNFTs;
+    use ternoa_common::traits::NFTTrait;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
     use ternoa_primitives::TernoaString;
 

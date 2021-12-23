@@ -99,7 +99,6 @@ impl Config for Test {
     type FeesCollector = MockFeeCollector;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaMock;
 }
 
 pub struct MockFeeCollector;
@@ -165,7 +164,7 @@ impl ExtBuilder {
 
 pub mod help {
     use super::*;
-    use crate::traits::LockableNFTs;
+    use crate::traits::NFTs;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
     use ternoa_primitives::TernoaString;

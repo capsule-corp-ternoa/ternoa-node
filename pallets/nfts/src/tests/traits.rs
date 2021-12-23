@@ -1,6 +1,6 @@
 use super::mock::*;
 use crate::tests::mock;
-use crate::traits::{LockableNFTs, NFTs as NFTTrait};
+use crate::traits::NFTs as NFTTrait;
 use crate::Error;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;

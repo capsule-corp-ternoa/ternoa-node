@@ -68,8 +68,12 @@ pub mod nfts {
         pub ipfs_reference: TernoaString,
         // Series ID
         pub series_id: NFTSeriesId,
-        // Is Locked
-        pub locked: bool,
+        // Is listed for sale
+        pub listed_for_sale: bool,
+        // Is being transmitted
+        pub in_transmission: bool,
+        // Is NFT converted to capsule
+        pub converted_to_capsule: bool,
     }
 
     impl<AccountId> NFTData<AccountId> {
@@ -77,13 +81,17 @@ pub mod nfts {
             owner: AccountId,
             ipfs_reference: TernoaString,
             series_id: NFTSeriesId,
-            locked: bool,
+            listed_for_sale: bool,
+            in_transmission: bool,
+            converted_to_capsule: bool,
         ) -> Self {
             Self {
                 owner,
                 ipfs_reference,
                 series_id,
-                locked,
+                listed_for_sale,
+                in_transmission,
+                converted_to_capsule,
             }
         }
     }

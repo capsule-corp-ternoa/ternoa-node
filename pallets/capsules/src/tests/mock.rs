@@ -97,7 +97,6 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaCapsules;
 }
 
 impl Config for Test {
@@ -169,7 +168,7 @@ impl ExtBuilder {
 
 pub mod help {
     use super::*;
-    use crate::traits::LockableNFTs;
+    use crate::traits::NFTs;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
     use ternoa_primitives::TernoaString;

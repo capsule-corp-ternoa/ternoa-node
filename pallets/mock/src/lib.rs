@@ -58,9 +58,3 @@ impl<T: Config> Pallet<T> {
         IsCapsulized::<T>::put(val);
     }
 }
-
-impl<T: Config> ternoa_common::traits::CapsulesTrait for Pallet<T> {
-    fn is_capsulized(_nft_id: ternoa_primitives::nfts::NFTId) -> bool {
-        IsCapsulized::<T>::get()
-    }
-}

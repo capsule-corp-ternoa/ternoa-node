@@ -7,7 +7,7 @@ use frame_support::assert_ok;
 use frame_system::RawOrigin;
 use sp_runtime::traits::Bounded;
 use sp_std::prelude::*;
-use ternoa_common::traits::NFTs;
+use ternoa_common::traits::NFTTrait;
 
 const SERIES_ID: u8 = 20;
 
