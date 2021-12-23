@@ -73,7 +73,7 @@ pub mod pallet {
             ensure!(!nft.listed_for_sale, Error::<T>::ListedForSale);
             ensure!(!nft.in_transmission, Error::<T>::AlreadyInTransmission);
 
-            T::NFTs::mark_as_in_transmission(nft_id)?;
+            T::NFTs::set_in_transmission(nft_id, true)?;
 
             ensure!(
                 T::Scheduler::schedule_named(
@@ -114,7 +114,7 @@ pub mod pallet {
             let ok = T::Scheduler::cancel_named((ESCROW_ID, nft_id).encode()).is_ok();
             ensure!(ok, Error::<T>::SchedulingFailed);
 
-            T::NFTs::unmark_as_in_transmission(nft_id)?;
+            T::NFTs::set_in_transmission(nft_id, false)?;
 
             Self::deposit_event(Event::TransferCanceled { nft_id });
 
@@ -134,7 +134,7 @@ pub mod pallet {
             // status.
             ensure_root(origin)?;
 
-            T::NFTs::unmark_as_in_transmission(nft_id)?;
+            T::NFTs::set_in_transmission(nft_id, false)?;
             T::NFTs::set_owner(nft_id, &to)?;
 
             Self::deposit_event(Event::TransferCompleted { nft_id });

@@ -52,9 +52,3 @@ pub mod pallet {
         fn build(&self) {}
     }
 }
-
-impl<T: Config> Pallet<T> {
-    pub fn set_is_capsulized(val: bool) {
-        IsCapsulized::<T>::put(val);
-    }
-}

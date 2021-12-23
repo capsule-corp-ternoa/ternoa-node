@@ -54,7 +54,7 @@ fn create_unhappy() {
 
             // Unhappy listed for sale
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
-            <NFTs as NFTTrait>::mark_as_listed_for_sale(nft_id).unwrap();
+            <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
 
             let ok = TimedEscrow::create(alice.clone(), nft_id, BOB, 10);
             assert_noop!(ok, Error::<Test>::ListedForSale);

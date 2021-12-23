@@ -108,6 +108,7 @@ pub mod pallet {
 
             // Create NFT and capsule
             let nft_id = T::NFTTrait::create_nft(who.clone(), nft_ipfs_reference, series_id)?;
+            T::NFTTrait::set_converted_to_capsule(nft_id, true)?;
             Self::new_capsule(&who, nft_id, capsule_ipfs_reference.clone(), amount);
 
             Self::deposit_event(Event::CapsuleDeposit { balance: amount });
@@ -149,6 +150,7 @@ pub mod pallet {
             Self::send_funds(&who, &Self::account_id(), amount, KeepAlive)?;
 
             // Create capsule
+            T::NFTTrait::set_converted_to_capsule(nft_id, true)?;
             Self::new_capsule(&who, nft_id, ipfs_reference.clone(), amount);
 
             Self::deposit_event(Event::CapsuleDeposit { balance: amount });

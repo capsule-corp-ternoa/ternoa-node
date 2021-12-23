@@ -28,28 +28,19 @@ pub trait NFTTrait {
     fn benchmark_lock_series(series_id: NFTSeriesId);
 
     /// TODO!
-    fn mark_as_listed_for_sale(id: NFTId) -> DispatchResult;
-
-    /// TODO!
-    fn unmark_as_listed_for_sale(id: NFTId) -> DispatchResult;
+    fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult;
 
     /// TODO!
     fn is_listed_for_sale(id: NFTId) -> Option<bool>;
 
     /// TODO!
-    fn mark_as_in_transmission(id: NFTId) -> DispatchResult;
-
-    /// TODO!
-    fn unmark_as_in_transmission(id: NFTId) -> DispatchResult;
+    fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult;
 
     /// TODO!
     fn is_in_transmission(id: NFTId) -> Option<bool>;
 
     /// TODO!
-    fn mark_as_converted_to_capsule(id: NFTId) -> DispatchResult;
-
-    /// TODO!
-    fn unmark_as_converted_to_capsule(id: NFTId) -> DispatchResult;
+    fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult;
 
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;

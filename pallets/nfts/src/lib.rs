@@ -144,13 +144,13 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let to = T::Lookup::lookup(to)?;
 
-            let mut data = Data::<T>::get(id).ok_or(Error::<T>::InvalidNFTId)?;
+            let mut data = Data::<T>::get(id).ok_or(Error::<T>::UnknownNFT)?;
             let series = Series::<T>::get(&data.series_id).ok_or(Error::<T>::SeriesNotFound)?;
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
             ensure!(!data.listed_for_sale, Error::<T>::Locked);
             ensure!(!series.draft, Error::<T>::SeriesIsInDraft);
-            ensure!(!data.converted_to_capsule, Error::<T>::NFTIsCapsulized);
+            ensure!(!data.converted_to_capsule, Error::<T>::ConvertedToCapsule);
 
             data.owner = to.clone();
             Data::<T>::insert(id, data);
@@ -171,11 +171,11 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::burn())]
         pub fn burn(origin: OriginFor<T>, id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let data = Data::<T>::get(id).ok_or(Error::<T>::InvalidNFTId)?;
+            let data = Data::<T>::get(id).ok_or(Error::<T>::UnknownNFT)?;
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
             ensure!(!data.listed_for_sale, Error::<T>::Locked);
-            ensure!(!data.converted_to_capsule, Error::<T>::NFTIsCapsulized);
+            ensure!(!data.converted_to_capsule, Error::<T>::ConvertedToCapsule);
 
             Data::<T>::remove(id);
             Self::deposit_event(Event::Burned { nft_id: id });
@@ -281,13 +281,15 @@ pub mod pallet {
         /// Series not Found
         SeriesNotFound,
         /// No NFT was found with that NFT id.
-        InvalidNFTId,
+        UnknownNFT,
         /// Ipfs reference is too short.
         TooShortIpfsReference,
         /// Ipfs reference is too long.
         TooLongIpfsReference,
         /// Nft is capsulized.
-        NFTIsCapsulized,
+        ConvertedToCapsule,
+        /// TODO!
+        ListedForSale,
     }
 
     /// The number of NFTs managed by this pallet
@@ -371,7 +373,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
                 (*data).owner = owner.clone();
                 Ok(())
             } else {
-                Err(Error::<T>::InvalidNFTId)
+                Err(Error::<T>::UnknownNFT)
             }
         })?;
 
@@ -406,20 +408,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         Data::<T>::get(id)
     }
 
-    fn mark_as_listed_for_sale(id: NFTId) -> DispatchResult {
+    fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult {
         Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::InvalidNFTId)?;
-            data.listed_for_sale = true;
-            Ok(())
-        })?;
-
-        Ok(())
-    }
-
-    fn unmark_as_listed_for_sale(id: NFTId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::InvalidNFTId)?;
-            data.listed_for_sale = false;
+            let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            data.listed_for_sale = value;
             Ok(())
         })?;
 
@@ -435,20 +427,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         return None;
     }
 
-    fn mark_as_in_transmission(id: NFTId) -> DispatchResult {
+    fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult {
         Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::InvalidNFTId)?;
-            data.in_transmission = true;
-            Ok(())
-        })?;
-
-        Ok(())
-    }
-
-    fn unmark_as_in_transmission(id: NFTId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::InvalidNFTId)?;
-            data.in_transmission = false;
+            let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            data.in_transmission = value;
             Ok(())
         })?;
 
@@ -464,20 +446,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         return None;
     }
 
-    fn mark_as_converted_to_capsule(id: NFTId) -> DispatchResult {
+    fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult {
         Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::InvalidNFTId)?;
-            data.converted_to_capsule = true;
-            Ok(())
-        })?;
-
-        Ok(())
-    }
-
-    fn unmark_as_converted_to_capsule(id: NFTId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::InvalidNFTId)?;
-            data.converted_to_capsule = false;
+            let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            data.converted_to_capsule = value;
             Ok(())
         })?;
 

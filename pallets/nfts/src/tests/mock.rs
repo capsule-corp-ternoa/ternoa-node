@@ -17,7 +17,6 @@ frame_support::construct_runtime!(
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         Balances: pallet_balances::{Pallet, Call, Config<T>, Storage, Event<T>},
         NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
-        TernoaMock: ternoa_mock::{Pallet, Call, Storage, Event<T>, Config},
     }
 );
 
@@ -159,35 +158,6 @@ impl ExtBuilder {
         let mut ext = sp_io::TestExternalities::new(t);
         ext.execute_with(|| System::set_block_number(1));
         ext
-    }
-}
-
-pub mod help {
-    use super::*;
-    use crate::traits::NFTs;
-    use frame_support::assert_ok;
-    use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-    use ternoa_primitives::TernoaString;
-
-    pub fn create(
-        owner: Origin,
-        ipfs_reference: TernoaString,
-        series_id: Option<NFTSeriesId>,
-    ) -> NFTId {
-        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
-        return NFTs::nft_id_generator() - 1;
-    }
-
-    pub fn finish_series(owner: Origin, series_id: NFTSeriesId) {
-        assert_ok!(NFTs::finish_series(owner, series_id));
-    }
-
-    pub fn lock(nft_id: NFTId) {
-        assert_ok!(NFTs::lock(nft_id));
-    }
-
-    pub fn capsulize(val: bool) {
-        TernoaMock::set_is_capsulized(val);
     }
 }
 

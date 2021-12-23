@@ -121,7 +121,7 @@ pub mod pallet {
                 ensure!(is_on_list, Error::<T>::NotAllowed);
             }
 
-            T::NFTs::mark_as_listed_for_sale(nft_id)?;
+            T::NFTs::set_listed_for_sale(nft_id, true)?;
 
             let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
@@ -146,7 +146,7 @@ pub mod pallet {
                 Error::<T>::NftNotForSale
             );
 
-            T::NFTs::unmark_as_listed_for_sale(nft_id)?;
+            T::NFTs::set_listed_for_sale(nft_id, false)?;
             NFTsForSale::<T>::remove(nft_id);
 
             Self::deposit_event(Event::NftUnlisted { nft_id });
@@ -217,7 +217,7 @@ pub mod pallet {
                 }
             }
 
-            T::NFTs::unmark_as_listed_for_sale(nft_id)?;
+            T::NFTs::set_listed_for_sale(nft_id, false)?;
             T::NFTs::set_owner(nft_id, &caller_id)?;
 
             NFTsForSale::<T>::remove(nft_id);

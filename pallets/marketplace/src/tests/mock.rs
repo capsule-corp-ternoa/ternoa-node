@@ -26,7 +26,6 @@ frame_support::construct_runtime!(
         Marketplace: ternoa_marketplace::{Pallet, Call, Event<T>},
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Event<T>},
         TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
-        TernoaMock: ternoa_mock::{Pallet, Call, Storage, Event<T>, Config},
     }
 );
 
@@ -329,10 +328,6 @@ pub mod help {
 
     pub fn lock(nft_id: NFTId) {
         assert_ok!(NFTs::lock(nft_id));
-    }
-
-    pub fn capsulize(val: bool) {
-        TernoaMock::set_is_capsulized(val);
     }
 }
 
