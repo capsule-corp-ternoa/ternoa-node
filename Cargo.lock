@@ -3924,21 +3924,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-mandate"
-version = "2.0.8"
-source = "git+https://github.com/ETeissonniere/pallet-mandate?branch=eliott/ternoa-sub-freeze#1c2fbeeb18f66c1ef03df7a4679a9f536fe0aa40"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "pallet-membership"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate.git#5be50ac14b23147c6f120745c2205a86a2675169"
@@ -4075,6 +4060,19 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "pallet-sudo"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate.git#5be50ac14b23147c6f120745c2205a86a2675169"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -7609,7 +7607,6 @@ dependencies = [
  "pallet-identity",
  "pallet-im-online",
  "pallet-indices",
- "pallet-mandate",
  "pallet-membership",
  "pallet-multisig",
  "pallet-offences",
@@ -7619,6 +7616,7 @@ dependencies = [
  "pallet-session",
  "pallet-staking",
  "pallet-staking-reward-curve",
+ "pallet-sudo",
  "pallet-timestamp",
  "pallet-tips",
  "pallet-transaction-payment",

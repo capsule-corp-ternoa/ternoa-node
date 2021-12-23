@@ -237,10 +237,9 @@ impl pallet_membership::Config for Runtime {
     type WeightInfo = ();
 }
 
-impl pallet_mandate::Config for Runtime {
+impl pallet_sudo::Config for Runtime {
     type Event = Event;
     type Call = Call;
-    type ExternalOrigin = MoreThanHalfOfTheTechnicalCollective;
 }
 
 parameter_types! {
