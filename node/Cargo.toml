@@ -98,7 +98,6 @@ ternoa-primitives = { path = "../primitives" }
 ternoa-runtime = { path = "../runtime" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 
-
 [build-dependencies]
 vergen = "6.0.0"
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate.git", version = "3.0.0", branch = "master" }
