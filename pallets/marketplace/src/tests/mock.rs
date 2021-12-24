@@ -124,10 +124,6 @@ impl ternoa_account_store::Config for Test {
     type AccountData = pallet_balances::AccountData<u128>;
 }
 
-impl ternoa_mock::Config for Test {
-    type Event = Event;
-}
-
 impl Config for Test {
     type Event = Event;
     type CurrencyCaps = Balances;
@@ -264,7 +260,6 @@ pub mod help {
 
     use super::*;
     use frame_support::assert_ok;
-    use ternoa_common::traits::NFTTrait;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
     use ternoa_primitives::TernoaString;
 
@@ -324,10 +319,6 @@ pub mod help {
 
     pub fn finish_series(owner: Origin, series_id: Vec<u8>) {
         assert_ok!(NFTs::finish_series(owner, series_id));
-    }
-
-    pub fn lock(nft_id: NFTId) {
-        assert_ok!(NFTs::lock(nft_id));
     }
 }
 
