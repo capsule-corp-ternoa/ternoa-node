@@ -5,6 +5,7 @@ use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
+use ternoa_common::traits::NFTTrait;
 
 #[test]
 fn create_happy() {
@@ -157,11 +158,17 @@ fn create_from_nft_unhappy() {
             let ok = TernoaCapsules::create_from_nft(alice.clone(), nft_id, vec![25]);
             assert_noop!(ok, Error::<Test>::NotOwner);
 
-            // Unhappy nft is locked
+            // Unhappy nft is listed for sale
             let nft_id = help::create_nft_fast(alice.clone());
-            help::lock(nft_id);
+            <TernoaNFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
             let ok = TernoaCapsules::create_from_nft(alice.clone(), nft_id, vec![25]);
-            assert_noop!(ok, Error::<Test>::NftLocked);
+            assert_noop!(ok, Error::<Test>::ListedForSale);
+
+            // Unhappy nft is in transmission
+            let nft_id = help::create_nft_fast(alice.clone());
+            <TernoaNFTs as NFTTrait>::set_in_transmission(nft_id, true).unwrap();
+            let ok = TernoaCapsules::create_from_nft(alice.clone(), nft_id, vec![25]);
+            assert_noop!(ok, Error::<Test>::InTransmission);
 
             // Unhappy nft is already a capsule
             let nft_id = help::create_nft_fast(alice.clone());

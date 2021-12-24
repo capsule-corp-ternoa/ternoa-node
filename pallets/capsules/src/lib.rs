@@ -140,6 +140,7 @@ pub mod pallet {
             let nft = T::NFTTrait::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
             ensure!(nft.owner == who, Error::<T>::NotOwner);
             ensure!(!nft.listed_for_sale, Error::<T>::ListedForSale);
+            ensure!(!nft.in_transmission, Error::<T>::InTransmission);
             ensure!(!nft.converted_to_capsule, Error::<T>::CapsuleAlreadyExists);
 
             let exists = Capsules::<T>::contains_key(nft_id);
@@ -328,6 +329,8 @@ pub mod pallet {
         AlreadyACapsule,
         /// TODO!
         UnknownNFT,
+        /// TODO!
+        InTransmission,
     }
 
     /// Current capsule mint fee.
