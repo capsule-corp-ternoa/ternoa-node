@@ -61,7 +61,7 @@ fn create_unhappy() {
 
             // Unhappy already in transmission
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
-            <NFTs as NFTTrait>::mark_as_in_transmission(nft_id).unwrap();
+            <NFTs as NFTTrait>::set_in_transmission(nft_id, true).unwrap();
 
             let ok = TimedEscrow::create(alice.clone(), nft_id, BOB, 10);
             assert_noop!(ok, Error::<Test>::AlreadyInTransmission);
@@ -147,6 +147,6 @@ fn complete_transfer_unhappy() {
 
             // Unhappy failed to set owner because wrong id was given
             let ok = TimedEscrow::complete_transfer(root, BOB, 1001);
-            assert_noop!(ok, ternoa_nfts::Error::<Test>::InvalidNFTId);
+            assert_noop!(ok, ternoa_nfts::Error::<Test>::UnknownNFT);
         });
 }

@@ -148,9 +148,10 @@ pub mod pallet {
             let series = Series::<T>::get(&data.series_id).ok_or(Error::<T>::SeriesNotFound)?;
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
-            ensure!(!data.listed_for_sale, Error::<T>::Locked);
-            ensure!(!series.draft, Error::<T>::SeriesIsInDraft);
+            ensure!(!data.listed_for_sale, Error::<T>::ListedForSale);
             ensure!(!data.converted_to_capsule, Error::<T>::ConvertedToCapsule);
+            ensure!(!data.in_transmission, Error::<T>::InTransmission);
+            ensure!(!series.draft, Error::<T>::SeriesIsInDraft);
 
             data.owner = to.clone();
             Data::<T>::insert(id, data);
@@ -174,8 +175,9 @@ pub mod pallet {
             let data = Data::<T>::get(id).ok_or(Error::<T>::UnknownNFT)?;
 
             ensure!(data.owner == who, Error::<T>::NotOwner);
-            ensure!(!data.listed_for_sale, Error::<T>::Locked);
+            ensure!(!data.listed_for_sale, Error::<T>::ListedForSale);
             ensure!(!data.converted_to_capsule, Error::<T>::ConvertedToCapsule);
+            ensure!(!data.in_transmission, Error::<T>::InTransmission);
 
             Data::<T>::remove(id);
             Self::deposit_event(Event::Burned { nft_id: id });
@@ -290,6 +292,8 @@ pub mod pallet {
         ConvertedToCapsule,
         /// TODO!
         ListedForSale,
+        /// TODO!
+        InTransmission,
     }
 
     /// The number of NFTs managed by this pallet
@@ -367,14 +371,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     type AccountId = T::AccountId;
 
     fn set_owner(id: NFTId, owner: &Self::AccountId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| {
-            if let Some(data) = data {
-                ensure!(!data.listed_for_sale, Error::<T>::Locked);
-                (*data).owner = owner.clone();
-                Ok(())
-            } else {
-                Err(Error::<T>::UnknownNFT)
-            }
+        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+            let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            data.owner = owner.clone();
+            Ok(())
         })?;
 
         Ok(())
@@ -409,8 +409,8 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+            let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.listed_for_sale = value;
             Ok(())
         })?;
@@ -428,8 +428,8 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
-            let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+            let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.in_transmission = value;
             Ok(())
         })?;

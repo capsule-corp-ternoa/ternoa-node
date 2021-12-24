@@ -14,9 +14,9 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Pallet, Call, Config<T>, Storage, Event<T>},
-        NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
+        System: frame_system,
+        Balances: pallet_balances,
+        NFTs: ternoa_nfts,
     }
 );
 
@@ -80,10 +80,6 @@ impl pallet_balances::Config for Test {
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = System;
     type WeightInfo = ();
-}
-
-impl ternoa_mock::Config for Test {
-    type Event = Event;
 }
 
 parameter_types! {

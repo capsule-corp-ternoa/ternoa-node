@@ -3,8 +3,9 @@ use crate::tests::mock;
 use crate::Error;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
+use ternoa_common::traits::NFTTrait;
 
-#[test]
+/* #[test]
 fn lock_happy() {
     ExtBuilder::default()
         .caps(vec![(ALICE, 100)])
@@ -13,7 +14,7 @@ fn lock_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Happy path
-            let nft_id = help::create(alice.clone(), vec![1], None);
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
             assert_ok!(NFTs::lock(nft_id));
             assert_eq!(NFTs::data(nft_id).unwrap().locked, true);
         })
@@ -28,12 +29,12 @@ fn lock_unhappy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Unhappy already locked
-            let nft_id = help::create(alice.clone(), vec![1], None);
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
             assert_ok!(NFTs::lock(nft_id));
             assert_noop!(NFTs::lock(nft_id), Error::<Test>::Locked);
 
             // Unhappy invalid NFT Id
-            assert_noop!(NFTs::lock(1001), Error::<Test>::InvalidNFTId);
+            assert_noop!(NFTs::lock(1001), Error::<Test>::UnknownNFT);
         })
 }
 
@@ -46,7 +47,7 @@ fn unlock_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Happy path
-            let nft_id = help::create(alice.clone(), vec![1], None);
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
             assert_ok!(NFTs::lock(nft_id));
             assert_eq!(NFTs::unlock(nft_id), true);
             assert_eq!(NFTs::data(nft_id).unwrap().locked, false);
@@ -73,7 +74,7 @@ fn locked_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Happy path
-            let nft_id = help::create(alice.clone(), vec![1], None);
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
             assert_eq!(NFTs::locked(nft_id), Some(false));
             assert_ok!(NFTs::lock(nft_id));
             assert_eq!(NFTs::locked(nft_id), Some(true));
@@ -86,7 +87,7 @@ fn locked_unhappy() {
         // Unhappy invalid NFT Id
         assert_eq!(NFTs::locked(1001), None);
     })
-}
+} */
 
 #[test]
 fn set_owner_happy() {
@@ -94,10 +95,8 @@ fn set_owner_happy() {
         .caps(vec![(ALICE, 100)])
         .build()
         .execute_with(|| {
-            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-
             // Happy path
-            let nft_id = help::create(alice.clone(), vec![1], None);
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
             assert_ok!(NFTs::set_owner(nft_id, &BOB));
             assert_eq!(NFTs::data(nft_id).unwrap().owner, BOB);
         })
@@ -109,15 +108,8 @@ fn set_owner_unhappy() {
         .caps(vec![(ALICE, 100)])
         .build()
         .execute_with(|| {
-            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-
-            // Unhappy is locked
-            let nft_id = help::create(alice.clone(), vec![1], None);
-            assert_ok!(NFTs::lock(nft_id));
-            assert_noop!(NFTs::set_owner(nft_id, &BOB), Error::<Test>::Locked);
-
-            // Unhappy invalid NFT Id
-            assert_noop!(NFTs::set_owner(1000, &BOB), Error::<Test>::InvalidNFTId);
+            // Unhappy Unknown NFT
+            assert_noop!(NFTs::set_owner(1000, &BOB), Error::<Test>::UnknownNFT);
         })
 }
 
@@ -127,10 +119,8 @@ fn owner_happy() {
         .caps(vec![(ALICE, 100)])
         .build()
         .execute_with(|| {
-            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-
             // Happy path
-            let nft_id = help::create(alice.clone(), vec![1], None);
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
             assert_eq!(NFTs::owner(nft_id), Some(ALICE));
         })
 }
@@ -153,7 +143,8 @@ fn is_series_completed_happy() {
 
             // Happy path
             let series_id = vec![50];
-            let nft_id = help::create(alice.clone(), vec![1], Some(series_id.clone()));
+            let nft_id =
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
             assert_eq!(NFTs::is_series_completed(nft_id), Some(false));
             assert_ok!(NFTs::finish_series(alice, series_id));
             assert_eq!(NFTs::is_series_completed(nft_id), Some(true));
