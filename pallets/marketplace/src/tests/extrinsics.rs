@@ -2,7 +2,7 @@ use super::mock::*;
 use crate::tests::mock;
 use crate::{
     Error, MarketplaceInformation, MarketplaceType, NFTCurrency, NFTCurrencyCombined,
-    NFTCurrencyId, SaleInformation, URI,
+    NFTCurrencyId, SaleInformation,
 };
 use frame_support::error::BadOrigin;
 use frame_support::instances::Instance1;
@@ -10,6 +10,7 @@ use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::NFTTrait;
+use ternoa_primitives::TextFormat;
 
 const CAPS_ID: NFTCurrencyId = NFTCurrencyId::Caps;
 const TIIME_ID: NFTCurrencyId = NFTCurrencyId::Tiime;
@@ -360,9 +361,9 @@ fn create_unhappy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            let normal_uri: Option<URI> = Some(vec![66]);
-            let too_short_uri: Option<URI> = Some(vec![]);
-            let too_long_uri: Option<URI> = Some([0; 1001].to_vec());
+            let normal_uri: Option<TextFormat> = Some(vec![66]);
+            let too_short_uri: Option<TextFormat> = Some(vec![]);
+            let too_long_uri: Option<TextFormat> = Some([0; 1001].to_vec());
 
             // Unhappy invalid commission fee
             let ok = Marketplace::create(
@@ -795,8 +796,8 @@ fn update_uri_unhappy() {
             let name = vec![50];
             let kind = MPT::Public;
             let uri = Some(vec![66]);
-            let raw_too_short_uri: URI = vec![];
-            let raw_too_long_uri: URI = [0; 1001].to_vec();
+            let raw_too_short_uri: TextFormat = vec![];
+            let raw_too_long_uri: TextFormat = [0; 1001].to_vec();
 
             assert_ok!(Marketplace::create(
                 alice.clone(),
@@ -876,8 +877,8 @@ fn update_logo_uri_unhappy() {
             let name = vec![50];
             let kind = MPT::Public;
             let uri = Some(vec![66]);
-            let raw_too_short_uri: URI = vec![];
-            let raw_too_long_uri: URI = [0; 1001].to_vec();
+            let raw_too_short_uri: TextFormat = vec![];
+            let raw_too_long_uri: TextFormat = [0; 1001].to_vec();
 
             assert_ok!(Marketplace::create(
                 alice.clone(),
@@ -1052,8 +1053,8 @@ fn set_description_unhappy() {
             let name = vec![50];
             let kind = MPT::Public;
             let uri = Some(vec![66]);
-            let raw_too_short_description: URI = vec![];
-            let raw_too_long_description: URI = [0; 501].to_vec();
+            let raw_too_short_description: TextFormat = vec![];
+            let raw_too_long_description: TextFormat = [0; 501].to_vec();
 
             assert_ok!(Marketplace::create(
                 alice.clone(),

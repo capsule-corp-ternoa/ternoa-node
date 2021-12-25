@@ -18,7 +18,7 @@ use default_weights::WeightInfo;
 use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
 use ternoa_primitives::nfts::NFTId;
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
@@ -240,10 +240,10 @@ pub mod pallet {
             origin: OriginFor<T>,
             kind: MarketplaceType,
             commission_fee: u8,
-            name: TernoaString,
-            uri: Option<URI>,
-            logo_uri: Option<URI>,
-            description: Option<TernoaString>,
+            name: TextFormat,
+            uri: Option<TextFormat>,
+            logo_uri: Option<TextFormat>,
+            description: Option<TextFormat>,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -327,7 +327,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -360,7 +360,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -395,7 +395,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -428,7 +428,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -466,7 +466,7 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
             let account_id = T::Lookup::lookup(account_id)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -493,7 +493,7 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -517,7 +517,7 @@ pub mod pallet {
         pub fn set_name(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            name: TernoaString,
+            name: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
@@ -533,7 +533,7 @@ pub mod pallet {
                 ),
             )?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(
                     market_info.owner == caller_id,
@@ -575,7 +575,7 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
 
-            Marketplaces::<T>::mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
                 market_info.commission_fee = commission_fee;
@@ -595,7 +595,7 @@ pub mod pallet {
         pub fn set_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            uri: URI,
+            uri: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -605,7 +605,7 @@ pub mod pallet {
                 (T::MaxStringLength::get(), Error::<T>::TooLongUri),
             )?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
                 market_info.uri = Some(uri.clone());
@@ -624,7 +624,7 @@ pub mod pallet {
         pub fn set_logo_uri(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            logo_uri: URI,
+            logo_uri: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -634,7 +634,7 @@ pub mod pallet {
                 (T::MaxStringLength::get(), Error::<T>::TooLongLogoUri),
             )?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
                 market_info.logo_uri = Some(logo_uri.clone());
@@ -653,7 +653,7 @@ pub mod pallet {
         pub fn set_description(
             origin: OriginFor<T>,
             marketplace_id: MarketplaceId,
-            description: TernoaString,
+            description: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -663,7 +663,7 @@ pub mod pallet {
                 (T::MaxStringLength::get(), Error::<T>::TooLongDescription),
             )?;
 
-            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
+            Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
                 ensure!(market_info.owner == who, Error::<T>::NotMarketplaceOwner);
                 market_info.description = Some(description.clone());
@@ -720,7 +720,7 @@ pub mod pallet {
         /// Marketplace changed name.
         MarketplaceNameChanged {
             marketplace_id: MarketplaceId,
-            name: TernoaString,
+            name: TextFormat,
         },
         /// Marketplace mint fee changed.
         MarketplaceMintFeeChanged { fee: BalanceCaps<T> },
@@ -729,15 +729,15 @@ pub mod pallet {
             marketplace_id: MarketplaceId,
             fee: u8,
         },
-        /// Marketplace URI updated.
+        /// Marketplace TextFormat updated.
         MarketplaceUriUpdated {
             marketplace_id: MarketplaceId,
-            uri: URI,
+            uri: TextFormat,
         },
-        /// Marketplace Logo URI updated.
+        /// Marketplace Logo TextFormat updated.
         MarketplaceLogoUriUpdated {
             marketplace_id: MarketplaceId,
-            uri: URI,
+            uri: TextFormat,
         },
         /// Account added to disallow list for a marketplace.
         AccountAddedToDisallowList {
@@ -752,7 +752,7 @@ pub mod pallet {
         /// Marketplace description updated.
         MarketplaceDescriptionUpdated {
             marketplace_id: MarketplaceId,
-            description: TernoaString,
+            description: TextFormat,
         },
     }
 
@@ -788,19 +788,19 @@ pub mod pallet {
         TooLongMarketplaceName,
         /// Series is not completed.
         SeriesNotCompleted,
-        // Marketplace URI is too long.
+        // Marketplace uri is too long.
         TooLongUri,
-        // Marketplace URI is too short.
+        // Marketplace uri is too short.
         TooShortUri,
-        // Marketplace Logo URI is too long.
+        // Marketplace logo uri is too long.
         TooLongLogoUri,
-        // Marketplace Logo URI is too short.
+        // Marketplace logo uri is too short.
         TooShortLogoUri,
         /// Nft is capsulized.
         CannotListCapsules,
-        /// Marketplace Description in too short.
+        /// Marketplace description in too short.
         TooShortDescription,
-        /// Marketplace Description in too long.
+        /// Marketplace description in too long.
         TooLongDescription,
         /// TODO!
         AlreadyListedForSale,

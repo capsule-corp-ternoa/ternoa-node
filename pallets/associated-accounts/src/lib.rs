@@ -12,7 +12,7 @@ pub use default_weights::WeightInfo;
 use frame_support::traits::{Get, StorageVersion};
 pub use pallet::*;
 
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
@@ -53,7 +53,7 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::set_altvr_username())]
         pub fn set_altvr_username(
             origin: OriginFor<T>,
-            value: TernoaString,
+            value: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let owner = ensure_signed(origin)?;
 
@@ -81,7 +81,7 @@ pub mod pallet {
         /// Altvr username updated.
         AltVRUsernameChanged {
             owner: T::AccountId,
-            username: TernoaString,
+            username: TextFormat,
         },
     }
 
@@ -97,11 +97,11 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn altvr_users)]
     pub type AltVRUsers<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, TernoaString, OptionQuery>;
+        StorageMap<_, Blake2_128Concat, T::AccountId, TextFormat, OptionQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub altvr_users: Vec<(T::AccountId, TernoaString)>,
+        pub altvr_users: Vec<(T::AccountId, TextFormat)>,
     }
 
     #[cfg(feature = "std")]

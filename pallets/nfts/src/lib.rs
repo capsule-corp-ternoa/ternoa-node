@@ -20,7 +20,7 @@ use sp_std::vec;
 use sp_std::vec::Vec;
 use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
 
@@ -85,7 +85,7 @@ pub mod pallet {
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -196,7 +196,7 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            Series::<T>::mutate(&series_id, |x| -> Result<(), Error<T>> {
+            Series::<T>::mutate(&series_id, |x| -> DispatchResult {
                 let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
                 ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
                 ensure!(series.draft, Error::<T>::SeriesIsCompleted);
@@ -234,7 +234,7 @@ pub mod pallet {
             nft_id: NFTId,
             owner: T::AccountId,
             series_id: NFTSeriesId,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
         },
         /// An NFT was transferred to someone else.
         Transfer {
@@ -366,7 +366,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     type AccountId = T::AccountId;
 
     fn set_owner(id: NFTId, owner: &Self::AccountId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
             let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.owner = owner.clone();
             Ok(())
@@ -386,7 +386,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
     fn create_nft(
         owner: Self::AccountId,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo> {
         Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
@@ -404,7 +404,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
             let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.listed_for_sale = value;
             Ok(())
@@ -423,7 +423,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
             let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.in_transmission = value;
             Ok(())
@@ -442,7 +442,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |d| -> DispatchResult {
             let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.converted_to_capsule = value;
             Ok(())

@@ -5,19 +5,19 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
+use ternoa_primitives::TextFormat;
 
 pub type EnclaveId = u32;
 pub type ClusterId = u32;
-pub type Url = Vec<u8>;
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct Enclave {
-    pub api_url: Url,
+    pub api_url: TextFormat,
 }
 
 impl Enclave {
-    pub fn new(api_url: Url) -> Self {
+    pub fn new(api_url: TextFormat) -> Self {
         Self { api_url }
     }
 }

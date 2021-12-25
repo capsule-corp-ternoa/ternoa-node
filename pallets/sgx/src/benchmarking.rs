@@ -1,19 +1,20 @@
 use crate::{
     BalanceOf, Call, Cluster, ClusterId, ClusterIdGenerator, ClusterIndex, ClusterRegistry, Config,
-    Enclave, EnclaveId, EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Pallet, Url,
+    Enclave, EnclaveId, EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Pallet,
 };
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
 use sp_runtime::traits::{Bounded, StaticLookup};
 use sp_std::prelude::*;
+use ternoa_primitives::TextFormat;
 
 use crate::Pallet as Sgx;
 
 benchmarks! {
     register_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let url: TextFormat = Default::default();
         let enclave_id: EnclaveId = 0;
         let enclave = Enclave::new(vec![]);
 
@@ -29,7 +30,7 @@ benchmarks! {
 
     assign_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let url: TextFormat = Default::default();
         let enclave_id: EnclaveId = 0;
         let cluster_id: ClusterId = 0;
 
@@ -45,7 +46,7 @@ benchmarks! {
 
     unassign_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let url: TextFormat = Default::default();
         let enclave_id: EnclaveId = 0;
         let cluster_id: ClusterId = 0;
         let empty: Vec<EnclaveId> = vec![];
@@ -63,9 +64,9 @@ benchmarks! {
 
     update_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let url: TextFormat = Default::default();
         let enclave_id: EnclaveId = 0;
-        let new_url: Url = vec![0, 1, 2];
+        let new_url: TextFormat = vec![0, 1, 2];
 
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
@@ -79,7 +80,7 @@ benchmarks! {
         let alice: T::AccountId = whitelisted_caller();
         let bob: T::AccountId = account("bob", 0, 0);
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
-        let url: Url = Default::default();
+        let url: TextFormat = Default::default();
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
         drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));

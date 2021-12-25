@@ -6,7 +6,7 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -15,14 +15,14 @@ where
     AccountId: Clone + Default,
 {
     pub owner: AccountId,
-    pub ipfs_reference: TernoaString,
+    pub ipfs_reference: TextFormat,
 }
 
 impl<AccountId> CapsuleData<AccountId>
 where
     AccountId: Clone + Default,
 {
-    pub fn new(owner: AccountId, ipfs_reference: TernoaString) -> CapsuleData<AccountId> {
+    pub fn new(owner: AccountId, ipfs_reference: TextFormat) -> CapsuleData<AccountId> {
         Self {
             owner,
             ipfs_reference,

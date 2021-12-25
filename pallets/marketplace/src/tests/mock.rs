@@ -261,11 +261,11 @@ pub mod help {
     use super::*;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-    use ternoa_primitives::TernoaString;
+    use ternoa_primitives::TextFormat;
 
     pub fn create_nft(
         owner: Origin,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
         assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
@@ -274,7 +274,7 @@ pub mod help {
 
     pub fn create_nft_and_lock_series(
         owner: Origin,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         series_id: NFTSeriesId,
     ) -> NFTId {
         let nft_id = help::create_nft(owner.clone(), ipfs_reference, Some(series_id.clone()));
@@ -287,7 +287,7 @@ pub mod help {
         owner: Origin,
         kind: MarketplaceType,
         fee: u8,
-        name: TernoaString,
+        name: TextFormat,
         list: Vec<u64>,
     ) -> MarketplaceId {
         assert_ok!(Marketplace::create(

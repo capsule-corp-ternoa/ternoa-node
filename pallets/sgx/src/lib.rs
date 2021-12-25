@@ -28,6 +28,7 @@ pub mod pallet {
     use frame_support::transactional;
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
+    use ternoa_primitives::TextFormat;
 
     pub type BalanceOf<T> =
         <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -77,7 +78,10 @@ pub mod pallet {
         //
         #[pallet::weight(T::WeightInfo::register_enclave())]
         #[transactional]
-        pub fn register_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
+        pub fn register_enclave(
+            origin: OriginFor<T>,
+            api_url: TextFormat,
+        ) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
 
             ensure!(
@@ -174,7 +178,10 @@ pub mod pallet {
         }
 
         #[pallet::weight(T::WeightInfo::update_enclave())]
-        pub fn update_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
+        pub fn update_enclave(
+            origin: OriginFor<T>,
+            api_url: TextFormat,
+        ) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
             let enclave_id = EnclaveIndex::<T>::get(&account).ok_or(Error::<T>::NotEnclaveOwner)?;
 
@@ -275,7 +282,7 @@ pub mod pallet {
         // Enclave
         AddedEnclave {
             account: T::AccountId,
-            api_url: Url,
+            api_url: TextFormat,
             enclave_id: EnclaveId,
         },
         AssignedEnclave {
@@ -287,7 +294,7 @@ pub mod pallet {
         },
         UpdatedEnclave {
             enclave_id: EnclaveId,
-            api_url: Url,
+            api_url: TextFormat,
         },
         NewEnclaveOwner {
             enclave_id: EnclaveId,
@@ -354,7 +361,7 @@ pub mod pallet {
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub enclaves: Vec<(T::AccountId, EnclaveId, Url)>,
+        pub enclaves: Vec<(T::AccountId, EnclaveId, TextFormat)>,
         pub clusters: Vec<(ClusterId, Vec<EnclaveId>)>,
     }
 

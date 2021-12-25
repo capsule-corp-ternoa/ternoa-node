@@ -2,12 +2,13 @@ use super::mock;
 use super::mock::*;
 use crate::{
     Cluster, ClusterId, ClusterIdGenerator, ClusterIndex, ClusterRegistry, Enclave, EnclaveId,
-    EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Error, Url,
+    EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Error,
 };
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use sp_runtime::traits::BadOrigin;
+use ternoa_primitives::TextFormat;
 
 #[test]
 fn register_enclave() {
@@ -22,7 +23,7 @@ fn register_enclave() {
             assert_eq!(EnclaveIndex::<Test>::iter().count(), 0);
             assert_eq!(EnclaveRegistry::<Test>::iter().count(), 0);
             assert_eq!(EnclaveIdGenerator::<Test>::get(), 0);
-            let url: Url = Default::default();
+            let url: TextFormat = Default::default();
 
             // Alice should be able to create an enclave if she has enough tokens.
             assert_ok!(Sgx::register_enclave(alice.clone(), url.clone()));
@@ -136,7 +137,7 @@ fn update_enclave() {
             let enclave_id: EnclaveId = 0;
 
             // Alice should be able to update her enclave.
-            let url: Url = vec![0, 1];
+            let url: TextFormat = vec![0, 1];
             let enclave = Enclave::new(url.clone());
             assert_ok!(Sgx::update_enclave(alice.clone(), url.clone()));
             assert_eq!(EnclaveRegistry::<Test>::get(enclave_id), Some(enclave));
@@ -204,7 +205,7 @@ fn remove_cluster() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let url: Url = Default::default();
+            let url: TextFormat = Default::default();
             let cluster_id: ClusterId = 0;
             let cluster = Cluster::new(vec![0, 1]);
 

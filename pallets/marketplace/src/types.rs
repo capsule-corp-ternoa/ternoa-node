@@ -5,10 +5,7 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::TernoaString;
-
-/// TODO!
-pub type URI = Vec<u8>;
+use ternoa_primitives::TextFormat;
 
 /// Structure that stores both NFT currencies at the same time.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, TypeInfo)]
@@ -184,10 +181,10 @@ pub struct MarketplaceInformation<AccountId> {
     pub owner: AccountId,
     pub allow_list: Vec<AccountId>,
     pub disallow_list: Vec<AccountId>,
-    pub name: TernoaString,
-    pub uri: Option<URI>,
-    pub logo_uri: Option<URI>,
-    pub description: Option<TernoaString>,
+    pub name: TextFormat,
+    pub uri: Option<TextFormat>,
+    pub logo_uri: Option<TextFormat>,
+    pub description: Option<TextFormat>,
 }
 
 impl<AccountId> MarketplaceInformation<AccountId> {
@@ -197,10 +194,10 @@ impl<AccountId> MarketplaceInformation<AccountId> {
         owner: AccountId,
         allow_list: Vec<AccountId>,
         disallow_list: Vec<AccountId>,
-        name: TernoaString,
-        uri: Option<URI>,
-        logo_uri: Option<URI>,
-        description: Option<TernoaString>,
+        name: TextFormat,
+        uri: Option<TextFormat>,
+        logo_uri: Option<TextFormat>,
+        description: Option<TextFormat>,
     ) -> MarketplaceInformation<AccountId> {
         Self {
             kind,

@@ -37,7 +37,8 @@ pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type.
 pub type Block = generic::Block<Header, OpaqueExtrinsic>;
 
-pub type TernoaString = Vec<u8>;
+/// Text format.
+pub type TextFormat = Vec<u8>;
 
 /// The type for looking up accounts. We don't expect more than 4 billion of them.
 pub type AccountIndex = u32;
@@ -46,7 +47,7 @@ pub mod nfts {
     #[cfg(feature = "std")]
     use serde::{Deserialize, Serialize};
 
-    use super::TernoaString;
+    use super::TextFormat;
     use codec::{Decode, Encode};
     use scale_info::TypeInfo;
     use sp_runtime::RuntimeDebug;
@@ -65,7 +66,7 @@ pub mod nfts {
         // NFT owner
         pub owner: AccountId,
         // IPFS reference
-        pub ipfs_reference: TernoaString,
+        pub ipfs_reference: TextFormat,
         // Series ID
         pub series_id: NFTSeriesId,
         // Is listed for sale
@@ -79,7 +80,7 @@ pub mod nfts {
     impl<AccountId> NFTData<AccountId> {
         pub fn new(
             owner: AccountId,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
             series_id: NFTSeriesId,
             listed_for_sale: bool,
             in_transmission: bool,
