@@ -83,8 +83,8 @@ impl pallet_balances::Config for Test {
 }
 
 parameter_types! {
-    pub const MaxStringLength: u16 = 5;
-    pub const MinStringLength: u16 = 1;
+    pub const MinUriLen: u16 = 1;
+    pub const MaxUriLen: u16 = 5;
 }
 
 impl Config for Test {
@@ -92,8 +92,8 @@ impl Config for Test {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = MockFeeCollector;
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinUriLen = MinUriLen;
+    type MaxUriLen = MaxUriLen;
 }
 
 pub struct MockFeeCollector;

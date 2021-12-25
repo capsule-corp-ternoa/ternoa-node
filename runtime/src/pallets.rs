@@ -253,7 +253,6 @@ parameter_types! {
     pub const MaxStringLength: u16 = 1000;
     pub const MinStringLength: u16 = 1;
     pub const ClusterSize: u32 = 8;
-    pub const MaxUrlLength: u32 = 1000;
     pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
     pub const MinNameLength : u8 = 1;
     pub const MaxNameLength : u8 = 20;
@@ -266,8 +265,8 @@ impl ternoa_nfts::Config for Runtime {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = Treasury;
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinUriLen = MinUriLen;
+    type MaxUriLen = MaxUriLen;
 }
 
 impl ternoa_timed_escrow::Config for Runtime {
@@ -292,6 +291,12 @@ impl ternoa_marketplace::Config for Runtime {
     type MaxDescriptionLength = MaxDescriptionLength;
 }
 
+parameter_types! {
+    pub const MinUriLen: u16 = 1;
+    pub const MaxUriLen: u16 = 256;
+}
+
+// SGX
 impl ternoa_sgx::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();
@@ -299,9 +304,11 @@ impl ternoa_sgx::Config for Runtime {
     type EnclaveFee = EnclaveFee;
     type FeesCollector = Treasury;
     type ClusterSize = ClusterSize;
-    type MaxUrlLength = MaxUrlLength;
+    type MinUriLen = MinUriLen;
+    type MaxUriLen = MaxUriLen;
 }
 
+// Capsules
 impl ternoa_capsules::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();

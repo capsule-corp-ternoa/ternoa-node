@@ -13,12 +13,12 @@ pub type ClusterId = u32;
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct Enclave {
-    pub api_url: TextFormat,
+    pub api_uri: TextFormat,
 }
 
 impl Enclave {
-    pub fn new(api_url: TextFormat) -> Self {
-        Self { api_url }
+    pub fn new(api_uri: TextFormat) -> Self {
+        Self { api_uri }
     }
 }
 
