@@ -32,6 +32,7 @@ pub mod pallet {
     use frame_support::{pallet_prelude::*, transactional};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
+    use ternoa_common::helpers::check_bounds;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -89,10 +90,11 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            check_bounds(
+                ipfs_reference.len(),
+                (T::MinStringLength::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxStringLength::get(), Error::<T>::TooLongIpfsReference),
+            )?;
 
             // Checks
             // The Caller needs to pay the NFT Mint fee.
@@ -194,21 +196,14 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            Series::<T>::mutate(&series_id, |x| {
-                if let Some(series) = x {
-                    if series.owner != who {
-                        return Err(Error::<T>::NotSeriesOwner);
-                    }
-                    if !series.draft {
-                        return Err(Error::<T>::SeriesIsCompleted);
-                    }
+            Series::<T>::mutate(&series_id, |x| -> Result<(), Error<T>> {
+                let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
+                ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
+                ensure!(series.draft, Error::<T>::SeriesIsCompleted);
 
-                    series.draft = false;
+                series.draft = false;
 
-                    Ok(())
-                } else {
-                    Err(Error::<T>::SeriesNotFound)?
-                }
+                Ok(())
             })?;
 
             Self::deposit_event(Event::SeriesFinished { series_id });

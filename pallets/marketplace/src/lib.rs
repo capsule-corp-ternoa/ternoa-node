@@ -33,6 +33,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
     use sp_std::vec::Vec;
+    use ternoa_common::helpers::check_bounds;
     use ternoa_common::traits::NFTTrait;
 
     pub type BalanceCaps<T> =
@@ -244,42 +245,40 @@ pub mod pallet {
             let caller_id = ensure_signed(origin)?;
 
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
-            let lower_bound = name.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
-            ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
+            check_bounds(
+                name.len(),
+                (
+                    T::MinStringLength::get(),
+                    Error::<T>::TooShortMarketplaceName,
+                ),
+                (
+                    T::MaxStringLength::get(),
+                    Error::<T>::TooLongMarketplaceName,
+                ),
+            )?;
 
-            if let Some(uri_value) = uri.as_ref() {
-                ensure!(
-                    uri_value.len() <= T::MaxStringLength::get() as usize,
-                    Error::<T>::TooLongMarketplaceUri
-                );
-                ensure!(
-                    uri_value.len() >= T::MinStringLength::get() as usize,
-                    Error::<T>::TooShortMarketplaceUri
-                );
+            if let Some(text) = uri.as_ref() {
+                check_bounds(
+                    text.len(),
+                    (T::MinStringLength::get(), Error::<T>::TooShortUri),
+                    (T::MaxStringLength::get(), Error::<T>::TooLongUri),
+                )?;
             }
 
-            if let Some(logo_uri_value) = logo_uri.as_ref() {
-                ensure!(
-                    logo_uri_value.len() <= T::MaxStringLength::get() as usize,
-                    Error::<T>::TooLongMarketplaceLogoUri
-                );
-                ensure!(
-                    logo_uri_value.len() >= T::MinStringLength::get() as usize,
-                    Error::<T>::TooShortMarketplaceLogoUri
-                );
+            if let Some(text) = logo_uri.as_ref() {
+                check_bounds(
+                    text.len(),
+                    (T::MinStringLength::get(), Error::<T>::TooShortLogoUri),
+                    (T::MaxStringLength::get(), Error::<T>::TooLongLogoUri),
+                )?;
             }
 
-            if let Some(description_value) = description.as_ref() {
-                ensure!(
-                    description_value.len() >= T::MinDescriptionLength::get() as usize,
-                    Error::<T>::TooShortMarketplaceDescription
-                );
-                ensure!(
-                    description_value.len() <= T::MaxDescriptionLength::get() as usize,
-                    Error::<T>::TooLongMarketplaceDescription
-                );
+            if let Some(text) = description.as_ref() {
+                check_bounds(
+                    text.len(),
+                    (T::MinStringLength::get(), Error::<T>::TooShortDescription),
+                    (T::MaxStringLength::get(), Error::<T>::TooLongDescription),
+                )?;
             }
 
             // Needs to have enough money
@@ -335,6 +334,7 @@ pub mod pallet {
                     market_info.kind == MarketplaceType::Private,
                     Error::<T>::UnsupportedMarketplace
                 );
+
                 market_info.allow_list.push(account_id.clone());
                 Ok(())
             })?;
@@ -367,6 +367,7 @@ pub mod pallet {
                     market_info.kind == MarketplaceType::Private,
                     Error::<T>::UnsupportedMarketplace
                 );
+
                 let index = market_info.allow_list.iter().position(|x| *x == account_id);
                 let index = index.ok_or(Error::<T>::AccountNotFound)?;
                 market_info.allow_list.swap_remove(index);
@@ -401,6 +402,7 @@ pub mod pallet {
                     market_info.kind == MarketplaceType::Public,
                     Error::<T>::UnsupportedMarketplace
                 );
+
                 market_info.disallow_list.push(account_id.clone());
                 Ok(())
             })?;
@@ -433,6 +435,7 @@ pub mod pallet {
                     market_info.kind == MarketplaceType::Public,
                     Error::<T>::UnsupportedMarketplace
                 );
+
                 let index = market_info
                     .disallow_list
                     .iter()
@@ -493,6 +496,7 @@ pub mod pallet {
                     market_info.owner == caller_id,
                     Error::<T>::NotMarketplaceOwner
                 );
+
                 market_info.kind = kind;
                 Ok(())
             })?;
@@ -514,10 +518,17 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            let lower_bound = name.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = name.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortMarketplaceName);
-            ensure!(upper_bound, Error::<T>::TooLongMarketplaceName);
+            check_bounds(
+                name.len(),
+                (
+                    T::MinStringLength::get(),
+                    Error::<T>::TooShortMarketplaceName,
+                ),
+                (
+                    T::MaxStringLength::get(),
+                    Error::<T>::TooLongMarketplaceName,
+                ),
+            )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
@@ -585,14 +596,11 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(
-                uri.len() <= T::MaxStringLength::get() as usize,
-                Error::<T>::TooLongMarketplaceUri
-            );
-            ensure!(
-                uri.len() >= T::MinStringLength::get() as usize,
-                Error::<T>::TooShortMarketplaceUri
-            );
+            check_bounds(
+                uri.len(),
+                (T::MinStringLength::get(), Error::<T>::TooShortUri),
+                (T::MaxStringLength::get(), Error::<T>::TooLongUri),
+            )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
@@ -617,14 +625,11 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(
-                logo_uri.len() <= T::MaxStringLength::get() as usize,
-                Error::<T>::TooLongMarketplaceLogoUri
-            );
-            ensure!(
-                logo_uri.len() >= T::MinStringLength::get() as usize,
-                Error::<T>::TooShortMarketplaceLogoUri
-            );
+            check_bounds(
+                logo_uri.len(),
+                (T::MinStringLength::get(), Error::<T>::TooShortLogoUri),
+                (T::MaxStringLength::get(), Error::<T>::TooLongLogoUri),
+            )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
@@ -649,14 +654,11 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            ensure!(
-                description.len() <= T::MaxDescriptionLength::get() as usize,
-                Error::<T>::TooShortMarketplaceDescription
-            );
-            ensure!(
-                description.len() >= T::MinDescriptionLength::get() as usize,
-                Error::<T>::TooLongMarketplaceDescription
-            );
+            check_bounds(
+                description.len(),
+                (T::MinStringLength::get(), Error::<T>::TooShortDescription),
+                (T::MaxStringLength::get(), Error::<T>::TooLongDescription),
+            )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> Result<(), Error<T>> {
                 let market_info = x.as_mut().ok_or(Error::<T>::UnknownMarketplace)?;
@@ -784,19 +786,19 @@ pub mod pallet {
         /// Series is not completed.
         SeriesNotCompleted,
         // Marketplace URI is too long.
-        TooLongMarketplaceUri,
+        TooLongUri,
         // Marketplace URI is too short.
-        TooShortMarketplaceUri,
+        TooShortUri,
         // Marketplace Logo URI is too long.
-        TooLongMarketplaceLogoUri,
+        TooLongLogoUri,
         // Marketplace Logo URI is too short.
-        TooShortMarketplaceLogoUri,
+        TooShortLogoUri,
         /// Nft is capsulized.
         CannotListCapsules,
         /// Marketplace Description in too short.
-        TooShortMarketplaceDescription,
+        TooShortDescription,
         /// Marketplace Description in too long.
-        TooLongMarketplaceDescription,
+        TooLongDescription,
         /// TODO!
         AlreadyListedForSale,
         /// TODO!
