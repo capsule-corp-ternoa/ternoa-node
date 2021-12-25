@@ -723,7 +723,7 @@ fn update_uri_happy() {
             let uri = Some(vec![66]);
             let updated_uri = Some(vec![67]);
 
-            let updated_info: MarketplaceInformation<Test> = MarketplaceInformation::new(
+            let updated_info = MarketplaceInformation::new(
                 kind,
                 fee,
                 ALICE,
@@ -979,7 +979,7 @@ fn set_description_happy() {
             let description = Some(vec![66]);
             let updated_description = Some(vec![67]);
 
-            let updated_info = MarketplaceInformation::<Test>::new(
+            let updated_info = MarketplaceInformation::new(
                 kind,
                 fee,
                 ALICE,

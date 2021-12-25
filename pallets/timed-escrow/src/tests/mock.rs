@@ -1,6 +1,6 @@
 use crate::{self as ternoa_timed_escrow, Config};
 use frame_benchmarking::account;
-use frame_support::traits::{Contains, GenesisBuild};
+use frame_support::traits::{Contains, EqualPrivilegeOnly, GenesisBuild};
 use frame_support::{parameter_types, weights::Weight};
 use frame_system::EnsureRoot;
 use sp_core::H256;
@@ -31,9 +31,9 @@ impl Contains<Call> for TestBaseCallFilter {
     fn contains(c: &Call) -> bool {
         match *c {
             // Transfer works. Use `transfer_keep_alive` for a call that doesn't pass the filter.
-            Call::Balances(pallet_balances::Call::transfer(..)) => true,
+            Call::Balances(pallet_balances::Call::transfer { .. }) => true,
             // For benchmarking, this acts as a noop call
-            Call::System(frame_system::Call::remark(..)) => true,
+            Call::System(frame_system::Call::remark { .. }) => true,
             // For tests
             _ => false,
         }
@@ -101,6 +101,7 @@ impl pallet_scheduler::Config for Test {
     type ScheduleOrigin = EnsureRoot<u64>;
     type MaxScheduledPerBlock = ();
     type WeightInfo = ();
+    type OriginPrivilegeCmp = EqualPrivilegeOnly;
 }
 
 parameter_types! {

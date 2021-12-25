@@ -8,22 +8,30 @@ version = "0.2.0"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
+# Frame
+frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev", branch = "master" }
+frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+
+# Sp
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+
+# Rest
+serde = { optional = true, version = "1.0.132" }
+codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.3.1" }
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+
+# Ternoa
 ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
 ternoa-nfts = { default-features = false, path = "../nfts" }
-serde = { optional = true, version = "1.0.126" }
-codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.2.0" }
-frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev" }
-frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
 
 [dev-dependencies]
-pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
-pallet-scheduler = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev" }
+pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
+pallet-scheduler = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 
 [features]
 default = ["std"]
@@ -38,6 +46,7 @@ std = [
     "ternoa-common/std",
     "ternoa-primitives/std",
     "ternoa-nfts/std",
+    "scale-info/std",
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

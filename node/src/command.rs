@@ -1,6 +1,6 @@
 use crate::cli::{Cli, Subcommand};
 use crate::{chain_spec, service, service::new_partial};
-use sc_cli::{ChainSpec, Result, Role, RuntimeVersion, SubstrateCli};
+use sc_cli::{ChainSpec, Result, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
 use ternoa_executor::ExecutorDispatch;
 use ternoa_runtime::{Block, RuntimeApi};
@@ -64,11 +64,7 @@ pub fn run() -> Result<()> {
         None => {
             let runner = cli.create_runner(&cli.run)?;
             runner.run_node_until_exit(|config| async move {
-                match config.role {
-                    Role::Light => service::new_light(config),
-                    _ => service::new_full(config),
-                }
-                .map_err(sc_cli::Error::Service)
+                service::new_full(config).map_err(sc_cli::Error::Service)
             })
         }
         Some(Subcommand::Inspect(cmd)) => {
@@ -83,7 +79,7 @@ pub fn run() -> Result<()> {
                 runner.sync_run(|config| cmd.run::<Block, ExecutorDispatch>(config))
             } else {
                 Err("Benchmarking wasn't enabled when building the node. \
-                You can enable it with `--features runtime-benchmarks`."
+				You can enable it with `--features runtime-benchmarks`."
                     .into())
             }
         }
@@ -165,7 +161,7 @@ pub fn run() -> Result<()> {
                 // manager to do `async_run`.
                 let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
                 let task_manager =
-                    sc_service::TaskManager::new(config.task_executor.clone(), registry)
+                    sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
                         .map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
 
                 Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
@@ -173,7 +169,7 @@ pub fn run() -> Result<()> {
         }
         #[cfg(not(feature = "try-runtime"))]
         Some(Subcommand::TryRuntime) => Err("TryRuntime wasn't enabled when building the node. \
-                You can enable it with `--features try-runtime`."
+				You can enable it with `--features try-runtime`."
             .into()),
     }
 }

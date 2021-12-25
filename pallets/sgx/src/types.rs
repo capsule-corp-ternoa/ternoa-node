@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 use codec::{Decode, Encode};
+use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
 
@@ -9,7 +10,7 @@ pub type EnclaveId = u32;
 pub type ClusterId = u32;
 pub type Url = Vec<u8>;
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct Enclave {
     pub api_url: Url,
@@ -21,7 +22,7 @@ impl Enclave {
     }
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct Cluster {
     pub enclaves: Vec<EnclaveId>,

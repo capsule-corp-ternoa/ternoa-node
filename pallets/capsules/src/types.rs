@@ -3,11 +3,12 @@ use serde::{Deserialize, Serialize};
 use ternoa_primitives::nfts::NFTId;
 
 use codec::{Decode, Encode};
+use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
 use ternoa_primitives::TernoaString;
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct CapsuleData<AccountId>
 where

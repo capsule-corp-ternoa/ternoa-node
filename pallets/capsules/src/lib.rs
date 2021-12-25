@@ -111,8 +111,12 @@ pub mod pallet {
             let nft_id = T::NFTSTrait::create_nft(who.clone(), nft_ipfs_reference, series_id)?;
             Self::new_capsule(&who, nft_id, capsule_ipfs_reference.clone(), amount);
 
-            Self::deposit_event(Event::CapsuleDeposit(amount));
-            let event = Event::CapsuleCreated(who, nft_id, amount);
+            Self::deposit_event(Event::CapsuleDeposit { balance: amount });
+            let event = Event::CapsuleCreated {
+                owner: who,
+                nft_id: nft_id,
+                frozen_balance: amount,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -149,8 +153,12 @@ pub mod pallet {
             // Create capsule
             Self::new_capsule(&who, nft_id, ipfs_reference.clone(), amount);
 
-            Self::deposit_event(Event::CapsuleDeposit(amount));
-            let event = Event::CapsuleCreated(who, nft_id, amount);
+            Self::deposit_event(Event::CapsuleDeposit { balance: amount });
+            let event = Event::CapsuleCreated {
+                owner: who,
+                nft_id,
+                frozen_balance: amount,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -182,7 +190,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::CapsuleRemoved(nft_id, unused_funds);
+            let event = Event::CapsuleRemoved {
+                nft_id,
+                unfrozen_balance: unused_funds,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -211,7 +222,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::CapsuleFundsAdded(nft_id, amount);
+            let event = Event::CapsuleFundsAdded {
+                nft_id,
+                balance: amount,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -239,7 +253,10 @@ pub mod pallet {
                 Ok(())
             })?;
 
-            let event = Event::CapsuleIpfsReferenceChanged(nft_id, ipfs_reference.clone());
+            let event = Event::CapsuleIpfsReferenceChanged {
+                nft_id,
+                ipfs_reference,
+            };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -255,7 +272,7 @@ pub mod pallet {
 
             CapsuleMintFee::<T>::put(capsule_fee);
 
-            Self::deposit_event(Event::CapsuleMintFeeChanged(capsule_fee));
+            Self::deposit_event(Event::CapsuleMintFeeChanged { fee: capsule_fee });
 
             Ok(().into())
         }
@@ -264,18 +281,31 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// A capsule ipfs reference was changed. \[nft id, ipfs reference\]
-        CapsuleIpfsReferenceChanged(NFTId, TernoaString),
-        /// Additional funds were added to a capsule. \[nft id, balance\]
-        CapsuleFundsAdded(NFTId, BalanceOf<T>),
-        /// A capsule was convert into an NFT. \[nft id, balance\]
-        CapsuleRemoved(NFTId, BalanceOf<T>),
-        /// A capsule was created. \[owner, nft id, balance\]
-        CapsuleCreated(T::AccountId, NFTId, BalanceOf<T>),
-        /// Capsule mint fee has been changed. \[balance\]
-        CapsuleMintFeeChanged(BalanceOf<T>),
-        /// Some funds have been deposited. \[deposit\]
-        CapsuleDeposit(BalanceOf<T>),
+        /// A capsule ipfs reference was changed.
+        CapsuleIpfsReferenceChanged {
+            nft_id: NFTId,
+            ipfs_reference: TernoaString,
+        },
+        /// Additional funds were added to a capsule.
+        CapsuleFundsAdded {
+            nft_id: NFTId,
+            balance: BalanceOf<T>,
+        },
+        /// A capsule was convert into an NFT.
+        CapsuleRemoved {
+            nft_id: NFTId,
+            unfrozen_balance: BalanceOf<T>,
+        },
+        /// A capsule was created.
+        CapsuleCreated {
+            owner: T::AccountId,
+            nft_id: NFTId,
+            frozen_balance: BalanceOf<T>,
+        },
+        /// Capsule mint fee has been changed.
+        CapsuleMintFeeChanged { fee: BalanceOf<T> },
+        /// Some funds have been deposited.
+        CapsuleDeposit { balance: BalanceOf<T> },
     }
 
     #[pallet::error]

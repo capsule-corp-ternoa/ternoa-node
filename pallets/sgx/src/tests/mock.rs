@@ -27,9 +27,9 @@ impl Contains<Call> for TestBaseCallFilter {
     fn contains(c: &Call) -> bool {
         match *c {
             // Transfer works. Use `transfer_keep_alive` for a call that doesn't pass the filter.
-            Call::Balances(pallet_balances::Call::transfer(..)) => true,
+            Call::Balances(pallet_balances::Call::transfer { .. }) => true,
             // For benchmarking, this acts as a noop call
-            Call::System(frame_system::Call::remark(..)) => true,
+            Call::System(frame_system::Call::remark { .. }) => true,
             // For tests
             _ => false,
         }

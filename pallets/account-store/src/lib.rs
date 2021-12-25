@@ -12,11 +12,12 @@ pub mod pallet {
     use codec::FullCodec;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
+    use scale_info::TypeInfo;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Data to be associated with an account.
-        type AccountData: Member + FullCodec + Clone + Default;
+        type AccountData: Member + FullCodec + Clone + Default + TypeInfo;
     }
 
     pub type AccountDataOf<T> = <T as Config>::AccountData;
