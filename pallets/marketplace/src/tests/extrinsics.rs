@@ -89,10 +89,15 @@ fn list_unhappy() {
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(10001));
             assert_noop!(ok, Error::<Test>::UnknownMarketplace);
 
-            // Unhappy not on the list
+            // Unhappy not on the private list
             let mkp_id = help::create_mkp(bob.clone(), MPT::Private, 0, vec![1], vec![]);
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(mkp_id));
-            assert_noop!(ok, Error::<Test>::NotAllowed);
+            assert_noop!(ok, Error::<Test>::NotAllowedToList);
+
+            // Unhappy on the disallow list
+            let mkp_id = help::create_mkp(bob.clone(), MPT::Public, 0, vec![1], vec![ALICE]);
+            let ok = Marketplace::list(alice.clone(), nft_id, price, Some(mkp_id));
+            assert_noop!(ok, Error::<Test>::NotAllowedToList);
 
             // Unhappy already listed for sale
             <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();

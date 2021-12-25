@@ -119,7 +119,10 @@ pub mod pallet {
 
             if market.kind == MarketplaceType::Private {
                 let is_on_list = market.allow_list.contains(&account_id);
-                ensure!(is_on_list, Error::<T>::NotAllowed);
+                ensure!(is_on_list, Error::<T>::NotAllowedToList);
+            } else {
+                let is_on_list = market.disallow_list.contains(&account_id);
+                ensure!(!is_on_list, Error::<T>::NotAllowedToList);
             }
 
             T::NFTs::set_listed_for_sale(nft_id, true)?;
@@ -777,8 +780,8 @@ pub mod pallet {
         AccountNotFound,
         /// Internal math error.
         InternalMathError,
-        /// Account not on the allow list should not be able to buy gated nfts.
-        NotAllowed,
+        /// Account not allowed to list NFTs on that marketplace.
+        NotAllowedToList,
         /// Marketplace name is too short.
         TooShortMarketplaceName,
         /// Marketplace name is too long.
