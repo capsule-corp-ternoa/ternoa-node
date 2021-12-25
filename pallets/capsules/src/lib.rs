@@ -20,7 +20,6 @@ use frame_support::traits::{ExistenceRequirement, WithdrawReasons};
 use frame_support::PalletId;
 use sp_runtime::traits::AccountIdConversion;
 use sp_std::vec;
-use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
 use ternoa_primitives::TernoaString;
 
@@ -35,7 +34,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::CheckedAdd;
     use sp_std::convert::TryInto;
-    use ternoa_common::traits::{LockableNFTs, NFTs};
+    use ternoa_common::traits::NFTTrait;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -47,8 +46,8 @@ pub mod pallet {
         /// Currency used to bill minting fees
         type Currency: Currency<Self::AccountId>;
 
-        type NFTSTrait: traits::LockableNFTs<AccountId = Self::AccountId>
-            + traits::NFTs<AccountId = Self::AccountId>;
+        /// TODO!
+        type NFTTrait: NFTTrait<AccountId = Self::AccountId>;
 
         /// The minimum length a string may be.
         #[pallet::constant]
@@ -108,7 +107,8 @@ pub mod pallet {
             Self::send_funds(&who, &Self::account_id(), amount, KeepAlive)?;
 
             // Create NFT and capsule
-            let nft_id = T::NFTSTrait::create_nft(who.clone(), nft_ipfs_reference, series_id)?;
+            let nft_id = T::NFTTrait::create_nft(who.clone(), nft_ipfs_reference, series_id)?;
+            T::NFTTrait::set_converted_to_capsule(nft_id, true)?;
             Self::new_capsule(&who, nft_id, capsule_ipfs_reference.clone(), amount);
 
             Self::deposit_event(Event::CapsuleDeposit { balance: amount });
@@ -137,11 +137,11 @@ pub mod pallet {
             ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
             ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
 
-            let nft_owner = T::NFTSTrait::owner(nft_id).ok_or(Error::<T>::NotOwner)?;
-            ensure!(who == nft_owner, Error::<T>::NotOwner);
-
-            let is_locked = T::NFTSTrait::locked(nft_id).ok_or(Error::<T>::NotOwner)?;
-            ensure!(is_locked == false, Error::<T>::NftLocked);
+            let nft = T::NFTTrait::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
+            ensure!(nft.owner == who, Error::<T>::NotOwner);
+            ensure!(!nft.listed_for_sale, Error::<T>::ListedForSale);
+            ensure!(!nft.in_transmission, Error::<T>::InTransmission);
+            ensure!(!nft.converted_to_capsule, Error::<T>::CapsuleAlreadyExists);
 
             let exists = Capsules::<T>::contains_key(nft_id);
             ensure!(!exists, Error::<T>::CapsuleAlreadyExists);
@@ -151,6 +151,7 @@ pub mod pallet {
             Self::send_funds(&who, &Self::account_id(), amount, KeepAlive)?;
 
             // Create capsule
+            T::NFTTrait::set_converted_to_capsule(nft_id, true)?;
             Self::new_capsule(&who, nft_id, ipfs_reference.clone(), amount);
 
             Self::deposit_event(Event::CapsuleDeposit { balance: amount });
@@ -323,7 +324,13 @@ pub mod pallet {
         /// This should never happen.
         InternalError,
         /// NFT is locked.
-        NftLocked,
+        ListedForSale,
+        /// TODO!
+        AlreadyACapsule,
+        /// TODO!
+        UnknownNFT,
+        /// TODO!
+        InTransmission,
     }
 
     /// Current capsule mint fee.
@@ -416,11 +423,5 @@ impl<T: Config> Pallet<T> {
         T::Currency::resolve_creating(receiver, imbalance);
 
         Ok(())
-    }
-}
-
-impl<T: Config> traits::CapsulesTrait for Pallet<T> {
-    fn is_capsulized(nft_id: NFTId) -> bool {
-        Capsules::<T>::contains_key(&nft_id)
     }
 }

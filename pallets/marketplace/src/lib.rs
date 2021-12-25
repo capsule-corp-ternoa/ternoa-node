@@ -33,8 +33,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
     use sp_std::vec::Vec;
-    use ternoa_common::traits;
-    use ternoa_common::traits::{CapsulesTrait, LockableNFTs, NFTs};
+    use ternoa_common::traits::NFTTrait;
 
     pub type BalanceCaps<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -49,8 +48,10 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
         /// Pallet managing nfts.
-        type NFTs: LockableNFTs<AccountId = Self::AccountId> + NFTs<AccountId = Self::AccountId>;
+        type NFTs: NFTTrait<AccountId = Self::AccountId>;
+
         /// Weight values for this pallet
         type WeightInfo: WeightInfo;
 
@@ -62,9 +63,6 @@ pub mod pallet {
 
         /// Place where the marketplace fees go.
         type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
-
-        /// Capsule trait
-        type CapsulesTrait: traits::CapsulesTrait;
 
         /// The minimum length a string may be.
         #[pallet::constant]
@@ -108,14 +106,13 @@ pub mod pallet {
             let account_id = ensure_signed(origin)?;
             let mkp_id = marketplace_id.unwrap_or(0);
 
-            let is_owner = T::NFTs::owner(nft_id) == Some(account_id.clone());
-            ensure!(is_owner, Error::<T>::NotNftOwner);
+            let nft = T::NFTs::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
+            ensure!(nft.owner == account_id, Error::<T>::NotNftOwner);
+            ensure!(!nft.converted_to_capsule, Error::<T>::CannotListCapsules);
+            ensure!(!nft.listed_for_sale, Error::<T>::AlreadyListedForSale);
 
             let is_series_completed = T::NFTs::is_series_completed(nft_id) == Some(true);
             ensure!(is_series_completed, Error::<T>::SeriesNotCompleted);
-
-            let is_capsulized = T::CapsulesTrait::is_capsulized(nft_id);
-            ensure!(!is_capsulized, Error::<T>::NFTIsCapsulized);
 
             let market = Marketplaces::<T>::get(mkp_id).ok_or(Error::<T>::UnknownMarketplace)?;
 
@@ -124,7 +121,7 @@ pub mod pallet {
                 ensure!(is_on_list, Error::<T>::NotAllowed);
             }
 
-            T::NFTs::lock(nft_id)?;
+            T::NFTs::set_listed_for_sale(nft_id, true)?;
 
             let sale_info = SaleInformation::new(account_id, price.clone(), mkp_id);
             NFTsForSale::<T>::insert(nft_id, sale_info);
@@ -149,7 +146,7 @@ pub mod pallet {
                 Error::<T>::NftNotForSale
             );
 
-            T::NFTs::unlock(nft_id);
+            T::NFTs::set_listed_for_sale(nft_id, false)?;
             NFTsForSale::<T>::remove(nft_id);
 
             Self::deposit_event(Event::NftUnlisted { nft_id });
@@ -220,8 +217,9 @@ pub mod pallet {
                 }
             }
 
-            T::NFTs::unlock(nft_id);
+            T::NFTs::set_listed_for_sale(nft_id, false)?;
             T::NFTs::set_owner(nft_id, &caller_id)?;
+
             NFTsForSale::<T>::remove(nft_id);
 
             Self::deposit_event(Event::NftSold {
@@ -794,11 +792,15 @@ pub mod pallet {
         // Marketplace Logo URI is too short.
         TooShortMarketplaceLogoUri,
         /// Nft is capsulized.
-        NFTIsCapsulized,
+        CannotListCapsules,
         /// Marketplace Description in too short.
         TooShortMarketplaceDescription,
         /// Marketplace Description in too long.
         TooLongMarketplaceDescription,
+        /// TODO!
+        AlreadyListedForSale,
+        /// TODO!
+        UnknownNFT,
     }
 
     /// Nfts listed on the marketplace

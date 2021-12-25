@@ -7,7 +7,6 @@ use sp_core::H256;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use sp_runtime::{testing::Header, Perbill};
 use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
-use ternoa_primitives::TernoaString;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -18,11 +17,11 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Pallet, Call, Storage, Event<T>},
-        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-        NFTs: ternoa_nfts::{Pallet, Call, Storage, Event<T>, Config<T>},
-        TimedEscrow: ternoa_timed_escrow::{Pallet, Call, Event<T>},
+        System: frame_system,
+        Balances: pallet_balances,
+        Scheduler: pallet_scheduler,
+        NFTs: ternoa_nfts,
+        TimedEscrow: ternoa_timed_escrow,
     }
 );
 
@@ -116,7 +115,6 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = MockCapsulesTrait;
 }
 
 impl Config for Test {
@@ -126,13 +124,6 @@ impl Config for Test {
     type PalletsOrigin = OriginCaller;
     type PalletsCall = Call;
     type WeightInfo = ();
-}
-
-pub struct MockCapsulesTrait;
-impl ternoa_common::traits::CapsulesTrait for MockCapsulesTrait {
-    fn is_capsulized(_nft_id: ternoa_primitives::nfts::NFTId) -> bool {
-        todo!()
-    }
 }
 
 // Do not use the `0` account id since this would be the default value
@@ -187,26 +178,6 @@ impl ExtBuilder {
     }
 }
 
-pub mod help {
-    use super::*;
-    use frame_support::assert_ok;
-    use ternoa_common::traits::LockableNFTs;
-    use ternoa_primitives::nfts::NFTId;
-
-    pub fn create(
-        owner: Origin,
-        ipfs_reference: TernoaString,
-        series_id: Option<Vec<u8>>,
-    ) -> NFTId {
-        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
-        return NFTs::nft_id_generator() - 1;
-    }
-
-    pub fn lock(nft_id: NFTId) {
-        assert_ok!(NFTs::lock(nft_id));
-    }
-}
-
 #[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut t = frame_system::GenesisConfig::default()
@@ -215,7 +186,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 
     let alice = account("ALICE", 0, 0);
     let bob = account("BOB", 0, 0);
-    let nft_data = NFTData::new(alice, vec![0], vec![50], false);
+    let nft_data = NFTData::new(alice, vec![0], vec![50], false, false, false);
     let series_data = NFTSeriesDetails::new(alice, false);
 
     pallet_balances::GenesisConfig::<Test> {

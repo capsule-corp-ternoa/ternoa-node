@@ -26,7 +26,6 @@ frame_support::construct_runtime!(
         Marketplace: ternoa_marketplace::{Pallet, Call, Event<T>},
         TiimeBalances: pallet_balances::<Instance1>::{Pallet, Call, Storage, Event<T>},
         TiimeAccountStore: ternoa_account_store::{Pallet, Storage},
-        TernoaMock: ternoa_mock::{Pallet, Call, Storage, Event<T>, Config},
     }
 );
 
@@ -119,15 +118,10 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaMock;
 }
 
 impl ternoa_account_store::Config for Test {
     type AccountData = pallet_balances::AccountData<u128>;
-}
-
-impl ternoa_mock::Config for Test {
-    type Event = Event;
 }
 
 impl Config for Test {
@@ -139,7 +133,6 @@ impl Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaMock;
     type MinDescriptionLength = MinDescriptionLength;
     type MaxDescriptionLength = MaxDescriptionLength;
 }
@@ -267,7 +260,6 @@ pub mod help {
 
     use super::*;
     use frame_support::assert_ok;
-    use ternoa_common::traits::LockableNFTs;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
     use ternoa_primitives::TernoaString;
 
@@ -327,14 +319,6 @@ pub mod help {
 
     pub fn finish_series(owner: Origin, series_id: Vec<u8>) {
         assert_ok!(NFTs::finish_series(owner, series_id));
-    }
-
-    pub fn lock(nft_id: NFTId) {
-        assert_ok!(NFTs::lock(nft_id));
-    }
-
-    pub fn capsulize(val: bool) {
-        TernoaMock::set_is_capsulized(val);
     }
 }
 

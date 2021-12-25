@@ -97,14 +97,13 @@ impl ternoa_nfts::Config for Test {
     type FeesCollector = ();
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = TernoaCapsules;
 }
 
 impl Config for Test {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
-    type NFTSTrait = TernoaNFTs;
+    type NFTTrait = TernoaNFTs;
     type PalletId = CapsulePalletId;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
@@ -169,7 +168,6 @@ impl ExtBuilder {
 
 pub mod help {
     use super::*;
-    use crate::traits::LockableNFTs;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
     use ternoa_primitives::TernoaString;
@@ -191,10 +189,6 @@ pub mod help {
     ) -> NFTId {
         assert_ok!(TernoaNFTs::create(owner, ipfs_reference, series_id));
         TernoaNFTs::nft_id_generator() - 1
-    }
-
-    pub fn lock(nft_id: NFTId) {
-        assert_ok!(TernoaNFTs::lock(nft_id));
     }
 }
 

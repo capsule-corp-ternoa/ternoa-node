@@ -3,7 +3,7 @@ use crate::constants::time::{
     DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
 };
 use crate::{
-    voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call, Capsules,
+    voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
     ElectionProviderMultiPhase, Elections, Event, Grandpa, Historical, ImOnline, Nfts, Offences,
     Origin, OriginCaller, PalletInfo, Runtime, Scheduler, Session, Signature, SignedPayload,
     Staking, System, TechnicalCommittee, TiimeAccountStore, TiimeBalances, Timestamp,
@@ -268,7 +268,6 @@ impl ternoa_nfts::Config for Runtime {
     type FeesCollector = Treasury;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = Capsules;
 }
 
 impl ternoa_timed_escrow::Config for Runtime {
@@ -289,7 +288,6 @@ impl ternoa_marketplace::Config for Runtime {
     type FeesCollector = Treasury;
     type MaxStringLength = MaxStringLength;
     type MinStringLength = MinStringLength;
-    type CapsulesTrait = Capsules;
     type MinDescriptionLength = MinDescriptionLength;
     type MaxDescriptionLength = MaxDescriptionLength;
 }
@@ -308,7 +306,7 @@ impl ternoa_capsules::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
-    type NFTSTrait = Nfts;
+    type NFTTrait = Nfts;
     type MinStringLength = MinStringLength;
     type MaxStringLength = MaxStringLength;
     type PalletId = CapsulePalletId;

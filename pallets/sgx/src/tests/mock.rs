@@ -16,9 +16,9 @@ frame_support::construct_runtime!(
         NodeBlock = Block,
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
-        System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Pallet, Call, Storage, Event<T>},
-        Sgx: ternoa_sgx::{Pallet, Call, Storage, Event<T>},
+        System: frame_system,
+        Balances: pallet_balances,
+        Sgx: ternoa_sgx,
     }
 );
 

@@ -1,8 +1,8 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
-use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
+use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TernoaString;
 
-pub trait NFTs {
+pub trait NFTTrait {
     type AccountId;
 
     /// Change the owner of an NFT.
@@ -21,26 +21,27 @@ pub trait NFTs {
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo>;
 
+    /// Get NFT data
+    fn get_nft(id: NFTId) -> Option<NFTData<Self::AccountId>>;
+
     /// Lock series WARNING: Only for benchmark purposes!
     fn benchmark_lock_series(series_id: NFTSeriesId);
-}
 
-/// Implemented by a pallet where it is possible to lock NFTs.
-pub trait LockableNFTs {
-    type AccountId;
+    /// TODO!
+    fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult;
 
-    /// Mark an NFT as locked thus preventing further owner changes or transfers.
-    /// Note that this doesn't mark the token as sealed and thus it could still has
-    /// its metadata changed by its actual owner.
-    fn lock(id: NFTId) -> DispatchResult;
+    /// TODO!
+    fn is_listed_for_sale(id: NFTId) -> Option<bool>;
 
-    /// Unlock a locked NFT.
-    fn unlock(id: NFTId) -> bool;
+    /// TODO!
+    fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult;
 
-    /// Return the lock status of an NFT.
-    fn locked(id: NFTId) -> Option<bool>;
-}
+    /// TODO!
+    fn is_in_transmission(id: NFTId) -> Option<bool>;
 
-pub trait CapsulesTrait {
-    fn is_capsulized(nft_id: NFTId) -> bool;
+    /// TODO!
+    fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult;
+
+    /// TODO!
+    fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
 }

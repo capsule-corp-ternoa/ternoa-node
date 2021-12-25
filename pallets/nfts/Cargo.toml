@@ -24,7 +24,6 @@ log = { default-features = false, version = "0.4.14"}
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 
 # Ternoa
-ternoa-mock = { default-features = false, path = "../mock" }
 ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
 
@@ -45,7 +44,6 @@ std = [
     "sp-std/std",
     "ternoa-common/std",
     "ternoa-primitives/std",
-    "ternoa-mock/std",
     "scale-info/std",
 ]
 runtime-benchmarks = [

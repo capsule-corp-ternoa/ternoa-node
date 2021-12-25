@@ -29,14 +29,14 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use frame_system::RawOrigin;
     use sp_runtime::traits::{Dispatchable, StaticLookup};
-    use ternoa_common::traits::{LockableNFTs, NFTs};
+    use ternoa_common::traits::NFTTrait;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
         /// Pallet managing NFTs.
-        type NFTs: LockableNFTs<AccountId = Self::AccountId> + NFTs<AccountId = Self::AccountId>;
+        type NFTs: NFTTrait<AccountId = Self::AccountId>;
         /// Scheduler instance which we use to schedule actual transfer calls. This way, we have
         /// all scheduled calls accross all pallets in one place.
         type Scheduler: ScheduleNamed<Self::BlockNumber, Self::PalletsCall, Self::PalletsOrigin>;
@@ -66,10 +66,14 @@ pub mod pallet {
             at: T::BlockNumber,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            ensure!(T::NFTs::owner(nft_id) == Some(who), Error::<T>::NotNFTOwner);
-
             let to_unlookup = T::Lookup::lookup(to)?;
-            T::NFTs::lock(nft_id)?;
+
+            let nft = T::NFTs::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
+            ensure!(nft.owner == who, Error::<T>::NotNFTOwner);
+            ensure!(!nft.listed_for_sale, Error::<T>::ListedForSale);
+            ensure!(!nft.in_transmission, Error::<T>::AlreadyInTransmission);
+
+            T::NFTs::set_in_transmission(nft_id, true)?;
 
             ensure!(
                 T::Scheduler::schedule_named(
@@ -103,13 +107,14 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::cancel())]
         pub fn cancel(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            ensure!(T::NFTs::owner(nft_id) == Some(who), Error::<T>::NotNFTOwner);
 
-            ensure!(
-                T::Scheduler::cancel_named((ESCROW_ID, nft_id).encode()).is_ok(),
-                Error::<T>::SchedulingFailed
-            );
-            T::NFTs::unlock(nft_id);
+            let nft = T::NFTs::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
+            ensure!(nft.owner == who, Error::<T>::NotNFTOwner);
+
+            let ok = T::Scheduler::cancel_named((ESCROW_ID, nft_id).encode()).is_ok();
+            ensure!(ok, Error::<T>::SchedulingFailed);
+
+            T::NFTs::set_in_transmission(nft_id, false)?;
 
             Self::deposit_event(Event::TransferCanceled { nft_id });
 
@@ -128,7 +133,8 @@ pub mod pallet {
             // or the call to `create` which will verify NFT ownership and locking
             // status.
             ensure_root(origin)?;
-            T::NFTs::unlock(nft_id);
+
+            T::NFTs::set_in_transmission(nft_id, false)?;
             T::NFTs::set_owner(nft_id, &to)?;
 
             Self::deposit_event(Event::TransferCompleted { nft_id });
@@ -158,5 +164,11 @@ pub mod pallet {
         NotNFTOwner,
         /// An unknown error happened which made the scheduling call fail.
         SchedulingFailed,
+        /// Unknown NFT
+        UnknownNFT,
+        /// TODO!
+        ListedForSale,
+        /// TODO!
+        AlreadyInTransmission,
     }
 }

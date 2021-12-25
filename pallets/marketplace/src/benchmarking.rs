@@ -8,7 +8,7 @@ use frame_support::traits::Currency;
 use frame_system::RawOrigin;
 use sp_runtime::traits::{Bounded, StaticLookup};
 use sp_std::prelude::*;
-use ternoa_common::traits::NFTs;
+use ternoa_common::traits::NFTTrait;
 
 const SERIES_ID: u8 = 20;
 
