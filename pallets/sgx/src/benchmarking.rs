@@ -14,9 +14,9 @@ use crate::Pallet as Sgx;
 benchmarks! {
     register_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let uri: TextFormat = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
-        let enclave = Enclave::new(vec![]);
+        let enclave = Enclave::new(uri.clone());
 
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
     }: _(RawOrigin::Signed(alice.clone().into()), uri.clone())
@@ -30,7 +30,7 @@ benchmarks! {
 
     assign_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let uri: TextFormat = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
         let cluster_id: ClusterId = 0;
 
@@ -46,7 +46,7 @@ benchmarks! {
 
     unassign_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let uri: TextFormat = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
         let cluster_id: ClusterId = 0;
         let empty: Vec<EnclaveId> = vec![];
@@ -64,7 +64,7 @@ benchmarks! {
 
     update_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let uri: TextFormat = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
         let new_uri: TextFormat = vec![0, 1, 2];
 
@@ -80,7 +80,7 @@ benchmarks! {
         let alice: T::AccountId = whitelisted_caller();
         let bob: T::AccountId = account("bob", 0, 0);
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
-        let uri: TextFormat = Default::default();
+        let uri: TextFormat = vec![1];
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
         drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), uri.clone()));

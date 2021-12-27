@@ -29,10 +29,10 @@ pub fn prepare_benchmarks<T: Config>() -> (NFTId, NFTId) {
 
     // Create default NFT and series
     let series_id = vec![SERIES_ID];
-    let nft_id = T::NFTSTrait::create_nft(alice.clone(), vec![1], Some(series_id.clone())).unwrap();
+    let nft_id = T::NFTTrait::create_nft(alice.clone(), vec![1], Some(series_id.clone())).unwrap();
 
     // Lock series
-    T::NFTSTrait::benchmark_lock_series(series_id.clone());
+    T::NFTTrait::benchmark_lock_series(series_id.clone());
 
     (nft_id - 1, nft_id)
 }
