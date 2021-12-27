@@ -254,21 +254,31 @@ parameter_types! {
     pub const MinStringLength: u16 = 1;
     pub const ClusterSize: u32 = 8;
     pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
-    pub const MinNameLength : u8 = 1;
-    pub const MaxNameLength : u8 = 20;
-    pub const MinDescriptionLength: u16 = 1;
-    pub const MaxDescriptionLength: u16 = 500;
+
+    // Min Max string length
+    pub const MinMarketplaceNameLen : u8 = 1;
+    pub const MaxMarketplaceNameLen : u8 = 64;
+    pub const MinMarketplaceDescriptionLen: u16 = 1;
+    pub const MaxMarketplaceDescriptionLen: u16 = 512;
+    pub const MinAltvrUsernameLen: u16 = 1;     // AltVR says that the minimum is 8
+    pub const MaxAltvrUsernameLen: u16 = 32;    // AltVR says that the maximum is 20
+    pub const MinUriLen: u16 = 1;
+    pub const MaxUriLen: u16 = 256;
+    pub const MinIpfsLen: u16 = 1;
+    pub const MaxIpfsLen: u16 = 256;
 }
 
+// NFTs
 impl ternoa_nfts::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = Treasury;
-    type MinUriLen = MinUriLen;
-    type MaxUriLen = MaxUriLen;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
+// Escrow
 impl ternoa_timed_escrow::Config for Runtime {
     type Event = Event;
     type NFTs = Nfts;
@@ -278,6 +288,7 @@ impl ternoa_timed_escrow::Config for Runtime {
     type WeightInfo = ();
 }
 
+// Marketplace
 impl ternoa_marketplace::Config for Runtime {
     type Event = Event;
     type CurrencyCaps = Balances;
@@ -285,15 +296,12 @@ impl ternoa_marketplace::Config for Runtime {
     type NFTs = Nfts;
     type WeightInfo = ();
     type FeesCollector = Treasury;
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
-    type MinDescriptionLength = MinDescriptionLength;
-    type MaxDescriptionLength = MaxDescriptionLength;
-}
-
-parameter_types! {
-    pub const MinUriLen: u16 = 1;
-    pub const MaxUriLen: u16 = 256;
+    type MinNameLen = MinMarketplaceNameLen;
+    type MaxNameLen = MaxMarketplaceNameLen;
+    type MinDescriptionLen = MinMarketplaceDescriptionLen;
+    type MaxDescriptionLen = MaxMarketplaceDescriptionLen;
+    type MinUriLen = MinUriLen;
+    type MaxUriLen = MaxUriLen;
 }
 
 // SGX
@@ -314,16 +322,16 @@ impl ternoa_capsules::Config for Runtime {
     type WeightInfo = ();
     type Currency = Balances;
     type NFTTrait = Nfts;
-    type MinStringLength = MinStringLength;
-    type MaxStringLength = MaxStringLength;
     type PalletId = CapsulePalletId;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
 impl ternoa_associated_accounts::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();
-    type MinNameLength = MinNameLength;
-    type MaxNameLength = MaxNameLength;
+    type MinAltvrUsernameLen = MinAltvrUsernameLen;
+    type MaxAltvrUsernameLen = MaxAltvrUsernameLen;
 }
 
 parameter_types! {

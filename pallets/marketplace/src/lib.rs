@@ -65,21 +65,29 @@ pub mod pallet {
         /// Place where the marketplace fees go.
         type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
 
-        /// The minimum length a string may be.
+        /// Min name length.
         #[pallet::constant]
-        type MinStringLength: Get<u16>;
+        type MinNameLen: Get<u16>;
 
-        /// The maximum length a string may be.
+        /// Max name length.
         #[pallet::constant]
-        type MaxStringLength: Get<u16>;
+        type MaxNameLen: Get<u16>;
 
-        /// The minimum length a description may be.
+        /// Min description length.
         #[pallet::constant]
-        type MinDescriptionLength: Get<u16>;
+        type MinDescriptionLen: Get<u16>;
 
-        /// The maximum length a description may be.
+        /// Max description length.
         #[pallet::constant]
-        type MaxDescriptionLength: Get<u16>;
+        type MaxDescriptionLen: Get<u16>;
+
+        /// Min uri length.
+        #[pallet::constant]
+        type MinUriLen: Get<u16>;
+
+        /// Max uri length.
+        #[pallet::constant]
+        type MaxUriLen: Get<u16>;
     }
 
     #[pallet::pallet]
@@ -250,37 +258,31 @@ pub mod pallet {
             ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
             check_bounds(
                 name.len(),
-                (
-                    T::MinStringLength::get(),
-                    Error::<T>::TooShortMarketplaceName,
-                ),
-                (
-                    T::MaxStringLength::get(),
-                    Error::<T>::TooLongMarketplaceName,
-                ),
+                (T::MinNameLen::get(), Error::<T>::TooShortMarketplaceName),
+                (T::MaxNameLen::get(), Error::<T>::TooLongMarketplaceName),
             )?;
 
             if let Some(text) = uri.as_ref() {
                 check_bounds(
                     text.len(),
-                    (T::MinStringLength::get(), Error::<T>::TooShortUri),
-                    (T::MaxStringLength::get(), Error::<T>::TooLongUri),
+                    (T::MinUriLen::get(), Error::<T>::TooShortUri),
+                    (T::MaxUriLen::get(), Error::<T>::TooLongUri),
                 )?;
             }
 
             if let Some(text) = logo_uri.as_ref() {
                 check_bounds(
                     text.len(),
-                    (T::MinStringLength::get(), Error::<T>::TooShortLogoUri),
-                    (T::MaxStringLength::get(), Error::<T>::TooLongLogoUri),
+                    (T::MinUriLen::get(), Error::<T>::TooShortLogoUri),
+                    (T::MaxUriLen::get(), Error::<T>::TooLongLogoUri),
                 )?;
             }
 
             if let Some(text) = description.as_ref() {
                 check_bounds(
                     text.len(),
-                    (T::MinStringLength::get(), Error::<T>::TooShortDescription),
-                    (T::MaxStringLength::get(), Error::<T>::TooLongDescription),
+                    (T::MinDescriptionLen::get(), Error::<T>::TooShortDescription),
+                    (T::MaxDescriptionLen::get(), Error::<T>::TooLongDescription),
                 )?;
             }
 
@@ -523,14 +525,8 @@ pub mod pallet {
 
             check_bounds(
                 name.len(),
-                (
-                    T::MinStringLength::get(),
-                    Error::<T>::TooShortMarketplaceName,
-                ),
-                (
-                    T::MaxStringLength::get(),
-                    Error::<T>::TooLongMarketplaceName,
-                ),
+                (T::MinNameLen::get(), Error::<T>::TooShortMarketplaceName),
+                (T::MaxNameLen::get(), Error::<T>::TooLongMarketplaceName),
             )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
@@ -601,8 +597,8 @@ pub mod pallet {
 
             check_bounds(
                 uri.len(),
-                (T::MinStringLength::get(), Error::<T>::TooShortUri),
-                (T::MaxStringLength::get(), Error::<T>::TooLongUri),
+                (T::MinUriLen::get(), Error::<T>::TooShortUri),
+                (T::MaxUriLen::get(), Error::<T>::TooLongUri),
             )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
@@ -630,8 +626,8 @@ pub mod pallet {
 
             check_bounds(
                 logo_uri.len(),
-                (T::MinStringLength::get(), Error::<T>::TooShortLogoUri),
-                (T::MaxStringLength::get(), Error::<T>::TooLongLogoUri),
+                (T::MinUriLen::get(), Error::<T>::TooShortLogoUri),
+                (T::MaxUriLen::get(), Error::<T>::TooLongLogoUri),
             )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {
@@ -659,8 +655,8 @@ pub mod pallet {
 
             check_bounds(
                 description.len(),
-                (T::MinStringLength::get(), Error::<T>::TooShortDescription),
-                (T::MaxStringLength::get(), Error::<T>::TooLongDescription),
+                (T::MinDescriptionLen::get(), Error::<T>::TooShortDescription),
+                (T::MaxDescriptionLen::get(), Error::<T>::TooLongDescription),
             )?;
 
             Marketplaces::<T>::try_mutate(marketplace_id, |x| -> DispatchResult {

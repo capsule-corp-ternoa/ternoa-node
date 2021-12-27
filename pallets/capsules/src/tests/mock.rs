@@ -85,8 +85,8 @@ impl pallet_balances::Config for Test {
 }
 
 parameter_types! {
-    pub const MaxStringLength: u16 = 5;
-    pub const MinStringLength: u16 = 1;
+    pub const MinIpfsLen: u16 = 1;
+    pub const MaxIpfsLen: u16 = 5;
     pub const CapsulePalletId: PalletId = PalletId(*b"mockcaps");
 }
 
@@ -95,8 +95,8 @@ impl ternoa_nfts::Config for Test {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = ();
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
 impl Config for Test {
@@ -105,8 +105,8 @@ impl Config for Test {
     type Currency = Balances;
     type NFTTrait = TernoaNFTs;
     type PalletId = CapsulePalletId;
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
 // Do not use the `0` account id since this would be the default value

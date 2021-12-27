@@ -105,10 +105,14 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 }
 
 parameter_types! {
-    pub const MaxStringLength: u16 = 5;
-    pub const MinStringLength: u16 = 1;
-    pub const MinDescriptionLength: u16 = 1;
-    pub const MaxDescriptionLength: u16 = 500;
+    pub const MinUriLen: u16 = 1;
+    pub const MaxUriLen: u16 = 5;
+    pub const MinIpfsLen: u16 = 1;
+    pub const MaxIpfsLen: u16 = 5;
+    pub const MinDescriptionLen: u16 = 1;
+    pub const MaxDescriptionLen: u16 = 500;
+    pub const MinNameLen: u16 = 1;
+    pub const MaxNameLen: u16 = 5;
 }
 
 impl ternoa_nfts::Config for Test {
@@ -116,8 +120,8 @@ impl ternoa_nfts::Config for Test {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = ();
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
 impl ternoa_account_store::Config for Test {
@@ -131,10 +135,12 @@ impl Config for Test {
     type NFTs = NFTs;
     type WeightInfo = ();
     type FeesCollector = ();
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
-    type MinDescriptionLength = MinDescriptionLength;
-    type MaxDescriptionLength = MaxDescriptionLength;
+    type MinNameLen = MinNameLen;
+    type MaxNameLen = MaxNameLen;
+    type MinUriLen = MinUriLen;
+    type MaxUriLen = MaxUriLen;
+    type MinDescriptionLen = MinDescriptionLen;
+    type MaxDescriptionLen = MaxDescriptionLen;
 }
 
 pub struct ExtBuilder {

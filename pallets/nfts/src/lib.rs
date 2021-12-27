@@ -47,13 +47,13 @@ pub mod pallet {
         /// What we do with additional fees
         type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
-        /// Min Uri len
+        /// Min Ipfs len
         #[pallet::constant]
-        type MinUriLen: Get<u16>;
+        type MinIpfsLen: Get<u16>;
 
         /// Max Uri len
         #[pallet::constant]
-        type MaxUriLen: Get<u16>;
+        type MaxIpfsLen: Get<u16>;
     }
 
     pub type BalanceOf<T> =
@@ -92,8 +92,8 @@ pub mod pallet {
 
             check_bounds(
                 ipfs_reference.len(),
-                (T::MinUriLen::get(), Error::<T>::TooShortIpfsReference),
-                (T::MaxUriLen::get(), Error::<T>::TooLongIpfsReference),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
             )?;
 
             // Checks

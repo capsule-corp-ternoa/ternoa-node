@@ -104,8 +104,8 @@ impl pallet_scheduler::Config for Test {
 }
 
 parameter_types! {
-    pub const MaxStringLength: u16 = 1000;
-    pub const MinStringLength: u16 = 1;
+    pub const MinIpfsLen: u16 = 1;
+    pub const MaxIpfsLen: u16 = 5;
 }
 
 impl ternoa_nfts::Config for Test {
@@ -113,8 +113,8 @@ impl ternoa_nfts::Config for Test {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = ();
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
 impl Config for Test {

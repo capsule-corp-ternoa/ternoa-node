@@ -50,13 +50,13 @@ pub mod pallet {
         /// TODO!
         type NFTTrait: NFTTrait<AccountId = Self::AccountId>;
 
-        /// The minimum length a string may be.
+        /// Min Ipfs len
         #[pallet::constant]
-        type MinStringLength: Get<u16>;
+        type MinIpfsLen: Get<u16>;
 
-        /// The maximum length a string may be.
+        /// Max Uri len
         #[pallet::constant]
-        type MaxStringLength: Get<u16>;
+        type MaxIpfsLen: Get<u16>;
 
         /// The treasury's pallet id, used for deriving its sovereign account ID.
         #[pallet::constant]
@@ -100,8 +100,8 @@ pub mod pallet {
 
             check_bounds(
                 capsule_ipfs_reference.len(),
-                (T::MinStringLength::get(), Error::<T>::TooShortIpfsReference),
-                (T::MaxStringLength::get(), Error::<T>::TooLongIpfsReference),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
             )?;
 
             // Reserve funds
@@ -136,8 +136,8 @@ pub mod pallet {
 
             check_bounds(
                 ipfs_reference.len(),
-                (T::MinStringLength::get(), Error::<T>::TooShortIpfsReference),
-                (T::MaxStringLength::get(), Error::<T>::TooLongIpfsReference),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
             )?;
 
             let nft = T::NFTTrait::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
@@ -244,13 +244,14 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            check_bounds(
+                ipfs_reference.len(),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
+            )?;
 
             Capsules::<T>::mutate(nft_id, |x| -> DispatchResult {
-                let data = x.as_mut().ok_or(Error::<T>::NotOwner)?;
+                let data = x.as_mut().ok_or(Error::<T>::UnknownNFT)?;
                 ensure!(data.owner == who, Error::<T>::NotOwner);
 
                 data.ipfs_reference = ipfs_reference.clone();

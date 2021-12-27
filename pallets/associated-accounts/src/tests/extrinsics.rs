@@ -44,10 +44,10 @@ fn set_altvr_username_unhappy() {
 
         // Unhappy too long Username
         let ok = TernoaAssociatedAccounts::set_altvr_username(alice.clone(), too_long_name);
-        assert_noop!(ok, Error::<Test>::TooLongUsername);
+        assert_noop!(ok, Error::<Test>::TooLongAltvrUsername);
 
         // Unhappy too short Username
         let ok = TernoaAssociatedAccounts::set_altvr_username(alice.clone(), vec![]);
-        assert_noop!(ok, Error::<Test>::TooShortUsername);
+        assert_noop!(ok, Error::<Test>::TooShortAltvrUsername);
     });
 }
