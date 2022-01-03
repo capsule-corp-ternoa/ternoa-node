@@ -65,15 +65,15 @@ impl frame_system::Config for Test {
 }
 
 parameter_types! {
-    pub const MaxNameLength: u8 = 20;
-    pub const MinNameLength: u8 = 1;
+    pub const MinAltvrUsernameLen: u8 = 1;
+    pub const MaxAltvrUsernameLen: u8 = 20;
 }
 
 impl Config for Test {
     type Event = Event;
     type WeightInfo = ();
-    type MaxNameLength = MaxNameLength;
-    type MinNameLength = MinNameLength;
+    type MinAltvrUsernameLen = MinAltvrUsernameLen;
+    type MaxAltvrUsernameLen = MaxAltvrUsernameLen;
 }
 
 pub struct ExtBuilder {}

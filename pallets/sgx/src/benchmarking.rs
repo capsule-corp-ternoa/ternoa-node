@@ -1,24 +1,25 @@
 use crate::{
     BalanceOf, Call, Cluster, ClusterId, ClusterIdGenerator, ClusterIndex, ClusterRegistry, Config,
-    Enclave, EnclaveId, EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Pallet, Url,
+    Enclave, EnclaveId, EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Pallet,
 };
 use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite, whitelisted_caller};
 use frame_support::traits::Currency;
 use frame_system::RawOrigin;
 use sp_runtime::traits::{Bounded, StaticLookup};
 use sp_std::prelude::*;
+use ternoa_primitives::TextFormat;
 
 use crate::Pallet as Sgx;
 
 benchmarks! {
     register_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
-        let enclave = Enclave::new(vec![]);
+        let enclave = Enclave::new(uri.clone());
 
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
-    }: _(RawOrigin::Signed(alice.clone().into()), url.clone())
+    }: _(RawOrigin::Signed(alice.clone().into()), uri.clone())
     verify {
         assert!(EnclaveRegistry::<T>::contains_key(enclave_id));
         assert_eq!(EnclaveRegistry::<T>::get(enclave_id), Some(enclave));
@@ -29,14 +30,14 @@ benchmarks! {
 
     assign_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
         let cluster_id: ClusterId = 0;
 
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
         drop(Sgx::<T>::create_cluster(RawOrigin::Root.into()));
-        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), uri.clone()));
     }: _(RawOrigin::Signed(alice.clone().into()), cluster_id)
     verify {
         assert_eq!(ClusterRegistry::<T>::get(cluster_id).unwrap().enclaves, vec![enclave_id]);
@@ -45,7 +46,7 @@ benchmarks! {
 
     unassign_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
         let cluster_id: ClusterId = 0;
         let empty: Vec<EnclaveId> = vec![];
@@ -53,7 +54,7 @@ benchmarks! {
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
         drop(Sgx::<T>::create_cluster(RawOrigin::Root.into()));
-        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), uri.clone()));
         drop(Sgx::<T>::assign_enclave(RawOrigin::Signed(alice.clone()).into(), cluster_id));
     }: _(RawOrigin::Signed(alice.clone().into()))
     verify {
@@ -63,26 +64,26 @@ benchmarks! {
 
     update_enclave {
         let alice: T::AccountId = whitelisted_caller();
-        let url: Url = Default::default();
+        let uri: TextFormat = vec![1];
         let enclave_id: EnclaveId = 0;
-        let new_url: Url = vec![0, 1, 2];
+        let new_uri: TextFormat = vec![0, 1, 2];
 
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
-        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
-    }: _(RawOrigin::Signed(alice.clone().into()), new_url.clone())
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), uri.clone()));
+    }: _(RawOrigin::Signed(alice.clone().into()), new_uri.clone())
     verify {
-        assert_eq!(EnclaveRegistry::<T>::get(enclave_id).unwrap().api_url, new_url);
+        assert_eq!(EnclaveRegistry::<T>::get(enclave_id).unwrap().api_uri, new_uri);
     }
 
     change_enclave_owner {
         let alice: T::AccountId = whitelisted_caller();
         let bob: T::AccountId = account("bob", 0, 0);
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
-        let url: Url = Default::default();
+        let uri: TextFormat = vec![1];
         T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
 
-        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), url.clone()));
+        drop(Sgx::<T>::register_enclave(RawOrigin::Signed(alice.clone()).into(), uri.clone()));
     }: _(RawOrigin::Signed(alice.clone().into()), bob_lookup)
     verify {
         assert!(EnclaveIndex::<T>::contains_key(bob.clone()));

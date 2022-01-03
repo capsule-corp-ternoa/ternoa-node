@@ -105,10 +105,14 @@ impl pallet_balances::Config<pallet_balances::Instance1> for Test {
 }
 
 parameter_types! {
-    pub const MaxStringLength: u16 = 5;
-    pub const MinStringLength: u16 = 1;
-    pub const MinDescriptionLength: u16 = 1;
-    pub const MaxDescriptionLength: u16 = 500;
+    pub const MinUriLen: u16 = 1;
+    pub const MaxUriLen: u16 = 5;
+    pub const MinIpfsLen: u16 = 1;
+    pub const MaxIpfsLen: u16 = 5;
+    pub const MinDescriptionLen: u16 = 1;
+    pub const MaxDescriptionLen: u16 = 500;
+    pub const MinNameLen: u16 = 1;
+    pub const MaxNameLen: u16 = 5;
 }
 
 impl ternoa_nfts::Config for Test {
@@ -116,8 +120,8 @@ impl ternoa_nfts::Config for Test {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = ();
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
+    type MinIpfsLen = MinIpfsLen;
+    type MaxIpfsLen = MaxIpfsLen;
 }
 
 impl ternoa_account_store::Config for Test {
@@ -131,10 +135,12 @@ impl Config for Test {
     type NFTs = NFTs;
     type WeightInfo = ();
     type FeesCollector = ();
-    type MaxStringLength = MaxStringLength;
-    type MinStringLength = MinStringLength;
-    type MinDescriptionLength = MinDescriptionLength;
-    type MaxDescriptionLength = MaxDescriptionLength;
+    type MinNameLen = MinNameLen;
+    type MaxNameLen = MaxNameLen;
+    type MinUriLen = MinUriLen;
+    type MaxUriLen = MaxUriLen;
+    type MinDescriptionLen = MinDescriptionLen;
+    type MaxDescriptionLen = MaxDescriptionLen;
 }
 
 pub struct ExtBuilder {
@@ -261,11 +267,11 @@ pub mod help {
     use super::*;
     use frame_support::assert_ok;
     use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-    use ternoa_primitives::TernoaString;
+    use ternoa_primitives::TextFormat;
 
     pub fn create_nft(
         owner: Origin,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
         assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
@@ -274,7 +280,7 @@ pub mod help {
 
     pub fn create_nft_and_lock_series(
         owner: Origin,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         series_id: NFTSeriesId,
     ) -> NFTId {
         let nft_id = help::create_nft(owner.clone(), ipfs_reference, Some(series_id.clone()));
@@ -287,7 +293,7 @@ pub mod help {
         owner: Origin,
         kind: MarketplaceType,
         fee: u8,
-        name: TernoaString,
+        name: TextFormat,
         list: Vec<u64>,
     ) -> MarketplaceId {
         assert_ok!(Marketplace::create(

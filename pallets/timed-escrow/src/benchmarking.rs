@@ -20,7 +20,7 @@ benchmarks! {
 
     }: _(RawOrigin::Signed(alice), nft_id, bob_lookup, at)
     verify {
-        assert_eq!(T::NFTs::locked(nft_id), Some(true));
+        assert_eq!(T::NFTs::is_in_transmission(nft_id), Some(true));
     }
 
     cancel {
@@ -34,7 +34,7 @@ benchmarks! {
         drop(TimedEscrow::<T>::create(RawOrigin::Signed(alice.clone()).into(), nft_id, bob_lookup, at));
     }: _(RawOrigin::Signed(alice), nft_id)
     verify {
-        assert_eq!(T::NFTs::locked(nft_id), Some(false));
+        assert_eq!(T::NFTs::is_in_transmission(nft_id), Some(false));
     }
 
     complete_transfer {

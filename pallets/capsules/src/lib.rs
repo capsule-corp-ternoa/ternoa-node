@@ -21,7 +21,7 @@ use frame_support::PalletId;
 use sp_runtime::traits::AccountIdConversion;
 use sp_std::vec;
 use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
@@ -34,6 +34,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::CheckedAdd;
     use sp_std::convert::TryInto;
+    use ternoa_common::helpers::check_bounds;
     use ternoa_common::traits::NFTTrait;
 
     #[pallet::config]
@@ -49,13 +50,13 @@ pub mod pallet {
         /// TODO!
         type NFTTrait: NFTTrait<AccountId = Self::AccountId>;
 
-        /// The minimum length a string may be.
+        /// Min Ipfs len
         #[pallet::constant]
-        type MinStringLength: Get<u16>;
+        type MinIpfsLen: Get<u16>;
 
-        /// The maximum length a string may be.
+        /// Max Uri len
         #[pallet::constant]
-        type MaxStringLength: Get<u16>;
+        type MaxIpfsLen: Get<u16>;
 
         /// The treasury's pallet id, used for deriving its sovereign account ID.
         #[pallet::constant]
@@ -91,16 +92,17 @@ pub mod pallet {
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
-            nft_ipfs_reference: TernoaString,
-            capsule_ipfs_reference: TernoaString,
+            nft_ipfs_reference: TextFormat,
+            capsule_ipfs_reference: TextFormat,
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            let lower_bound = capsule_ipfs_reference.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = capsule_ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            check_bounds(
+                capsule_ipfs_reference.len(),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
+            )?;
 
             // Reserve funds
             let amount = CapsuleMintFee::<T>::get();
@@ -128,14 +130,15 @@ pub mod pallet {
         pub fn create_from_nft(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            check_bounds(
+                ipfs_reference.len(),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
+            )?;
 
             let nft = T::NFTTrait::get_nft(nft_id).ok_or(Error::<T>::UnknownNFT)?;
             ensure!(nft.owner == who, Error::<T>::NotOwner);
@@ -237,17 +240,18 @@ pub mod pallet {
         pub fn set_ipfs_reference(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            check_bounds(
+                ipfs_reference.len(),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
+            )?;
 
             Capsules::<T>::mutate(nft_id, |x| -> DispatchResult {
-                let data = x.as_mut().ok_or(Error::<T>::NotOwner)?;
+                let data = x.as_mut().ok_or(Error::<T>::UnknownNFT)?;
                 ensure!(data.owner == who, Error::<T>::NotOwner);
 
                 data.ipfs_reference = ipfs_reference.clone();
@@ -285,7 +289,7 @@ pub mod pallet {
         /// A capsule ipfs reference was changed.
         CapsuleIpfsReferenceChanged {
             nft_id: NFTId,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
         },
         /// Additional funds were added to a capsule.
         CapsuleFundsAdded {
@@ -353,7 +357,7 @@ pub mod pallet {
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub capsule_mint_fee: BalanceOf<T>,
-        pub capsules: Vec<(NFTId, T::AccountId, TernoaString)>,
+        pub capsules: Vec<(NFTId, T::AccountId, TextFormat)>,
         pub ledgers: Vec<(T::AccountId, Vec<(NFTId, BalanceOf<T>)>)>,
     }
 
@@ -394,7 +398,7 @@ impl<T: Config> Pallet<T> {
     fn new_capsule(
         owner: &T::AccountId,
         nft_id: NFTId,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         funds: BalanceOf<T>,
     ) {
         let data = CapsuleData::new(owner.clone(), ipfs_reference.clone());

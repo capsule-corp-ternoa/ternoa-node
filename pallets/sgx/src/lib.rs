@@ -28,6 +28,8 @@ pub mod pallet {
     use frame_support::transactional;
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
+    use ternoa_common::helpers::check_bounds;
+    use ternoa_primitives::TextFormat;
 
     pub type BalanceOf<T> =
         <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -57,9 +59,13 @@ pub mod pallet {
         #[pallet::constant]
         type ClusterSize: Get<u32>;
 
-        /// Size of a cluster
+        /// Min Uri len
         #[pallet::constant]
-        type MaxUrlLength: Get<u32>;
+        type MinUriLen: Get<u16>;
+
+        /// Max Uri len
+        #[pallet::constant]
+        type MaxUriLen: Get<u16>;
     }
 
     #[pallet::pallet]
@@ -77,13 +83,18 @@ pub mod pallet {
         //
         #[pallet::weight(T::WeightInfo::register_enclave())]
         #[transactional]
-        pub fn register_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
+        pub fn register_enclave(
+            origin: OriginFor<T>,
+            api_uri: TextFormat,
+        ) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
 
-            ensure!(
-                api_url.len() < T::MaxUrlLength::get() as usize,
-                Error::<T>::UrlTooLong
-            );
+            check_bounds(
+                api_uri.len(),
+                (T::MinUriLen::get(), Error::<T>::UriTooShort),
+                (T::MaxUriLen::get(), Error::<T>::UriTooLong),
+            )?;
+
             ensure!(
                 !EnclaveIndex::<T>::contains_key(&account),
                 Error::<T>::PublicKeyAlreadyTiedToACluster
@@ -98,7 +109,7 @@ pub mod pallet {
             )?;
             T::FeesCollector::on_unbalanced(imbalance);
 
-            let enclave = Enclave::new(api_url.clone());
+            let enclave = Enclave::new(api_uri.clone());
 
             EnclaveIndex::<T>::insert(account.clone(), enclave_id);
             EnclaveRegistry::<T>::insert(enclave_id, enclave);
@@ -106,7 +117,7 @@ pub mod pallet {
 
             Self::deposit_event(Event::AddedEnclave {
                 account,
-                api_url,
+                api_uri,
                 enclave_id,
             });
             Ok(().into())
@@ -174,22 +185,29 @@ pub mod pallet {
         }
 
         #[pallet::weight(T::WeightInfo::update_enclave())]
-        pub fn update_enclave(origin: OriginFor<T>, api_url: Url) -> DispatchResultWithPostInfo {
+        pub fn update_enclave(
+            origin: OriginFor<T>,
+            api_uri: TextFormat,
+        ) -> DispatchResultWithPostInfo {
             let account = ensure_signed(origin)?;
             let enclave_id = EnclaveIndex::<T>::get(&account).ok_or(Error::<T>::NotEnclaveOwner)?;
 
-            EnclaveRegistry::<T>::mutate(enclave_id, |enclave_opt| {
-                if let Some(enclave) = enclave_opt {
-                    enclave.api_url = api_url.clone();
-                    Ok(())
-                } else {
-                    Err(Error::<T>::UnknownEnclaveId)
-                }
+            check_bounds(
+                api_uri.len(),
+                (T::MinUriLen::get(), Error::<T>::UriTooShort),
+                (T::MaxUriLen::get(), Error::<T>::UriTooLong),
+            )?;
+
+            EnclaveRegistry::<T>::mutate(enclave_id, |enclave| -> DispatchResult {
+                let enclave = enclave.as_mut().ok_or(Error::<T>::UnknownEnclaveId)?;
+                enclave.api_uri = api_uri.clone();
+
+                Ok(())
             })?;
 
             Self::deposit_event(Event::UpdatedEnclave {
                 enclave_id,
-                api_url,
+                api_uri,
             });
             Ok(().into())
         }
@@ -275,7 +293,7 @@ pub mod pallet {
         // Enclave
         AddedEnclave {
             account: T::AccountId,
-            api_url: Url,
+            api_uri: TextFormat,
             enclave_id: EnclaveId,
         },
         AssignedEnclave {
@@ -287,7 +305,7 @@ pub mod pallet {
         },
         UpdatedEnclave {
             enclave_id: EnclaveId,
-            api_url: Url,
+            api_uri: TextFormat,
         },
         NewEnclaveOwner {
             enclave_id: EnclaveId,
@@ -308,7 +326,8 @@ pub mod pallet {
         UnknownClusterId,
         NotEnclaveOwner,
         PublicKeyAlreadyTiedToACluster,
-        UrlTooLong,
+        UriTooShort,
+        UriTooLong,
         EnclaveIdOverflow,
         ClusterIdOverflow,
         ClusterIsAlreadyFull,
@@ -354,7 +373,7 @@ pub mod pallet {
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub enclaves: Vec<(T::AccountId, EnclaveId, Url)>,
+        pub enclaves: Vec<(T::AccountId, EnclaveId, TextFormat)>,
         pub clusters: Vec<(ClusterId, Vec<EnclaveId>)>,
     }
 
@@ -378,7 +397,7 @@ pub mod pallet {
 
             for enclave in enclaves {
                 EnclaveIndex::<T>::insert(enclave.0, enclave.1);
-                EnclaveRegistry::<T>::insert(enclave.1, Enclave { api_url: enclave.2 });
+                EnclaveRegistry::<T>::insert(enclave.1, Enclave { api_uri: enclave.2 });
             }
 
             let clusters = self.clusters.clone();

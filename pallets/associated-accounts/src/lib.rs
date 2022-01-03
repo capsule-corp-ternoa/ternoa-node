@@ -12,16 +12,16 @@ pub use default_weights::WeightInfo;
 use frame_support::traits::{Get, StorageVersion};
 pub use pallet::*;
 
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-    use frame_support::ensure;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
+    use ternoa_common::helpers::check_bounds;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -30,13 +30,13 @@ pub mod pallet {
 
         type WeightInfo: WeightInfo;
 
-        /// The minimum length a username string may be.
+        /// Min Altvr name len.
         #[pallet::constant]
-        type MinNameLength: Get<u8>;
+        type MinAltvrUsernameLen: Get<u16>;
 
-        /// The maximum length a username may be.
+        /// Max Altvr name len.
         #[pallet::constant]
-        type MaxNameLength: Get<u8>;
+        type MaxAltvrUsernameLen: Get<u16>;
     }
 
     #[pallet::pallet]
@@ -53,15 +53,21 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::set_altvr_username())]
         pub fn set_altvr_username(
             origin: OriginFor<T>,
-            value: TernoaString,
+            value: TextFormat,
         ) -> DispatchResultWithPostInfo {
             let owner = ensure_signed(origin)?;
 
-            let username_lower_bound = value.len() >= T::MinNameLength::get() as usize;
-            let username_upper_bound = value.len() <= T::MaxNameLength::get() as usize;
-
-            ensure!(username_lower_bound, Error::<T>::TooShortUsername);
-            ensure!(username_upper_bound, Error::<T>::TooLongUsername);
+            check_bounds(
+                value.len(),
+                (
+                    T::MinAltvrUsernameLen::get(),
+                    Error::<T>::TooShortAltvrUsername,
+                ),
+                (
+                    T::MaxAltvrUsernameLen::get(),
+                    Error::<T>::TooLongAltvrUsername,
+                ),
+            )?;
 
             AltVRUsers::<T>::insert(owner.clone(), value.clone());
 
@@ -81,27 +87,27 @@ pub mod pallet {
         /// Altvr username updated.
         AltVRUsernameChanged {
             owner: T::AccountId,
-            username: TernoaString,
+            username: TextFormat,
         },
     }
 
     #[pallet::error]
     pub enum Error<T> {
         /// Altvr username is too short.
-        TooShortUsername,
+        TooShortAltvrUsername,
         /// Altvr username is too long.
-        TooLongUsername,
+        TooLongAltvrUsername,
     }
 
     /// List of Altvr datas create.
     #[pallet::storage]
     #[pallet::getter(fn altvr_users)]
     pub type AltVRUsers<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, TernoaString, OptionQuery>;
+        StorageMap<_, Blake2_128Concat, T::AccountId, TextFormat, OptionQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub altvr_users: Vec<(T::AccountId, TernoaString)>,
+        pub altvr_users: Vec<(T::AccountId, TextFormat)>,
     }
 
     #[cfg(feature = "std")]

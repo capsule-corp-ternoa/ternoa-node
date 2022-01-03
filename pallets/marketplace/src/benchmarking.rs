@@ -189,7 +189,7 @@ benchmarks! {
     set_uri {
         let (mkp_id, ..) = prepare_benchmarks::<T>();
 
-        let uri: URI = "test".as_bytes().to_vec();
+        let uri: TextFormat = "test".as_bytes().to_vec();
     }: _(get_origin::<T>("ALICE"), mkp_id, uri.clone())
     verify {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().uri, Some(uri));
@@ -198,7 +198,7 @@ benchmarks! {
     set_logo_uri {
         let (mkp_id, ..) = prepare_benchmarks::<T>();
 
-        let uri: URI = "test".as_bytes().to_vec();
+        let uri: TextFormat = "test".as_bytes().to_vec();
     }: _(get_origin::<T>("ALICE"), mkp_id, uri.clone())
     verify {
         assert_eq!(Marketplaces::<T>::get(mkp_id).unwrap().logo_uri, Some(uri));

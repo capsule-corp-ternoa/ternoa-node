@@ -20,7 +20,7 @@ use sp_std::vec;
 use sp_std::vec::Vec;
 use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
-use ternoa_primitives::TernoaString;
+use ternoa_primitives::TextFormat;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
 
@@ -32,6 +32,7 @@ pub mod pallet {
     use frame_support::{pallet_prelude::*, transactional};
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::StaticLookup;
+    use ternoa_common::helpers::check_bounds;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -46,13 +47,13 @@ pub mod pallet {
         /// What we do with additional fees
         type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
-        /// The minimum length a string may be.
+        /// Min Ipfs len
         #[pallet::constant]
-        type MinStringLength: Get<u16>;
+        type MinIpfsLen: Get<u16>;
 
-        /// The maximum length a string may be.
+        /// Max Uri len
         #[pallet::constant]
-        type MaxStringLength: Get<u16>;
+        type MaxIpfsLen: Get<u16>;
     }
 
     pub type BalanceOf<T> =
@@ -84,15 +85,16 @@ pub mod pallet {
         #[transactional]
         pub fn create(
             origin: OriginFor<T>,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
             series_id: Option<NFTSeriesId>,
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            let lower_bound = ipfs_reference.len() >= T::MinStringLength::get() as usize;
-            let upper_bound = ipfs_reference.len() <= T::MaxStringLength::get() as usize;
-            ensure!(lower_bound, Error::<T>::TooShortIpfsReference);
-            ensure!(upper_bound, Error::<T>::TooLongIpfsReference);
+            check_bounds(
+                ipfs_reference.len(),
+                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
+                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
+            )?;
 
             // Checks
             // The Caller needs to pay the NFT Mint fee.
@@ -194,21 +196,14 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            Series::<T>::mutate(&series_id, |x| {
-                if let Some(series) = x {
-                    if series.owner != who {
-                        return Err(Error::<T>::NotSeriesOwner);
-                    }
-                    if !series.draft {
-                        return Err(Error::<T>::SeriesIsCompleted);
-                    }
+            Series::<T>::mutate(&series_id, |x| -> DispatchResult {
+                let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
+                ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
+                ensure!(series.draft, Error::<T>::SeriesIsCompleted);
 
-                    series.draft = false;
+                series.draft = false;
 
-                    Ok(())
-                } else {
-                    Err(Error::<T>::SeriesNotFound)?
-                }
+                Ok(())
             })?;
 
             Self::deposit_event(Event::SeriesFinished { series_id });
@@ -239,7 +234,7 @@ pub mod pallet {
             nft_id: NFTId,
             owner: T::AccountId,
             series_id: NFTSeriesId,
-            ipfs_reference: TernoaString,
+            ipfs_reference: TextFormat,
         },
         /// An NFT was transferred to someone else.
         Transfer {
@@ -371,7 +366,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     type AccountId = T::AccountId;
 
     fn set_owner(id: NFTId, owner: &Self::AccountId) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
             let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.owner = owner.clone();
             Ok(())
@@ -391,7 +386,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
     fn create_nft(
         owner: Self::AccountId,
-        ipfs_reference: TernoaString,
+        ipfs_reference: TextFormat,
         series_id: Option<NFTSeriesId>,
     ) -> Result<NFTId, DispatchErrorWithPostInfo> {
         Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
@@ -409,7 +404,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
             let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.listed_for_sale = value;
             Ok(())
@@ -428,7 +423,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |data| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |data| -> DispatchResult {
             let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.in_transmission = value;
             Ok(())
@@ -447,7 +442,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
     }
 
     fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult {
-        Data::<T>::try_mutate(id, |d| -> Result<(), Error<T>> {
+        Data::<T>::try_mutate(id, |d| -> DispatchResult {
             let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
             data.converted_to_capsule = value;
             Ok(())
