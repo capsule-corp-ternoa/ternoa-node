@@ -17,7 +17,8 @@ use ternoa_runtime::{
     wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
     MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig, StakerStatus,
-    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, MAX_NOMINATIONS,
+    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, TeerexConfig,
+    MAX_NOMINATIONS,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -260,6 +261,9 @@ pub fn testnet_genesis(
         sudo: SudoConfig { key: root_key },
         scheduler: Default::default(),
         transaction_payment: Default::default(),
+        teerex: TeerexConfig {
+            allow_sgx_debug_mode: true,
+        },
     }
 }
 

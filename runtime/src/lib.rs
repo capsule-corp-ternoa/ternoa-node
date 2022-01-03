@@ -21,19 +21,22 @@ use sp_runtime::transaction_validity::{TransactionSource, TransactionValidity};
 use sp_runtime::{generic, ApplyExtrinsicResult};
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
-use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 
 pub mod constants;
 mod pallets;
 mod version;
 mod voter_bags;
 
-pub use pallet_balances::Call as BalancesCall;
 use pallets::EpochDuration;
 pub use pallets::SessionKeys;
 pub use pallets::BABE_GENESIS_EPOCH_CONFIG;
 pub use pallets::MAX_NOMINATIONS;
 pub use version::VERSION;
+
+// Reexport for SGX
+pub use pallet_balances::Call as BalancesCall;
+pub use pallet_teerex;
+pub use ternoa_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Signature};
 
 #[cfg(feature = "std")]
 pub use version::native_version;
@@ -125,6 +128,10 @@ construct_runtime!(
         Sgx: ternoa_sgx = 104,
         TimedEscrow: ternoa_timed_escrow = 105,
         AssociatedAccounts: ternoa_associated_accounts = 106,
+
+        // Integritee
+        Teerex: pallet_teerex::{Pallet, Call, Config, Storage, Event<T>} = 130,
+        Teeracle: pallet_teeracle::{Pallet, Call, Storage, Event<T>} = 131,
     }
 );
 

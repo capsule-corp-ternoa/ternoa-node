@@ -976,3 +976,28 @@ impl pallet_bags_list::Config for Runtime {
     type WeightInfo = pallet_bags_list::weights::SubstrateWeight<Runtime>;
     type BagThresholds = BagThresholds;
 }
+
+parameter_types! {
+    pub const MomentsPerDay: Moment = 86_400_000; // [ms/d]
+    pub const MaxSilenceTime: Moment =172_800_000; // 48h
+}
+
+/// Integritee Teerex
+impl pallet_teerex::Config for Runtime {
+    type Event = Event;
+    type Currency = pallet_balances::Pallet<Runtime>;
+    type MomentsPerDay = MomentsPerDay;
+    type MaxSilenceTime = MaxSilenceTime;
+    type WeightInfo = pallet_teerex::weights::IntegriteeWeight<Runtime>;
+}
+
+parameter_types! {
+    pub const MaxWhitelistedReleases: u32 = 10;
+}
+
+/// Integritee Teeracle
+impl pallet_teeracle::Config for Runtime {
+    type Event = Event;
+    type WeightInfo = pallet_teeracle::weights::IntegriteeWeight<Runtime>;
+    type MaxWhitelistedReleases = MaxWhitelistedReleases;
+}

@@ -83,6 +83,10 @@ ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
 ternoa-associated-accounts = { default-features = false, path = "../pallets/associated-accounts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
 
+# Integritee
+pallet-teerex = { package = "pallet-teerex", default-features = false, git = "https://github.com/integritee-network/pallets.git", rev = "a15965982f65b86a4ca2532391cf76d4137558f8" }
+pallet-teeracle = { package = "pallet-teeracle", default-features = false, git = "https://github.com/integritee-network/pallets.git", rev = "a15965982f65b86a4ca2532391cf76d4137558f8" }
+
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev", branch = "master" }
 
@@ -149,6 +153,8 @@ std = [
 	"scale-info/std",
 	"pallet-mmr/std",
 	"pallet-bags-list/std",
+	"pallet-teerex/std",
+	"pallet-teeracle/std",
 ]
 
 runtime-benchmarks = [
