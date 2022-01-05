@@ -65,6 +65,8 @@ pub mod nfts {
     pub struct NFTData<AccountId> {
         // NFT owner
         pub owner: AccountId,
+        // NFT creator
+        pub creator: AccountId,
         // IPFS reference
         pub ipfs_reference: TextFormat,
         // Series ID
@@ -80,6 +82,7 @@ pub mod nfts {
     impl<AccountId> NFTData<AccountId> {
         pub fn new(
             owner: AccountId,
+            creator: AccountId,
             ipfs_reference: TextFormat,
             series_id: NFTSeriesId,
             listed_for_sale: bool,
@@ -88,6 +91,7 @@ pub mod nfts {
         ) -> Self {
             Self {
                 owner,
+                creator,
                 ipfs_reference,
                 series_id,
                 listed_for_sale,

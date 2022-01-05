@@ -186,7 +186,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
 
     let alice = account("ALICE", 0, 0);
     let bob = account("BOB", 0, 0);
-    let nft_data = NFTData::new(alice, vec![0], vec![50], false, false, false);
+    let nft_data = NFTData::new(alice, ALICE, vec![0], vec![50], false, false, false);
     let series_data = NFTSeriesDetails::new(alice, false);
 
     pallet_balances::GenesisConfig::<Test> {

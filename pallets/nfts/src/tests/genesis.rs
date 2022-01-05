@@ -10,7 +10,7 @@ fn register_nfts() {
 
     let nft_id = 100;
     let mint_fee = 10;
-    let data = NFTData::new(ALICE, vec![1], vec![48], false, false, false);
+    let data = NFTData::new(ALICE, ALICE, vec![1], vec![48], false, false, false);
 
     GenesisConfig::<Test> {
         nfts: vec![(nft_id, data.clone())],

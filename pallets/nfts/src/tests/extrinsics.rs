@@ -21,7 +21,7 @@ fn create_happy() {
 
             // Happy path NFT with series
             let series = NFTSeriesDetails::new(ALICE, true);
-            let data = NFTData::new(ALICE, vec![1], vec![50], false, false, false);
+            let data = NFTData::new(ALICE, ALICE, vec![1], vec![50], false, false, false);
             let alice_balance = Balances::free_balance(ALICE);
 
             let ok = NFTs::create(
@@ -41,7 +41,7 @@ fn create_happy() {
             );
 
             // Happy path NFT without series
-            let data = NFTData::new(ALICE, vec![0], vec![48], false, false, false);
+            let data = NFTData::new(ALICE, ALICE, vec![0], vec![48], false, false, false);
             let series = NFTSeriesDetails::new(ALICE, true);
 
             let ok = NFTs::create(alice.clone(), vec![0], None);
@@ -109,10 +109,14 @@ fn transfer_happy() {
             let nft_id =
                 <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
             NFTs::finish_series(alice.clone(), series_id).unwrap();
-            assert_eq!(NFTs::data(nft_id).unwrap().owner, ALICE);
+            let nft = NFTs::data(nft_id).unwrap();
+            assert_eq!(nft.owner, ALICE);
+            assert_eq!(nft.creator, ALICE);
 
             assert_ok!(NFTs::transfer(alice.clone(), nft_id, BOB));
-            assert_eq!(NFTs::data(nft_id).unwrap().owner, BOB);
+            let nft = NFTs::data(nft_id).unwrap();
+            assert_eq!(nft.owner, BOB);
+            assert_eq!(nft.creator, ALICE);
         })
 }
 
