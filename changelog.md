@@ -1,7 +1,6 @@
 # 🚀 0.2.2 Release
 Replaced faulty ternoa::String type with TernoaString
 
-
 # 🚀 0.2.1 Release
 This is the second release for the Ternoa Testnet.
 This release incorporates two large features, a couple of small improvements and a large list of fixes.

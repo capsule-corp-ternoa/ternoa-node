@@ -112,6 +112,7 @@ pub mod pallet {
 
             let value = NFTData::new(
                 who.clone(),
+                who.clone(),
                 ipfs_reference.clone(),
                 series_id.clone(),
                 false,
