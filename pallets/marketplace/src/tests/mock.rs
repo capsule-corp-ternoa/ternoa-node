@@ -274,7 +274,17 @@ pub mod help {
         ipfs_reference: TextFormat,
         series_id: Option<NFTSeriesId>,
     ) -> NFTId {
-        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
+        assert_ok!(NFTs::create(owner, ipfs_reference, series_id, 0));
+        return NFTs::nft_id_generator() - 1;
+    }
+
+    pub fn create_nft_with_royalties(
+        owner: Origin,
+        ipfs_reference: TextFormat,
+        series_id: Option<NFTSeriesId>,
+        royalties_fee: u8,
+    ) -> NFTId {
+        assert_ok!(NFTs::create(owner, ipfs_reference, series_id, royalties_fee));
         return NFTs::nft_id_generator() - 1;
     }
 

@@ -30,7 +30,7 @@ fn list_happy() {
             let price = NFTCurrency::Caps(50);
             let series_id = vec![50];
             let nft_id =
-                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone())).unwrap();
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone()), 0).unwrap();
             let sale_info = SaleInformation::new(ALICE, price.clone(), 0);
 
             help::finish_series(alice.clone(), series_id);
@@ -43,7 +43,7 @@ fn list_happy() {
             let mkp_id = help::create_mkp(bob.clone(), MPT::Private, 0, vec![1], vec![ALICE]);
             let sale_info = SaleInformation::new(ALICE, price.clone(), mkp_id);
             let nft_id =
-                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone())).unwrap();
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone()), 0).unwrap();
 
             help::finish_series(alice.clone(), series_id);
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(mkp_id));
@@ -68,14 +68,14 @@ fn list_unhappy() {
             assert_noop!(ok, Error::<Test>::UnknownNFT);
 
             // Unhappy not the NFT owner
-            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![50], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![50], None, 0).unwrap();
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
             assert_noop!(ok, Error::<Test>::NotNftOwner);
 
             // Unhappy series not completed
             let series_id = vec![50];
             let nft_id =
-                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone())).unwrap();
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone()), 0).unwrap();
             let ok = Marketplace::list(alice.clone(), nft_id, price, Some(0));
             assert_noop!(ok, Error::<Test>::SeriesNotCompleted);
 
@@ -118,7 +118,7 @@ fn unlist_happy() {
             let price = NFTCurrency::Caps(50);
             let series_id = vec![50];
             let nft_id =
-                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone())).unwrap();
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone()), 0).unwrap();
 
             // Happy path
             help::finish_series(alice.clone(), series_id);
@@ -142,7 +142,7 @@ fn unlist_unhappy() {
             assert_noop!(ok, Error::<Test>::NotNftOwner);
 
             // Unhappy not listed NFT
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![50], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![50], None, 0).unwrap();
             let ok = Marketplace::unlist(alice.clone(), nft_id);
             assert_noop!(ok, Error::<Test>::NftNotForSale);
         })
@@ -1070,5 +1070,72 @@ fn set_description_unhappy() {
             assert_noop!(nok, Error::<Test>::TooShortDescription);
             let nok = Marketplace::set_description(alice, 1, raw_too_long_description);
             assert_noop!(nok, Error::<Test>::TooLongDescription);
+        })
+}
+
+#[test]
+fn list_with_commission_and_royalties_fees() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 20, vec![50], vec![]);
+            let nft_id = help::create_nft_with_royalties(alice.clone(), vec![1], Some(vec![2]), 50);
+            help::finish_series(alice.clone(), vec![2]);
+
+            // try to list a nft with ok commission_fee and royalties_fee
+            assert_ok!(Marketplace::list(alice.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
+            // check if nft is listed
+            assert_eq!(Marketplace::nft_for_sale(nft_id), Some(SaleInformation::new(ALICE, NFTCurrency::Caps(500), mkp_id)));
+        })
+}
+
+#[test]
+fn list_with_too_much_fees() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 70, vec![50], vec![]);
+            let nft_id = help::create_nft_with_royalties(alice.clone(), vec![1], Some(vec![2]), 50);
+            help::finish_series(alice.clone(), vec![2]);
+
+            let lst_response = Marketplace::list(alice.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id));
+            // try to list a nft with too big fees, should return an error
+            assert_noop!(lst_response, Error::<Test>::CumulatedFeesToHigh);
+        })
+}
+
+#[test]
+fn creator_royalties_reception_on_buy() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000), (BOB, 10000), (DAVE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+            let dave: mock::Origin = RawOrigin::Signed(DAVE).into();
+
+            let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 20, vec![50], vec![]);
+            let nft_id = help::create_nft_with_royalties(alice.clone(), vec![1], Some(vec![2]), 50);
+            help::finish_series(alice.clone(), vec![2]);
+            assert_ok!(Marketplace::list(alice.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
+
+            let alice_before = Balances::free_balance(ALICE);
+
+            assert_ok!(Marketplace::buy(bob.clone(), nft_id, CAPS_ID));
+
+            // check if creator received royalties
+            assert_eq!(Balances::free_balance(ALICE), alice_before + 500);
+
+            assert_ok!(Marketplace::list(bob.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
+            assert_ok!(Marketplace::buy(dave.clone(), nft_id, CAPS_ID));
+
+            // check if creator received royalties
+            assert_eq!(Balances::free_balance(ALICE), alice_before + 500 + 50);
         })
 }

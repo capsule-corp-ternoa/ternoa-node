@@ -63,10 +63,9 @@ pub mod nfts {
     #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
     pub struct NFTData<AccountId> {
+        creator: AccountId,
         // NFT owner
         pub owner: AccountId,
-        // NFT creator
-        pub creator: AccountId,
         // IPFS reference
         pub ipfs_reference: TextFormat,
         // Series ID
@@ -77,27 +76,38 @@ pub mod nfts {
         pub in_transmission: bool,
         // Is NFT converted to capsule
         pub converted_to_capsule: bool,
+        // Amount of royalties fee
+        royalties_fee: u8
     }
 
-    impl<AccountId> NFTData<AccountId> {
+    impl<AccountId: Clone> NFTData<AccountId> {
         pub fn new(
             owner: AccountId,
-            creator: AccountId,
             ipfs_reference: TextFormat,
             series_id: NFTSeriesId,
             listed_for_sale: bool,
             in_transmission: bool,
             converted_to_capsule: bool,
+            royalties_fee: u8
         ) -> Self {
             Self {
+                creator: owner.clone(),
                 owner,
-                creator,
                 ipfs_reference,
                 series_id,
                 listed_for_sale,
                 in_transmission,
                 converted_to_capsule,
+                royalties_fee
             }
+        }
+
+        pub fn creator(&self) -> AccountId {
+            self.creator.clone()
+        }
+
+        pub fn royalties_fee(&self) -> u8 {
+            self.royalties_fee
         }
     }
 

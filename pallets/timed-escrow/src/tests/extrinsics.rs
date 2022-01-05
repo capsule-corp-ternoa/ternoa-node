@@ -15,7 +15,7 @@ fn create_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Happy path
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             assert_ok!(TimedEscrow::create(alice.clone(), nft_id, BOB, 10));
 
             let nft = <NFTs as NFTTrait>::get_nft(nft_id).unwrap();
@@ -48,19 +48,19 @@ fn create_unhappy() {
             assert_noop!(ok, Error::<Test>::UnknownNFT);
 
             // Unhappy not nft owner
-            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![0], None, 0).unwrap();
             let ok = TimedEscrow::create(alice.clone(), nft_id, BOB, 10);
             assert_noop!(ok, Error::<Test>::NotNFTOwner);
 
             // Unhappy listed for sale
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
 
             let ok = TimedEscrow::create(alice.clone(), nft_id, BOB, 10);
             assert_noop!(ok, Error::<Test>::ListedForSale);
 
             // Unhappy already in transmission
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             <NFTs as NFTTrait>::set_in_transmission(nft_id, true).unwrap();
 
             let ok = TimedEscrow::create(alice.clone(), nft_id, BOB, 10);
@@ -77,7 +77,7 @@ fn cancel_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Happy path
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             assert_ok!(TimedEscrow::create(alice.clone(), nft_id, BOB, 10));
             assert_ok!(TimedEscrow::cancel(alice.clone(), nft_id));
             assert_eq!(<NFTs as NFTTrait>::is_in_transmission(nft_id), Some(false));
@@ -103,7 +103,7 @@ fn cancel_unhappy() {
             assert_noop!(ok, Error::<Test>::UnknownNFT);
 
             // Unhappy not nft owner
-            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![0], None, 0).unwrap();
             let ok = TimedEscrow::cancel(alice.clone(), nft_id);
             assert_noop!(ok, Error::<Test>::NotNFTOwner);
         });
@@ -119,7 +119,7 @@ fn complete_transfer_happy() {
             let root: mock::Origin = RawOrigin::Root.into();
 
             // Happy path
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             assert_ok!(TimedEscrow::create(alice.clone(), nft_id, BOB, 10));
             assert_ok!(TimedEscrow::complete_transfer(root, BOB, nft_id));
 
@@ -138,7 +138,7 @@ fn complete_transfer_unhappy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let root: mock::Origin = RawOrigin::Root.into();
 
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             assert_ok!(TimedEscrow::create(alice.clone(), nft_id, BOB, 10));
 
             // Unhappy not root

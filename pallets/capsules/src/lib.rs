@@ -95,6 +95,7 @@ pub mod pallet {
             nft_ipfs_reference: TextFormat,
             capsule_ipfs_reference: TextFormat,
             series_id: Option<NFTSeriesId>,
+            royalties_fee: u8
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -109,7 +110,7 @@ pub mod pallet {
             Self::send_funds(&who, &Self::account_id(), amount, KeepAlive)?;
 
             // Create NFT and capsule
-            let nft_id = T::NFTTrait::create_nft(who.clone(), nft_ipfs_reference, series_id)?;
+            let nft_id = T::NFTTrait::create_nft(who.clone(), nft_ipfs_reference, series_id, royalties_fee)?;
             T::NFTTrait::set_converted_to_capsule(nft_id, true)?;
             Self::new_capsule(&who, nft_id, capsule_ipfs_reference.clone(), amount);
 

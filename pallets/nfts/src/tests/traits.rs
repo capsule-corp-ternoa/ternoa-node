@@ -96,7 +96,7 @@ fn set_owner_happy() {
         .build()
         .execute_with(|| {
             // Happy path
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None, 0).unwrap();
             assert_ok!(NFTs::set_owner(nft_id, &BOB));
             assert_eq!(NFTs::data(nft_id).unwrap().owner, BOB);
         })
@@ -120,7 +120,7 @@ fn owner_happy() {
         .build()
         .execute_with(|| {
             // Happy path
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], None, 0).unwrap();
             assert_eq!(NFTs::owner(nft_id), Some(ALICE));
         })
 }
@@ -144,7 +144,7 @@ fn is_series_completed_happy() {
             // Happy path
             let series_id = vec![50];
             let nft_id =
-                <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone()), 0).unwrap();
             assert_eq!(NFTs::is_series_completed(nft_id), Some(false));
             assert_ok!(NFTs::finish_series(alice, series_id));
             assert_eq!(NFTs::is_series_completed(nft_id), Some(true));

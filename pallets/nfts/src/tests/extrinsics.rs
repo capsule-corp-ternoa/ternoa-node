@@ -21,13 +21,14 @@ fn create_happy() {
 
             // Happy path NFT with series
             let series = NFTSeriesDetails::new(ALICE, true);
-            let data = NFTData::new(ALICE, ALICE, vec![1], vec![50], false, false, false);
+            let data = NFTData::new(ALICE, vec![1], vec![50], false, false, false, 0);
             let alice_balance = Balances::free_balance(ALICE);
 
             let ok = NFTs::create(
                 alice.clone(),
                 data.ipfs_reference.clone(),
                 Some(data.series_id.clone()),
+                0
             );
             assert_ok!(ok);
 
@@ -41,10 +42,10 @@ fn create_happy() {
             );
 
             // Happy path NFT without series
-            let data = NFTData::new(ALICE, ALICE, vec![0], vec![48], false, false, false);
+            let data = NFTData::new(ALICE, vec![0], vec![48], false, false, false, 0);
             let series = NFTSeriesDetails::new(ALICE, true);
 
-            let ok = NFTs::create(alice.clone(), vec![0], None);
+            let ok = NFTs::create(alice.clone(), vec![0], None, 0);
             assert_ok!(ok);
 
             assert_eq!(NFTs::series(&data.series_id), Some(series));
@@ -67,31 +68,31 @@ fn create_unhappy() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             // Unhappy too short name
-            let ok = NFTs::create(alice.clone(), vec![], None);
+            let ok = NFTs::create(alice.clone(), vec![], None, 0);
             assert_noop!(ok, Error::<Test>::TooShortIpfsReference);
 
             // Unhappy too long name
-            let ok = NFTs::create(alice.clone(), vec![1, 2, 3, 4, 5, 6], None);
+            let ok = NFTs::create(alice.clone(), vec![1, 2, 3, 4, 5, 6], None, 0);
             assert_noop!(ok, Error::<Test>::TooLongIpfsReference);
 
             // Unhappy not enough caps to mint an NFT
-            let ok = NFTs::create(alice.clone(), vec![1], None);
+            let ok = NFTs::create(alice.clone(), vec![1], None, 0);
             assert_noop!(ok, BalanceError::<Test>::InsufficientBalance);
 
             // Unhappy not the owner of series
             let series_id = Some(vec![50]);
-            <NFTs as NFTTrait>::create_nft(CHAD, vec![50], series_id.clone()).unwrap();
+            <NFTs as NFTTrait>::create_nft(CHAD, vec![50], series_id.clone(), 0).unwrap();
 
-            let ok = NFTs::create(bob.clone(), vec![1], series_id);
+            let ok = NFTs::create(bob.clone(), vec![1], series_id, 0);
             assert_noop!(ok, Error::<Test>::NotSeriesOwner);
             assert_eq!(Balances::free_balance(BOB), 100);
 
             // Unhappy cannot create nfts with complete (locked) series
             let series_id = Some(vec![51]);
-            <NFTs as NFTTrait>::create_nft(BOB, vec![50], series_id.clone()).unwrap();
+            <NFTs as NFTTrait>::create_nft(BOB, vec![50], series_id.clone(), 0).unwrap();
             NFTs::finish_series(bob.clone(), series_id.clone().unwrap()).unwrap();
 
-            let ok = NFTs::create(bob.clone(), vec![1], series_id.clone());
+            let ok = NFTs::create(bob.clone(), vec![1], series_id.clone(), 0);
             assert_noop!(ok, Error::<Test>::SeriesIsCompleted);
         })
 }
@@ -107,16 +108,12 @@ fn transfer_happy() {
             // Happy path transfer
             let series_id = vec![2];
             let nft_id =
-                <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
+                <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone()), 0).unwrap();
             NFTs::finish_series(alice.clone(), series_id).unwrap();
-            let nft = NFTs::data(nft_id).unwrap();
-            assert_eq!(nft.owner, ALICE);
-            assert_eq!(nft.creator, ALICE);
+            assert_eq!(NFTs::data(nft_id).unwrap().owner, ALICE);
 
             assert_ok!(NFTs::transfer(alice.clone(), nft_id, BOB));
-            let nft = NFTs::data(nft_id).unwrap();
-            assert_eq!(nft.owner, BOB);
-            assert_eq!(nft.creator, ALICE);
+            assert_eq!(NFTs::data(nft_id).unwrap().owner, BOB);
         })
 }
 
@@ -133,26 +130,26 @@ fn transfer_unhappy() {
             assert_noop!(ok, Error::<Test>::UnknownNFT);
 
             // Unhappy draft(open) series
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
             assert_noop!(ok, Error::<Test>::SeriesIsInDraft);
 
             // Unhappy NFT is listed for sale
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
 
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
             assert_noop!(ok, Error::<Test>::ListedForSale);
 
             // Unhappy NFT is converted to a capsule
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             <NFTs as NFTTrait>::set_converted_to_capsule(nft_id, true).unwrap();
 
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
             assert_noop!(ok, Error::<Test>::ConvertedToCapsule);
 
             // Unhappy NFT is in transmission
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None, 0).unwrap();
             <NFTs as NFTTrait>::set_in_transmission(nft_id, true).unwrap();
 
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
@@ -169,7 +166,7 @@ fn burn_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
             // Happy path transfer
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2])).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2]), 0).unwrap();
             assert_eq!(NFTs::data(nft_id).is_some(), true);
 
             assert_ok!(NFTs::burn(alice.clone(), nft_id));
@@ -190,19 +187,19 @@ fn burn_unhappy() {
             assert_noop!(ok, Error::<Test>::UnknownNFT);
 
             // Unhappy not the owner
-            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![1], Some(vec![3])).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![1], Some(vec![3]), 0).unwrap();
             let ok = NFTs::burn(alice.clone(), nft_id);
             assert_noop!(ok, Error::<Test>::NotOwner);
 
             // Unhappy listed for sale
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2])).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2]), 0).unwrap();
             <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
 
             let ok = NFTs::burn(alice.clone(), nft_id);
             assert_noop!(ok, Error::<Test>::ListedForSale);
 
             // Unhappy converted to capsule
-            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2])).unwrap();
+            let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2]), 0).unwrap();
             <NFTs as NFTTrait>::set_converted_to_capsule(nft_id, true).unwrap();
 
             let ok = NFTs::burn(alice.clone(), nft_id);
@@ -220,7 +217,7 @@ fn finish_series_happy() {
 
             // Happy path transfer
             let series_id = vec![50];
-            <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
+            <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone()), 0).unwrap();
             assert_eq!(NFTs::series(&series_id).unwrap().draft, true);
 
             assert_ok!(NFTs::finish_series(alice.clone(), series_id.clone()));
@@ -242,13 +239,13 @@ fn finish_series_unhappy() {
 
             // Unhappy not series owner
             let series_id = vec![3];
-            <NFTs as NFTTrait>::create_nft(BOB, vec![1], Some(series_id.clone())).unwrap();
+            <NFTs as NFTTrait>::create_nft(BOB, vec![1], Some(series_id.clone()), 0).unwrap();
             let ok = NFTs::finish_series(alice.clone(), series_id);
             assert_noop!(ok, Error::<Test>::NotSeriesOwner);
 
             // Unhappy series is already completed(locked)
             let series_id = vec![55];
-            <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
+            <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone()), 0).unwrap();
 
             assert_ok!(NFTs::finish_series(alice.clone(), series_id.clone()));
             let ok = NFTs::finish_series(alice.clone(), series_id);
@@ -281,5 +278,37 @@ fn set_nft_mint_fee_unhappy() {
             // Unhappy non root user tries to modify the mint fee
             let ok = NFTs::set_nft_mint_fee(alice.clone(), 654);
             assert_noop!(ok, BadOrigin);
+        })
+}
+
+#[test]
+fn create_nft_with_royalties() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let response = NFTs::create(alice.clone(), vec![1], None, 50);
+            // check if it's ok to create with valid amount of royalties_fee
+            assert_ok!(response);
+
+            // check if royalties has been set
+            let nft_id = NFTs::nft_id_generator() - 1;
+            assert_eq!(<NFTs as NFTTrait>::get_royalties_fee(nft_id).unwrap(), 50);
+        })
+}
+
+#[test]
+fn create_nft_with_too_much_royalties() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let response = NFTs::create(alice.clone(), vec![1], None, 150);
+            // check if create() refuse to create nft with a too big royalties_fee
+            assert_noop!(response, Error::<Test>::InvaliRoyaltyFeeValue);
         })
 }

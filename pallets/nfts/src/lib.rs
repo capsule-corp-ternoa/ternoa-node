@@ -87,6 +87,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             ipfs_reference: TextFormat,
             series_id: Option<NFTSeriesId>,
+            royalties_fee: u8
         ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
@@ -110,14 +111,17 @@ pub mod pallet {
             let nft_id = Self::generate_nft_id();
             let series_id = series_id.unwrap_or_else(|| Self::generate_series_id());
 
+            // Check if royalties is in 0-10 range
+            ensure!(royalties_fee <= 100, Error::<T>::InvaliRoyaltyFeeValue);
+
             let value = NFTData::new(
-                who.clone(),
                 who.clone(),
                 ipfs_reference.clone(),
                 series_id.clone(),
                 false,
                 false,
                 false,
+                royalties_fee
             );
 
             // Save
@@ -290,6 +294,8 @@ pub mod pallet {
         ListedForSale,
         /// TODO!
         InTransmission,
+        // Royalties ammount is invalid
+        InvaliRoyaltyFeeValue
     }
 
     /// The number of NFTs managed by this pallet
@@ -389,8 +395,9 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         owner: Self::AccountId,
         ipfs_reference: TextFormat,
         series_id: Option<NFTSeriesId>,
+        royalties_fee: u8
     ) -> Result<NFTId, DispatchErrorWithPostInfo> {
-        Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
+        Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id, royalties_fee)?;
         return Ok(Self::nft_id_generator() - 1);
     }
 
@@ -459,6 +466,14 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         }
 
         return None;
+    }
+
+    fn get_creator(id: NFTId) -> Option<Self::AccountId> {
+        Data::<T>::get(id).map(|data| data.creator())
+    }
+
+    fn get_royalties_fee(id: NFTId) -> Option<u8> {
+        Data::<T>::get(id).map(|data| data.royalties_fee())
     }
 }
 

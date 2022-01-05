@@ -125,6 +125,10 @@ pub mod pallet {
 
             let market = Marketplaces::<T>::get(mkp_id).ok_or(Error::<T>::UnknownMarketplace)?;
 
+            let commission_fee = market.commission_fee;
+            let royalties_fee = nft.royalties_fee();
+            ensure!(commission_fee + royalties_fee <= 100, Error::<T>::CumulatedFeesToHigh);
+
             if market.kind == MarketplaceType::Private {
                 let is_on_list = market.allow_list.contains(&account_id);
                 ensure!(is_on_list, Error::<T>::NotAllowedToList);
@@ -182,8 +186,12 @@ pub mod pallet {
             // Check if there is any commission fee.
             let market_info = Marketplaces::<T>::get(sale.marketplace_id)
                 .ok_or(Error::<T>::UnknownMarketplace)?;
-
             let commission_fee = market_info.commission_fee;
+
+            let nft = T::NFTs::get_nft(nft_id)
+                .ok_or(Error::<T>::UnknownNFT)?;
+            let royalties_fee = nft.royalties_fee();
+            let nft_creator = nft.creator();
 
             // KeepAlive because they need to be able to use the NFT later on
             match currency {
@@ -201,8 +209,22 @@ pub mod pallet {
                         value = value
                             .checked_sub(&fee)
                             .ok_or(Error::<T>::InternalMathError)?;
-
                         T::CurrencyCaps::transfer(&caller_id, &market_info.owner, fee, KeepAlive)?;
+                    }
+
+                    if royalties_fee != 0 {
+                        let tmp = 100u8
+                            .checked_div(royalties_fee)
+                            .ok_or(Error::<T>::InternalMathError)?;
+
+                        let fee = value
+                            .checked_div(&(tmp.into()))
+                            .ok_or(Error::<T>::InternalMathError)?;
+
+                        value = value
+                            .checked_sub(&fee)
+                            .ok_or(Error::<T>::InternalMathError)?;
+                        T::CurrencyCaps::transfer(&caller_id, &nft_creator, fee, KeepAlive)?;
                     }
 
                     T::CurrencyCaps::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
@@ -223,6 +245,21 @@ pub mod pallet {
                             .ok_or(Error::<T>::InternalMathError)?;
 
                         T::CurrencyTiime::transfer(&caller_id, &market_info.owner, fee, KeepAlive)?;
+                    }
+
+                    if royalties_fee != 0 {
+                        let tmp = 100u8
+                            .checked_div(royalties_fee)
+                            .ok_or(Error::<T>::InternalMathError)?;
+
+                        let fee = value
+                            .checked_div(&(tmp.into()))
+                            .ok_or(Error::<T>::InternalMathError)?;
+
+                        value = value
+                            .checked_sub(&fee)
+                            .ok_or(Error::<T>::InternalMathError)?;
+                        T::CurrencyTiime::transfer(&caller_id, &nft.creator(), fee, KeepAlive)?;
                     }
 
                     T::CurrencyTiime::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
@@ -802,6 +839,8 @@ pub mod pallet {
         AlreadyListedForSale,
         /// TODO!
         UnknownNFT,
+        /// Invalid sum for fees
+        CumulatedFeesToHigh
     }
 
     /// Nfts listed on the marketplace
