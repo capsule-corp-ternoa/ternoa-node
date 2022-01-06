@@ -13,6 +13,7 @@ type Block = frame_system::mocking::MockBlock<Test>;
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 pub const DAVE: u64 = 3;
+pub const JACK: u64 = 4;
 
 frame_support::construct_runtime!(
     pub enum Test where

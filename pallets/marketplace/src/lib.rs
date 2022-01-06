@@ -196,70 +196,45 @@ pub mod pallet {
             // KeepAlive because they need to be able to use the NFT later on
             match currency {
                 NFTCurrencyId::Caps => {
-                    let mut value = sale.price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    let price = sale.price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    let mut value = price;
+
                     if commission_fee != 0 {
-                        let tmp = 100u8
-                            .checked_div(commission_fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        let fee = value
-                            .checked_div(&(tmp.into()))
-                            .ok_or(Error::<T>::InternalMathError)?;
-
+                        let share = Self::calculate_caps_share(price, commission_fee)?;
                         value = value
-                            .checked_sub(&fee)
+                            .checked_sub(&share)
                             .ok_or(Error::<T>::InternalMathError)?;
-                        T::CurrencyCaps::transfer(&caller_id, &market_info.owner, fee, KeepAlive)?;
+                        T::CurrencyCaps::transfer(&caller_id, &market_info.owner, share, KeepAlive)?;
                     }
 
                     if royalties_fee != 0 {
-                        let tmp = 100u8
-                            .checked_div(royalties_fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        let fee = value
-                            .checked_div(&(tmp.into()))
-                            .ok_or(Error::<T>::InternalMathError)?;
-
+                        let share = Self::calculate_caps_share(price, royalties_fee)?;
                         value = value
-                            .checked_sub(&fee)
+                            .checked_sub(&share)
                             .ok_or(Error::<T>::InternalMathError)?;
-                        T::CurrencyCaps::transfer(&caller_id, &nft_creator, fee, KeepAlive)?;
+                        T::CurrencyCaps::transfer(&caller_id, &nft_creator, share, KeepAlive)?;
                     }
 
                     T::CurrencyCaps::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
                 }
                 NFTCurrencyId::Tiime => {
-                    let mut value = sale.price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    let price = sale.price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
+                    let mut value = price;
+
                     if commission_fee != 0 {
-                        let tmp = 100u8
-                            .checked_div(commission_fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        let fee = value
-                            .checked_div(&(tmp.into()))
-                            .ok_or(Error::<T>::InternalMathError)?;
-
+                        let share = Self::calculate_tiime_share(price, commission_fee)?;
                         value = value
-                            .checked_sub(&fee)
+                            .checked_sub(&share)
                             .ok_or(Error::<T>::InternalMathError)?;
-
-                        T::CurrencyTiime::transfer(&caller_id, &market_info.owner, fee, KeepAlive)?;
+                        T::CurrencyTiime::transfer(&caller_id, &market_info.owner, share, KeepAlive)?;
                     }
 
                     if royalties_fee != 0 {
-                        let tmp = 100u8
-                            .checked_div(royalties_fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        let fee = value
-                            .checked_div(&(tmp.into()))
-                            .ok_or(Error::<T>::InternalMathError)?;
-
+                        let share = Self::calculate_tiime_share(price, royalties_fee)?;
                         value = value
-                            .checked_sub(&fee)
+                            .checked_sub(&share)
                             .ok_or(Error::<T>::InternalMathError)?;
-                        T::CurrencyTiime::transfer(&caller_id, &nft.creator(), fee, KeepAlive)?;
+                        T::CurrencyTiime::transfer(&caller_id, &nft.creator(), share, KeepAlive)?;
                     }
 
                     T::CurrencyTiime::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
@@ -911,6 +886,32 @@ pub mod pallet {
                     Marketplaces::<T>::insert(market_id, market_info);
                 });
             MarketplaceMintFee::<T>::put(self.marketplace_mint_fee);
+        }
+    }
+
+    impl<T: pallet::Config> Pallet<T> {
+        fn calculate_tiime_share(price: BalanceTiime<T>, fee: u8) -> Result<BalanceTiime<T>, Error::<T>> {
+            let tmp = 100u8
+                .checked_div(fee)
+                .ok_or(Error::<T>::InternalMathError)?;
+
+            let share = price
+                .checked_div(&(tmp.into()))
+                .ok_or(Error::<T>::InternalMathError)?;
+            
+            Ok(share)
+        }
+
+        fn calculate_caps_share(price: BalanceCaps<T>, fee: u8) -> Result<BalanceCaps<T>, Error::<T>> {
+            let tmp = 100u8
+                .checked_div(fee)
+                .ok_or(Error::<T>::InternalMathError)?;
+
+            let share = price
+                .checked_div(&(tmp.into()))
+                .ok_or(Error::<T>::InternalMathError)?;
+            
+            Ok(share)
         }
     }
 }

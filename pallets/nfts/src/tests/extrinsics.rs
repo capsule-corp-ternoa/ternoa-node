@@ -289,13 +289,12 @@ fn create_nft_with_royalties() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
-            let response = NFTs::create(alice.clone(), vec![1], None, 50);
             // check if it's ok to create with valid amount of royalties_fee
-            assert_ok!(response);
+            assert_ok!(NFTs::create(alice.clone(), vec![1], None, 50));
 
             // check if royalties has been set
             let nft_id = NFTs::nft_id_generator() - 1;
-            assert_eq!(<NFTs as NFTTrait>::get_royalties_fee(nft_id).unwrap(), 50);
+            assert_eq!(NFTs::data(nft_id).unwrap().royalties_fee(), 50);
         })
 }
 

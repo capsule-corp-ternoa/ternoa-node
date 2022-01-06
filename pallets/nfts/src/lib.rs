@@ -467,14 +467,6 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
         return None;
     }
-
-    fn get_creator(id: NFTId) -> Option<Self::AccountId> {
-        Data::<T>::get(id).map(|data| data.creator())
-    }
-
-    fn get_royalties_fee(id: NFTId) -> Option<u8> {
-        Data::<T>::get(id).map(|data| data.royalties_fee())
-    }
 }
 
 impl<T: Config> Pallet<T> {

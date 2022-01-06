@@ -45,10 +45,4 @@ pub trait NFTTrait {
 
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
-
-    /// Get creator AccountId
-    fn get_creator(id: NFTId) -> Option<Self::AccountId>;
-
-    /// Get royalties fee
-    fn get_royalties_fee(id: NFTId) -> Option<u8>;
 }

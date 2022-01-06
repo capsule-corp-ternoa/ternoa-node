@@ -1076,35 +1076,39 @@ fn set_description_unhappy() {
 #[test]
 fn list_with_commission_and_royalties_fees() {
     ExtBuilder::default()
-        .caps(vec![(ALICE, 10000)])
+        .caps(vec![(ALICE, 10000), (BOB, 10000)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 20, vec![50], vec![]);
-            let nft_id = help::create_nft_with_royalties(alice.clone(), vec![1], Some(vec![2]), 50);
-            help::finish_series(alice.clone(), vec![2]);
+
+            let nft_id = help::create_nft_with_royalties(bob.clone(), vec![1], Some(vec![2]), 50);
+            help::finish_series(bob.clone(), vec![2]);
 
             // try to list a nft with ok commission_fee and royalties_fee
-            assert_ok!(Marketplace::list(alice.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
+            assert_ok!(Marketplace::list(bob.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
             // check if nft is listed
-            assert_eq!(Marketplace::nft_for_sale(nft_id), Some(SaleInformation::new(ALICE, NFTCurrency::Caps(500), mkp_id)));
+            assert_eq!(Marketplace::nft_for_sale(nft_id), Some(SaleInformation::new(BOB, NFTCurrency::Caps(500), mkp_id)));
         })
 }
 
 #[test]
 fn list_with_too_much_fees() {
     ExtBuilder::default()
-        .caps(vec![(ALICE, 10000)])
+        .caps(vec![(ALICE, 10000), (BOB, 10000)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 70, vec![50], vec![]);
-            let nft_id = help::create_nft_with_royalties(alice.clone(), vec![1], Some(vec![2]), 50);
-            help::finish_series(alice.clone(), vec![2]);
 
-            let lst_response = Marketplace::list(alice.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id));
+            let nft_id = help::create_nft_with_royalties(bob.clone(), vec![1], Some(vec![2]), 50);
+            help::finish_series(bob.clone(), vec![2]);
+
+            let lst_response = Marketplace::list(bob.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id));
             // try to list a nft with too big fees, should return an error
             assert_noop!(lst_response, Error::<Test>::CumulatedFeesToHigh);
         })
@@ -1113,29 +1117,40 @@ fn list_with_too_much_fees() {
 #[test]
 fn creator_royalties_reception_on_buy() {
     ExtBuilder::default()
-        .caps(vec![(ALICE, 10000), (BOB, 10000), (DAVE, 10000)])
+        .caps(vec![(ALICE, 10000), (BOB, 10000), (DAVE, 10000), (JACK, 10000)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
             let dave: mock::Origin = RawOrigin::Signed(DAVE).into();
+            let jack: mock::Origin = RawOrigin::Signed(JACK).into();
 
             let mkp_id = help::create_mkp(alice.clone(), MPT::Public, 20, vec![50], vec![]);
-            let nft_id = help::create_nft_with_royalties(alice.clone(), vec![1], Some(vec![2]), 50);
-            help::finish_series(alice.clone(), vec![2]);
-            assert_ok!(Marketplace::list(alice.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
+
+            let nft_id = help::create_nft_with_royalties(bob.clone(), vec![1], Some(vec![2]), 50);
+            help::finish_series(bob.clone(), vec![2]);
 
             let alice_before = Balances::free_balance(ALICE);
-
-            assert_ok!(Marketplace::buy(bob.clone(), nft_id, CAPS_ID));
-
-            // check if creator received royalties
-            assert_eq!(Balances::free_balance(ALICE), alice_before + 500);
+            let bob_before = Balances::free_balance(BOB);
 
             assert_ok!(Marketplace::list(bob.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
             assert_ok!(Marketplace::buy(dave.clone(), nft_id, CAPS_ID));
+            // check if mkp creator received commission
+            assert_eq!(Balances::free_balance(ALICE), alice_before + 100); // (20 * 500 / 100)
+            // check if nft creator received royalties + owned caps
+            assert_eq!(Balances::free_balance(BOB), bob_before + 400); // 500 - (20 * 500 / 100) - (50 * 500 / 100) + (50 * 500 / 100)
 
-            // check if creator received royalties
-            assert_eq!(Balances::free_balance(ALICE), alice_before + 500 + 50);
+            let alice_before = Balances::free_balance(ALICE);
+            let bob_before = Balances::free_balance(BOB);
+            let dave_before = Balances::free_balance(DAVE);
+
+            assert_ok!(Marketplace::list(dave.clone(), nft_id, NFTCurrency::Caps(500), Some(mkp_id)));
+            assert_ok!(Marketplace::buy(jack.clone(), nft_id, CAPS_ID));
+            // check if mkp creator received royalties
+            assert_eq!(Balances::free_balance(ALICE), alice_before + 100); // (20 * 500 / 100)
+            // check if nft creator received royalties
+            assert_eq!(Balances::free_balance(BOB), bob_before + 250); // (50 * 500 / 100)
+            // check seller received caps
+            assert_eq!(Balances::free_balance(DAVE), dave_before + 150); // 500 - (20 * 500 / 100) - (50 * 500 / 100)
         })
 }
