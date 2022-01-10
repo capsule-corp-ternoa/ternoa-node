@@ -6,8 +6,8 @@ use crate::{
     voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
     ElectionProviderMultiPhase, Elections, Event, Grandpa, Historical, ImOnline, Nfts, Offences,
     Origin, OriginCaller, PalletInfo, Runtime, Scheduler, Session, Signature, SignedPayload,
-    Staking, System, TechnicalCommittee, TiimeAccountStore, TiimeBalances, Timestamp,
-    TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
+    Staking, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+    UncheckedExtrinsic, VERSION,
 };
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
@@ -191,22 +191,6 @@ impl pallet_balances::Config for Runtime {
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }
 
-impl ternoa_account_store::Config for Runtime {
-    type AccountData = pallet_balances::AccountData<Balance>;
-}
-
-impl pallet_balances::Config<pallet_balances::Instance1> for Runtime {
-    type MaxLocks = MaxLocks;
-    type Balance = Balance;
-    type MaxReserves = MaxReserves;
-    type ReserveIdentifier = [u8; 8];
-    type DustRemoval = ();
-    type Event = Event;
-    type ExistentialDeposit = ExistentialDeposit;
-    type AccountStore = TiimeAccountStore;
-    type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
-}
-
 // Shared parameters with all collectives / committees
 parameter_types! {
     pub const MotionDuration: BlockNumber = 2 * DAYS;
@@ -291,8 +275,7 @@ impl ternoa_timed_escrow::Config for Runtime {
 // Marketplace
 impl ternoa_marketplace::Config for Runtime {
     type Event = Event;
-    type CurrencyCaps = Balances;
-    type CurrencyTiime = TiimeBalances;
+    type Currency = Balances;
     type NFTs = Nfts;
     type WeightInfo = ();
     type FeesCollector = Treasury;

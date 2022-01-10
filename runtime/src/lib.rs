@@ -72,8 +72,6 @@ construct_runtime!(
         Timestamp: pallet_timestamp,
         Indices: pallet_indices,
         Balances: pallet_balances,
-        TiimeBalances: pallet_balances::<Instance1>,
-        TiimeAccountStore: ternoa_account_store,
         TransactionPayment: pallet_transaction_payment,
 
         // Consensus support.

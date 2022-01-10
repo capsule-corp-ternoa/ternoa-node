@@ -92,18 +92,6 @@ impl pallet_balances::Config for Test {
     type MaxLocks = MaxLocks;
 }
 
-impl pallet_balances::Config<pallet_balances::Instance1> for Test {
-    type Balance = u128;
-    type MaxReserves = MaxReserves;
-    type ReserveIdentifier = [u8; 8];
-    type DustRemoval = ();
-    type Event = Event;
-    type ExistentialDeposit = ExistentialDeposit;
-    type AccountStore = TiimeAccountStore;
-    type WeightInfo = ();
-    type MaxLocks = MaxLocks;
-}
-
 parameter_types! {
     pub const MinUriLen: u16 = 1;
     pub const MaxUriLen: u16 = 5;

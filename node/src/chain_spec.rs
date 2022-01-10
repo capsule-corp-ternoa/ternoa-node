@@ -174,7 +174,6 @@ pub fn testnet_genesis(
                 .map(|x| (x, ENDOWMENT))
                 .collect(),
         },
-        tiime_balances: Default::default(),
 
         // Consensus
         session: SessionConfig {
