@@ -1,19 +1,12 @@
 use super::mock::*;
 use crate::tests::mock;
-use crate::{
-    Error, MarketplaceInformation, MarketplaceType, NFTCurrency, NFTCurrencyCombined,
-    NFTCurrencyId, SaleInformation,
-};
+use crate::{Error, MarketplaceInformation, MarketplaceType, SaleInformation};
 use frame_support::error::BadOrigin;
-use frame_support::instances::Instance1;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::NFTTrait;
 use ternoa_primitives::TextFormat;
-
-const CAPS_ID: NFTCurrencyId = NFTCurrencyId::Caps;
-const TIIME_ID: NFTCurrencyId = NFTCurrencyId::Tiime;
 
 type MPT = MarketplaceType;
 
@@ -27,7 +20,7 @@ fn list_happy() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             // Happy path Public marketplace
-            let price = NFTCurrency::Caps(50);
+            let price = 50;
             let series_id = vec![50];
             let nft_id =
                 <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone())).unwrap();
@@ -61,7 +54,7 @@ fn list_unhappy() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let price = NFTCurrency::Caps(50);
+            let price = 50;
 
             // Unhappy unknown NFT
             let ok = Marketplace::list(alice.clone(), 10001, price, Some(0));
@@ -115,7 +108,7 @@ fn unlist_happy() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
 
-            let price = NFTCurrency::Caps(50);
+            let price = 50;
             let series_id = vec![50];
             let nft_id =
                 <NFTs as NFTTrait>::create_nft(ALICE, vec![50], Some(series_id.clone())).unwrap();
@@ -161,26 +154,19 @@ fn buy_happy() {
 
             let nft_id_1 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![50]);
             let nft_id_2 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![51]);
-            let nft_id_3 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![52]);
-            let nft_id_4 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![53]);
-            let nft_id_5 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![54]);
             let mkt_id = help::create_mkp(dave.clone(), MPT::Private, 10, vec![0], vec![ALICE]);
 
-            let caps = NFTCurrency::Caps(50);
-            let tiime = NFTCurrency::Tiime(50);
-            let comb = NFTCurrency::Combined(NFTCurrencyCombined::new(15, 5));
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_1, caps, None));
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_2, tiime, None));
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_3, comb, None));
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_4, comb, None));
-            let ok = Marketplace::list(alice.clone(), nft_id_5, caps, Some(mkt_id));
+            let price = 50;
+            assert_ok!(Marketplace::list(alice.clone(), nft_id_1, price, None));
+
+            let ok = Marketplace::list(alice.clone(), nft_id_2, price, Some(mkt_id));
             assert_ok!(ok);
 
             // Happy path CAPS
             let bob_before = Balances::free_balance(BOB);
             let alice_before = Balances::free_balance(ALICE);
 
-            assert_ok!(Marketplace::buy(bob.clone(), nft_id_1, CAPS_ID));
+            assert_ok!(Marketplace::buy(bob.clone(), nft_id_1));
             assert_eq!(
                 <NFTs as NFTTrait>::is_listed_for_sale(nft_id_1),
                 Some(false)
@@ -191,63 +177,18 @@ fn buy_happy() {
             assert_eq!(Balances::free_balance(BOB), bob_before - 50);
             assert_eq!(Balances::free_balance(ALICE), alice_before + 50);
 
-            // Happy path TIIME
-            let bob_before = TiimeBalances::free_balance(BOB);
-            let alice_before = TiimeBalances::free_balance(ALICE);
+            // Happy path PRIVATE (with commission fee)
+            let bob_before = Balances::free_balance(BOB);
+            let alice_before = Balances::free_balance(ALICE);
+            let dave_before = Balances::free_balance(DAVE);
 
-            assert_ok!(Marketplace::buy(bob.clone(), nft_id_2, TIIME_ID));
+            assert_ok!(Marketplace::buy(bob.clone(), nft_id_2));
             assert_eq!(
                 <NFTs as NFTTrait>::is_listed_for_sale(nft_id_2),
                 Some(false)
             );
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id_2), Some(BOB));
             assert_eq!(Marketplace::nft_for_sale(nft_id_2), None);
-
-            assert_eq!(TiimeBalances::free_balance(BOB), bob_before - 50);
-            assert_eq!(TiimeBalances::free_balance(ALICE), alice_before + 50);
-
-            // Happy path COMBINED CAPS
-            let bob_before = Balances::free_balance(BOB);
-            let alice_before = Balances::free_balance(ALICE);
-
-            assert_ok!(Marketplace::buy(bob.clone(), nft_id_3, CAPS_ID));
-            assert_eq!(
-                <NFTs as NFTTrait>::is_listed_for_sale(nft_id_3),
-                Some(false)
-            );
-            assert_eq!(<NFTs as NFTTrait>::owner(nft_id_3), Some(BOB));
-            assert_eq!(Marketplace::nft_for_sale(nft_id_3), None);
-
-            assert_eq!(Balances::free_balance(BOB), bob_before - 15);
-            assert_eq!(Balances::free_balance(ALICE), alice_before + 15);
-
-            // Happy path COMBINED Tiime
-            let bob_before = TiimeBalances::free_balance(BOB);
-            let alice_before = TiimeBalances::free_balance(ALICE);
-
-            assert_ok!(Marketplace::buy(bob.clone(), nft_id_4, TIIME_ID));
-            assert_eq!(
-                <NFTs as NFTTrait>::is_listed_for_sale(nft_id_4),
-                Some(false)
-            );
-            assert_eq!(<NFTs as NFTTrait>::owner(nft_id_4), Some(BOB));
-            assert_eq!(Marketplace::nft_for_sale(nft_id_4), None);
-
-            assert_eq!(TiimeBalances::free_balance(BOB), bob_before - 5);
-            assert_eq!(TiimeBalances::free_balance(ALICE), alice_before + 5);
-
-            // Happy path PRIVATE (with commission fee)
-            let bob_before = Balances::free_balance(BOB);
-            let alice_before = Balances::free_balance(ALICE);
-            let dave_before = Balances::free_balance(DAVE);
-
-            assert_ok!(Marketplace::buy(bob.clone(), nft_id_5, CAPS_ID));
-            assert_eq!(
-                <NFTs as NFTTrait>::is_listed_for_sale(nft_id_5),
-                Some(false)
-            );
-            assert_eq!(<NFTs as NFTTrait>::owner(nft_id_5), Some(BOB));
-            assert_eq!(Marketplace::nft_for_sale(nft_id_5), None);
 
             assert_eq!(Balances::free_balance(BOB), bob_before - 50);
             assert_eq!(Balances::free_balance(ALICE), alice_before + 45);
@@ -265,45 +206,17 @@ fn buy_unhappy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
-            let caps = NFTCurrency::Caps(5000);
-            let tiime = NFTCurrency::Tiime(5000);
-            let comb = NFTCurrency::Combined(NFTCurrencyCombined::new(5000, 5000));
-
-            let nft_id_1 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![50]);
-            let nft_id_2 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![51]);
-            let nft_id_3 = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![52]);
-
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_1, caps, None));
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_2, tiime, None));
-            assert_ok!(Marketplace::list(alice.clone(), nft_id_3, comb, None));
+            let price = 5000;
+            let nft_id = help::create_nft_and_lock_series(alice.clone(), vec![50], vec![50]);
+            assert_ok!(Marketplace::list(alice.clone(), nft_id, price, None));
 
             // Unhappy nft not on sale
-            let ok = Marketplace::buy(bob.clone(), 1001, CAPS_ID);
+            let ok = Marketplace::buy(bob.clone(), 1001);
             assert_noop!(ok, Error::<Test>::NftNotForSale);
 
             // Unhappy not enough caps
-            let ok = Marketplace::buy(bob.clone(), nft_id_1, CAPS_ID);
+            let ok = Marketplace::buy(bob.clone(), nft_id);
             assert_noop!(ok, BalanceError::<Test>::InsufficientBalance);
-
-            // Unhappy not enough tiime
-            let ok = Marketplace::buy(bob.clone(), nft_id_2, TIIME_ID);
-            assert_noop!(ok, BalanceError::<Test, Instance1>::InsufficientBalance);
-
-            // Unhappy not enough combined caps
-            let ok = Marketplace::buy(bob.clone(), nft_id_3, CAPS_ID);
-            assert_noop!(ok, BalanceError::<Test>::InsufficientBalance);
-
-            // Unhappy not enough combined tiime
-            let ok = Marketplace::buy(bob.clone(), nft_id_3, TIIME_ID);
-            assert_noop!(ok, BalanceError::<Test, Instance1>::InsufficientBalance);
-
-            // Unhappy wrong currency used (expects CAPS)
-            let ok = Marketplace::buy(bob.clone(), nft_id_1, TIIME_ID);
-            assert_noop!(ok, Error::<Test>::WrongCurrencyUsed);
-
-            // Unhappy wrong currency used (expects TIIME)
-            let ok = Marketplace::buy(bob.clone(), nft_id_2, CAPS_ID);
-            assert_noop!(ok, Error::<Test>::WrongCurrencyUsed);
         })
 }
 
