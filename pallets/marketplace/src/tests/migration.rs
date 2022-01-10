@@ -1,4 +1,4 @@
-use super::mock::*;
+/* use super::mock::*;
 use crate::migrations::v6::v6;
 use crate::migrations::v7::v7;
 use frame_support::traits::{OnRuntimeUpgrade, StorageVersion};
@@ -81,3 +81,4 @@ fn upgrade_from_latest_to_latest() {
         assert_eq!(weight, 0);
     })
 }
+ */
