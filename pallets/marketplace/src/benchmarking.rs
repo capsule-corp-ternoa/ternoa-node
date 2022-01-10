@@ -17,8 +17,8 @@ pub fn prepare_benchmarks<T: Config>() -> (MarketplaceId, MarketplaceId, NFTId) 
     let bob: T::AccountId = get_account::<T>("BOB");
 
     // Give them enough caps
-    T::CurrencyCaps::make_free_balance_be(&alice, BalanceCaps::<T>::max_value());
-    T::CurrencyCaps::make_free_balance_be(&bob, BalanceCaps::<T>::max_value());
+    T::Currency::make_free_balance_be(&alice, BalanceOf::<T>::max_value());
+    T::Currency::make_free_balance_be(&bob, BalanceOf::<T>::max_value());
 
     // Create default NFT and series
     let series_id = vec![SERIES_ID];
@@ -68,7 +68,7 @@ benchmarks! {
         let (mkp_id, _, nft_id) = prepare_benchmarks::<T>();
 
         let alice: T::AccountId = get_account::<T>("ALICE");
-        let price = NFTCurrency::Caps(100u32.into());
+        let price: BalanceOf<T> = 100u32.into();
 
     }: _(RawOrigin::Signed(alice.clone()), nft_id, price, Some(mkp_id))
     verify {
@@ -80,7 +80,7 @@ benchmarks! {
         let (mkp_id, _, nft_id) = prepare_benchmarks::<T>();
 
         let alice = get_origin::<T>("ALICE");
-        let price = NFTCurrency::Caps(100u32.into());
+        let price: BalanceOf<T> = 100u32.into();
         drop(Marketplace::<T>::list(alice.clone().into(), nft_id, price, Some(mkp_id)));
 
     }: _(alice.clone(), nft_id)
@@ -92,10 +92,10 @@ benchmarks! {
         let (mkp_id, _, nft_id) = prepare_benchmarks::<T>();
 
         let bob: T::AccountId = get_account::<T>("BOB");
-        let price = NFTCurrency::Caps(0u32.into());
+        let price: BalanceOf<T> = 0u32.into();
 
         drop(Marketplace::<T>::list(get_origin::<T>("ALICE").into(), nft_id, price, Some(mkp_id)));
-    }: _(RawOrigin::Signed(bob.clone().into()), nft_id, NFTCurrencyId::Caps)
+    }: _(RawOrigin::Signed(bob.clone().into()), nft_id)
     verify {
         assert_eq!(T::NFTs::owner(nft_id), Some(bob));
         assert_eq!(NFTsForSale::<T>::contains_key(nft_id), false);

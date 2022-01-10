@@ -7725,22 +7725,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ternoa-account-store"
-version = "0.2.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "ternoa-associated-accounts"
 version = "0.1.0"
 dependencies = [
@@ -7823,7 +7807,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
- "ternoa-account-store",
  "ternoa-common",
  "ternoa-nfts",
  "ternoa-primitives",
@@ -7926,7 +7909,6 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-account-store",
  "ternoa-associated-accounts",
  "ternoa-capsules",
  "ternoa-marketplace",
