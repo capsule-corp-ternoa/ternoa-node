@@ -23,7 +23,7 @@ pub mod pallet {
     use ternoa_common::traits::NFTTrait;
     use ternoa_primitives::{nfts::NFTId, MarketplaceId};
 
-    pub type BalanceCaps<T> =
+    pub type BalanceOf<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
@@ -58,7 +58,7 @@ pub mod pallet {
         _,
         Blake2_128Concat,
         NFTId,
-        AuctionData<T::AccountId, T::BlockNumber, BalanceCaps<T>>,
+        AuctionData<T::AccountId, T::BlockNumber, BalanceOf<T>>,
         OptionQuery,
     >;
 
@@ -92,16 +92,19 @@ pub mod pallet {
         AuctionPricingInvalid,
         /// NFT has not been listed for auction
         NFTNotListedForAuction,
-        /// NFT cannot be set to the new state
-        NFTStateInvalid,
+        /// NFT is already listed for sale
+        NFTAlreadyListedForSale,
+        /// The given NFTID is invalid
+        NFTIdInvalid,
+        /// The nft is in transmission
+        NFTInTransmission,
+        /// The nft is not currently listed for sale
+        NFTNotListedForSale,
     }
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
-    // Dispatchable functions allows users to interact with the pallet and invoke state changes.
-    // These functions materialize as "extrinsics", which are often compared to transactions.
-    // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// An example dispatchable that takes a singles value as a parameter, writes the value to
@@ -113,8 +116,8 @@ pub mod pallet {
             marketplace_id: MarketplaceId,
             #[pallet::compact] start_block: T::BlockNumber,
             #[pallet::compact] end_block: T::BlockNumber,
-            start_price: BalanceCaps<T>,
-            buy_it_price: Option<BalanceCaps<T>>,
+            start_price: BalanceOf<T>,
+            buy_it_price: Option<BalanceOf<T>>,
         ) -> DispatchResultWithPostInfo {
             let creator = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
@@ -147,22 +150,25 @@ pub mod pallet {
                 None => (),
             }
 
+            // fetch the data of given nftId
+            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
+
             // ensure the caller is the owner of NFT
             ensure!(
-                T::NFTHandler::owner(nft_id) == Some(creator.clone()),
+                nft_data.owner == creator.clone(),
                 Error::<T>::NftNotOwned
             );
 
             // ensure the nft is not listed for sale
             ensure!(
-                T::NFTHandler::is_listed_for_sale(nft_id) == Some(false),
-                Error::<T>::NFTStateInvalid
+                nft_data.listed_for_sale == false,
+                Error::<T>::NFTAlreadyListedForSale
             );
 
             // ensure the nft is not in transmission
             ensure!(
-                T::NFTHandler::is_in_transmission(nft_id) == Some(false),
-                Error::<T>::NFTStateInvalid
+                nft_data.in_transmission == false,
+                Error::<T>::NFTInTransmission
             );
 
             // TODO : Ensure origin is allowed to sell nft on given marketplace
@@ -210,7 +216,7 @@ pub mod pallet {
             // ensure the nft is in listed for sale state
             ensure!(
                 T::NFTHandler::is_listed_for_sale(nft_id) == Some(true),
-                Error::<T>::NFTStateInvalid
+                Error::<T>::NFTNotListedForSale
             );
 
             // ensure start block > current block ie auction already started
