@@ -1,8 +1,8 @@
 [package]
-build = "build.rs"
-edition = "2018"
 name = "ternoa"
 version = "0.2.2"
+edition = "2018"
+build = "build.rs"
 
 [[bin]]
 name = "ternoa"
