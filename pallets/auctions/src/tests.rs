@@ -63,9 +63,6 @@ fn test_cancel_auction_works() {
 
             // skip to block of auction start
 
-            assert_ok!(Auctions::cancel_auction(
-                alice.clone(),
-                nft_id,
-            ));
+            assert_ok!(Auctions::cancel_auction(alice.clone(), nft_id,));
         })
 }

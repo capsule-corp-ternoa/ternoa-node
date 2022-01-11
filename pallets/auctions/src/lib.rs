@@ -67,8 +67,18 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        AuctionCreated { nft_id: NFTId },
-        AuctionCancelled { nft_id: NFTId },
+        /// A new auction was created
+        AuctionCreated {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
+        /// An existing auction was cancelled
+        AuctionCancelled {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -83,7 +93,7 @@ pub mod pallet {
         /// NFT has not been listed for auction
         NFTNotListedForAuction,
         /// NFT cannot be set to the new state
-        NFTStateInvalid
+        NFTStateInvalid,
     }
 
     #[pallet::hooks]
@@ -176,7 +186,11 @@ pub mod pallet {
             );
 
             // Emit AuctionCreated event
-            Self::deposit_event(Event::AuctionCreated { nft_id });
+            Self::deposit_event(Event::AuctionCreated {
+                nft_id,
+                marketplace_id,
+                creator,
+            });
             // Return a successful DispatchResultWithPostInfo
             Ok(().into())
         }
@@ -215,7 +229,11 @@ pub mod pallet {
             Auctions::<T>::remove(nft_id);
 
             // Emit auction canceled event
-            Self::deposit_event(Event::AuctionCancelled { nft_id });
+            Self::deposit_event(Event::AuctionCancelled {
+                nft_id,
+                marketplace_id: current_auction.marketplace_id,
+                creator: who,
+            });
 
             Ok(().into())
         }
