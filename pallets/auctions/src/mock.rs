@@ -6,8 +6,8 @@ use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
 use ternoa_marketplace::MarketplaceType;
 use ternoa_primitives::{
+    marketplace::MarketplaceId,
     nfts::{NFTData, NFTSeriesDetails},
-    MarketplaceId,
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;

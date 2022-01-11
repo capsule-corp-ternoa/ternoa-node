@@ -21,7 +21,7 @@ pub mod pallet {
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use ternoa_common::traits::NFTTrait;
-    use ternoa_primitives::{nfts::NFTId, MarketplaceId};
+    use ternoa_primitives::{marketplace::MarketplaceId, nfts::NFTId};
 
     pub type BalanceOf<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -154,10 +154,7 @@ pub mod pallet {
             let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
 
             // ensure the caller is the owner of NFT
-            ensure!(
-                nft_data.owner == creator.clone(),
-                Error::<T>::NftNotOwned
-            );
+            ensure!(nft_data.owner == creator.clone(), Error::<T>::NftNotOwned);
 
             // ensure the nft is not listed for sale
             ensure!(

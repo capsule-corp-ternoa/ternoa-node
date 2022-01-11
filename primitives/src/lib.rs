@@ -43,8 +43,10 @@ pub type TextFormat = Vec<u8>;
 /// The type for looking up accounts. We don't expect more than 4 billion of them.
 pub type AccountIndex = u32;
 
+pub mod marketplace {
 /// The type of marketplace Id
 pub type MarketplaceId = u32;
+}
 
 pub mod nfts {
     #[cfg(feature = "std")]

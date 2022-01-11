@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
-use ternoa_primitives::MarketplaceId;
+use ternoa_primitives::marketplace::MarketplaceId;
 //use sp_std::iter::Map;
 
 #[derive(Encode, Decode, Clone, RuntimeDebug, TypeInfo)]
