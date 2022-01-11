@@ -12,10 +12,14 @@ mod tests;
 mod benchmarking;
 
 mod types;
+use frame_support::traits::StorageVersion;
+
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
     use crate::types::AuctionData;
+    use crate::STORAGE_VERSION;
     use frame_support::sp_runtime::traits::CheckedSub;
     use frame_support::traits::Currency;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
@@ -48,12 +52,13 @@ pub mod pallet {
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
+    #[pallet::storage_version(STORAGE_VERSION)]
     pub struct Pallet<T>(_);
 
     // The pallet's runtime storage items.
     // https://docs.substrate.io/v3/runtime/storage
     #[pallet::storage]
-    #[pallet::getter(fn something)]
+    #[pallet::getter(fn auctions)]
     pub type Auctions<T: Config> = StorageMap<
         _,
         Blake2_128Concat,
@@ -100,6 +105,8 @@ pub mod pallet {
         NFTInTransmission,
         /// The nft is not currently listed for sale
         NFTNotListedForSale,
+        /// The specified auction does not exist
+        InvalidAuction,
     }
 
     #[pallet::hooks]
@@ -202,7 +209,7 @@ pub mod pallet {
         pub fn cancel_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
-            let current_auction = Auctions::<T>::take(nft_id).unwrap(); // TODO: Handle failure and reject
+            let current_auction = Auctions::<T>::get(nft_id).ok_or(Error::<T>::InvalidAuction)?;
 
             // ensure the caller is the owner of NFT
             ensure!(
