@@ -139,6 +139,7 @@ impl Config for Test {
     type Event = Event;
     type CurrencyCaps = Balances;
     type NFTHandler = NFTs;
+    type MarketplaceHandler = Marketplace;
     type MinAuctionBuffer = MinAuctionBuffer;
     type MaxAuctionDuration = MaxAuctionDuration;
     type MinAuctionDuration = MinAuctionDuration;

@@ -1,6 +1,9 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
-use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
+use ternoa_primitives::{
+    marketplace::MarketplaceId,
+    nfts::{NFTData, NFTId, NFTSeriesId},
+};
 
 pub trait NFTTrait {
     type AccountId;
@@ -44,4 +47,14 @@ pub trait NFTTrait {
 
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
+}
+
+/// Trait that implements basic functionalities related to Ternoa Marketplace
+/// TODO: Expand trait with more useful functions
+pub trait MarketplaceTrait<AccountId> {
+    /// Return if an account is permitted to list on given marketplace
+    fn is_allowed_to_list_on_marketplace(
+        marketplace_id: MarketplaceId,
+        account_id: AccountId,
+    ) -> DispatchResult;
 }

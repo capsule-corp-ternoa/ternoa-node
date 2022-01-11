@@ -44,8 +44,8 @@ pub type TextFormat = Vec<u8>;
 pub type AccountIndex = u32;
 
 pub mod marketplace {
-/// The type of marketplace Id
-pub type MarketplaceId = u32;
+    /// The type of marketplace Id
+    pub type MarketplaceId = u32;
 }
 
 pub mod nfts {

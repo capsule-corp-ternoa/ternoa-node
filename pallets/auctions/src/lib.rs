@@ -24,7 +24,7 @@ pub mod pallet {
     use frame_support::traits::Currency;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
-    use ternoa_common::traits::NFTTrait;
+    use ternoa_common::traits::{MarketplaceTrait, NFTTrait};
     use ternoa_primitives::{marketplace::MarketplaceId, nfts::NFTId};
 
     pub type BalanceOf<T> =
@@ -39,6 +39,8 @@ pub mod pallet {
         type CurrencyCaps: Currency<Self::AccountId>;
         /// Get information on nfts
         type NFTHandler: NFTTrait<AccountId = Self::AccountId>;
+        /// Get information on marketplace
+        type MarketplaceHandler: MarketplaceTrait<Self::AccountId>;
         /// Minimum required length of auction
         #[pallet::constant]
         type MinAuctionDuration: Get<Self::BlockNumber>;
@@ -175,8 +177,11 @@ pub mod pallet {
                 Error::<T>::NFTInTransmission
             );
 
-            // TODO : Ensure origin is allowed to sell nft on given marketplace
-            // TODO : Implement trait to accesss data from marketplace pallet
+            // Ensure origin is allowed to sell nft on given marketplace
+            T::MarketplaceHandler::is_allowed_to_list_on_marketplace(
+                marketplace_id,
+                creator.clone(),
+            )?;
 
             // Mark NFT as listed for sale
             T::NFTHandler::set_listed_for_sale(nft_id, true)?;

@@ -10,15 +10,17 @@ mod default_weights;
 mod migrations;
 mod types;
 
-use frame_support::dispatch::DispatchResultWithPostInfo;
+use frame_support::dispatch::DispatchResult;
 pub use pallet::*;
 pub use types::*;
 
 use default_weights::WeightInfo;
+use frame_support::ensure;
 use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
+use ternoa_common::traits::MarketplaceTrait;
 use ternoa_primitives::nfts::NFTId;
-use ternoa_primitives::TextFormat;
+use ternoa_primitives::{marketplace::MarketplaceId, TextFormat};
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
@@ -837,6 +839,27 @@ pub mod pallet {
                     Marketplaces::<T>::insert(market_id, market_info);
                 });
             MarketplaceMintFee::<T>::put(self.marketplace_mint_fee);
+        }
+    }
+}
+
+impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
+    /// Return if an account is permitted to list on given marketplace
+    fn is_allowed_to_list_on_marketplace(
+        marketplace_id: MarketplaceId,
+        account_id: T::AccountId,
+    ) -> DispatchResult {
+        let market =
+            Marketplaces::<T>::get(marketplace_id).ok_or(Error::<T>::UnknownMarketplace)?;
+
+        if market.kind == MarketplaceType::Private {
+            let is_on_list = market.allow_list.contains(&account_id);
+            ensure!(is_on_list, Error::<T>::NotAllowedToList);
+            Ok(())
+        } else {
+            let is_on_list = market.disallow_list.contains(&account_id);
+            ensure!(!is_on_list, Error::<T>::NotAllowedToList);
+            Ok(())
         }
     }
 }
