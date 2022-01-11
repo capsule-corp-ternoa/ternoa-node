@@ -7777,6 +7777,7 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "ternoa-common",
+ "ternoa-marketplace",
  "ternoa-nfts",
  "ternoa-primitives",
 ]

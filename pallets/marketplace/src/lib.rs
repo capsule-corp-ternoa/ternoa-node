@@ -35,6 +35,7 @@ pub mod pallet {
     use sp_std::vec::Vec;
     use ternoa_common::helpers::check_bounds;
     use ternoa_common::traits::NFTTrait;
+    use ternoa_primitives::MarketplaceId;
 
     pub type BalanceCaps<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;

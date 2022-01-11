@@ -27,6 +27,7 @@ scale-info = { version = "1.0", default-features = false, features = ["derive"] 
 ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
 ternoa-nfts = { default-features = false, path = "../nfts" }
+ternoa-marketplace = { default-features = false, path = "../marketplace" }
 
 [dev-dependencies]
 pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
@@ -47,6 +48,7 @@ std = [
     "ternoa-primitives/std",
     "ternoa-nfts/std",
     "scale-info/std",
+    "ternoa-marketplace/std",
 ]
 runtime-benchmarks = [
     "frame-benchmarking",
