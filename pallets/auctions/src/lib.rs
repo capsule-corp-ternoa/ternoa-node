@@ -20,8 +20,9 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 pub mod pallet {
     use crate::types::AuctionData;
     use crate::STORAGE_VERSION;
-    use frame_support::sp_runtime::traits::CheckedSub;
+    use frame_support::sp_runtime::traits::{CheckedAdd, CheckedSub};
     use frame_support::traits::Currency;
+    use frame_support::traits::ExistenceRequirement::KeepAlive;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use ternoa_common::traits::{MarketplaceTrait, NFTTrait};
@@ -50,6 +51,12 @@ pub mod pallet {
         /// Minimum buffer of blocks required before auction start
         #[pallet::constant]
         type MinAuctionBuffer: Get<Self::BlockNumber>;
+        /// Grace period to extend auction by if new bid received
+        #[pallet::constant]
+        type AuctionGracePeriod: Get<Self::BlockNumber>;
+        /// Ending period during which an auction can be extended
+        #[pallet::constant]
+        type AuctionEndingPeriod: Get<Self::BlockNumber>;
     }
 
     #[pallet::pallet]
@@ -86,6 +93,18 @@ pub mod pallet {
             marketplace_id: MarketplaceId,
             creator: T::AccountId,
         },
+        /// A new bid was created
+        BidCreated {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
+        /// An exising bid was removed
+        BidRemoved {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -108,7 +127,17 @@ pub mod pallet {
         /// The nft is not currently listed for sale
         NFTNotListedForSale,
         /// The specified auction does not exist
-        InvalidAuction,
+        AuctionDoesNotExist,
+        /// Current owner cannot bid on NFT
+        OwnerCannotCreateBid,
+        /// The auction has not started
+        AuctionNotStarted,
+        /// The auction has already ended
+        AuctionEnded,
+        /// The bid amount is lower than current highest bid
+        InvalidBidAmount,
+        /// Unexpected error occured
+        UnexpectedError,
     }
 
     #[pallet::hooks]
@@ -214,17 +243,18 @@ pub mod pallet {
         pub fn cancel_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
-            let current_auction = Auctions::<T>::get(nft_id).ok_or(Error::<T>::InvalidAuction)?;
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // fetch the data of given nftId
+            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
 
             // ensure the caller is the owner of NFT
-            ensure!(
-                T::NFTHandler::owner(nft_id) == Some(who.clone()),
-                Error::<T>::NftNotOwned
-            );
+            ensure!(nft_data.owner == who.clone(), Error::<T>::NftNotOwned);
 
             // ensure the nft is in listed for sale state
             ensure!(
-                T::NFTHandler::is_listed_for_sale(nft_id) == Some(true),
+                nft_data.listed_for_sale == true,
                 Error::<T>::NFTNotListedForSale
             );
 
@@ -245,6 +275,129 @@ pub mod pallet {
 
             // Emit auction canceled event
             Self::deposit_event(Event::AuctionCancelled {
+                nft_id,
+                marketplace_id: current_auction.marketplace_id,
+                creator: who,
+            });
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn add_bid(
+            origin: OriginFor<T>,
+            nft_id: NFTId,
+            amount: BalanceOf<T>,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let current_block = frame_system::Pallet::<T>::block_number();
+
+            // fetch the data of given nftId
+            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
+
+            // fetch data of auction that lists NFT
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // ensure the nft is in listed for sale state
+            ensure!(
+                nft_data.listed_for_sale == false,
+                Error::<T>::NFTNotListedForSale
+            );
+
+            // ensure the caller is not the owner of NFT
+            ensure!(
+                nft_data.owner != who.clone(),
+                Error::<T>::OwnerCannotCreateBid
+            );
+
+            // ensure the auction period has commenced
+            ensure!(
+                current_auction.start_block < current_block,
+                Error::<T>::AuctionNotStarted
+            );
+
+            // ensure the auction period has not ended
+            ensure!(
+                current_auction.end_block > current_block,
+                Error::<T>::AuctionEnded
+            );
+
+            // ensure the bid is larger than the current highest bid
+            if let Some(current_highest_bid) = current_auction.top_bidder {
+                ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
+            }
+
+            // transfer funds from caller
+            // TODO : is it better to reserve here to save gas??
+            // TODO : Recipient should be pallet account
+            T::CurrencyCaps::transfer(&who, &nft_data.owner, amount, KeepAlive)?;
+
+            // TODO : Return previous top bidder amount??
+
+            // add bid as top bidder in storage
+            Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
+                // should not panic when unwrap since already checked above
+                let auction = maybe_auction.as_mut().unwrap();
+                // replace top bidder with caller
+                auction.top_bidder = Some((who.clone(), amount));
+                // extend auction by grace period
+                // TODO : Can lead to infinite auction??
+                if auction.end_block.checked_sub(&current_block)
+                    < Some(T::AuctionGracePeriod::get())
+                {
+                    auction.end_block = auction
+                        .end_block
+                        .checked_add(&T::AuctionGracePeriod::get())
+                        .ok_or(Error::<T>::UnexpectedError)?;
+                }
+                Ok(())
+            })?;
+
+            // emit bid created event
+            Self::deposit_event(Event::BidCreated {
+                nft_id,
+                marketplace_id: current_auction.marketplace_id,
+                creator: who,
+            });
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn remove_bid(
+            origin: OriginFor<T>,
+            nft_id: NFTId,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let current_block = frame_system::Pallet::<T>::block_number();
+
+            // fetch the data of given nftId
+            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
+
+            // fetch data of auction that lists NFT
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // ensure the auction period has not ended
+            ensure!(
+                current_auction.end_block > current_block,
+                Error::<T>::AuctionEnded
+            );
+
+            // transfer funds to caller
+            // TODO : is it better to unreserve here to save gas??
+            // TODO : Recipient should be pallet account
+            //T::CurrencyCaps::transfer(&who, &nft_data.owner, amount, KeepAlive)?;
+
+            // TODO : Return previous top bidder amount??
+
+            // remove bidder as top bidder
+            // TODO : possible attack to create bid increase time and then remove bid??
+            // TODO : how to replace top bidder?
+
+            // emit bid created event
+            Self::deposit_event(Event::BidRemoved {
                 nft_id,
                 marketplace_id: current_auction.marketplace_id,
                 creator: who,
