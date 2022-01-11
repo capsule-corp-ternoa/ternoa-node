@@ -67,12 +67,8 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// Event documentation should end with an array that provides descriptive names for event
-        /// parameters. [something, who]
-        AuctionCreated {
-            creator: T::AccountId,
-            nft_id: NFTId,
-        },
+        AuctionCreated { nft_id: NFTId },
+        AuctionCancelled { nft_id: NFTId },
     }
 
     // Errors inform users that something went wrong.
@@ -84,6 +80,10 @@ pub mod pallet {
         NftNotOwned,
         /// buy_it_price should be greater then start_price
         AuctionPricingInvalid,
+        /// NFT has not been listed for auction
+        NFTNotListedForAuction,
+        /// NFT cannot be set to the new state
+        NFTStateInvalid
     }
 
     #[pallet::hooks]
@@ -146,17 +146,20 @@ pub mod pallet {
             // ensure the nft is not listed for sale
             ensure!(
                 T::NFTHandler::is_listed_for_sale(nft_id) == Some(false),
-                Error::<T>::NftNotOwned
+                Error::<T>::NFTStateInvalid
             );
 
             // ensure the nft is not in transmission
             ensure!(
                 T::NFTHandler::is_in_transmission(nft_id) == Some(false),
-                Error::<T>::NftNotOwned
+                Error::<T>::NFTStateInvalid
             );
 
             // TODO : Ensure origin is allowed to sell nft on given marketplace
             // TODO : Implement trait to accesss data from marketplace pallet
+
+            // Mark NFT as listed for sale
+            T::NFTHandler::set_listed_for_sale(nft_id, true)?;
 
             // Add auction to storage
             Auctions::<T>::insert(
@@ -172,9 +175,48 @@ pub mod pallet {
                 },
             );
 
-            // Emit an event.
-            Self::deposit_event(Event::AuctionCreated { creator, nft_id });
+            // Emit AuctionCreated event
+            Self::deposit_event(Event::AuctionCreated { nft_id });
             // Return a successful DispatchResultWithPostInfo
+            Ok(().into())
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn cancel_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let current_block = frame_system::Pallet::<T>::block_number();
+            let current_auction = Auctions::<T>::take(nft_id).unwrap(); // TODO: Handle failure and reject
+
+            // ensure the caller is the owner of NFT
+            ensure!(
+                T::NFTHandler::owner(nft_id) == Some(who.clone()),
+                Error::<T>::NftNotOwned
+            );
+
+            // ensure the nft is in listed for sale state
+            ensure!(
+                T::NFTHandler::is_listed_for_sale(nft_id) == Some(true),
+                Error::<T>::NFTStateInvalid
+            );
+
+            // ensure start block > current block ie auction already started
+            // TODO : is this check necessary
+            ensure!(
+                current_auction.start_block > current_block,
+                Error::<T>::AuctionTimelineInvalid
+            );
+
+            // TODO : Refund any reserved bids
+
+            // List nft as not for sale
+            T::NFTHandler::set_listed_for_sale(nft_id, false)?;
+
+            // Remove auction from storage
+            Auctions::<T>::remove(nft_id);
+
+            // Emit auction canceled event
+            Self::deposit_event(Event::AuctionCancelled { nft_id });
+
             Ok(().into())
         }
     }

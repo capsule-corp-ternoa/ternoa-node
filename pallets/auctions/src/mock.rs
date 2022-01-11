@@ -117,8 +117,7 @@ impl ternoa_nfts::Config for Test {
 
 impl ternoa_marketplace::Config for Test {
     type Event = Event;
-    type CurrencyCaps = Balances;
-    type CurrencyTiime = Balances; // ToDo : Change to time balances later
+    type Currency = Balances;
     type NFTs = NFTs;
     type WeightInfo = ();
     type FeesCollector = ();
