@@ -11,14 +11,17 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+mod types;
+
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::types::AuctionData;
     use frame_support::sp_runtime::traits::CheckedSub;
     use frame_support::traits::Currency;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use ternoa_common::traits::NFTTrait;
-    use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
+    use ternoa_primitives::{nfts::NFTId, MarketplaceId};
 
     pub type BalanceCaps<T> =
         <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -51,9 +54,13 @@ pub mod pallet {
     // https://docs.substrate.io/v3/runtime/storage
     #[pallet::storage]
     #[pallet::getter(fn something)]
-    // Learn more about declaring storage items:
-    // https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-    pub type Something<T> = StorageValue<_, u32>;
+    pub type Auctions<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        NFTId,
+        AuctionData<T::AccountId, T::BlockNumber, BalanceCaps<T>>,
+        OptionQuery,
+    >;
 
     // Pallets use events to inform users when important changes are made.
     // https://docs.substrate.io/v3/runtime/events-and-errors
@@ -93,13 +100,13 @@ pub mod pallet {
         pub fn create_auction(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            marketplace_id: u32, // TODO : move to commons and import marketplaceid here
+            marketplace_id: MarketplaceId,
             #[pallet::compact] start_block: T::BlockNumber,
             #[pallet::compact] end_block: T::BlockNumber,
             start_price: BalanceCaps<T>,
             buy_it_price: Option<BalanceCaps<T>>,
         ) -> DispatchResultWithPostInfo {
-            let who = ensure_signed(origin)?;
+            let creator = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
             // ensure the auction timeline is valid
             ensure!(start_block < end_block, Error::<T>::AuctionTimelineInvalid);
@@ -123,25 +130,50 @@ pub mod pallet {
                 start_block.checked_sub(&current_block) >= Some(T::MinAuctionBuffer::get()),
                 Error::<T>::AuctionTimelineInvalid
             );
-            // ensure the caller is the owner of NFT
-            ensure!(
-                T::NFTHandler::owner(nft_id) == Some(who.clone()),
-                Error::<T>::NftNotOwned
-            );
-            // ensure the caller is the owner of NFT
+
+            // ensure the buy_it_price is greater than start_price
             match buy_it_price {
-                Some(price) => ensure!(
-                    buy_it_price > Some(start_price),
-                    Error::<T>::AuctionPricingInvalid
-                ),
+                Some(price) => ensure!(price > start_price, Error::<T>::AuctionPricingInvalid),
                 None => (),
             }
 
-            // Emit an event.
-            Self::deposit_event(Event::AuctionCreated {
-                creator: who,
+            // ensure the caller is the owner of NFT
+            ensure!(
+                T::NFTHandler::owner(nft_id) == Some(creator.clone()),
+                Error::<T>::NftNotOwned
+            );
+
+            // ensure the nft is not listed for sale
+            ensure!(
+                T::NFTHandler::is_listed_for_sale(nft_id) == Some(false),
+                Error::<T>::NftNotOwned
+            );
+
+            // ensure the nft is not in transmission
+            ensure!(
+                T::NFTHandler::is_in_transmission(nft_id) == Some(false),
+                Error::<T>::NftNotOwned
+            );
+
+            // TODO : Ensure origin is allowed to sell nft on given marketplace
+            // TODO : Implement trait to accesss data from marketplace pallet
+
+            // Add auction to storage
+            Auctions::<T>::insert(
                 nft_id,
-            });
+                AuctionData {
+                    creator: creator.clone(),
+                    start_block,
+                    end_block,
+                    start_price,
+                    buy_it_price,
+                    top_bidder: None,
+                    marketplace_id,
+                },
+            );
+
+            // Emit an event.
+            Self::deposit_event(Event::AuctionCreated { creator, nft_id });
             // Return a successful DispatchResultWithPostInfo
             Ok(().into())
         }

@@ -5,7 +5,7 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::TextFormat;
+use ternoa_primitives::{TextFormat, MarketplaceId};
 
 /// Structure that stores both NFT currencies at the same time.
 #[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, TypeInfo)]
@@ -117,8 +117,6 @@ impl Default for NFTCurrencyId {
         Self::Caps
     }
 }
-
-pub type MarketplaceId = u32;
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
