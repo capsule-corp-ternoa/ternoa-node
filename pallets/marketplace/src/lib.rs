@@ -37,12 +37,9 @@ pub mod pallet {
     use ternoa_common::traits::NFTTrait;
     use ternoa_primitives::MarketplaceId;
 
-    pub type BalanceCaps<T> =
-        <<T as Config>::CurrencyCaps as Currency<<T as frame_system::Config>::AccountId>>::Balance;
-    pub type BalanceTiime<T> =
-        <<T as Config>::CurrencyTiime as Currency<<T as frame_system::Config>::AccountId>>::Balance;
-
-    pub type NegativeImbalanceCaps<T> = <<T as Config>::CurrencyCaps as Currency<
+    pub type BalanceOf<T> =
+        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+    pub(crate) type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
         <T as frame_system::Config>::AccountId,
     >>::NegativeImbalance;
 
@@ -58,13 +55,10 @@ pub mod pallet {
         type WeightInfo: WeightInfo;
 
         /// Caps Currency
-        type CurrencyCaps: Currency<Self::AccountId>;
-
-        /// Tiime Currency
-        type CurrencyTiime: Currency<Self::AccountId>;
+        type Currency: Currency<Self::AccountId>;
 
         /// Place where the marketplace fees go.
-        type FeesCollector: OnUnbalanced<NegativeImbalanceCaps<Self>>;
+        type FeesCollector: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
         /// Min name length.
         #[pallet::constant]
@@ -110,7 +104,7 @@ pub mod pallet {
         pub fn list(
             origin: OriginFor<T>,
             nft_id: NFTId,
-            price: NFTCurrency<BalanceCaps<T>, BalanceTiime<T>>,
+            price: BalanceOf<T>,
             marketplace_id: Option<MarketplaceId>,
         ) -> DispatchResultWithPostInfo {
             let account_id = ensure_signed(origin)?;
@@ -170,75 +164,48 @@ pub mod pallet {
         /// Buy a listed nft
         #[pallet::weight(T::WeightInfo::buy())]
         #[transactional]
-        pub fn buy(
-            origin: OriginFor<T>,
-            nft_id: NFTId,
-            currency: NFTCurrencyId,
-        ) -> DispatchResultWithPostInfo {
-            let caller_id = ensure_signed(origin)?;
+        pub fn buy(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
+            let caller = ensure_signed(origin)?;
 
             let sale = NFTsForSale::<T>::get(nft_id).ok_or(Error::<T>::NftNotForSale)?;
-            ensure!(sale.account_id != caller_id, Error::<T>::NftAlreadyOwned);
+            ensure!(sale.account_id != caller, Error::<T>::NftAlreadyOwned);
 
             // Check if there is any commission fee.
-            let market_info = Marketplaces::<T>::get(sale.marketplace_id)
+            let market = Marketplaces::<T>::get(sale.marketplace_id)
                 .ok_or(Error::<T>::UnknownMarketplace)?;
 
-            let commission_fee = market_info.commission_fee;
+            let commission_fee = market.commission_fee;
+            let mut price = sale.price;
 
             // KeepAlive because they need to be able to use the NFT later on
-            match currency {
-                NFTCurrencyId::Caps => {
-                    let mut value = sale.price.caps().ok_or(Error::<T>::WrongCurrencyUsed)?;
-                    if commission_fee != 0 {
-                        let tmp = 100u8
-                            .checked_div(commission_fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
+            if commission_fee != 0 {
+                let tmp = 100u8
+                    .checked_div(commission_fee)
+                    .ok_or(Error::<T>::InternalMathError)?;
 
-                        let fee = value
-                            .checked_div(&(tmp.into()))
-                            .ok_or(Error::<T>::InternalMathError)?;
+                let fee = price
+                    .checked_div(&(tmp.into()))
+                    .ok_or(Error::<T>::InternalMathError)?;
 
-                        value = value
-                            .checked_sub(&fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
+                price = price
+                    .checked_sub(&fee)
+                    .ok_or(Error::<T>::InternalMathError)?;
 
-                        T::CurrencyCaps::transfer(&caller_id, &market_info.owner, fee, KeepAlive)?;
-                    }
-
-                    T::CurrencyCaps::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
-                }
-                NFTCurrencyId::Tiime => {
-                    let mut value = sale.price.tiime().ok_or(Error::<T>::WrongCurrencyUsed)?;
-                    if commission_fee != 0 {
-                        let tmp = 100u8
-                            .checked_div(commission_fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        let fee = value
-                            .checked_div(&(tmp.into()))
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        value = value
-                            .checked_sub(&fee)
-                            .ok_or(Error::<T>::InternalMathError)?;
-
-                        T::CurrencyTiime::transfer(&caller_id, &market_info.owner, fee, KeepAlive)?;
-                    }
-
-                    T::CurrencyTiime::transfer(&caller_id, &sale.account_id, value, KeepAlive)?;
-                }
+                T::Currency::transfer(&caller, &market.owner, fee, KeepAlive)?;
             }
 
+            T::Currency::transfer(&caller, &sale.account_id, price, KeepAlive)?;
+
             T::NFTs::set_listed_for_sale(nft_id, false)?;
-            T::NFTs::set_owner(nft_id, &caller_id)?;
+            T::NFTs::set_owner(nft_id, &caller)?;
 
             NFTsForSale::<T>::remove(nft_id);
 
-            Self::deposit_event(Event::NftSold {
+            let event = Event::NftSold {
                 nft_id,
-                owner: caller_id,
-            });
+                owner: caller,
+            };
+            Self::deposit_event(event);
 
             Ok(().into())
         }
@@ -288,7 +255,7 @@ pub mod pallet {
             }
 
             // Needs to have enough money
-            let imbalance = T::CurrencyCaps::withdraw(
+            let imbalance = T::Currency::withdraw(
                 &caller_id,
                 MarketplaceMintFee::<T>::get(),
                 WithdrawReasons::FEE,
@@ -552,7 +519,7 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::set_marketplace_mint_fee())]
         pub fn set_marketplace_mint_fee(
             origin: OriginFor<T>,
-            mint_fee: BalanceCaps<T>,
+            mint_fee: BalanceOf<T>,
         ) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
 
@@ -682,7 +649,7 @@ pub mod pallet {
         /// A nft has been listed for sale.
         NftListed {
             nft_id: NFTId,
-            price: NFTCurrency<BalanceCaps<T>, BalanceTiime<T>>,
+            price: BalanceOf<T>,
             marketplace_id: MarketplaceId,
         },
         /// A nft is removed from the marketplace by its owner.
@@ -720,7 +687,7 @@ pub mod pallet {
             name: TextFormat,
         },
         /// Marketplace mint fee changed.
-        MarketplaceMintFeeChanged { fee: BalanceCaps<T> },
+        MarketplaceMintFeeChanged { fee: BalanceOf<T> },
         /// Marketplace mint fee changed.
         MarketplaceCommissionFeeChanged {
             marketplace_id: MarketplaceId,
@@ -812,7 +779,7 @@ pub mod pallet {
         _,
         Blake2_128Concat,
         NFTId,
-        SaleInformation<T::AccountId, BalanceCaps<T>, BalanceTiime<T>>,
+        SaleInformation<T::AccountId, BalanceOf<T>>,
         OptionQuery,
     >;
 
@@ -833,16 +800,13 @@ pub mod pallet {
     /// Host much does it cost to create a marketplace.
     #[pallet::storage]
     #[pallet::getter(fn marketplace_mint_fee)]
-    pub type MarketplaceMintFee<T: Config> = StorageValue<_, BalanceCaps<T>, ValueQuery>;
+    pub type MarketplaceMintFee<T: Config> = StorageValue<_, BalanceOf<T>, ValueQuery>;
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub nfts_for_sale: Vec<(
-            NFTId,
-            SaleInformation<T::AccountId, BalanceCaps<T>, BalanceTiime<T>>,
-        )>,
+        pub nfts_for_sale: Vec<(NFTId, SaleInformation<T::AccountId, BalanceOf<T>>)>,
         pub marketplaces: Vec<(MarketplaceId, MarketplaceInformation<T::AccountId>)>,
-        pub marketplace_mint_fee: BalanceCaps<T>,
+        pub marketplace_mint_fee: BalanceOf<T>,
     }
 
     #[cfg(feature = "std")]
