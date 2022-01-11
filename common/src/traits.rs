@@ -1,7 +1,7 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 use ternoa_primitives::TextFormat;
 use ternoa_primitives::{
-    marketplace::MarketplaceId,
+    marketplace::{MarketplaceId, MarketplaceCommission},
     nfts::{NFTData, NFTId, NFTSeriesId},
 };
 
@@ -57,4 +57,9 @@ pub trait MarketplaceTrait<AccountId> {
         marketplace_id: MarketplaceId,
         account_id: AccountId,
     ) -> DispatchResult;
+
+    /// Return the commission charged by a given marketplace
+    fn get_commission_fee(
+        marketplace_id: MarketplaceId,
+    ) -> MarketplaceCommission;
 }

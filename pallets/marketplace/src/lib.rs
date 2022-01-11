@@ -20,7 +20,7 @@ use frame_support::traits::StorageVersion;
 use frame_support::weights::Weight;
 use ternoa_common::traits::MarketplaceTrait;
 use ternoa_primitives::nfts::NFTId;
-use ternoa_primitives::{marketplace::MarketplaceId, TextFormat};
+use ternoa_primitives::{marketplace::{MarketplaceId, MarketplaceCommission}, TextFormat};
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
@@ -844,7 +844,7 @@ pub mod pallet {
 }
 
 impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
-    /// Return if an account is permitted to list on given marketplace
+    // Return if an account is permitted to list on given marketplace
     fn is_allowed_to_list_on_marketplace(
         marketplace_id: MarketplaceId,
         account_id: T::AccountId,
@@ -861,5 +861,12 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
             ensure!(!is_on_list, Error::<T>::NotAllowedToList);
             Ok(())
         }
+    }
+
+    fn get_commission_fee(marketplace_id: MarketplaceId) -> MarketplaceCommission {
+        if let Some(marketplace) = Marketplaces::<T>::get(marketplace_id) {
+            return marketplace.commission_fee;
+        }
+        0
     }
 }

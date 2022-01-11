@@ -365,10 +365,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn remove_bid(
-            origin: OriginFor<T>,
-            nft_id: NFTId,
-        ) -> DispatchResultWithPostInfo {
+        pub fn remove_bid(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 

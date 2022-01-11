@@ -46,6 +46,8 @@ pub type AccountIndex = u32;
 pub mod marketplace {
     /// The type of marketplace Id
     pub type MarketplaceId = u32;
+    /// Type of marketplace commission
+    pub type MarketplaceCommission = u8;
 }
 
 pub mod nfts {
