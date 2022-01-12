@@ -115,8 +115,8 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
-        /// End block must be greater than start block for an auction
-        AuctionTimelineInvalid,
+        /// Auction start block must be 'buffer' blocks away from current block
+        AuctionTimelineBeforeBuffer,
         /// Only owner of NFT can list for auction
         NftNotOwned,
         /// buy_it_price should be greater then start_price
@@ -143,6 +143,14 @@ pub mod pallet {
         InvalidBidAmount,
         /// Unexpected error occured
         UnexpectedError,
+        /// Auction start should be greater than end block
+        AuctionStartBlockLesserThanEndBlock,
+        /// Auction start block must be higher than current block
+        AuctionStartLowerThanCurrentBlock,
+        /// Auction time should be higher than min auction duration
+        AuctionTimelineLowerThanMinDuration,
+        /// Auction time should be lower than max auction duration
+        AuctionTimelineGreaterThanMaxDuration,
     }
 
     #[pallet::hooks]
@@ -165,26 +173,29 @@ pub mod pallet {
             let creator = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
             // ensure the auction timeline is valid
-            ensure!(start_block < end_block, Error::<T>::AuctionTimelineInvalid);
+            ensure!(
+                start_block < end_block,
+                Error::<T>::AuctionStartBlockLesserThanEndBlock
+            );
             // ensure start block > current block
             ensure!(
                 start_block > current_block,
-                Error::<T>::AuctionTimelineInvalid
+                Error::<T>::AuctionStartLowerThanCurrentBlock
             );
             // ensure maximum auction duration is not exceeded
             ensure!(
                 end_block.checked_sub(&start_block) <= Some(T::MaxAuctionDuration::get()),
-                Error::<T>::AuctionTimelineInvalid
+                Error::<T>::AuctionTimelineGreaterThanMaxDuration
             );
             // ensure minimum auction duration is valid
             ensure!(
                 end_block.checked_sub(&start_block) >= Some(T::MinAuctionDuration::get()),
-                Error::<T>::AuctionTimelineInvalid
+                Error::<T>::AuctionTimelineLowerThanMinDuration
             );
             // ensure buffer period is valid
             ensure!(
                 start_block.checked_sub(&current_block) >= Some(T::MinAuctionBuffer::get()),
-                Error::<T>::AuctionTimelineInvalid
+                Error::<T>::AuctionTimelineBeforeBuffer
             );
 
             // ensure the buy_it_price is greater than start_price
@@ -267,7 +278,7 @@ pub mod pallet {
             // TODO : is this check necessary
             ensure!(
                 current_auction.start_block > current_block,
-                Error::<T>::AuctionTimelineInvalid
+                Error::<T>::AuctionStartLowerThanCurrentBlock
             );
 
             // TODO : Refund any reserved bids
