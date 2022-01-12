@@ -7,7 +7,7 @@ use sp_runtime::RuntimeDebug;
 use ternoa_primitives::marketplace::MarketplaceId;
 //use sp_std::iter::Map;
 
-#[derive(Encode, Decode, Clone, RuntimeDebug, TypeInfo)]
+#[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 /// Structure to store Auction data
 pub struct AuctionData<AccountId, BlockNumber, BalanceCaps>

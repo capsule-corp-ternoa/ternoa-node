@@ -236,17 +236,6 @@ pub mod help {
         return NFTs::nft_id_generator() - 1;
     }
 
-    pub fn create_nft_and_lock_series(
-        owner: Origin,
-        ipfs_reference: TextFormat,
-        series_id: NFTSeriesId,
-    ) -> NFTId {
-        let nft_id = help::create_nft(owner.clone(), ipfs_reference, Some(series_id.clone()));
-        help::finish_series(owner.clone(), series_id.clone());
-
-        nft_id
-    }
-
     pub fn create_mkp(
         owner: Origin,
         kind: MarketplaceType,
@@ -279,10 +268,6 @@ pub mod help {
         }
 
         return Marketplace::marketplace_id_generator();
-    }
-
-    pub fn finish_series(owner: Origin, series_id: Vec<u8>) {
-        assert_ok!(NFTs::finish_series(owner, series_id));
     }
 }
 
