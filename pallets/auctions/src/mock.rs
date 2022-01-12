@@ -1,6 +1,6 @@
 use crate::{self as ternoa_auctions, Config};
-use frame_support::parameter_types;
 use frame_support::traits::{Contains, GenesisBuild};
+use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
@@ -133,6 +133,9 @@ parameter_types! {
     pub const MinAuctionDuration: BlockNumber = 1;
     pub const MinAuctionBuffer: BlockNumber = 5;
     pub const MaxAuctionDuration: BlockNumber = 10;
+    pub const AuctionGracePeriod: BlockNumber = 2;
+    pub const AuctionEndingPeriod: BlockNumber = 2;
+    pub const AuctionsPalletId: PalletId = PalletId(*b"py/lotto");
 }
 
 impl Config for Test {
@@ -143,6 +146,9 @@ impl Config for Test {
     type MinAuctionBuffer = MinAuctionBuffer;
     type MaxAuctionDuration = MaxAuctionDuration;
     type MinAuctionDuration = MinAuctionDuration;
+    type AuctionGracePeriod = AuctionGracePeriod;
+    type AuctionEndingPeriod = AuctionEndingPeriod;
+    type PalletId = AuctionsPalletId;
 }
 
 pub struct ExtBuilder {

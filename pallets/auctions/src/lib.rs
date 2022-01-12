@@ -12,16 +12,18 @@ mod tests;
 mod benchmarking;
 
 mod types;
-use frame_support::traits::StorageVersion;
+use frame_support::traits::{Currency, Get, StorageVersion};
+use frame_support::PalletId;
+use sp_runtime::traits::AccountIdConversion;
+use sp_runtime::traits::Saturating;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
     use crate::types::AuctionData;
-    use crate::STORAGE_VERSION;
+    use crate::*;
     use frame_support::sp_runtime::traits::{CheckedAdd, CheckedSub};
-    use frame_support::traits::Currency;
     use frame_support::traits::ExistenceRequirement::KeepAlive;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
@@ -57,6 +59,9 @@ pub mod pallet {
         /// Ending period during which an auction can be extended
         #[pallet::constant]
         type AuctionEndingPeriod: Get<Self::BlockNumber>;
+        /// The auctions pallet id - will be used to generate account id
+        #[pallet::constant]
+        type PalletId: Get<PalletId>;
     }
 
     #[pallet::pallet]
@@ -330,8 +335,7 @@ pub mod pallet {
 
             // transfer funds from caller
             // TODO : is it better to reserve here to save gas??
-            // TODO : Recipient should be pallet account
-            T::CurrencyCaps::transfer(&who, &nft_data.owner, amount, KeepAlive)?;
+            T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
 
             // TODO : Return previous top bidder amount??
 
@@ -384,8 +388,13 @@ pub mod pallet {
 
             // transfer funds to caller
             // TODO : is it better to unreserve here to save gas??
-            // TODO : Recipient should be pallet account
-            //T::CurrencyCaps::transfer(&who, &nft_data.owner, amount, KeepAlive)?;
+            // TODO : replace amount by finding bid from bids map
+            T::CurrencyCaps::transfer(
+                &Self::account_id(),
+                &who,
+                current_auction.top_bidder.unwrap().1,
+                KeepAlive,
+            )?;
 
             // TODO : Return previous top bidder amount??
 
@@ -402,5 +411,22 @@ pub mod pallet {
 
             Ok(().into())
         }
+    }
+}
+
+impl<T: Config> Pallet<T> {
+    /// The account ID of the auctions pot.
+    pub fn account_id() -> T::AccountId {
+        T::PalletId::get().into_account()
+    }
+
+    /// Return the pot account and amount of money in the pot.
+    /// The existential deposit is not part of the pot so auctions account never gets deleted.
+    fn pot() -> (T::AccountId, BalanceOf<T>) {
+        let account_id = Self::account_id();
+        let balance = T::CurrencyCaps::free_balance(&account_id)
+            .saturating_sub(T::CurrencyCaps::minimum_balance());
+
+        (account_id, balance)
     }
 }
