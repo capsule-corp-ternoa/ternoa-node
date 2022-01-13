@@ -110,6 +110,12 @@ pub mod pallet {
             marketplace_id: MarketplaceId,
             creator: T::AccountId,
         },
+        /// An exising bid was updated
+        BidUpdated {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -333,7 +339,6 @@ pub mod pallet {
             }
 
             // transfer funds from caller
-            // TODO : is it better to reserve here to save gas??
             T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
 
             // TODO : Return previous top bidder amount??
@@ -403,6 +408,90 @@ pub mod pallet {
 
             // emit bid created event
             Self::deposit_event(Event::BidRemoved {
+                nft_id,
+                marketplace_id: current_auction.marketplace_id,
+                creator: who,
+            });
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn increase_bid(origin: OriginFor<T>, nft_id: NFTId, amount: BalanceOf<T>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let current_block = frame_system::Pallet::<T>::block_number();
+
+            // fetch the data of given nftId
+            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
+
+            // fetch data of auction that lists NFT
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // ensure the auction period has not ended
+            ensure!(
+                current_auction.end_block > current_block,
+                Error::<T>::AuctionEnded
+            );
+
+            // ensure the bid is larger than the current highest bid
+            if let Some(current_highest_bid) = current_auction.top_bidder {
+                ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
+            }
+
+            // transfer funds from caller (subtracting amount from previous bid)
+            // TODO : fetch the users current bid and subtract the amount to get amount to transfer;
+            let amount_to_transfer = amount;
+            T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
+
+
+            // emit bid created event
+            Self::deposit_event(Event::BidUpdated {
+                nft_id,
+                marketplace_id: current_auction.marketplace_id,
+                creator: who,
+            });
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn buy_it_now(origin: OriginFor<T>, nft_id: NFTId, amount: BalanceOf<T>) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let current_block = frame_system::Pallet::<T>::block_number();
+
+            // fetch the data of given nftId
+            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
+
+            // fetch data of auction that lists NFT
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // ensure the auction period has commenced
+            ensure!(
+                current_auction.start_block < current_block,
+                Error::<T>::AuctionNotStarted
+            );
+
+            // ensure the auction period has not ended
+            ensure!(
+                current_auction.end_block > current_block,
+                Error::<T>::AuctionEnded
+            );
+
+            // ensure the bid is larger than the current highest bid
+            if let Some(current_highest_bid) = current_auction.top_bidder {
+                ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
+            }
+
+            // transfer funds from caller (subtracting amount from previous bid)
+            // TODO : fetch the users current bid and subtract the amount to get amount to transfer;
+            let amount_to_transfer = amount;
+            T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
+
+
+            // emit bid created event
+            Self::deposit_event(Event::BidUpdated {
                 nft_id,
                 marketplace_id: current_auction.marketplace_id,
                 creator: who,
