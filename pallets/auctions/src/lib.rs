@@ -259,8 +259,6 @@ pub mod pallet {
         pub fn cancel_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
-            let current_auction =
-                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
 
             // fetch the data of given nftId
             let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
@@ -268,18 +266,8 @@ pub mod pallet {
             // ensure the caller is the owner of NFT
             ensure!(nft_data.owner == who.clone(), Error::<T>::NftNotOwned);
 
-            // ensure the nft is in listed for sale state
-            ensure!(
-                nft_data.listed_for_sale == true,
-                Error::<T>::NFTNotListedForSale
-            );
-
-            // ensure start block > current block ie auction already started
-            // TODO : is this check necessary
-            ensure!(
-                current_auction.start_block > current_block,
-                Error::<T>::AuctionStartLowerThanCurrentBlock
-            );
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
 
             // TODO : Refund any reserved bids
 

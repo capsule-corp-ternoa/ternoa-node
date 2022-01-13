@@ -1,5 +1,5 @@
 use crate::{self as ternoa_auctions, Config};
-use frame_support::traits::{Contains, GenesisBuild};
+use frame_support::traits::{Contains, GenesisBuild, OnFinalize, OnInitialize};
 use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
@@ -15,7 +15,6 @@ type Block = frame_system::mocking::MockBlock<Test>;
 
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
-pub const DAVE: u64 = 3;
 pub type BlockNumber = u64;
 
 frame_support::construct_runtime!(
@@ -155,7 +154,6 @@ pub struct ExtBuilder {
     nfts: Vec<(u32, NFTData<u64>)>,
     series: Vec<(Vec<u8>, NFTSeriesDetails<u64>)>,
     caps_endowed_accounts: Vec<(u64, u128)>,
-    tiime_endowed_accounts: Vec<(u64, u128)>,
     marketplaces: Vec<(u64, MarketplaceType, u8, Vec<u8>)>,
 }
 
@@ -165,7 +163,6 @@ impl Default for ExtBuilder {
             nfts: Vec::new(),
             series: Vec::new(),
             caps_endowed_accounts: Vec::new(),
-            tiime_endowed_accounts: Vec::new(),
             marketplaces: Vec::new(),
         }
     }
@@ -175,13 +172,6 @@ impl ExtBuilder {
     pub fn caps(mut self, accounts: Vec<(u64, u128)>) -> Self {
         for account in accounts {
             self.caps_endowed_accounts.push(account);
-        }
-        self
-    }
-
-    pub fn tiime(mut self, accounts: Vec<(u64, u128)>) -> Self {
-        for account in accounts {
-            self.tiime_endowed_accounts.push(account);
         }
         self
     }
@@ -278,4 +268,16 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .unwrap();
 
     t.into()
+}
+
+pub fn run_to_block(n: u64) {
+    while System::block_number() < n {
+        Auctions::on_finalize(System::block_number());
+        Balances::on_finalize(System::block_number());
+        System::on_finalize(System::block_number());
+        System::set_block_number(System::block_number() + 1);
+        System::on_initialize(System::block_number());
+        Balances::on_initialize(System::block_number());
+        Auctions::on_initialize(System::block_number());
+    }
 }
