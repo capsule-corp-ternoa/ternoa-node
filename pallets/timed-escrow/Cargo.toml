@@ -1,8 +1,8 @@
 [package]
+name = "ternoa-timed-escrow"
+version = "0.1.0"
 edition = "2018"
 license = "Apache 2.0"
-name = "ternoa-timed-escrow"
-version = "0.2.0"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
