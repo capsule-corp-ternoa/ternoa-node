@@ -21,7 +21,7 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
-    use crate::types::AuctionData;
+    use crate::types::{AuctionData, SortedBidderList};
     use crate::*;
     use frame_support::sp_runtime::traits::{CheckedAdd, CheckedSub};
     use frame_support::traits::ExistenceRequirement::KeepAlive;
@@ -163,6 +163,8 @@ pub mod pallet {
         AuctionTimelineLowerThanMinDuration,
         /// Auction time should be lower than max auction duration
         AuctionTimelineGreaterThanMaxDuration,
+        /// The specified bid does not exist
+        BidDoesNotExist,
     }
 
     #[pallet::hooks]
@@ -243,6 +245,8 @@ pub mod pallet {
             // Mark NFT as listed for sale
             T::NFTHandler::set_listed_for_sale(nft_id, true)?;
 
+            let bidders: SortedBidderList<T::AccountId, BalanceOf<T>> = SortedBidderList::new();
+
             // Add auction to storage
             Auctions::<T>::insert(
                 nft_id,
@@ -252,7 +256,7 @@ pub mod pallet {
                     end_block,
                     start_price,
                     buy_it_price,
-                    top_bidder: None,
+                    bidders,
                     marketplace_id,
                 },
             );
@@ -340,23 +344,25 @@ pub mod pallet {
             );
 
             // ensure the bid is larger than the current highest bid
-            if let Some(current_highest_bid) = current_auction.top_bidder {
+            if let Some(current_highest_bid) = current_auction.bidders.get_current_highest_bid() {
                 ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
             }
 
             // transfer funds from caller
             T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
 
-            // TODO : Return previous top bidder amount??
-
-            // add bid as top bidder in storage
+            // add bid to storage
             Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
                 // should not panic when unwrap since already checked above
                 let auction = maybe_auction.as_mut().unwrap();
+
                 // replace top bidder with caller
-                auction.top_bidder = Some((who.clone(), amount));
+                // if bidder has been removed, refund removed user
+                if let Some(bid) = auction.bidders.insert_new_bid(who.clone(), amount) {
+                    T::CurrencyCaps::transfer(&Self::account_id(), &bid.0, bid.1, KeepAlive)?;
+                }
+
                 // extend auction by grace period
-                // TODO : Can lead to infinite auction??
                 if auction.end_block.checked_sub(&current_block)
                     < Some(T::AuctionGracePeriod::get())
                 {
@@ -383,9 +389,6 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
-            // fetch the data of given nftId
-            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
-
             // fetch data of auction that lists NFT
             let current_auction =
                 Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
@@ -396,23 +399,16 @@ pub mod pallet {
                 Error::<T>::AuctionEnded
             );
 
-            // transfer funds to caller
-            // TODO : is it better to unreserve here to save gas??
-            // TODO : replace amount by finding bid from bids map
-            T::CurrencyCaps::transfer(
-                &Self::account_id(),
-                &who,
-                current_auction.top_bidder.unwrap().1,
-                KeepAlive,
-            )?;
+            // ensure the user has a bid
+            match current_auction.bidders.find_bid(&who) {
+                // transfer funds to caller
+                Some(user_bid) => {
+                    T::CurrencyCaps::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)
+                }
+                None => Err(Error::<T>::BidDoesNotExist.into()),
+            };
 
-            // TODO : Return previous top bidder amount??
-
-            // remove bidder as top bidder
-            // TODO : possible attack to create bid increase time and then remove bid??
-            // TODO : how to replace top bidder?
-
-            // emit bid created event
+            // emit bid removed event
             Self::deposit_event(Event::BidRemoved {
                 nft_id,
                 marketplace_id: current_auction.marketplace_id,
@@ -431,9 +427,6 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
-            // fetch the data of given nftId
-            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
-
             // fetch data of auction that lists NFT
             let current_auction =
                 Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
@@ -445,14 +438,19 @@ pub mod pallet {
             );
 
             // ensure the bid is larger than the current highest bid
-            if let Some(current_highest_bid) = current_auction.top_bidder {
+            if let Some(current_highest_bid) = current_auction.bidders.get_current_highest_bid() {
                 ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
             }
 
             // transfer funds from caller (subtracting amount from previous bid)
-            // TODO : fetch the users current bid and subtract the amount to get amount to transfer;
-            let amount_to_transfer = amount;
-            T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
+            match current_auction.bidders.find_bid(&who) {
+                // transfer funds to caller
+                Some(user_bid) => {
+                    let amount_to_transfer = amount.checked_sub(&user_bid.1);
+                    T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)
+                }
+                None => Err(Error::<T>::BidDoesNotExist.into()),
+            };
 
             // emit bid created event
             Self::deposit_event(Event::BidUpdated {
@@ -493,7 +491,7 @@ pub mod pallet {
             );
 
             // ensure the bid is larger than the current highest bid
-            if let Some(current_highest_bid) = current_auction.top_bidder {
+            if let Some(current_highest_bid) = current_auction.bidders.get_current_highest_bid() {
                 ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
             }
 
