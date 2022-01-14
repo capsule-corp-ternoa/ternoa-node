@@ -116,6 +116,12 @@ pub mod pallet {
             marketplace_id: MarketplaceId,
             creator: T::AccountId,
         },
+        /// An exising bid was completed
+        BidCompleted {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -417,7 +423,11 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn increase_bid(origin: OriginFor<T>, nft_id: NFTId, amount: BalanceOf<T>) -> DispatchResultWithPostInfo {
+        pub fn increase_bid(
+            origin: OriginFor<T>,
+            nft_id: NFTId,
+            amount: BalanceOf<T>,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
@@ -444,7 +454,6 @@ pub mod pallet {
             let amount_to_transfer = amount;
             T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
 
-
             // emit bid created event
             Self::deposit_event(Event::BidUpdated {
                 nft_id,
@@ -456,7 +465,11 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn buy_it_now(origin: OriginFor<T>, nft_id: NFTId, amount: BalanceOf<T>) -> DispatchResultWithPostInfo {
+        pub fn buy_it_now(
+            origin: OriginFor<T>,
+            nft_id: NFTId,
+            amount: BalanceOf<T>,
+        ) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
@@ -489,12 +502,42 @@ pub mod pallet {
             let amount_to_transfer = amount;
             T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
 
-
             // emit bid created event
             Self::deposit_event(Event::BidUpdated {
                 nft_id,
                 marketplace_id: current_auction.marketplace_id,
                 creator: who,
+            });
+
+            Ok(().into())
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn complete_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+            let current_block = frame_system::Pallet::<T>::block_number();
+
+            // fetch data of auction that lists NFT
+            let current_auction =
+                Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // ensure the auction period has commenced
+            ensure!(
+                current_auction.start_block < current_block,
+                Error::<T>::AuctionNotStarted
+            );
+
+            // ensure the auction period has ended
+            ensure!(
+                current_auction.end_block < current_block,
+                Error::<T>::AuctionEnded
+            );
+
+            // emit bid created event
+            Self::deposit_event(Event::BidCompleted {
+                nft_id,
+                marketplace_id: current_auction.marketplace_id,
+                creator: current_auction.creator,
             });
 
             Ok(().into())
