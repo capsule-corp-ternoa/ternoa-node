@@ -15,6 +15,7 @@ type Block = frame_system::mocking::MockBlock<Test>;
 
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
+pub const CHARLIE: u64 = 3;
 pub type BlockNumber = u64;
 
 frame_support::construct_runtime!(

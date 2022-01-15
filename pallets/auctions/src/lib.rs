@@ -165,6 +165,10 @@ pub mod pallet {
         AuctionTimelineGreaterThanMaxDuration,
         /// The specified bid does not exist
         BidDoesNotExist,
+        /// Cannot cancel an auction that has started
+        CannotCancelInProcessAuction,
+        /// User cannot create more than one bid
+        UserBidAlreadyExists,
     }
 
     #[pallet::hooks]
@@ -285,7 +289,11 @@ pub mod pallet {
             let current_auction =
                 Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
 
-            // TODO : Refund any reserved bids
+            // ensure auction has not started
+            ensure!(
+                current_auction.start_block > current_block,
+                Error::<T>::CannotCancelInProcessAuction
+            );
 
             // List nft as not for sale
             T::NFTHandler::set_listed_for_sale(nft_id, false)?;
@@ -321,7 +329,7 @@ pub mod pallet {
 
             // ensure the nft is in listed for sale state
             ensure!(
-                nft_data.listed_for_sale == false,
+                nft_data.listed_for_sale == true,
                 Error::<T>::NFTNotListedForSale
             );
 
@@ -339,14 +347,26 @@ pub mod pallet {
 
             // ensure the auction period has not ended
             ensure!(
-                current_auction.end_block > current_block,
+                current_auction.end_block >= current_block,
                 Error::<T>::AuctionEnded
+            );
+
+            // ensure the bid amount is greater than start price
+            ensure!(
+                current_auction.start_price < amount,
+                Error::<T>::InvalidBidAmount
             );
 
             // ensure the bid is larger than the current highest bid
             if let Some(current_highest_bid) = current_auction.bidders.get_current_highest_bid() {
                 ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
             }
+
+            // reject if user already has a bid
+            ensure!(
+                current_auction.bidders.find_bid(&who).is_none(),
+                Error::<T>::UserBidAlreadyExists
+            );
 
             // transfer funds from caller
             T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
@@ -362,9 +382,9 @@ pub mod pallet {
                     T::CurrencyCaps::transfer(&Self::account_id(), &bid.0, bid.1, KeepAlive)?;
                 }
 
-                // extend auction by grace period
+                // extend auction by grace period if in ending period
                 if auction.end_block.checked_sub(&current_block)
-                    < Some(T::AuctionGracePeriod::get())
+                    <= Some(T::AuctionEndingPeriod::get())
                 {
                     auction.end_block = auction
                         .end_block
@@ -399,14 +419,21 @@ pub mod pallet {
                 Error::<T>::AuctionEnded
             );
 
-            // ensure the user has a bid
-            match current_auction.bidders.find_bid(&who) {
-                // transfer funds to caller
-                Some(user_bid) => {
-                    T::CurrencyCaps::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)
-                }
-                None => Err(Error::<T>::BidDoesNotExist.into()),
-            };
+            // reject if user does not have a bid
+            ensure!(
+                current_auction.bidders.find_bid(&who).is_some(),
+                Error::<T>::BidDoesNotExist
+            );
+
+            // remove bid from storage
+            Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
+                // should not panic when unwrap since already checked above
+                let mut auction = maybe_auction.as_mut().unwrap();
+                let user_bid = auction.bidders.find_bid(&who).unwrap();
+                T::CurrencyCaps::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive);
+                auction.bidders.remove_bid(&who);
+                Ok(())
+            })?;
 
             // emit bid removed event
             Self::deposit_event(Event::BidRemoved {

@@ -188,6 +188,7 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.find_bid(&5), Some(&(5, 6)));
     assert_eq!(bidders_list.find_bid(&11), Some(&(11, 12)));
     assert_eq!(bidders_list.find_bid(&7), Some(&(7, 8)));
+    assert_eq!(bidders_list.find_bid(&2021), None);
 
     // ensure remove_bid works
     bidders_list.remove_bid(&5);
