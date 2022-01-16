@@ -98,6 +98,18 @@ pub mod pallet {
             marketplace_id: MarketplaceId,
             creator: T::AccountId,
         },
+        /// An existing auction was purchased at buy it now price
+        AuctionBuyItNow {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
+        /// An auction has completed and no more bids can be placed
+        AuctionCompleted {
+            nft_id: NFTId,
+            marketplace_id: MarketplaceId,
+            creator: T::AccountId,
+        },
         /// A new bid was created
         BidCreated {
             nft_id: NFTId,
@@ -169,6 +181,8 @@ pub mod pallet {
         CannotCancelInProcessAuction,
         /// User cannot create more than one bid
         UserBidAlreadyExists,
+        /// The auction does not have a buy it now price
+        AuctionDoesNotSupportBuyItNow,
     }
 
     #[pallet::hooks]
@@ -473,8 +487,13 @@ pub mod pallet {
             match current_auction.bidders.find_bid(&who) {
                 // transfer funds to caller
                 Some(user_bid) => {
-                    let amount_to_transfer = amount.checked_sub(&user_bid.1);
-                    T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)
+                    let amount_to_transfer = amount.checked_sub(&user_bid.1).unwrap();
+                    T::CurrencyCaps::transfer(
+                        &who,
+                        &Self::account_id(),
+                        amount_to_transfer,
+                        KeepAlive,
+                    )
                 }
                 None => Err(Error::<T>::BidDoesNotExist.into()),
             };
@@ -498,12 +517,15 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
-            // fetch the data of given nftId
-            let nft_data = T::NFTHandler::get_nft(nft_id).ok_or(Error::<T>::NFTIdInvalid)?;
-
             // fetch data of auction that lists NFT
             let current_auction =
                 Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+
+            // ensure the auction has a buy it now price
+            ensure!(
+                current_auction.buy_it_price.is_some(),
+                Error::<T>::AuctionDoesNotSupportBuyItNow
+            );
 
             // ensure the auction period has commenced
             ensure!(
@@ -517,18 +539,16 @@ pub mod pallet {
                 Error::<T>::AuctionEnded
             );
 
-            // ensure the bid is larger than the current highest bid
-            if let Some(current_highest_bid) = current_auction.bidders.get_current_highest_bid() {
-                ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
-            }
+            // TODO : Mark the auction as completed so other bid users can claim amount
 
-            // transfer funds from caller (subtracting amount from previous bid)
-            // TODO : fetch the users current bid and subtract the amount to get amount to transfer;
-            let amount_to_transfer = amount;
+            // transfer funds from caller to pallet
             T::CurrencyCaps::transfer(&who, &Self::account_id(), amount, KeepAlive)?;
 
+            // transfer NFT to caller
+            T::NFTHandler::set_owner(nft_id, &who)?;
+
             // emit bid created event
-            Self::deposit_event(Event::BidUpdated {
+            Self::deposit_event(Event::AuctionBuyItNow {
                 nft_id,
                 marketplace_id: current_auction.marketplace_id,
                 creator: who,
@@ -546,20 +566,20 @@ pub mod pallet {
             let current_auction =
                 Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
 
-            // ensure the auction period has commenced
-            ensure!(
-                current_auction.start_block < current_block,
-                Error::<T>::AuctionNotStarted
-            );
-
             // ensure the auction period has ended
             ensure!(
                 current_auction.end_block < current_block,
                 Error::<T>::AuctionEnded
             );
 
+            // Transfer nft to highest bidder
+            if let Some(highest_bidder) = current_auction.bidders.get_current_highest_bid() {
+                // transfer NFT to highest bidder
+                T::NFTHandler::set_owner(nft_id, &highest_bidder.0)?;
+            }
+
             // emit bid created event
-            Self::deposit_event(Event::BidCompleted {
+            Self::deposit_event(Event::AuctionCompleted {
                 nft_id,
                 marketplace_id: current_auction.marketplace_id,
                 creator: current_auction.creator,
