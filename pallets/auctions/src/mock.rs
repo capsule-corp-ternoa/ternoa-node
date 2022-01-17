@@ -140,7 +140,7 @@ parameter_types! {
 
 impl Config for Test {
     type Event = Event;
-    type CurrencyCaps = Balances;
+    type Currency = Balances;
     type NFTHandler = NFTs;
     type MarketplaceHandler = Marketplace;
     type MinAuctionBuffer = MinAuctionBuffer;

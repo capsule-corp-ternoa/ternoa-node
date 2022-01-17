@@ -52,7 +52,7 @@ where
         value: BalanceCaps,
     ) -> Option<(AccountId, BalanceCaps)> {
         // ensure the new bid is larger than current highest bid
-        if let Some(current_highest_bid) = self.get_current_highest_bid() {
+        if let Some(current_highest_bid) = self.get_highest_bid() {
             if current_highest_bid.1 >= value {
                 // this panic should never happen since the extrinsic already checks if value > current_highest_bid
                 panic!("cannot accept a lower bid!");
@@ -79,12 +79,12 @@ where
     }
 
     /// Get current highest bid in list
-    pub fn get_current_highest_bid(&self) -> Option<&(AccountId, BalanceCaps)> {
+    pub fn get_highest_bid(&self) -> Option<&(AccountId, BalanceCaps)> {
         self.0.last()
     }
 
     /// Get current lowest bid in list
-    pub fn get_current_lowest_bid(&self) -> Option<&(AccountId, BalanceCaps)> {
+    pub fn get_lowest_bid(&self) -> Option<&(AccountId, BalanceCaps)> {
         self.0.first()
     }
 
@@ -94,13 +94,14 @@ where
     }
 
     /// Remove a specific bid from list
-    pub fn remove_bid(&mut self, account_id: &AccountId) {
+    pub fn remove_bid(&mut self, account_id: &AccountId) -> bool {
         match self.0.binary_search_by_key(account_id, |(a, _)| a.clone()) {
             Ok(index) => {
                 self.0.remove(index);
+                true
             }
-            Err(_) => (), // since the value does not exist, ignore
-        };
+            Err(_) => false,
+        }
     }
 
     /// Find a specific bid from list
@@ -130,10 +131,10 @@ fn test_sorted_bid_works() {
     );
 
     // get highest bid works
-    assert_eq!(bidders_list.get_current_highest_bid(), Some(&(2u32, 3u32)));
+    assert_eq!(bidders_list.get_highest_bid(), Some(&(2u32, 3u32)));
 
     // get lowest bid works
-    assert_eq!(bidders_list.get_current_lowest_bid(), Some(&(1u32, 2u32)));
+    assert_eq!(bidders_list.get_lowest_bid(), Some(&(1u32, 2u32)));
 
     // insert max bids
     for n in 4..12 {
@@ -191,7 +192,7 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.find_bid(&2021), None);
 
     // ensure remove_bid works
-    bidders_list.remove_bid(&5);
+    assert_eq!(bidders_list.remove_bid(&5), true);
     assert_eq!(
         bidders_list,
         SortedBidderList(
@@ -211,7 +212,7 @@ fn test_sorted_bid_works() {
     );
 
     // ensure remove_bid works
-    bidders_list.remove_bid(&11);
+    assert_eq!(bidders_list.remove_bid(&11), true);
     assert_eq!(
         bidders_list,
         SortedBidderList(
@@ -228,6 +229,7 @@ fn test_sorted_bid_works() {
             .to_vec()
         )
     );
+    assert_eq!(bidders_list.remove_bid(&2022), false);
 }
 
 #[test]

@@ -1,9 +1,7 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 use ternoa_primitives::TextFormat;
-use ternoa_primitives::{
-    marketplace::{MarketplaceId, MarketplaceCommission},
-    nfts::{NFTData, NFTId, NFTSeriesId},
-};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceCommission};
+use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 
 pub trait NFTTrait {
     type AccountId;
