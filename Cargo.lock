@@ -7789,7 +7789,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-common"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "frame-support",
  "sp-runtime",
@@ -7799,7 +7799,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-executor"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
  "parity-scale-codec",
@@ -7815,7 +7815,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-marketplace"
-version = "0.4.0"
+version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7836,7 +7836,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-nfts"
-version = "0.3.0"
+version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7856,7 +7856,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-primitives"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "frame-system",
  "parity-scale-codec",
@@ -7870,7 +7870,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-runtime"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -7963,7 +7963,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-timed-escrow"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
