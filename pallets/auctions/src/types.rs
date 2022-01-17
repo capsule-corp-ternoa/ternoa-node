@@ -19,17 +19,32 @@ where
     pub end_block: BlockNumber,
     pub start_price: BalanceCaps,
     pub buy_it_price: Option<BalanceCaps>,
-    pub bidders: SortedBidderList<AccountId, BalanceCaps>,
+    pub bidders: BidderList<AccountId, BalanceCaps>,
     pub marketplace_id: MarketplaceId,
+    pub state: AuctionState,
+}
+
+#[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+/// enum to store the current state of an auction
+pub enum AuctionState {
+    /// The auction has been created but not yet started
+    Pending,
+    /// The auction has started and is in process
+    InProcess,
+    /// The auction has been extended past the original end_block
+    Extended,
+    /// The auction has been completed, the nft has been assigned to highest bidder
+    Completed,
 }
 
 #[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 /// wrapper type to store sorted list of all bids
 /// The wrapper exists to ensure a queue implementation of sorted bids
-pub struct SortedBidderList<AccountId, BalanceCaps>(pub Vec<(AccountId, BalanceCaps)>);
+pub struct BidderList<AccountId, BalanceCaps>(pub Vec<(AccountId, BalanceCaps)>);
 
-impl<AccountId, BalanceCaps> SortedBidderList<AccountId, BalanceCaps>
+impl<AccountId, BalanceCaps> BidderList<AccountId, BalanceCaps>
 where
     AccountId: std::cmp::Ord + Clone,
     BalanceCaps: std::cmp::PartialOrd,
@@ -42,22 +57,11 @@ where
     }
 
     /// Insert a new bid to the list
-    ///
-    /// The function ensures that the new bid is always higher than the current highest bid
-    /// If the insert action will cause an overflow, the lowest bid is removed and returned
-    /// If value lower than current highest bid is passed, the function will panic
     pub fn insert_new_bid(
         &mut self,
         account_id: AccountId,
         value: BalanceCaps,
     ) -> Option<(AccountId, BalanceCaps)> {
-        // ensure the new bid is larger than current highest bid
-        if let Some(current_highest_bid) = self.get_highest_bid() {
-            if current_highest_bid.1 >= value {
-                // this panic should never happen since the extrinsic already checks if value > current_highest_bid
-                panic!("cannot accept a lower bid!");
-            }
-        }
         // If list is at max capacity, remove lowest bid
         match self.0.len() {
             Self::MAX_COUNT => {
@@ -118,16 +122,16 @@ fn test_sorted_bid_works() {
     type MockBalance = u32;
     type MockAccount = u32;
     // create a new list
-    let mut bidders_list: SortedBidderList<MockAccount, MockBalance> = SortedBidderList::new();
+    let mut bidders_list: BidderList<MockAccount, MockBalance> = BidderList::new();
 
     // insert to list works
     bidders_list.insert_new_bid(1u32, 2u32);
-    assert_eq!(bidders_list, SortedBidderList([(1u32, 2u32)].to_vec()));
+    assert_eq!(bidders_list, BidderList([(1u32, 2u32)].to_vec()));
 
     bidders_list.insert_new_bid(2u32, 3u32);
     assert_eq!(
         bidders_list,
-        SortedBidderList([(1u32, 2u32), (2u32, 3u32)].to_vec())
+        BidderList([(1u32, 2u32), (2u32, 3u32)].to_vec())
     );
 
     // get highest bid works
@@ -144,7 +148,7 @@ fn test_sorted_bid_works() {
     // ensure the insertion has worked correctly
     assert_eq!(
         bidders_list,
-        SortedBidderList(
+        BidderList(
             [
                 (1, 2),
                 (2, 3),
@@ -168,7 +172,7 @@ fn test_sorted_bid_works() {
     // ensure the insertion has worked correctly
     assert_eq!(
         bidders_list,
-        SortedBidderList(
+        BidderList(
             [
                 (2, 3),
                 (4, 5),
@@ -195,7 +199,7 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.remove_bid(&5), true);
     assert_eq!(
         bidders_list,
-        SortedBidderList(
+        BidderList(
             [
                 (2, 3),
                 (4, 5),
@@ -215,7 +219,7 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.remove_bid(&11), true);
     assert_eq!(
         bidders_list,
-        SortedBidderList(
+        BidderList(
             [
                 (2, 3),
                 (4, 5),
@@ -230,17 +234,4 @@ fn test_sorted_bid_works() {
         )
     );
     assert_eq!(bidders_list.remove_bid(&2022), false);
-}
-
-#[test]
-#[should_panic(expected = "cannot accept a lower bid!")]
-fn test_sorted_bid_insert_fails_for_lower_bid() {
-    type MockBalance = u32;
-    type MockAccount = u32;
-    // create a new list
-    let mut bidders_list: SortedBidderList<MockAccount, MockBalance> = SortedBidderList::new();
-
-    // insert to list works
-    bidders_list.insert_new_bid(1u32, 2u32);
-    bidders_list.insert_new_bid(1u32, 2u32);
 }

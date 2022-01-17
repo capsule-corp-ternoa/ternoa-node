@@ -57,7 +57,7 @@ pub trait MarketplaceTrait<AccountId> {
     ) -> DispatchResult;
 
     /// Return the commission charged by a given marketplace
-    fn get_commission_fee(
+    fn get_marketplace_info(
         marketplace_id: MarketplaceId,
-    ) -> MarketplaceCommission;
+    ) -> Option<(AccountId, MarketplaceCommission)>;
 }

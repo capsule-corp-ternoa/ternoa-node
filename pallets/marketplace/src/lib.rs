@@ -863,10 +863,10 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
         }
     }
 
-    fn get_commission_fee(marketplace_id: MarketplaceId) -> MarketplaceCommission {
-        if let Some(marketplace) = Marketplaces::<T>::get(marketplace_id) {
-            return marketplace.commission_fee;
+    fn get_marketplace_info(marketplace_id: MarketplaceId) -> Option<(T::AccountId, MarketplaceCommission)> {
+        match Marketplaces::<T>::get(marketplace_id) {
+            Some(marketplace) => Some((marketplace.owner, marketplace.commission_fee)),
+            None => None
         }
-        0
     }
 }

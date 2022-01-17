@@ -200,16 +200,6 @@ impl ExtBuilder {
         ext.execute_with(|| System::set_block_number(1));
         ext
     }
-
-    /*     pub fn build_v6_migration(self) -> sp_io::TestExternalities {
-        let t = frame_system::GenesisConfig::default()
-            .build_storage::<Test>()
-            .unwrap();
-
-        let mut ext = sp_io::TestExternalities::new(t);
-        ext.execute_with(|| System::set_block_number(1));
-        ext
-    } */
 }
 
 pub mod help {
