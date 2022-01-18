@@ -24,7 +24,6 @@ pub mod pallet {
     use crate::types::{AuctionData, AuctionState, BidderList};
     use crate::*;
     use frame_support::sp_runtime::traits::{CheckedAdd, CheckedSub};
-    use frame_support::sp_runtime::Percent;
     use frame_support::traits::ExistenceRequirement::KeepAlive;
     use frame_support::transactional;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
@@ -446,7 +445,7 @@ pub mod pallet {
                     .bidders
                     .find_bid(&who)
                     .ok_or(Error::<T>::BidDoesNotExist)?;
-                T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive);
+                T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)?;
                 auction.bidders.remove_bid(&who);
                 // emit bid removed event
                 Self::deposit_event(Event::BidRemoved {
@@ -556,7 +555,7 @@ pub mod pallet {
                     &marketplace_info.0,
                     marketplace_commission_amount,
                     KeepAlive,
-                );
+                )?;
 
                 // Transfer remaining to auction creator
                 T::Currency::transfer(
@@ -564,7 +563,7 @@ pub mod pallet {
                     &auction.creator,
                     amount_to_auction_creator,
                     KeepAlive,
-                );
+                )?;
 
                 // emit bid created event
                 Self::deposit_event(Event::AuctionBuyItNow {
@@ -581,7 +580,7 @@ pub mod pallet {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn complete_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
-            let who = ensure_root(origin)?;
+            let _who = ensure_root(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
             // Mark the auction as completed so other bid users can claim amount
@@ -591,6 +590,9 @@ pub mod pallet {
                     .as_mut()
                     .ok_or(Error::<T>::AuctionDoesNotExist)?;
 
+                // ensure the auction period has ended
+                ensure!(auction.end_block < current_block, Error::<T>::AuctionNotCompleted);
+
                 // get the highest bidder
                 let highest_bidder = auction.bidders.get_highest_bid();
 
@@ -599,13 +601,39 @@ pub mod pallet {
                     Some(bidder) => {
                         // remove highest bidder from list to avoid claim
                         let _ = auction.bidders.clone().remove_bid(&bidder.0);
+
+                        // Handle marketplace fees
+                        let marketplace_info =
+                            T::MarketplaceHandler::get_marketplace_info(auction.marketplace_id)
+                                .ok_or(Error::<T>::UnexpectedError)?;
+                        let marketplace_commission_amount =
+                            bidder.1.saturating_mul(marketplace_info.1.into()) / 100u32.into();
+                        let amount_to_auction_creator = bidder
+                            .1
+                            .checked_sub(&marketplace_commission_amount)
+                            .ok_or(Error::<T>::UnexpectedError)?;
+
+                        // Transfer fee to marketplace
+                        T::Currency::transfer(
+                            &Self::account_id(),
+                            &marketplace_info.0,
+                            marketplace_commission_amount,
+                            KeepAlive,
+                        )?;
+
+                        // Transfer remaining to auction creator
+                        T::Currency::transfer(
+                            &Self::account_id(),
+                            &auction.creator,
+                            amount_to_auction_creator,
+                            KeepAlive,
+                        )?;
+
                         // transfer NFT to highest bidder
                         T::NFTHandler::set_owner(nft_id, &bidder.0)?;
                     }
                     None => (),
                 }
-
-                // Handle marketplace fees
 
                 // ensure the state is completed so other users can claim amount
                 auction.state = AuctionState::Completed;
@@ -627,7 +655,6 @@ pub mod pallet {
         #[transactional]
         pub fn claim_bid(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let current_block = frame_system::Pallet::<T>::block_number();
 
             // Mark the auction as completed so other bid users can claim amount
             Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
@@ -635,6 +662,7 @@ pub mod pallet {
                 let auction = maybe_auction
                     .as_mut()
                     .ok_or(Error::<T>::AuctionDoesNotExist)?;
+
                 // ensure the auction period is completed
                 ensure!(
                     auction.state == AuctionState::Completed,

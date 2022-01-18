@@ -473,6 +473,7 @@ fn complete_auction_happy() {
             run_to_block(7);
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 200));
             assert_eq!(Balances::free_balance(BOB), 800);
+            run_to_block(18);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(BOB));
         })
@@ -519,6 +520,7 @@ fn claim_bid_happy() {
             assert_ok!(Auctions::add_bid(charlie.clone(), nft_id, 500));
             assert_eq!(Balances::free_balance(BOB), 800);
             assert_eq!(Balances::free_balance(CHARLIE), 500);
+            run_to_block(18);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(CHARLIE));
             assert_ok!(Auctions::claim_bid(bob.clone(), nft_id));
@@ -557,6 +559,7 @@ fn claim_bid_unhappy() {
             assert_ok!(Auctions::add_bid(charlie.clone(), nft_id, 500));
             assert_eq!(Balances::free_balance(BOB), 800);
             assert_eq!(Balances::free_balance(CHARLIE), 500);
+            run_to_block(18);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(CHARLIE));
             assert_ok!(Auctions::claim_bid(bob.clone(), nft_id));
