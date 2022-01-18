@@ -16,6 +16,7 @@ type Block = frame_system::mocking::MockBlock<Test>;
 pub const ALICE: u64 = 1;
 pub const BOB: u64 = 2;
 pub const CHARLIE: u64 = 3;
+pub const TREASURY: u64 = 2021;
 pub type BlockNumber = u64;
 
 frame_support::construct_runtime!(
@@ -155,7 +156,6 @@ pub struct ExtBuilder {
     nfts: Vec<(u32, NFTData<u64>)>,
     series: Vec<(Vec<u8>, NFTSeriesDetails<u64>)>,
     caps_endowed_accounts: Vec<(u64, u128)>,
-    marketplaces: Vec<(u64, MarketplaceType, u8, Vec<u8>)>,
 }
 
 impl Default for ExtBuilder {
@@ -164,7 +164,6 @@ impl Default for ExtBuilder {
             nfts: Vec::new(),
             series: Vec::new(),
             caps_endowed_accounts: Vec::new(),
-            marketplaces: Vec::new(),
         }
     }
 }
@@ -202,6 +201,7 @@ impl ExtBuilder {
     }
 }
 
+#[allow(dead_code)]
 pub mod help {
     use super::*;
     use frame_support::assert_ok;

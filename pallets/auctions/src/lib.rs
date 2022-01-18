@@ -136,11 +136,7 @@ pub mod pallet {
             creator: T::AccountId,
         },
         /// An expired bid was refunded
-        BidClaimed {
-            nft_id: NFTId,
-            marketplace_id: MarketplaceId,
-            creator: T::AccountId,
-        },
+        BidClaimed { nft_id: NFTId, caller: T::AccountId },
     }
 
     // Errors inform users that something went wrong.
@@ -439,14 +435,16 @@ pub mod pallet {
                 let auction = maybe_auction
                     .as_mut()
                     .ok_or(Error::<T>::AuctionDoesNotExist)?;
+
                 // ensure the auction period has not ended
                 ensure!(auction.end_block > current_block, Error::<T>::AuctionEnded);
+
                 let user_bid = auction
                     .bidders
-                    .find_bid(&who)
+                    .remove_bid(&who)
                     .ok_or(Error::<T>::BidDoesNotExist)?;
+
                 T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)?;
-                auction.bidders.remove_bid(&who);
                 // emit bid removed event
                 Self::deposit_event(Event::BidRemoved {
                     nft_id,
@@ -479,17 +477,15 @@ pub mod pallet {
                 ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
             }
 
-            // transfer funds from caller (subtracting amount from previous bid)
-            match auction.bidders.find_bid(&who) {
-                // transfer funds to caller
-                Some(user_bid) => {
-                    let amount_to_transfer = amount
-                        .checked_sub(&user_bid.1)
-                        .ok_or(Error::<T>::UnexpectedError)?;
-                    T::Currency::transfer(&who, &Self::account_id(), amount_to_transfer, KeepAlive)
-                }
-                None => Err(Error::<T>::BidDoesNotExist.into()),
-            };
+            let user_bid = auction
+                .bidders
+                .find_bid(&who)
+                .take()
+                .ok_or(Error::<T>::BidDoesNotExist)?;
+            let amount_to_transfer = amount
+                .checked_sub(&user_bid.1)
+                .ok_or(Error::<T>::UnexpectedError)?;
+            T::Currency::transfer(&who, &Self::account_id(), amount_to_transfer, KeepAlive)?;
 
             // emit bid created event
             Self::deposit_event(Event::BidUpdated {
@@ -545,9 +541,8 @@ pub mod pallet {
                         .ok_or(Error::<T>::UnexpectedError)?;
                 let marketplace_commission_amount =
                     amount.saturating_mul(marketplace_info.1.into()) / 100u32.into();
-                let amount_to_auction_creator = amount
-                    .checked_sub(&marketplace_commission_amount)
-                    .ok_or(Error::<T>::UnexpectedError)?;
+                let amount_to_auction_creator =
+                    amount.saturating_sub(marketplace_commission_amount);
 
                 // Transfer fee to marketplace
                 T::Currency::transfer(
@@ -591,16 +586,23 @@ pub mod pallet {
                     .ok_or(Error::<T>::AuctionDoesNotExist)?;
 
                 // ensure the auction period has ended
-                ensure!(auction.end_block < current_block, Error::<T>::AuctionNotCompleted);
+                ensure!(
+                    auction.end_block < current_block,
+                    Error::<T>::AuctionNotCompleted
+                );
 
                 // get the highest bidder
-                let highest_bidder = auction.bidders.get_highest_bid();
+                let highest_bidder = auction.bidders.get_highest_bid().cloned();
 
                 // Transfer nft to highest bidder
                 match highest_bidder {
                     Some(bidder) => {
                         // remove highest bidder from list to avoid claim
-                        let _ = auction.bidders.clone().remove_bid(&bidder.0);
+                        let bidder = auction
+                            .bidders
+                            .remove_bid(&bidder.0)
+                            .take()
+                            .ok_or(Error::<T>::UnexpectedError)?;
 
                         // Handle marketplace fees
                         let marketplace_info =
@@ -669,28 +671,31 @@ pub mod pallet {
                     Error::<T>::AuctionNotCompleted
                 );
 
-                match auction.bidders.find_bid(&who) {
-                    // transfer funds to caller and remove from bid list
-                    Some(user_bid) => {
-                        auction.bidders.clone().remove_bid(&who);
-                        T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)
-                    }
-                    None => Err(Error::<T>::BidDoesNotExist.into()),
-                };
-                // emit bid created event
-                Self::deposit_event(Event::BidClaimed {
-                    nft_id,
-                    marketplace_id: auction.marketplace_id,
-                    creator: auction.creator.clone(),
-                });
+                // remove the users bid from bidder list
+                let user_bid = auction
+                    .bidders
+                    .remove_bid(&who)
+                    .take()
+                    .ok_or(Error::<T>::BidDoesNotExist)?;
+                // transfer amount to user
+                T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)?;
+                *maybe_auction = Some(auction.clone());
+
                 Ok(())
             })?;
+
+            // emit bid claimed event
+            Self::deposit_event(Event::BidClaimed {
+                nft_id,
+                caller: who,
+            });
 
             Ok(().into())
         }
     }
 }
 
+#[allow(dead_code)]
 impl<T: Config> Pallet<T> {
     /// The account ID of the auctions pot.
     pub fn account_id() -> T::AccountId {

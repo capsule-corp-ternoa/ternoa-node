@@ -98,13 +98,10 @@ where
     }
 
     /// Remove a specific bid from list
-    pub fn remove_bid(&mut self, account_id: &AccountId) -> bool {
+    pub fn remove_bid(&mut self, account_id: &AccountId) -> Option<(AccountId, BalanceCaps)> {
         match self.0.binary_search_by_key(account_id, |(a, _)| a.clone()) {
-            Ok(index) => {
-                self.0.remove(index);
-                true
-            }
-            Err(_) => false,
+            Ok(index) => Some(self.0.remove(index)),
+            Err(_) => None,
         }
     }
 
@@ -196,7 +193,7 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.find_bid(&2021), None);
 
     // ensure remove_bid works
-    assert_eq!(bidders_list.remove_bid(&5), true);
+    assert_eq!(bidders_list.remove_bid(&5), Some((5, 6)));
     assert_eq!(
         bidders_list,
         BidderList(
@@ -216,7 +213,7 @@ fn test_sorted_bid_works() {
     );
 
     // ensure remove_bid works
-    assert_eq!(bidders_list.remove_bid(&11), true);
+    assert_eq!(bidders_list.remove_bid(&11), Some((11, 12)));
     assert_eq!(
         bidders_list,
         BidderList(
@@ -233,5 +230,5 @@ fn test_sorted_bid_works() {
             .to_vec()
         )
     );
-    assert_eq!(bidders_list.remove_bid(&2022), false);
+    assert_eq!(bidders_list.remove_bid(&2022), None);
 }

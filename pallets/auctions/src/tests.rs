@@ -1,22 +1,21 @@
 #[cfg(test)]
 use super::mock::*;
-use crate::{mock, types::AuctionData, Auctions as AuctionsStorage, Error};
+use crate::{mock, types::BidderList, Auctions as AuctionsStorage, BalanceOf, Error};
 use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
-use pallet_balances::Error as BalanceError;
-use ternoa_common::traits::NFTTrait;
-use ternoa_marketplace::{Error as MarketplaceError, MarketplaceInformation, MarketplaceType};
-use ternoa_primitives::{marketplace::MarketplaceId, nfts::NFTId, AccountId};
+use ternoa_common::traits::{MarketplaceTrait, NFTTrait};
+use ternoa_marketplace::{Error as MarketplaceError, MarketplaceType};
+use ternoa_primitives::{marketplace::MarketplaceId, nfts::NFTId};
 
 fn get_marketplace(owner: u64) -> MarketplaceId {
     let owner_signed: mock::Origin = RawOrigin::Signed(owner).into();
     help::create_mkp(
         owner_signed,
-        MarketplaceType::Private,
-        0,
+        MarketplaceType::Public,
+        10, // 10% commission
         vec![1],
-        vec![owner],
+        vec![],
     )
 }
 
@@ -44,7 +43,6 @@ fn create_auction_happy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
@@ -144,7 +142,6 @@ fn cancel_auction_happy() {
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
-            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
@@ -285,8 +282,42 @@ fn add_bid_unhappy() {
                 Auctions::add_bid(charlie.clone(), nft_id, 105),
                 Error::<Test>::AuctionEnded
             );
+        })
+}
 
-            // TODO : add a test for extreme case of add bid where a user is ejected from queue
+#[test]
+fn add_bid_bidderlist_overflow_works() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 5000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+
+            let mkp_id = get_marketplace(ALICE);
+            let nft_id = create_nft(ALICE);
+            create_auction(alice.clone(), mkp_id, nft_id);
+
+            run_to_block(9);
+            // add 10 bids in a row
+            for n in 2..12 {
+                assert_ok!(Balances::transfer(alice.clone(), n, 200));
+                let account: mock::Origin = RawOrigin::Signed(n).into();
+                assert_ok!(Auctions::add_bid(account, nft_id, (100 + n).into()));
+            }
+
+            // on insertion of 11th bid, first user should be refunded
+            assert_ok!(Balances::transfer(alice.clone(), 13, 200));
+            let account13: mock::Origin = RawOrigin::Signed(13).into();
+            assert_ok!(Auctions::add_bid(account13, nft_id, 200));
+            // first user should be refunded
+            assert_eq!(Balances::free_balance(2), 200);
+
+            // on insertion of 12th bid, second user should be refunded
+            assert_ok!(Balances::transfer(alice.clone(), 14, 300));
+            let account14: mock::Origin = RawOrigin::Signed(14).into();
+            assert_ok!(Auctions::add_bid(account14, nft_id, 201));
+            // first user should be refunded
+            assert_eq!(Balances::free_balance(3), 200);
         })
 }
 
@@ -298,7 +329,6 @@ fn remove_bid_happy() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let charlie: mock::Origin = RawOrigin::Signed(CHARLIE).into();
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
@@ -320,7 +350,6 @@ fn remove_bid_unhappy() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let charlie: mock::Origin = RawOrigin::Signed(CHARLIE).into();
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
@@ -351,7 +380,6 @@ fn increase_bid_happy() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let charlie: mock::Origin = RawOrigin::Signed(CHARLIE).into();
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
@@ -373,7 +401,6 @@ fn increase_bid_unhappy() {
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
-            let charlie: mock::Origin = RawOrigin::Signed(CHARLIE).into();
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
@@ -413,20 +440,29 @@ fn increase_bid_unhappy() {
 #[test]
 fn buy_it_now_happy() {
     ExtBuilder::default()
-        .caps(vec![(ALICE, 1000), (BOB, 1000)])
+        .caps(vec![(ALICE, 1000), (BOB, 1000), (CHARLIE, 1000)])
         .build()
         .execute_with(|| {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
-            let mkp_id = get_marketplace(ALICE);
+            let mkp_id = get_marketplace(CHARLIE);
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
             run_to_block(7);
+            assert_eq!(Balances::free_balance(ALICE), 990);
             assert_ok!(Auctions::buy_it_now(bob.clone(), nft_id, 200));
             assert_eq!(Balances::free_balance(BOB), 800);
+            // Bob should be the owner of nft
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(BOB));
+            // alice should have received the amount - commission fee (10%)
+            assert_eq!(Balances::free_balance(ALICE), 990 + 200 - 20);
+            // marketplace account should have received commission fee
+            let marketplace_account = Marketplace::get_marketplace_info(mkp_id).unwrap();
+            assert_eq!(marketplace_account.1, 10);
+            assert_eq!(Balances::free_balance(marketplace_account.0), 1020);
+            assert_eq!(Balances::free_balance(Auctions::account_id()), 0);
         })
 }
 
@@ -466,7 +502,7 @@ fn complete_auction_happy() {
             let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
 
-            let mkp_id = get_marketplace(ALICE);
+            let mkp_id = get_marketplace(CHARLIE);
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
@@ -475,7 +511,15 @@ fn complete_auction_happy() {
             assert_eq!(Balances::free_balance(BOB), 800);
             run_to_block(18);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
+            // Bob should be the owner of nft
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(BOB));
+            // alice should have received the amount - commission fee (10%)
+            assert_eq!(Balances::free_balance(ALICE), 990 + 200 - 20);
+            // marketplace account should have received commission fee
+            let marketplace_account = Marketplace::get_marketplace_info(mkp_id).unwrap();
+            assert_eq!(marketplace_account.1, 10);
+            assert_eq!(Balances::free_balance(marketplace_account.0), 20);
+            assert_eq!(Balances::free_balance(Auctions::account_id()), 0);
         })
 }
 
@@ -570,5 +614,102 @@ fn claim_bid_unhappy() {
                 Auctions::claim_bid(bob.clone(), nft_id),
                 Error::<Test>::BidDoesNotExist
             );
+        })
+}
+
+#[test]
+fn test_auction_workflow() {
+    ExtBuilder::default()
+        .caps(vec![
+            (TREASURY, 10000),
+            (BOB, 1000),
+            (CHARLIE, 1000),
+            (ALICE, 1000),
+        ])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            let bob: mock::Origin = RawOrigin::Signed(BOB).into();
+            let charlie: mock::Origin = RawOrigin::Signed(CHARLIE).into();
+            let treasury: mock::Origin = RawOrigin::Signed(TREASURY).into();
+            
+            let mkp_id = get_marketplace(3000);
+            let nft_id = create_nft(ALICE);
+            create_auction(alice.clone(), mkp_id, nft_id);
+            run_to_block(7);
+
+            // add 10 bids in a row
+            for n in 5..15 {
+                assert_ok!(Balances::transfer(treasury.clone(), n, 200));
+                let account: mock::Origin = RawOrigin::Signed(n).into();
+                assert_ok!(Auctions::add_bid(account, nft_id, (100 + n).into()));
+            }
+
+            // on insertion of 11th bid, first user should be refunded
+            assert_ok!(Balances::transfer(treasury.clone(), 16, 200));
+            let account11: mock::Origin = RawOrigin::Signed(16).into();
+            assert_ok!(Auctions::add_bid(account11, nft_id, 200));
+            // first user should be refunded
+            assert_eq!(Balances::free_balance(5), 200);
+
+            // on insertion of 12th bid, second user should be refunded
+            assert_ok!(Balances::transfer(treasury.clone(), 17, 300));
+            let account12: mock::Origin = RawOrigin::Signed(17).into();
+            assert_ok!(Auctions::add_bid(account12.clone(), nft_id, 201));
+            // first user should be refunded
+            assert_eq!(Balances::free_balance(6), 200);
+
+            // move inside the grace period
+            run_to_block(15);
+            // charlie creates a bid, this should extend the auction by 2 blocks
+            assert_ok!(Auctions::add_bid(charlie.clone(), nft_id, 300));
+            assert_eq!(Balances::free_balance(CHARLIE), 700);
+            // 3rd user should be refunded
+            assert_eq!(Balances::free_balance(7), 200);
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
+                17 + 2
+            );
+            // bob outbids by huge margin
+            assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 1000));
+            run_to_block(20);
+            assert_eq!(Balances::free_balance(ALICE), 990);
+            assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
+            // Bob should be the owner of nft
+            assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(BOB));
+            // alice should have received the amount - commission fee (10%)
+            assert_eq!(Balances::free_balance(ALICE), 990 + 1000 - 100);
+            // marketplace account should have received commission fee
+            let marketplace_account = Marketplace::get_marketplace_info(mkp_id).unwrap();
+            assert_eq!(marketplace_account.1, 10);
+            assert_eq!(Balances::free_balance(marketplace_account.0), 100);
+
+            // all the users who did not win the auction should be able to claim the bids
+            for n in 9..17 {
+                let account: mock::Origin = RawOrigin::Signed(n).into();
+                assert_ok!(Auctions::claim_bid(account, nft_id));
+            }
+
+            // charlie claims back bid
+            assert_ok!(Auctions::claim_bid(charlie.clone(), nft_id));
+            // charlie can only claim once
+            assert_noop!(
+                Auctions::claim_bid(charlie.clone(), nft_id),
+                Error::<Test>::BidDoesNotExist
+            );
+            // bob won the auction so should not be able to claim
+            assert_noop!(
+                Auctions::claim_bid(bob.clone(), nft_id),
+                Error::<Test>::BidDoesNotExist
+            );
+
+            let bidders: BidderList<u64, BalanceOf<Test>> = BidderList::new();
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap().bidders,
+                bidders
+            );
+
+            // the auction pallet should have refunded all bids
+            assert_eq!(Balances::free_balance(Auctions::account_id()), 0);
         })
 }
