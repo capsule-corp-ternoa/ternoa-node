@@ -1,6 +1,6 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 use ternoa_primitives::TextFormat;
-use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceCommission};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceCommission, MarketplaceType};
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 
 pub trait NFTTrait {
@@ -60,4 +60,15 @@ pub trait MarketplaceTrait<AccountId> {
     fn get_marketplace_info(
         marketplace_id: MarketplaceId,
     ) -> Option<(AccountId, MarketplaceCommission)>;
+
+    /// create a new marketplace
+    fn create(
+        origin: AccountId,
+        kind: MarketplaceType,
+        commission_fee: u8,
+        name: TextFormat,
+        uri: Option<TextFormat>,
+        logo_uri: Option<TextFormat>,
+        description: Option<TextFormat>,
+    ) -> DispatchResult;
 }

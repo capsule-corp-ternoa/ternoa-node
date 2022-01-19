@@ -7,7 +7,12 @@ use sp_runtime::{
     traits::{BlakeTwo256, IdentifyAccount, Verify},
     MultiSignature, OpaqueExtrinsic,
 };
+use codec::{Decode, Encode};
+use scale_info::TypeInfo;
+use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -44,21 +49,22 @@ pub type TextFormat = Vec<u8>;
 pub type AccountIndex = u32;
 
 pub mod marketplace {
+    use super::*;
     /// The type of marketplace Id
     pub type MarketplaceId = u32;
     /// Type of marketplace commission
     pub type MarketplaceCommission = u8;
+
+    #[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
+    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    pub enum MarketplaceType {
+        Public,
+        Private,
+    }
 }
 
 pub mod nfts {
-    #[cfg(feature = "std")]
-    use serde::{Deserialize, Serialize};
-
-    use super::TextFormat;
-    use codec::{Decode, Encode};
-    use scale_info::TypeInfo;
-    use sp_runtime::RuntimeDebug;
-    use sp_std::vec::Vec;
+    use super::*;
 
     /// How NFT IDs are encoded.
     pub type NFTId = u32;

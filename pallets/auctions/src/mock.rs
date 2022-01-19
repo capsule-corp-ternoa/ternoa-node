@@ -4,9 +4,8 @@ use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_marketplace::MarketplaceType;
 use ternoa_primitives::{
-    marketplace::MarketplaceId,
+    marketplace::{MarketplaceId, MarketplaceType},
     nfts::{NFTData, NFTSeriesDetails},
 };
 

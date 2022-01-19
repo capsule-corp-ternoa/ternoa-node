@@ -16,11 +16,15 @@ pub use types::*;
 
 use default_weights::WeightInfo;
 use frame_support::ensure;
-use frame_support::traits::StorageVersion;
+use frame_support::traits::{
+    Currency, ExistenceRequirement::KeepAlive, Get, OnUnbalanced, StorageVersion, WithdrawReasons,
+};
 use frame_support::weights::Weight;
+use ternoa_common::helpers::check_bounds;
 use ternoa_common::traits::MarketplaceTrait;
+use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
 use ternoa_primitives::nfts::NFTId;
-use ternoa_primitives::{marketplace::{MarketplaceId, MarketplaceCommission}, TextFormat};
+use ternoa_primitives::TextFormat;
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
@@ -29,15 +33,11 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
 pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
-    use frame_support::traits::ExistenceRequirement::KeepAlive;
-    use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
     use frame_support::transactional;
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
     use sp_std::vec::Vec;
-    use ternoa_common::helpers::check_bounds;
     use ternoa_common::traits::NFTTrait;
-    use ternoa_primitives::marketplace::MarketplaceId;
 
     pub type BalanceOf<T> =
         <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -225,67 +225,15 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let caller_id = ensure_signed(origin)?;
 
-            ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
-            check_bounds(
-                name.len(),
-                (T::MinNameLen::get(), Error::<T>::TooShortMarketplaceName),
-                (T::MaxNameLen::get(), Error::<T>::TooLongMarketplaceName),
-            )?;
-
-            if let Some(text) = uri.as_ref() {
-                check_bounds(
-                    text.len(),
-                    (T::MinUriLen::get(), Error::<T>::TooShortUri),
-                    (T::MaxUriLen::get(), Error::<T>::TooLongUri),
-                )?;
-            }
-
-            if let Some(text) = logo_uri.as_ref() {
-                check_bounds(
-                    text.len(),
-                    (T::MinUriLen::get(), Error::<T>::TooShortLogoUri),
-                    (T::MaxUriLen::get(), Error::<T>::TooLongLogoUri),
-                )?;
-            }
-
-            if let Some(text) = description.as_ref() {
-                check_bounds(
-                    text.len(),
-                    (T::MinDescriptionLen::get(), Error::<T>::TooShortDescription),
-                    (T::MaxDescriptionLen::get(), Error::<T>::TooLongDescription),
-                )?;
-            }
-
-            // Needs to have enough money
-            let imbalance = T::Currency::withdraw(
-                &caller_id,
-                MarketplaceMintFee::<T>::get(),
-                WithdrawReasons::FEE,
-                KeepAlive,
-            )?;
-            T::FeesCollector::on_unbalanced(imbalance);
-
-            let marketplace = MarketplaceInformation::new(
+            <Self as MarketplaceTrait<T::AccountId>>::create(
+                caller_id,
                 kind,
                 commission_fee,
-                caller_id.clone(),
-                Vec::default(),
-                Vec::default(),
                 name,
                 uri,
                 logo_uri,
                 description,
-            );
-
-            let id = MarketplaceIdGenerator::<T>::get();
-            let id = id.checked_add(1).ok_or(Error::<T>::MarketplaceIdOverflow)?;
-
-            Marketplaces::<T>::insert(id, marketplace);
-            MarketplaceIdGenerator::<T>::set(id);
-            Self::deposit_event(Event::MarketplaceCreated {
-                marketplace_id: id,
-                owner: caller_id,
-            });
+            )?;
 
             Ok(().into())
         }
@@ -863,10 +811,87 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
         }
     }
 
-    fn get_marketplace_info(marketplace_id: MarketplaceId) -> Option<(T::AccountId, MarketplaceCommission)> {
+    // Return the owner account and commision for marketplace with `marketplace_id`
+    fn get_marketplace_info(
+        marketplace_id: MarketplaceId,
+    ) -> Option<(T::AccountId, MarketplaceCommission)> {
         match Marketplaces::<T>::get(marketplace_id) {
             Some(marketplace) => Some((marketplace.owner, marketplace.commission_fee)),
-            None => None
+            None => None,
         }
+    }
+
+    // create a new marketplace
+    fn create(
+        caller_id: <T as frame_system::Config>::AccountId,
+        kind: MarketplaceType,
+        commission_fee: u8,
+        name: TextFormat,
+        uri: Option<TextFormat>,
+        logo_uri: Option<TextFormat>,
+        description: Option<TextFormat>,
+    ) -> DispatchResult {
+        ensure!(commission_fee <= 100, Error::<T>::InvalidCommissionFeeValue);
+        check_bounds(
+            name.len(),
+            (T::MinNameLen::get(), Error::<T>::TooShortMarketplaceName),
+            (T::MaxNameLen::get(), Error::<T>::TooLongMarketplaceName),
+        )?;
+
+        if let Some(text) = uri.as_ref() {
+            check_bounds(
+                text.len(),
+                (T::MinUriLen::get(), Error::<T>::TooShortUri),
+                (T::MaxUriLen::get(), Error::<T>::TooLongUri),
+            )?;
+        }
+
+        if let Some(text) = logo_uri.as_ref() {
+            check_bounds(
+                text.len(),
+                (T::MinUriLen::get(), Error::<T>::TooShortLogoUri),
+                (T::MaxUriLen::get(), Error::<T>::TooLongLogoUri),
+            )?;
+        }
+
+        if let Some(text) = description.as_ref() {
+            check_bounds(
+                text.len(),
+                (T::MinDescriptionLen::get(), Error::<T>::TooShortDescription),
+                (T::MaxDescriptionLen::get(), Error::<T>::TooLongDescription),
+            )?;
+        }
+
+        // Needs to have enough money
+        let imbalance = T::Currency::withdraw(
+            &caller_id,
+            MarketplaceMintFee::<T>::get(),
+            WithdrawReasons::FEE,
+            KeepAlive,
+        )?;
+        T::FeesCollector::on_unbalanced(imbalance);
+
+        let marketplace = MarketplaceInformation::new(
+            kind,
+            commission_fee,
+            caller_id.clone(),
+            Vec::default(),
+            Vec::default(),
+            name,
+            uri,
+            logo_uri,
+            description,
+        );
+
+        let id = MarketplaceIdGenerator::<T>::get();
+        let id = id.checked_add(1).ok_or(Error::<T>::MarketplaceIdOverflow)?;
+
+        Marketplaces::<T>::insert(id, marketplace);
+        MarketplaceIdGenerator::<T>::set(id);
+        Self::deposit_event(Event::MarketplaceCreated {
+            marketplace_id: id,
+            owner: caller_id,
+        });
+        Ok(())
     }
 }

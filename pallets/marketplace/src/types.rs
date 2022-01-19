@@ -5,7 +5,10 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::{marketplace::{MarketplaceId, MarketplaceCommission}, TextFormat};
+use ternoa_primitives::{
+    marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType},
+    TextFormat,
+};
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -47,13 +50,6 @@ where
             marketplace_id,
         }
     }
-}
-
-#[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum MarketplaceType {
-    Public,
-    Private,
 }
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]

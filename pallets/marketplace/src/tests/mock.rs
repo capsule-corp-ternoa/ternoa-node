@@ -1,9 +1,10 @@
-use crate::{self as ternoa_marketplace, Config, MarketplaceInformation, MarketplaceType};
+use crate::{self as ternoa_marketplace, Config, MarketplaceInformation};
 use frame_support::parameter_types;
 use frame_support::traits::{Contains, GenesisBuild};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use ternoa_primitives::marketplace::MarketplaceType;
 use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;

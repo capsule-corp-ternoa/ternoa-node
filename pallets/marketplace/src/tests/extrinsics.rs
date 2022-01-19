@@ -1,11 +1,12 @@
 use super::mock::*;
 use crate::tests::mock;
-use crate::{Error, MarketplaceInformation, MarketplaceType, SaleInformation};
+use crate::{Error, MarketplaceInformation, SaleInformation};
 use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::NFTTrait;
+use ternoa_primitives::marketplace::MarketplaceType;
 use ternoa_primitives::TextFormat;
 
 type MPT = MarketplaceType;
