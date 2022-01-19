@@ -379,7 +379,7 @@ pub mod pallet {
 
             // reject if user already has a bid
             ensure!(
-                auction.bidders.find_bid(&who).is_none(),
+                auction.bidders.find_bid(who.clone()).is_none(),
                 Error::<T>::UserBidAlreadyExists
             );
 
@@ -441,7 +441,7 @@ pub mod pallet {
 
                 let user_bid = auction
                     .bidders
-                    .remove_bid(&who)
+                    .remove_bid(who.clone())
                     .ok_or(Error::<T>::BidDoesNotExist)?;
 
                 T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)?;
@@ -466,33 +466,40 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
-            // fetch data of auction that lists NFT
-            let auction = Auctions::<T>::get(nft_id).ok_or(Error::<T>::AuctionDoesNotExist)?;
+            Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
+                let auction = maybe_auction
+                    .as_mut()
+                    .ok_or(Error::<T>::AuctionDoesNotExist)?;
 
-            // ensure the auction period has not ended
-            ensure!(auction.end_block > current_block, Error::<T>::AuctionEnded);
+                // ensure the auction period has not ended
+                ensure!(auction.end_block > current_block, Error::<T>::AuctionEnded);
 
-            // ensure the bid is larger than the current highest bid
-            if let Some(current_highest_bid) = auction.bidders.get_highest_bid() {
-                ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
-            }
+                // ensure the bid is larger than the current highest bid
+                if let Some(current_highest_bid) = auction.bidders.get_highest_bid() {
+                    ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
+                }
 
-            let user_bid = auction
-                .bidders
-                .find_bid(&who)
-                .take()
-                .ok_or(Error::<T>::BidDoesNotExist)?;
-            let amount_to_transfer = amount
-                .checked_sub(&user_bid.1)
-                .ok_or(Error::<T>::UnexpectedError)?;
-            T::Currency::transfer(&who, &Self::account_id(), amount_to_transfer, KeepAlive)?;
+                let user_bid = auction
+                    .bidders
+                    .remove_bid(who.clone())
+                    .ok_or(Error::<T>::BidDoesNotExist)?;
 
-            // emit bid created event
-            Self::deposit_event(Event::BidUpdated {
-                nft_id,
-                marketplace_id: auction.marketplace_id,
-                creator: who,
-            });
+                let amount_to_transfer = amount
+                    .checked_sub(&user_bid.1)
+                    .ok_or(Error::<T>::UnexpectedError)?;
+
+                T::Currency::transfer(&who, &Self::account_id(), amount_to_transfer, KeepAlive)?;
+
+                auction.bidders.insert_new_bid(who.clone(), amount);
+
+                // emit bid updated event
+                Self::deposit_event(Event::BidUpdated {
+                    nft_id,
+                    marketplace_id: auction.marketplace_id,
+                    creator: who,
+                });
+                Ok(())
+            })?;
 
             Ok(().into())
         }
@@ -600,7 +607,7 @@ pub mod pallet {
                         // remove highest bidder from list to avoid claim
                         let bidder = auction
                             .bidders
-                            .remove_bid(&bidder.0)
+                            .remove_bid(bidder.0)
                             .take()
                             .ok_or(Error::<T>::UnexpectedError)?;
 
@@ -674,9 +681,10 @@ pub mod pallet {
                 // remove the users bid from bidder list
                 let user_bid = auction
                     .bidders
-                    .remove_bid(&who)
+                    .remove_bid(who.clone())
                     .take()
                     .ok_or(Error::<T>::BidDoesNotExist)?;
+
                 // transfer amount to user
                 T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)?;
                 *maybe_auction = Some(auction.clone());

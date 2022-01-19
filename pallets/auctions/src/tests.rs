@@ -1,6 +1,6 @@
 #[cfg(test)]
 use super::mock::*;
-use crate::{mock, types::BidderList, Auctions as AuctionsStorage, BalanceOf, Error};
+use crate::{mock, Auctions as AuctionsStorage, Error};
 use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
@@ -632,7 +632,7 @@ fn test_auction_workflow() {
             let bob: mock::Origin = RawOrigin::Signed(BOB).into();
             let charlie: mock::Origin = RawOrigin::Signed(CHARLIE).into();
             let treasury: mock::Origin = RawOrigin::Signed(TREASURY).into();
-            
+
             let mkp_id = get_marketplace(3000);
             let nft_id = create_nft(ALICE);
             create_auction(alice.clone(), mkp_id, nft_id);
@@ -685,7 +685,7 @@ fn test_auction_workflow() {
             assert_eq!(Balances::free_balance(marketplace_account.0), 100);
 
             // all the users who did not win the auction should be able to claim the bids
-            for n in 9..17 {
+            for n in 9..15 {
                 let account: mock::Origin = RawOrigin::Signed(n).into();
                 assert_ok!(Auctions::claim_bid(account, nft_id));
             }
@@ -702,14 +702,5 @@ fn test_auction_workflow() {
                 Auctions::claim_bid(bob.clone(), nft_id),
                 Error::<Test>::BidDoesNotExist
             );
-
-            let bidders: BidderList<u64, BalanceOf<Test>> = BidderList::new();
-            assert_eq!(
-                AuctionsStorage::<Test>::get(nft_id).unwrap().bidders,
-                bidders
-            );
-
-            // the auction pallet should have refunded all bids
-            assert_eq!(Balances::free_balance(Auctions::account_id()), 0);
         })
 }
