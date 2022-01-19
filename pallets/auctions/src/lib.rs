@@ -541,6 +541,8 @@ pub mod pallet {
 
                 // transfer NFT to caller
                 T::NFTHandler::set_owner(nft_id, &who)?;
+                // Mark NFT as not listed for sale
+                T::NFTHandler::set_listed_for_sale(nft_id, false)?;
 
                 // get marketplace fee for transaction
                 let marketplace_info =
@@ -640,6 +642,8 @@ pub mod pallet {
 
                         // transfer NFT to highest bidder
                         T::NFTHandler::set_owner(nft_id, &bidder.0)?;
+                        // Mark NFT as not listed for sale
+                        T::NFTHandler::set_listed_for_sale(nft_id, false)?;
                     }
                     None => (),
                 }
