@@ -2,17 +2,17 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use codec::{Decode, Encode};
+use scale_info::TypeInfo;
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
+use sp_runtime::RuntimeDebug;
 use sp_runtime::{
     generic,
     traits::{BlakeTwo256, IdentifyAccount, Verify},
     MultiSignature, OpaqueExtrinsic,
 };
-use codec::{Decode, Encode};
-use scale_info::TypeInfo;
-use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-#[cfg(feature = "std")]
-use serde::{Deserialize, Serialize};
 
 /// An index to a block.
 pub type BlockNumber = u32;
