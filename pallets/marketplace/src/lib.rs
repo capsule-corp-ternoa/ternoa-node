@@ -20,6 +20,7 @@ use frame_support::traits::{
     Currency, ExistenceRequirement::KeepAlive, Get, OnUnbalanced, StorageVersion, WithdrawReasons,
 };
 use frame_support::weights::Weight;
+use sp_std::vec::Vec;
 use ternoa_common::helpers::check_bounds;
 use ternoa_common::traits::MarketplaceTrait;
 use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
@@ -36,7 +37,6 @@ pub mod pallet {
     use frame_support::transactional;
     use frame_system::pallet_prelude::*;
     use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
-    use sp_std::vec::Vec;
     use ternoa_common::traits::NFTTrait;
 
     pub type BalanceOf<T> =

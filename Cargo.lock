@@ -7932,6 +7932,7 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
+ "ternoa-auctions",
  "ternoa-capsules",
  "ternoa-marketplace",
  "ternoa-nfts",

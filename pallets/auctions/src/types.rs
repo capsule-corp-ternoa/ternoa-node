@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
+use sp_std::vec::Vec;
 use ternoa_primitives::marketplace::MarketplaceId;
 
 #[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
@@ -54,8 +55,8 @@ pub struct BidderList<AccountId, Balance>(pub Vec<(AccountId, Balance)>);
 
 impl<AccountId, Balance> BidderList<AccountId, Balance>
 where
-    AccountId: std::cmp::Ord + Clone,
-    Balance: std::cmp::PartialOrd,
+    AccountId: sp_std::cmp::Ord + Clone,
+    Balance: sp_std::cmp::PartialOrd,
 {
     pub const MAX_COUNT: usize = 10;
 
