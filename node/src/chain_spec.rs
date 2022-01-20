@@ -17,7 +17,7 @@ use ternoa_runtime::{
     wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
     BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
     MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig, StakerStatus,
-    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, MAX_NOMINATIONS,
+    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, MAX_NOMINATIONS
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -251,6 +251,7 @@ pub fn testnet_genesis(
             capsule_mint_fee: 1000000000000000000000,
             ..Default::default()
         },
+        dday_protocol: Default::default(),
         associated_accounts: AssociatedAccountsConfig {
             ..Default::default()
         },

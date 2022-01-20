@@ -81,6 +81,7 @@ ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
 ternoa-associated-accounts = { default-features = false, path = "../pallets/associated-accounts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
+ternoa-dday-protocol = { default-features = false, path = "../pallets/dday-protocol" }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev", branch = "master" }
@@ -135,6 +136,7 @@ std = [
 	"ternoa-sgx/std",
 	"ternoa-capsules/std",
 	"ternoa-associated-accounts/std",
+	"ternoa-dday-protocol/std",
 	"pallet-multisig/std",
 	"pallet-election-provider-multi-phase/std",
 	"frame-election-provider-support/std",
@@ -173,4 +175,5 @@ runtime-benchmarks = [
 	"ternoa-sgx/runtime-benchmarks",
 	"ternoa-capsules/runtime-benchmarks",
 	"ternoa-associated-accounts/runtime-benchmarks",
+	"ternoa-dday-protocol/runtime-benchmarks",
 ]

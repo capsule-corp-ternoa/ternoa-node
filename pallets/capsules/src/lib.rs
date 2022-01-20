@@ -11,6 +11,7 @@ mod types;
 
 pub use default_weights::WeightInfo;
 use frame_support::dispatch::DispatchResult;
+use ternoa_primitives::capsules::CapsuleData;
 pub use pallet::*;
 pub use types::*;
 
@@ -22,6 +23,7 @@ use sp_runtime::traits::AccountIdConversion;
 use sp_std::vec;
 use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
+use ternoa_common::traits;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
@@ -87,7 +89,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// Creates an NFT and coverts it into a capsule.
+        /// Creates an NFT and converts it into a capsule.
         #[pallet::weight(T::WeightInfo::create())]
         #[transactional]
         pub fn create(
@@ -335,6 +337,8 @@ pub mod pallet {
         UnknownNFT,
         /// TODO!
         InTransmission,
+        /// TODO!
+        UnknownCapsule,
     }
 
     /// Current capsule mint fee.
@@ -425,6 +429,24 @@ impl<T: Config> Pallet<T> {
     ) -> DispatchResult {
         let imbalance = T::Currency::withdraw(&sender, amount, WithdrawReasons::FEE, liveness)?;
         T::Currency::resolve_creating(receiver, imbalance);
+
+        Ok(())
+    }
+}
+
+impl<T: Config> traits::CapsulesTrait for Pallet<T> {
+    type AccountId = T::AccountId;
+
+    fn get_capsule(id: NFTId) -> Option<ternoa_primitives::capsules::CapsuleData<Self::AccountId>> {
+        Capsules::<T>::get(id)
+    }
+
+    fn set_owner(id: NFTId, new_owner: &Self::AccountId) -> DispatchResult {
+        Capsules::<T>::try_mutate(id, |d| -> DispatchResult {
+            let data = d.as_mut().ok_or(Error::<T>::UnknownCapsule)?;
+            data.owner = new_owner.clone();
+            Ok(())
+        })?;
 
         Ok(())
     }

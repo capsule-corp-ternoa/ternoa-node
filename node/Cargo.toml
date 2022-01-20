@@ -97,6 +97,7 @@ ternoa-executor = { path = "../executor" }
 ternoa-primitives = { path = "../primitives" }
 ternoa-runtime = { path = "../runtime" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
+ternoa-dday-protocol = { default-features = false, path = "../pallets/dday-protocol" }
 
 [build-dependencies]
 vergen = "6.0.0"

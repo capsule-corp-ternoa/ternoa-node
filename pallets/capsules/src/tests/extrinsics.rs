@@ -5,7 +5,7 @@ use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
-use ternoa_common::traits::NFTTrait;
+use ternoa_common::traits::{NFTTrait, CapsulesTrait};
 
 #[test]
 fn create_happy() {
@@ -421,5 +421,32 @@ fn set_capsule_mint_fee_unhappy() {
             // Unhappy non root user tries to modify the mint fee
             let ok = TernoaCapsules::set_capsule_mint_fee(alice.clone(), 654);
             assert_noop!(ok, BadOrigin);
+        })
+}
+
+#[test]
+fn set_owner_ok() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000), (BOB, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            // create a nft and encapsulate it
+            let nft_id = help::create_capsule_fast(alice.clone());
+            assert_ok!(<TernoaCapsules as CapsulesTrait>::set_owner(nft_id, &BOB));
+            assert_eq!(TernoaCapsules::capsules(nft_id).unwrap().owner, BOB);
+        })
+}
+
+#[test]
+fn set_owner_unknown_capsule_error() {
+    ExtBuilder::default()
+        .caps(vec![(ALICE, 10000), (BOB, 10000)])
+        .build()
+        .execute_with(|| {
+            let alice: mock::Origin = RawOrigin::Signed(ALICE).into();
+            // create a nft and encapsulate it
+            let nft_id = help::create_nft_fast(alice.clone());
+            assert_noop!(<TernoaCapsules as CapsulesTrait>::set_owner(nft_id, &BOB), Error::<Test>::UnknownCapsule);
         })
 }

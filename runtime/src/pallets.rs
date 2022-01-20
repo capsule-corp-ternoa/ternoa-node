@@ -7,7 +7,7 @@ use crate::{
     ElectionProviderMultiPhase, Elections, Event, Grandpa, Historical, ImOnline, Nfts, Offences,
     Origin, OriginCaller, PalletInfo, Runtime, Scheduler, Session, Signature, SignedPayload,
     Staking, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-    UncheckedExtrinsic, VERSION,
+    UncheckedExtrinsic, VERSION, Capsules
 };
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
@@ -269,6 +269,14 @@ impl ternoa_timed_escrow::Config for Runtime {
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
     type PalletsCall = Call;
+    type WeightInfo = ();
+}
+
+// Dday Protocol
+impl ternoa_dday_protocol::Config for Runtime {
+    type Event = Event;
+    type NFTs = Nfts;
+    type Capsules = Capsules;
     type WeightInfo = ();
 }
 

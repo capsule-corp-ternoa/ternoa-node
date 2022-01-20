@@ -7717,6 +7717,7 @@ dependencies = [
  "structopt",
  "substrate-build-script-utils",
  "substrate-frame-rpc-system",
+ "ternoa-dday-protocol",
  "ternoa-executor",
  "ternoa-marketplace",
  "ternoa-primitives",
@@ -7772,6 +7773,28 @@ dependencies = [
  "frame-support",
  "sp-runtime",
  "sp-std",
+ "ternoa-primitives",
+]
+
+[[package]]
+name = "ternoa-dday-protocol"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "pallet-scheduler",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-capsules",
+ "ternoa-common",
+ "ternoa-nfts",
  "ternoa-primitives",
 ]
 
@@ -7911,6 +7934,7 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
  "ternoa-capsules",
+ "ternoa-dday-protocol",
  "ternoa-marketplace",
  "ternoa-nfts",
  "ternoa-primitives",

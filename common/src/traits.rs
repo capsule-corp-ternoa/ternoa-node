@@ -1,4 +1,5 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
+use ternoa_primitives::capsules::CapsuleData;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
 
@@ -44,4 +45,14 @@ pub trait NFTTrait {
 
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
+}
+
+pub trait CapsulesTrait {
+    type AccountId: Clone + Default;
+
+    // Get a capsule by NFTId
+    fn get_capsule(id: NFTId) -> Option<CapsuleData<Self::AccountId>>;
+    
+    // Change owner of the capsule and the conained NFT
+    fn set_owner(id: NFTId, new_owner: &Self::AccountId) -> DispatchResult;
 }
