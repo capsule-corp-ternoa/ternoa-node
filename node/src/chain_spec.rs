@@ -11,7 +11,8 @@ use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use sp_runtime::Perbill;
 use ternoa_marketplace::MarketplaceInformation;
-use ternoa_primitives::{marketplace::MarketplaceType, AccountId, Balance, Signature};
+use ternoa_primitives::marketplace::MarketplaceType;
+use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::constants::currency::UNITS;
 use ternoa_runtime::{
     wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,

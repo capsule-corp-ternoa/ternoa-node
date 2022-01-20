@@ -51,10 +51,7 @@ pub trait NFTTrait {
 /// TODO: Expand trait with more useful functions
 pub trait MarketplaceTrait<AccountId> {
     /// Return if an account is permitted to list on given marketplace
-    fn is_allowed_to_list_on_marketplace(
-        marketplace_id: MarketplaceId,
-        account_id: AccountId,
-    ) -> DispatchResult;
+    fn is_allowed_to_list(marketplace_id: MarketplaceId, account_id: AccountId) -> DispatchResult;
 
     /// Return the commission charged by a given marketplace
     fn get_marketplace_info(

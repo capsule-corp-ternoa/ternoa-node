@@ -968,8 +968,8 @@ parameter_types! {
     pub const MinAuctionBuffer: BlockNumber = 600;
     // max auction duration of 30 days (30*24*60*60)/6
     pub const MaxAuctionDuration: BlockNumber = 432000;
-    // auction grace period of 1hr (1*60*60)/6
-    pub const AuctionGracePeriod: BlockNumber = 600;
+    // auction grace period of 10min (10*60)/6
+    pub const AuctionGracePeriod: BlockNumber = 100;
     // auction ending period of 1hr (1*60*60)/6
     pub const AuctionEndingPeriod: BlockNumber = 600;
     pub const AuctionsPalletId: PalletId = PalletId(*b"py/enauc");

@@ -106,6 +106,14 @@ where
         self.0.remove(0)
     }
 
+    /// Remove the highest bid in list
+    pub fn remove_highest_bid(&mut self) -> Option<(AccountId, Balance)> {
+        match self.0.len() {
+            0 => None,
+            n => Some(self.0.remove(n - 1)),
+        }
+    }
+
     /// Remove a specific bid from `account_id` from list if it exists
     pub fn remove_bid(&mut self, account_id: AccountId) -> Option<(AccountId, Balance)> {
         match self.0.iter().position(|x| x.0 == account_id) {
@@ -250,4 +258,12 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.remove_bid(10), Some((10, 11)));
     assert_eq!(bidders_list.remove_bid(1), Some((1, 102)));
     assert_eq!(bidders_list, BidderList([].to_vec()));
+
+    // insert max bids
+    for n in 4..12 {
+        bidders_list.insert_new_bid(n, n + 1);
+    }
+
+    assert_eq!(bidders_list.remove_highest_bid(), Some((11, 12)));
+    assert_eq!(bidders_list.remove_highest_bid(), Some((10, 11)));
 }

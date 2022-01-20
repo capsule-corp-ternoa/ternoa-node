@@ -166,12 +166,6 @@ fn cancel_auction_unhappy() {
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
 
-            // should fail since the nft_id does not exist
-            assert_noop!(
-                Auctions::cancel_auction(alice.clone(), 2021u32,),
-                Error::<Test>::NFTIdInvalid
-            );
-
             // should fail since the auction does not exist
             assert_noop!(
                 Auctions::cancel_auction(alice.clone(), nft_id,),
@@ -180,10 +174,10 @@ fn cancel_auction_unhappy() {
 
             create_auction(alice.clone(), mkp_id, nft_id);
 
-            // should fail since the caller is not owner of nft
+            // should fail since the caller is not creator of auction
             assert_noop!(
                 Auctions::cancel_auction(bob.clone(), nft_id,),
-                Error::<Test>::NftNotOwned
+                Error::<Test>::OnlyAuctionCreatorCanCancel
             );
 
             // should fail since the auction has already started
@@ -216,7 +210,7 @@ fn add_bid_happy() {
             // adding a bid in auction period should extend the auction by grace period
             run_to_block(15);
             assert_ok!(Auctions::add_bid(charlie, nft_id, 105));
-            assert_eq!(AuctionsStorage::<Test>::get(nft_id).unwrap().end_block, 19);
+            assert_eq!(AuctionsStorage::<Test>::get(nft_id).unwrap().end_block, 18);
         })
 }
 
@@ -232,12 +226,6 @@ fn add_bid_unhappy() {
 
             let mkp_id = get_marketplace(ALICE);
             let nft_id = create_nft(ALICE);
-
-            // should fail since the nft_id does not exist
-            assert_noop!(
-                Auctions::add_bid(bob.clone(), 2021u32, 100),
-                Error::<Test>::NFTIdInvalid
-            );
 
             // should fail since the auction does not exist
             assert_noop!(
@@ -671,7 +659,7 @@ fn test_auction_workflow() {
             assert_eq!(Balances::free_balance(7), 200);
             assert_eq!(
                 AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
-                17 + 2
+                17 + 1
             );
             // bob outbids by huge margin
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 1000));

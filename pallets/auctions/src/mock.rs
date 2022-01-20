@@ -133,7 +133,7 @@ parameter_types! {
     pub const MinAuctionDuration: BlockNumber = 10;
     pub const MinAuctionBuffer: BlockNumber = 5;
     pub const MaxAuctionDuration: BlockNumber = 20;
-    pub const AuctionGracePeriod: BlockNumber = 2;
+    pub const AuctionGracePeriod: BlockNumber = 3;
     pub const AuctionEndingPeriod: BlockNumber = 2;
     pub const AuctionsPalletId: PalletId = PalletId(*b"py/lotto");
 }

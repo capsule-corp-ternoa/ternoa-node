@@ -793,7 +793,7 @@ pub mod pallet {
 
 impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
     // Return if an account is permitted to list on given marketplace
-    fn is_allowed_to_list_on_marketplace(
+    fn is_allowed_to_list(
         marketplace_id: MarketplaceId,
         account_id: T::AccountId,
     ) -> DispatchResult {
