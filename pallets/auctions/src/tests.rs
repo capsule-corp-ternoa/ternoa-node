@@ -71,13 +71,13 @@ fn create_auction_unhappy() {
             // should fail since start block > end block
             assert_noop!(
                 Auctions::create_auction(alice.clone(), nft_id, mkp_id, 10, 6, 100, Some(200)),
-                Error::<Test>::AuctionStartBlockLesserThanEndBlock
+                Error::<Test>::AuctionCannotStartBeforeItHasEnded
             );
 
             // should fail since start block > end block
             assert_noop!(
                 Auctions::create_auction(alice.clone(), nft_id, mkp_id, 1, 6, 100, Some(200)),
-                Error::<Test>::AuctionStartLowerThanCurrentBlock
+                Error::<Test>::AuctionMustStartInFuture
             );
 
             // should fail since auction period greater than max auction duration

@@ -161,9 +161,9 @@ pub mod pallet {
         /// Unexpected error occured
         UnexpectedError,
         /// Auction start should be greater than end block
-        AuctionStartBlockLesserThanEndBlock,
+        AuctionCannotStartBeforeItHasEnded,
         /// Auction start block must be higher than current block
-        AuctionStartLowerThanCurrentBlock,
+        AuctionMustStartInFuture,
         /// Auction time should be higher than min auction duration
         AuctionTimelineLowerThanMinDuration,
         /// Auction time should be lower than max auction duration
@@ -205,12 +205,12 @@ pub mod pallet {
             // ensure the auction timeline is valid
             ensure!(
                 start_block < end_block,
-                Error::<T>::AuctionStartBlockLesserThanEndBlock
+                Error::<T>::AuctionCannotStartBeforeItHasEnded
             );
             // ensure start block > current block
             ensure!(
                 start_block > current_block,
-                Error::<T>::AuctionStartLowerThanCurrentBlock
+                Error::<T>::AuctionMustStartInFuture
             );
             // ensure maximum auction duration is not exceeded
             ensure!(
