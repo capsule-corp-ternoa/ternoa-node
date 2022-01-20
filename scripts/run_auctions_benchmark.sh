@@ -1,0 +1,1 @@
+cargo run --release --features=runtime-benchmarks -- benchmark --chain dev  --execution=wasm --wasm-execution compiled --extrinsic="*" --pallet=ternoa_auctions --steps=1 --repeat=1 --heap-pages=4096 --output .

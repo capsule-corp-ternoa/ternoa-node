@@ -430,6 +430,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_sgx, Sgx);
             list_benchmark!(list, extra, ternoa_capsules, Capsules);
             list_benchmark!(list, extra, ternoa_associated_accounts, AssociatedAccounts);
+            list_benchmark!(list, extra, ternoa_auctions, Auctions);
 
             let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -490,6 +491,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_sgx, Sgx);
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
             add_benchmark!(params, batches, ternoa_associated_accounts, AssociatedAccounts);
+            add_benchmark!(params, batches, ternoa_auctions, Auctions);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

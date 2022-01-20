@@ -21,9 +21,9 @@ pub fn prepare_benchmarks<T: Config>() -> (NFTId, MarketplaceId) {
     let charlie: T::AccountId = get_account::<T>("CHARLIE");
 
     // Give them enough caps
-    T::Currency::make_free_balance_be(&alice, 1000u32.into());
-    T::Currency::make_free_balance_be(&bob, 1000u32.into());
-    T::Currency::make_free_balance_be(&charlie, 1000u32.into());
+    T::Currency::make_free_balance_be(&alice, 10000u32.into());
+    T::Currency::make_free_balance_be(&bob, 10000u32.into());
+    T::Currency::make_free_balance_be(&charlie, 10000u32.into());
 
     // Create default NFT and series
     let series_id = vec![SERIES_ID];
