@@ -337,7 +337,7 @@ pub mod pallet {
         UnknownNFT,
         /// TODO!
         InTransmission,
-        /// TODO!
+        /// There is no capsule referring to this NFTId
         UnknownCapsule,
     }
 
