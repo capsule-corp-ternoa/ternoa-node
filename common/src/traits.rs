@@ -1,4 +1,6 @@
-use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
+use frame_support::dispatch::{
+    DispatchErrorWithPostInfo, DispatchResult, DispatchResultWithPostInfo,
+};
 use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
@@ -67,5 +69,5 @@ pub trait MarketplaceTrait<AccountId> {
         uri: Option<TextFormat>,
         logo_uri: Option<TextFormat>,
         description: Option<TextFormat>,
-    ) -> DispatchResult;
+    ) -> DispatchResultWithPostInfo;
 }
