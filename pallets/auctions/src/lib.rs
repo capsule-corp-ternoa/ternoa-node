@@ -592,7 +592,7 @@ pub mod pallet {
                         &Self::account_id(),
                         &marketplace_info.0,
                         marketplace_commission_amount,
-                        KeepAlive,
+                        AllowDeath,
                     )?;
 
                     // Transfer remaining to auction creator
@@ -600,7 +600,7 @@ pub mod pallet {
                         &Self::account_id(),
                         &auction.creator,
                         amount_to_auction_creator,
-                        KeepAlive,
+                        AllowDeath,
                     )?;
 
                     // transfer NFT to highest bidder
@@ -662,7 +662,7 @@ pub mod pallet {
                     .ok_or(Error::<T>::BidDoesNotExist)?;
 
                 // transfer amount to user
-                T::Currency::transfer(&Self::account_id(), &who, user_bid.1, KeepAlive)?;
+                T::Currency::transfer(&Self::account_id(), &who, user_bid.1, AllowDeath)?;
                 *maybe_auction = Some(auction.clone());
 
                 Ok(())

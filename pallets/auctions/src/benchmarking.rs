@@ -14,6 +14,7 @@ use ternoa_primitives::{
 };
 
 const SERIES_ID: u8 = 20;
+const AUCTION_BUFFER: u32 = 600;
 
 pub fn prepare_benchmarks<T: Config>() -> (NFTId, MarketplaceId) {
     let alice: T::AccountId = get_account::<T>("ALICE");
@@ -102,7 +103,7 @@ benchmarks! {
         let start_block = 610u32.into();
         let end_block = start_block + 14401u32.into();
         TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), None)?;
-        run_to_block::<T>(start_block + 1u32.into());
+        run_to_block::<T>(start_block + One::one());
     }: _(RawOrigin::Signed(bob.clone()), nft_id, get_bid_price::<T>(100u32))
     verify {
         assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(true));
@@ -112,72 +113,72 @@ benchmarks! {
         let (nft_id, mkp_id) = prepare_benchmarks::<T>();
         let alice: T::AccountId = get_account::<T>("ALICE");
         let bob: T::AccountId = get_account::<T>("BOB");
-        let start_block = 630u32.into();
+        let start_block = frame_system::Pallet::<T>::block_number() + AUCTION_BUFFER.into();
         let end_block = start_block + 14401u32.into();
         TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), None)?;
         run_to_block::<T>(start_block + 1u32.into());
-        TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, 101u32.into())?;
+        TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, get_bid_price::<T>(101u32))?;
     }: _(RawOrigin::Signed(bob.clone()), nft_id)
     verify {
         assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(true));
     }
 
-    // increase_bid {
-    //     let (nft_id, mkp_id) = prepare_benchmarks::<T>();
-    //     let alice: T::AccountId = get_account::<T>("ALICE");
-    //     let bob: T::AccountId = get_account::<T>("BOB");
-    //     let start_block = 630u32.into();
-    //     let end_block = start_block + 14401u32.into();
-    //     TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), None)?;
-    //     run_to_block::<T>(start_block + 1u32.into());
-    //     TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, 101u32.into())?;
-    // }: _(RawOrigin::Signed(bob.clone()), nft_id, 102u32.into())
-    // verify {
-    //     assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(true));
-    // }
+    increase_bid {
+        let (nft_id, mkp_id) = prepare_benchmarks::<T>();
+        let alice: T::AccountId = get_account::<T>("ALICE");
+        let bob: T::AccountId = get_account::<T>("BOB");
+        let start_block = frame_system::Pallet::<T>::block_number() + AUCTION_BUFFER.into();
+        let end_block = start_block + 14401u32.into();
+        TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), None)?;
+        run_to_block::<T>(start_block + 1u32.into());
+        TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, get_bid_price::<T>(101u32))?;
+    }: _(RawOrigin::Signed(bob.clone()), nft_id, get_bid_price::<T>(102u32))
+    verify {
+        assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(true));
+    }
 
-    // buy_it_now {
-    //     let (nft_id, mkp_id) = prepare_benchmarks::<T>();
-    //     let alice: T::AccountId = get_account::<T>("ALICE");
-    //     let bob: T::AccountId = get_account::<T>("BOB");
-    //     let start_block = 640u32.into();
-    //     let end_block = start_block + 14401u32.into();
-    //     TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), Some(200u32.into()))?;
-    //     run_to_block::<T>(start_block + 1u32.into());
-    // }: _(RawOrigin::Signed(bob.clone()), nft_id, 200u32.into())
-    // verify {
-    //     assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(false));
-    // }
+    buy_it_now {
+        let (nft_id, mkp_id) = prepare_benchmarks::<T>();
+        let alice: T::AccountId = get_account::<T>("ALICE");
+        let bob: T::AccountId = get_account::<T>("BOB");
+        let start_block = frame_system::Pallet::<T>::block_number() + AUCTION_BUFFER.into();
+        let end_block = start_block + 14401u32.into();
+        TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), Some(get_bid_price::<T>(200u32)))?;
+        run_to_block::<T>(start_block + 1u32.into());
+    }: _(RawOrigin::Signed(bob.clone()), nft_id, get_bid_price::<T>(200u32))
+    verify {
+        assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(false));
+    }
 
-    // complete_auction {
-    //     let (nft_id, mkp_id) = prepare_benchmarks::<T>();
-    //     let alice: T::AccountId = get_account::<T>("ALICE");
-    //     let bob: T::AccountId = get_account::<T>("BOB");
-    //     let start_block = 650u32.into();
-    //     let end_block = start_block + 14401u32.into();
-    //     TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), Some(200u32.into()))?;
-    //     run_to_block::<T>(start_block + 1u32.into());
-    //     TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, 101u32.into())?;
-    //     run_to_block::<T>(end_block + 1u32.into());
-    // }: _(RawOrigin::Root, nft_id)
-    // verify {
-    //     assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(false));
-    // }
+    complete_auction {
+        let (nft_id, mkp_id) = prepare_benchmarks::<T>();
+        let alice: T::AccountId = get_account::<T>("ALICE");
+        let bob: T::AccountId = get_account::<T>("BOB");
+        let start_block = frame_system::Pallet::<T>::block_number() + AUCTION_BUFFER.into();
+        let end_block = start_block + 14401u32.into();
+        TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), None)?;
+        run_to_block::<T>(start_block + 1u32.into());
+        TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, get_bid_price::<T>(101u32))?;
+        run_to_block::<T>(end_block + 1u32.into());
+    }: _(RawOrigin::Root, nft_id)
+    verify {
+        assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(false));
+    }
 
-    // claim_bid {
-    //     let (nft_id, mkp_id) = prepare_benchmarks::<T>();
-    //     let alice: T::AccountId = get_account::<T>("ALICE");
-    //     let bob: T::AccountId = get_account::<T>("BOB");
-    //     let start_block = 26550u32.into();
-    //     let end_block = start_block + 14401u32.into();
-    //     TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), Some(200u32.into()))?;
-    //     run_to_block::<T>(start_block + 1u32.into());
-    //     TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, 101u32.into())?;
-    //     TernoaAuctions::<T>::buy_it_now(get_origin::<T>("CHARLIE").into(), nft_id, 200u32.into())?;
-    // }: _(RawOrigin::Signed(bob.clone()), nft_id)
-    // verify {
-    //     assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(false));
-    // }
+    claim_bid {
+        let (nft_id, mkp_id) = prepare_benchmarks::<T>();
+        let alice: T::AccountId = get_account::<T>("ALICE");
+        let bob: T::AccountId = get_account::<T>("BOB");
+        let start_block = frame_system::Pallet::<T>::block_number() + AUCTION_BUFFER.into();
+        let end_block = start_block + 14401u32.into();
+        TernoaAuctions::<T>::create_auction(get_origin::<T>("ALICE").into(), nft_id, mkp_id, start_block, end_block, get_start_price::<T>(), Some(get_bid_price::<T>(200u32)))?;
+        run_to_block::<T>(start_block + 1u32.into());
+        TernoaAuctions::<T>::add_bid(get_origin::<T>("BOB").into(), nft_id, get_bid_price::<T>(101u32))?;
+        TernoaAuctions::<T>::buy_it_now(get_origin::<T>("CHARLIE").into(), nft_id, get_bid_price::<T>(200u32))?;
+    }: _(RawOrigin::Signed(bob.clone()), nft_id)
+    verify {
+        assert_eq!(T::NFTHandler::is_listed_for_sale(nft_id), Some(false));
+    }
 }
 
 impl_benchmark_test_suite!(
