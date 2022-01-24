@@ -469,8 +469,8 @@ pub mod pallet {
                 ensure!(auction.end_block > current_block, Error::<T>::AuctionEnded);
 
                 // ensure the bid is larger than the current highest bid
-                if let Some(current_highest_bid) = auction.bidders.get_highest_bid() {
-                    ensure!(amount > current_highest_bid.1, Error::<T>::InvalidBidAmount);
+                if let Some(highest_bid) = auction.bidders.get_highest_bid() {
+                    ensure!(amount > highest_bid.1, Error::<T>::InvalidBidAmount);
                 }
 
                 let user_bid = auction
@@ -508,7 +508,6 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
-            // Mark the auction as completed so other bid users can claim amount
             Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
                 // should not panic when unwrap since already checked above
                 let mut auction = maybe_auction
@@ -554,6 +553,7 @@ pub mod pallet {
                     KeepAlive,
                 )?;
 
+                // Mark the auction as completed so other bid users can claim amount
                 auction.state = AuctionState::Completed;
 
                 // transfer NFT to caller
@@ -580,7 +580,6 @@ pub mod pallet {
             let _who = ensure_root(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
 
-            // Mark the auction as completed so other bid users can claim amount
             Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
                 // should not panic when unwrap since already checked above
                 let mut auction = maybe_auction
@@ -660,7 +659,6 @@ pub mod pallet {
         pub fn claim_bid(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
 
-            // Mark the auction as completed so other bid users can claim amount
             Auctions::<T>::try_mutate(nft_id, |maybe_auction| -> DispatchResult {
                 // should not panic when unwrap since already checked above
                 let auction = maybe_auction
@@ -682,7 +680,6 @@ pub mod pallet {
 
                 // transfer amount to user
                 T::Currency::transfer(&Self::account_id(), &who, user_bid.1, AllowDeath)?;
-                *maybe_auction = Some(auction.clone());
 
                 // emit bid claimed event
                 Self::deposit_event(Event::BidClaimed {
