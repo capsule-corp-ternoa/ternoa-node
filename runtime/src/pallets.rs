@@ -986,4 +986,5 @@ impl ternoa_auctions::Config for Runtime {
     type AuctionGracePeriod = AuctionGracePeriod;
     type AuctionEndingPeriod = AuctionEndingPeriod;
     type PalletId = AuctionsPalletId;
+    type WeightInfo = ();
 }

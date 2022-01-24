@@ -11,7 +11,9 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+mod default_weights;
 mod types;
+pub use default_weights::WeightInfo;
 use frame_support::traits::{Currency, Get, StorageVersion};
 use frame_support::PalletId;
 use sp_runtime::traits::AccountIdConversion;
@@ -63,6 +65,8 @@ pub mod pallet {
         /// The auctions pallet id - will be used to generate account id
         #[pallet::constant]
         type PalletId: Get<PalletId>;
+        // weight information for pallet
+        type WeightInfo: WeightInfo;
     }
 
     #[pallet::pallet]
@@ -189,7 +193,7 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         /// An example dispatchable that takes a singles value as a parameter, writes the value to
         /// storage and emits an event. This function must be dispatched by a signed extrinsic.
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::create_auction())]
         #[transactional]
         pub fn create_auction(
             origin: OriginFor<T>,
@@ -289,7 +293,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::cancel_auction())]
         #[transactional]
         pub fn cancel_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -321,7 +325,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::add_bid())]
         #[transactional]
         pub fn add_bid(
             origin: OriginFor<T>,
@@ -400,7 +404,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::remove_bid())]
         #[transactional]
         pub fn remove_bid(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -432,7 +436,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::increase_bid())]
         #[transactional]
         pub fn increase_bid(
             origin: OriginFor<T>,
@@ -480,7 +484,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::buy_it_now())]
         #[transactional]
         pub fn buy_it_now(
             origin: OriginFor<T>,
@@ -556,7 +560,8 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::complete_auction())]
+        #[transactional]
         pub fn complete_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let _who = ensure_root(origin)?;
             let current_block = frame_system::Pallet::<T>::block_number();
@@ -636,7 +641,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(T::WeightInfo::claim_bid())]
         #[transactional]
         pub fn claim_bid(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;

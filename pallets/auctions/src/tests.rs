@@ -11,6 +11,14 @@ use ternoa_primitives::{
     nfts::NFTId,
 };
 
+pub const MIN_AUCTION_DURATION: u64 = 14400;
+// min auction buffer of 1 hour (1*60*60)/6
+pub const MIN_AUCTION_BUFFER: u64 = 600;
+// max auction duration of 30 days (30*24*60*60)/6
+pub const MAX_AUCTION_DURATION: u64 = 432000;
+// auction grace period of 10min (10*60)/6
+pub const AUCTION_GRACE_PERIOD: u64 = 100;
+
 fn get_marketplace(owner: u64) -> MarketplaceId {
     let owner_signed: mock::Origin = RawOrigin::Signed(owner).into();
     help::create_mkp(
@@ -32,8 +40,8 @@ fn create_auction(owner: mock::Origin, marketplace_id: MarketplaceId, nft_id: NF
         owner,
         nft_id,
         marketplace_id,
-        6,
-        17,
+        MIN_AUCTION_BUFFER + 1,
+        MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1,
         100,
         Some(200)
     ));
@@ -70,11 +78,19 @@ fn create_auction_unhappy() {
 
             // should fail since start block > end block
             assert_noop!(
-                Auctions::create_auction(alice.clone(), nft_id, mkp_id, 10, 6, 100, Some(200)),
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    MIN_AUCTION_BUFFER + 1,
+                    6,
+                    100,
+                    Some(200)
+                ),
                 Error::<Test>::AuctionCannotStartBeforeItHasEnded
             );
 
-            // should fail since start block > end block
+            // should fail since start block < current block
             assert_noop!(
                 Auctions::create_auction(alice.clone(), nft_id, mkp_id, 1, 6, 100, Some(200)),
                 Error::<Test>::AuctionMustStartInFuture
@@ -82,32 +98,75 @@ fn create_auction_unhappy() {
 
             // should fail since auction period greater than max auction duration
             assert_noop!(
-                Auctions::create_auction(alice.clone(), nft_id, mkp_id, 5, 26, 100, Some(200)),
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    MIN_AUCTION_BUFFER + 1,
+                    MAX_AUCTION_DURATION + MIN_AUCTION_BUFFER + 2,
+                    100,
+                    Some(200)
+                ),
                 Error::<Test>::AuctionTimelineGreaterThanMaxDuration
             );
 
             // should fail since auction period lesser than min auction duration
             assert_noop!(
-                Auctions::create_auction(alice.clone(), nft_id, mkp_id, 5, 6, 100, Some(200)),
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    MIN_AUCTION_BUFFER + 1,
+                    MIN_AUCTION_BUFFER + 2,
+                    100,
+                    Some(200)
+                ),
                 Error::<Test>::AuctionTimelineLowerThanMinDuration
             );
 
+            let ideal_start_block: u64 = MIN_AUCTION_BUFFER + 1;
+            let ideal_end_block: u64 = MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1;
+
             // should fail since buy it price < start price
             assert_noop!(
-                Auctions::create_auction(alice.clone(), nft_id, mkp_id, 6, 16, 100, Some(50)),
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    ideal_start_block,
+                    ideal_end_block,
+                    100,
+                    Some(50)
+                ),
                 Error::<Test>::AuctionPricingInvalid
             );
 
             // should fail since the caller is not the owner of nft
             assert_noop!(
-                Auctions::create_auction(bob.clone(), nft_id, mkp_id, 6, 16, 100, Some(150)),
+                Auctions::create_auction(
+                    bob.clone(),
+                    nft_id,
+                    mkp_id,
+                    ideal_start_block,
+                    ideal_end_block,
+                    100,
+                    Some(150)
+                ),
                 Error::<Test>::NftNotOwned
             );
 
             // should fail since the nft is already listed for sale
             let _ = <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true);
             assert_noop!(
-                Auctions::create_auction(alice.clone(), nft_id, mkp_id, 6, 16, 100, Some(150)),
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    ideal_start_block,
+                    ideal_end_block,
+                    100,
+                    Some(150)
+                ),
                 Error::<Test>::NFTAlreadyListedForSale
             );
             let _ = <NFTs as NFTTrait>::set_listed_for_sale(nft_id, false);
@@ -115,7 +174,15 @@ fn create_auction_unhappy() {
             // should fail since the nft is set in transmission
             let _ = <NFTs as NFTTrait>::set_in_transmission(nft_id, true);
             assert_noop!(
-                Auctions::create_auction(alice.clone(), nft_id, mkp_id, 6, 16, 100, Some(150)),
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    ideal_start_block,
+                    ideal_end_block,
+                    100,
+                    Some(150)
+                ),
                 Error::<Test>::NFTInTransmission
             );
             let _ = <NFTs as NFTTrait>::set_in_transmission(nft_id, false);
@@ -128,8 +195,8 @@ fn create_auction_unhappy() {
                     alice.clone(),
                     nft_id,
                     restricted_mkp_id,
-                    6,
-                    16,
+                    ideal_start_block,
+                    ideal_end_block,
                     100,
                     Some(150)
                 ),
@@ -181,7 +248,7 @@ fn cancel_auction_unhappy() {
             );
 
             // should fail since the auction has already started
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_noop!(
                 Auctions::cancel_auction(alice, nft_id,),
                 Error::<Test>::CannotCancelInProcessAuction
@@ -203,14 +270,21 @@ fn add_bid_happy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob, nft_id, 102));
             // the end block should not be modified
-            assert_eq!(AuctionsStorage::<Test>::get(nft_id).unwrap().end_block, 17);
-            // adding a bid in auction period should extend the auction by grace period
-            run_to_block(15);
+            let end_block: u64 = MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1;
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
+                end_block
+            );
+            // adding a bid in ending period should extend the auction by grace period
+            run_to_block(end_block - 50);
             assert_ok!(Auctions::add_bid(charlie, nft_id, 105));
-            assert_eq!(AuctionsStorage::<Test>::get(nft_id).unwrap().end_block, 18);
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
+                end_block + 50
+            );
         })
 }
 
@@ -247,7 +321,7 @@ fn add_bid_unhappy() {
                 Error::<Test>::AuctionNotStarted
             );
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             // should fail since the amount is not greater than start price
             assert_noop!(
                 Auctions::add_bid(bob.clone(), nft_id, 100),
@@ -268,7 +342,7 @@ fn add_bid_unhappy() {
                 Error::<Test>::InvalidBidAmount
             );
 
-            run_to_block(18);
+            run_to_block(MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 2);
             assert_noop!(
                 Auctions::add_bid(charlie.clone(), nft_id, 105),
                 Error::<Test>::AuctionEnded
@@ -288,7 +362,7 @@ fn add_bid_bidderlist_overflow_works() {
             let nft_id = create_nft(ALICE);
             create_auction(alice.clone(), mkp_id, nft_id);
 
-            run_to_block(9);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             // add 10 bids in a row
             for n in 2..12 {
                 assert_ok!(Balances::transfer(alice.clone(), n, 200));
@@ -325,7 +399,7 @@ fn remove_bid_happy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 102));
             assert_eq!(Balances::free_balance(BOB), 898);
             assert_ok!(Auctions::remove_bid(bob, nft_id));
@@ -353,7 +427,7 @@ fn remove_bid_unhappy() {
 
             create_auction(alice.clone(), mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
 
             // should fail since the user does not have a bid
             assert_noop!(
@@ -376,7 +450,7 @@ fn increase_bid_happy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 200));
             assert_eq!(Balances::free_balance(BOB), 800);
             assert_ok!(Auctions::increase_bid(bob, nft_id, 300));
@@ -403,7 +477,7 @@ fn increase_bid_unhappy() {
             );
 
             create_auction(alice.clone(), mkp_id, nft_id);
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
 
             // should fail since the user does not have a bid
             assert_noop!(
@@ -419,7 +493,7 @@ fn increase_bid_unhappy() {
                 Error::<Test>::InvalidBidAmount
             );
 
-            run_to_block(18);
+            run_to_block(MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 2);
             // should fail since the auction has ended
             assert_noop!(
                 Auctions::increase_bid(bob.clone(), nft_id, 100),
@@ -441,7 +515,7 @@ fn buy_it_now_happy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_eq!(Balances::free_balance(ALICE), 990);
             assert_ok!(Auctions::buy_it_now(bob.clone(), nft_id, 200));
             assert_eq!(Balances::free_balance(BOB), 800);
@@ -497,10 +571,10 @@ fn complete_auction_happy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 200));
             assert_eq!(Balances::free_balance(BOB), 800);
-            run_to_block(18);
+            run_to_block(MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 2);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             // Bob should be the owner of nft
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(BOB));
@@ -527,7 +601,7 @@ fn complete_auction_unhappy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 200));
             assert_eq!(Balances::free_balance(BOB), 800);
 
@@ -550,12 +624,12 @@ fn claim_bid_happy() {
             let nft_id = create_nft(ALICE);
             create_auction(alice, mkp_id, nft_id);
 
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 200));
             assert_ok!(Auctions::add_bid(charlie.clone(), nft_id, 500));
             assert_eq!(Balances::free_balance(BOB), 800);
             assert_eq!(Balances::free_balance(CHARLIE), 500);
-            run_to_block(18);
+            run_to_block(MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 2);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(CHARLIE));
             assert_ok!(Auctions::claim_bid(bob.clone(), nft_id));
@@ -582,7 +656,7 @@ fn claim_bid_unhappy() {
             );
 
             create_auction(alice.clone(), mkp_id, nft_id);
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
 
             // should fail since the auction is not completed
             assert_noop!(
@@ -594,7 +668,7 @@ fn claim_bid_unhappy() {
             assert_ok!(Auctions::add_bid(charlie.clone(), nft_id, 500));
             assert_eq!(Balances::free_balance(BOB), 800);
             assert_eq!(Balances::free_balance(CHARLIE), 500);
-            run_to_block(18);
+            run_to_block(MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 2);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(CHARLIE));
             assert_ok!(Auctions::claim_bid(bob.clone(), nft_id));
@@ -627,7 +701,7 @@ fn test_auction_workflow() {
             let mkp_id = get_marketplace(3000);
             let nft_id = create_nft(ALICE);
             create_auction(alice.clone(), mkp_id, nft_id);
-            run_to_block(7);
+            run_to_block(MIN_AUCTION_BUFFER + 2);
 
             // add 10 bids in a row
             for n in 5..15 {
@@ -651,7 +725,8 @@ fn test_auction_workflow() {
             assert_eq!(Balances::free_balance(6), 200);
 
             // move inside the grace period
-            run_to_block(15);
+            let end_block: u64 = MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1;
+            run_to_block(end_block - AUCTION_GRACE_PERIOD / 2);
             // charlie creates a bid, this should extend the auction by 2 blocks
             assert_ok!(Auctions::add_bid(charlie.clone(), nft_id, 300));
             assert_eq!(Balances::free_balance(CHARLIE), 700);
@@ -659,11 +734,11 @@ fn test_auction_workflow() {
             assert_eq!(Balances::free_balance(7), 200);
             assert_eq!(
                 AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
-                17 + 1
+                end_block + AUCTION_GRACE_PERIOD / 2
             );
             // bob outbids by huge margin
             assert_ok!(Auctions::add_bid(bob.clone(), nft_id, 1000));
-            run_to_block(20);
+            run_to_block(end_block + AUCTION_GRACE_PERIOD / 2 + 1);
             assert_eq!(Balances::free_balance(ALICE), 990);
             assert_ok!(Auctions::complete_auction(RawOrigin::Root.into(), nft_id));
             // Bob should be the owner of nft

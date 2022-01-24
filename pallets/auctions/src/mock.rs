@@ -130,12 +130,18 @@ impl ternoa_marketplace::Config for Test {
 }
 
 parameter_types! {
-    pub const MinAuctionDuration: BlockNumber = 10;
-    pub const MinAuctionBuffer: BlockNumber = 5;
-    pub const MaxAuctionDuration: BlockNumber = 20;
-    pub const AuctionGracePeriod: BlockNumber = 3;
-    pub const AuctionEndingPeriod: BlockNumber = 2;
-    pub const AuctionsPalletId: PalletId = PalletId(*b"py/lotto");
+    // all calculations assume blocktime of 6secs
+    // min auction duration of 24 hours (24*60*60)/6
+    pub const MinAuctionDuration: BlockNumber = 14400;
+    // min auction buffer of 1 hour (1*60*60)/6
+    pub const MinAuctionBuffer: BlockNumber = 600;
+    // max auction duration of 30 days (30*24*60*60)/6
+    pub const MaxAuctionDuration: BlockNumber = 432000;
+    // auction grace period of 10min (10*60)/6
+    pub const AuctionGracePeriod: BlockNumber = 100;
+    // auction ending period of 1hr (1*60*60)/6
+    pub const AuctionEndingPeriod: BlockNumber = 600;
+    pub const AuctionsPalletId: PalletId = PalletId(*b"py/enauc");
 }
 
 impl Config for Test {
@@ -149,6 +155,7 @@ impl Config for Test {
     type AuctionGracePeriod = AuctionGracePeriod;
     type AuctionEndingPeriod = AuctionEndingPeriod;
     type PalletId = AuctionsPalletId;
+    type WeightInfo = ();
 }
 
 pub struct ExtBuilder {
