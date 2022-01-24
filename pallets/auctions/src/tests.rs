@@ -138,7 +138,7 @@ fn create_auction_unhappy() {
                     100,
                     Some(50)
                 ),
-                Error::<Test>::AuctionPricingInvalid
+                Error::<Test>::StartPriceCannotBeLowerThanBuyItPrice
             );
 
             // should fail since the caller is not the owner of nft
@@ -186,6 +186,22 @@ fn create_auction_unhappy() {
                 Error::<Test>::NFTInTransmission
             );
             let _ = <NFTs as NFTTrait>::set_in_transmission(nft_id, false);
+
+            // should fail when nft converted to capsule
+            let _ = <NFTs as NFTTrait>::set_converted_to_capsule(nft_id, true);
+            assert_noop!(
+                Auctions::create_auction(
+                    alice.clone(),
+                    nft_id,
+                    mkp_id,
+                    ideal_start_block,
+                    ideal_end_block,
+                    100,
+                    Some(150)
+                ),
+                Error::<Test>::NFTConvertedToCapsule
+            );
+            let _ = <NFTs as NFTTrait>::set_converted_to_capsule(nft_id, false);
 
             // should fail since the caller is not permitted to list on marketplace
             let restricted_mkp_id =

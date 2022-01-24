@@ -130,7 +130,11 @@ pub mod pallet {
             amount: BalanceOf<T>,
         },
         /// An expired bid was refunded
-        BidClaimed { nft_id: NFTId, caller: T::AccountId },
+        BidClaimed {
+            nft_id: NFTId,
+            caller: T::AccountId,
+            amount: BalanceOf<T>,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -141,7 +145,7 @@ pub mod pallet {
         /// Only owner of NFT can list for auction
         NftNotOwned,
         /// buy_it_price should be greater then start_price
-        AuctionPricingInvalid,
+        StartPriceCannotBeLowerThanBuyItPrice,
         /// NFT has not been listed for auction
         NFTNotListedForAuction,
         /// NFT is already listed for sale
@@ -184,6 +188,8 @@ pub mod pallet {
         AuctionNotCompleted,
         /// Only auction creator can cancel the auction
         OnlyAuctionCreatorCanCancel,
+        /// NFT has been converted to capsule
+        NFTConvertedToCapsule,
     }
 
     #[pallet::hooks]
@@ -234,7 +240,10 @@ pub mod pallet {
 
             // ensure the buy_it_price is greater than start_price
             match buy_it_price {
-                Some(price) => ensure!(price > start_price, Error::<T>::AuctionPricingInvalid),
+                Some(price) => ensure!(
+                    price > start_price,
+                    Error::<T>::StartPriceCannotBeLowerThanBuyItPrice
+                ),
                 None => (),
             }
 
@@ -254,6 +263,12 @@ pub mod pallet {
             ensure!(
                 nft_data.in_transmission == false,
                 Error::<T>::NFTInTransmission
+            );
+
+            // ensure the nft is not converted to capsule
+            ensure!(
+                nft_data.converted_to_capsule == false,
+                Error::<T>::NFTConvertedToCapsule
             );
 
             // Ensure origin is allowed to sell nft on given marketplace
@@ -377,10 +392,9 @@ pub mod pallet {
                     <= Some(T::AuctionEndingPeriod::get())
                 {
                     let remaining_time = auction.end_block.saturating_sub(current_block);
-                    let time_to_increase =
-                        T::AuctionGracePeriod::get().saturating_sub(remaining_time);
+                    let blocks_to_add = T::AuctionGracePeriod::get().saturating_sub(remaining_time);
 
-                    auction.end_block = auction.end_block.saturating_add(time_to_increase);
+                    auction.end_block = auction.end_block.saturating_add(blocks_to_add);
                 }
 
                 auction.state = AuctionState::Extended;
@@ -670,14 +684,15 @@ pub mod pallet {
                 T::Currency::transfer(&Self::account_id(), &who, user_bid.1, AllowDeath)?;
                 *maybe_auction = Some(auction.clone());
 
+                // emit bid claimed event
+                Self::deposit_event(Event::BidClaimed {
+                    nft_id,
+                    caller: who,
+                    amount: user_bid.1,
+                });
+
                 Ok(())
             })?;
-
-            // emit bid claimed event
-            Self::deposit_event(Event::BidClaimed {
-                nft_id,
-                caller: who,
-            });
 
             Ok(().into())
         }
