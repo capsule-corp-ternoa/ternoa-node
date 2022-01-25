@@ -81,6 +81,7 @@ ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
 ternoa-associated-accounts = { default-features = false, path = "../pallets/associated-accounts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
+ternoa-auctions = { default-features = false, path = "../pallets/auctions" }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev", branch = "master" }
@@ -147,6 +148,7 @@ std = [
 	"scale-info/std",
 	"pallet-mmr/std",
 	"pallet-bags-list/std",
+	"ternoa-auctions/std",
 ]
 
 runtime-benchmarks = [
@@ -173,4 +175,5 @@ runtime-benchmarks = [
 	"ternoa-sgx/runtime-benchmarks",
 	"ternoa-capsules/runtime-benchmarks",
 	"ternoa-associated-accounts/runtime-benchmarks",
+	"ternoa-auctions/runtime-benchmarks",
 ]

@@ -5,9 +5,10 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::TextFormat;
-
-pub type MarketplaceId = u32;
+use ternoa_primitives::{
+    marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType},
+    TextFormat,
+};
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -51,18 +52,11 @@ where
     }
 }
 
-#[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-pub enum MarketplaceType {
-    Public,
-    Private,
-}
-
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct MarketplaceInformation<AccountId> {
     pub kind: MarketplaceType,
-    pub commission_fee: u8,
+    pub commission_fee: MarketplaceCommission,
     pub owner: AccountId,
     pub allow_list: Vec<AccountId>,
     pub disallow_list: Vec<AccountId>,
@@ -75,7 +69,7 @@ pub struct MarketplaceInformation<AccountId> {
 impl<AccountId> MarketplaceInformation<AccountId> {
     pub fn new(
         kind: MarketplaceType,
-        commission_fee: u8,
+        commission_fee: MarketplaceCommission,
         owner: AccountId,
         allow_list: Vec<AccountId>,
         disallow_list: Vec<AccountId>,

@@ -2,6 +2,11 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use codec::{Decode, Encode};
+use scale_info::TypeInfo;
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
+use sp_runtime::RuntimeDebug;
 use sp_runtime::{
     generic,
     traits::{BlakeTwo256, IdentifyAccount, Verify},
@@ -43,15 +48,23 @@ pub type TextFormat = Vec<u8>;
 /// The type for looking up accounts. We don't expect more than 4 billion of them.
 pub type AccountIndex = u32;
 
-pub mod nfts {
-    #[cfg(feature = "std")]
-    use serde::{Deserialize, Serialize};
+pub mod marketplace {
+    use super::*;
+    /// The type of marketplace Id
+    pub type MarketplaceId = u32;
+    /// Type of marketplace commission
+    pub type MarketplaceCommission = u8;
 
-    use super::TextFormat;
-    use codec::{Decode, Encode};
-    use scale_info::TypeInfo;
-    use sp_runtime::RuntimeDebug;
-    use sp_std::vec::Vec;
+    #[derive(Encode, Decode, Copy, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
+    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    pub enum MarketplaceType {
+        Public,
+        Private,
+    }
+}
+
+pub mod nfts {
+    use super::*;
 
     /// How NFT IDs are encoded.
     pub type NFTId = u32;

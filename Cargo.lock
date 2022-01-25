@@ -7745,6 +7745,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-auctions"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-marketplace",
+ "ternoa-nfts",
+ "ternoa-primitives",
+]
+
+[[package]]
 name = "ternoa-capsules"
 version = "0.1.0"
 dependencies = [
@@ -7910,6 +7932,7 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
+ "ternoa-auctions",
  "ternoa-capsules",
  "ternoa-marketplace",
  "ternoa-nfts",
