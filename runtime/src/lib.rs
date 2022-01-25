@@ -123,7 +123,7 @@ construct_runtime!(
         Sgx: ternoa_sgx = 104,
         TimedEscrow: ternoa_timed_escrow = 105,
         AssociatedAccounts: ternoa_associated_accounts = 106,
-        Auctions: ternoa_auctions= 107,
+        Auctions: ternoa_auctions = 107,
     }
 );
 

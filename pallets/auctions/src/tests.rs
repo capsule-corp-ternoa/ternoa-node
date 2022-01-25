@@ -1,5 +1,6 @@
 #[cfg(test)]
 use super::mock::*;
+use crate::types::{AuctionData, AuctionState, BidderList};
 use crate::{mock, Auctions as AuctionsStorage, Error};
 use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
@@ -61,6 +62,20 @@ fn create_auction_happy() {
 
             // ensure nft is marked as listed for sale
             assert_eq!(NFTs::is_listed_for_sale(nft_id), Some(true));
+            // ensure storage is populated correctly
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block: MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1,
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList::new(),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Pending
+                }
+            );
         })
 }
 
@@ -234,6 +249,9 @@ fn cancel_auction_happy() {
             create_auction(alice.clone(), mkp_id, nft_id);
 
             assert_ok!(Auctions::cancel_auction(alice, nft_id,));
+
+            // ensure auction is removed from storage
+            assert_eq!(AuctionsStorage::<Test>::get(nft_id), None);
         })
 }
 
@@ -288,18 +306,40 @@ fn add_bid_happy() {
 
             run_to_block(MIN_AUCTION_BUFFER + 2);
             assert_ok!(Auctions::add_bid(bob, nft_id, 102));
+            assert_eq!(Balances::free_balance(BOB), 898);
             // the end block should not be modified
             let end_block: u64 = MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1;
+            // ensure storage is populated correctly
             assert_eq!(
-                AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
-                end_block
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block,
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList([(BOB, 102)].to_vec()),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Pending
+                }
             );
             // adding a bid in ending period should extend the auction by grace period
             run_to_block(end_block - 50);
             assert_ok!(Auctions::add_bid(charlie, nft_id, 105));
+            assert_eq!(Balances::free_balance(CHARLIE), 895);
+            // ensure storage is populated correctly
             assert_eq!(
-                AuctionsStorage::<Test>::get(nft_id).unwrap().end_block,
-                end_block + 50
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block: end_block + 50, // the auction time should be extended
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList([(BOB, 102), (CHARLIE, 105)].to_vec()),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Extended // the auction state should be extended
+                }
             );
         })
 }
@@ -471,6 +511,21 @@ fn increase_bid_happy() {
             assert_eq!(Balances::free_balance(BOB), 800);
             assert_ok!(Auctions::increase_bid(bob, nft_id, 300));
             assert_eq!(Balances::free_balance(BOB), 700);
+
+            // ensure storage is populated correctly
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block: MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1,
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList([(BOB, 300)].to_vec()),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Pending
+                }
+            );
         })
 }
 
@@ -544,6 +599,21 @@ fn buy_it_now_happy() {
             assert_eq!(marketplace_account.1, 10);
             assert_eq!(Balances::free_balance(marketplace_account.0), 1020);
             assert_eq!(Balances::free_balance(Auctions::account_id()), 0);
+
+            // ensure storage is populated correctly
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block: MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1,
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList::new(),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Completed
+                }
+            );
         })
 }
 
@@ -601,6 +671,20 @@ fn complete_auction_happy() {
             assert_eq!(marketplace_account.1, 10);
             assert_eq!(Balances::free_balance(marketplace_account.0), 20);
             assert_eq!(Balances::free_balance(Auctions::account_id()), 0);
+            // ensure storage is populated correctly
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block: MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1,
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList::new(),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Completed
+                }
+            );
         })
 }
 
@@ -650,6 +734,20 @@ fn claim_bid_happy() {
             assert_eq!(<NFTs as NFTTrait>::owner(nft_id), Some(CHARLIE));
             assert_ok!(Auctions::claim_bid(bob.clone(), nft_id));
             assert_eq!(Balances::free_balance(BOB), 1000);
+            // ensure storage is populated correctly
+            assert_eq!(
+                AuctionsStorage::<Test>::get(nft_id).unwrap(),
+                AuctionData {
+                    creator: ALICE,
+                    start_block: MIN_AUCTION_BUFFER + 1,
+                    end_block: MIN_AUCTION_BUFFER + MIN_AUCTION_DURATION + 1,
+                    start_price: 100,
+                    buy_it_price: Some(200),
+                    bidders: BidderList::new(),
+                    marketplace_id: mkp_id,
+                    state: AuctionState::Completed
+                }
+            );
         })
 }
 

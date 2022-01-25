@@ -395,9 +395,8 @@ pub mod pallet {
                     let blocks_to_add = T::AuctionGracePeriod::get().saturating_sub(remaining_time);
 
                     auction.end_block = auction.end_block.saturating_add(blocks_to_add);
+                    auction.state = AuctionState::Extended;
                 }
-
-                auction.state = AuctionState::Extended;
 
                 // replace top bidder with caller
                 // if bidder has been removed, refund removed user
