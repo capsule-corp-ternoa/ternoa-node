@@ -14,5 +14,6 @@ jobs:
     runs-on: ternoa-runner-linux-ubuntu
     steps:
     - uses: actions/checkout@v2
+
     - name: Build
       run: cargo build --release
