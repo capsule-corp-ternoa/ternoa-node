@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: ternoa-runner-linux-ubuntu
+    runs-on: ternoa-runner-ubuntu
     steps:
     - uses: actions/checkout@v2
 
