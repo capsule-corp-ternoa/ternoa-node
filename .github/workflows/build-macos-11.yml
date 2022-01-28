@@ -15,10 +15,24 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+	rustup default stable
+
+
+    rustup update
+    rustup default stable
+    rustup update nightly
+    rustup target add wasm32-unknown-unknown --toolchain nightly
 
     - name: Install Brew
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" -y 
 
+    - name: Updating Brew Packages
+      run: brew update
+
+    - name: Brew install required packages
+      run: brew install openssl cmake llvm
+  
+  
     - name: Install Rustup
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
@@ -31,12 +45,14 @@ jobs:
     - name: rustup update
       run: rustup update
       
-    - name: rustup target add nightly-x86_64-apple-darwin --toolchain nightly
-      run: rustup target add nightly-x86_64-apple-darwin --toolchain nightly
+    - name: rustup target add wasm32-unknown-unknown --toolchain nightly
+      run: rustup target add wasm32-unknown-unknown --toolchain nightly
 
     - name: rustup update nightly
       run: rustup update nightly
 
+    - name: Load env
+      run: source ~/.cargo/env
 
     - name: Build
       run: /root/.cargo/bin/cargo build --release
