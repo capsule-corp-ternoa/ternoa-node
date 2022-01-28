@@ -36,15 +36,23 @@ jobs:
 
     - name: rustup update
       run: rustup update
-      
-    - name: rustup target add wasm32-unknown-unknown --toolchain nightly
-      run: rustup target add wasm32-unknown-unknown --toolchain nightly
 
     - name: rustup update nightly
       run: rustup update nightly
 
+      
+    - name: rustup target add wasm32-unknown-unknown --toolchain nightly
+      run: rustup target add wasm32-unknown-unknown --toolchain nightly
+
     - name: Load env
       run: source ~/.cargo/env
+
+    - name: rustc --version
+      run: rustc --version
+
+    - name: rustup show
+      run: rustup show
+
 
     - name: Build
       run: cargo build --release
