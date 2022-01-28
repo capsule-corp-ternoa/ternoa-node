@@ -31,8 +31,8 @@ jobs:
     - name: rustup update
       run: rustup update
       
-    - name: rustup target add wasm32-unknown-unknown --toolchain nightly
-      run: rustup target add wasm32-unknown-unknown --toolchain nightly
+    - name: rustup target add nightly-x86_64-apple-darwin --toolchain nightly
+      run: rustup target add nightly-x86_64-apple-darwin --toolchain nightly
 
     - name: rustup update nightly
       run: rustup update nightly
