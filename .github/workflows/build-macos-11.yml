@@ -17,7 +17,7 @@ jobs:
 
 
     - name: Install Brew
-      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" -y 
 
     - name: Install Rustup
       run: curl https://sh.rustup.rs -sSf | sh
