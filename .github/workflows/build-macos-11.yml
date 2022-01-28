@@ -15,14 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-	rustup default stable
-
-
-    rustup update
-    rustup default stable
-    rustup update nightly
-    rustup target add wasm32-unknown-unknown --toolchain nightly
-
     - name: Install Brew
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" -y 
 
