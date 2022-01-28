@@ -47,10 +47,10 @@ jobs:
       run: source ~/.cargo/env
 
     - name: Build
-      run: /root/.cargo/bin/cargo build --release
+      run: cargo build --release
 
     - name: Test 
-      run: /root/.cargo/bin/cargo test --all-targets --all-features --workspace
+      run: cargo test --all-targets --all-features --workspace
 
     - name: Configure AWS credentials from Test account
       uses: s3-actions/s3cmd@v0
