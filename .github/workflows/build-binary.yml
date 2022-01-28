@@ -18,6 +18,9 @@ jobs:
     - name: Build
       run: cargo build --release
 
+    - name: Test 
+      run: cargo test --all-targets --all-features --workspace
+
     - name: Configure AWS credentials from Test account
       uses: s3-actions/s3cmd@v0
       with:
@@ -33,3 +36,9 @@ jobs:
     - name: Copy Binary to Scaleway Bucket  ${{ github.sha }}.zip
       run: |
         s3cmd sync ./target/release/ternoa s3://ternoa/chain/${GITHUB_REF##*/}/${{ github.sha }} --host https://s3.fr-par.scw.cloud --host-bucket https://s3.fr-par.scw.cloud
+        
+    - name: Notify Ops
+      uses: craftech-io/slack-action@v1
+      with:
+        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
