@@ -2,9 +2,9 @@ name: CI for Chain on Linux Environement
 
 on:
   push:
-    branches: [ soufiane2 ]
+    branches: [ soufiane ]
   pull_request:
-    branches: [ soufiane2 ]
+    branches: [ soufiane ]
 
 env:
   CARGO_TERM_COLOR: always
