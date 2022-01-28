@@ -49,8 +49,8 @@ jobs:
     - name: Build
       run: cargo build --release
 
-    - name: Test 
-      run: cargo test --all-targets --all-features --workspace
+#    - name: Test 
+#      run: cargo test --all-targets --all-features --workspace
 
     - name: Configure AWS credentials from Test account
       uses: s3-actions/s3cmd@v0
