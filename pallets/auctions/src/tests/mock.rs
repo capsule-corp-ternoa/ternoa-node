@@ -4,10 +4,8 @@ use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_primitives::{
-    marketplace::{MarketplaceId, MarketplaceType},
-    nfts::{NFTData, NFTSeriesDetails},
-};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceType};
+use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -17,6 +15,14 @@ pub const BOB: u64 = 2;
 pub const CHARLIE: u64 = 3;
 pub const TREASURY: u64 = 2021;
 pub type BlockNumber = u64;
+
+pub const MIN_AUCTION_DURATION: u64 = 14400;
+// min auction buffer of 1 hour (1*60*60)/6
+pub const MIN_AUCTION_BUFFER: u64 = 600;
+// max auction duration of 30 days (30*24*60*60)/6
+pub const MAX_AUCTION_DURATION: u64 = 432000;
+// auction grace period of 10min (10*60)/6
+pub const AUCTION_GRACE_PERIOD: u64 = 100;
 
 frame_support::construct_runtime!(
     pub enum Test where
@@ -132,11 +138,11 @@ impl ternoa_marketplace::Config for Test {
 parameter_types! {
     // all calculations assume blocktime of 6secs
     // min auction duration of 24 hours (24*60*60)/6
-    pub const MinAuctionDuration: BlockNumber = 14400;
+    pub const MinAuctionDuration: BlockNumber = MIN_AUCTION_DURATION;
     // min auction buffer of 1 hour (1*60*60)/6
-    pub const MinAuctionBuffer: BlockNumber = 600;
+    pub const MaxAuctionBuffer: BlockNumber = 600;
     // max auction duration of 30 days (30*24*60*60)/6
-    pub const MaxAuctionDuration: BlockNumber = 432000;
+    pub const MaxAuctionDuration: BlockNumber = MIN_AUCTION_DURATION;
     // auction grace period of 10min (10*60)/6
     pub const AuctionGracePeriod: BlockNumber = 100;
     // auction ending period of 1hr (1*60*60)/6
@@ -149,7 +155,7 @@ impl Config for Test {
     type Currency = Balances;
     type NFTHandler = NFTs;
     type MarketplaceHandler = Marketplace;
-    type MinAuctionBuffer = MinAuctionBuffer;
+    type MaxAuctionBuffer = MaxAuctionBuffer;
     type MaxAuctionDuration = MaxAuctionDuration;
     type MinAuctionDuration = MinAuctionDuration;
     type AuctionGracePeriod = AuctionGracePeriod;

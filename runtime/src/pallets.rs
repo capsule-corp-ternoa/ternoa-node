@@ -965,7 +965,7 @@ parameter_types! {
     // min auction duration of 24 hours (24*60*60)/6
     pub const MinAuctionDuration: BlockNumber = 14400;
     // min auction buffer of 1 hour (1*60*60)/6
-    pub const MinAuctionBuffer: BlockNumber = 600;
+    pub const MaxAuctionBuffer: BlockNumber = 600;
     // max auction duration of 30 days (30*24*60*60)/6
     pub const MaxAuctionDuration: BlockNumber = 432000;
     // auction grace period of 10min (10*60)/6
@@ -980,7 +980,7 @@ impl ternoa_auctions::Config for Runtime {
     type Currency = Balances;
     type NFTHandler = Nfts;
     type MarketplaceHandler = Marketplace;
-    type MinAuctionBuffer = MinAuctionBuffer;
+    type MaxAuctionBuffer = MaxAuctionBuffer;
     type MaxAuctionDuration = MaxAuctionDuration;
     type MinAuctionDuration = MinAuctionDuration;
     type AuctionGracePeriod = AuctionGracePeriod;

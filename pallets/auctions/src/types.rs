@@ -6,6 +6,7 @@ use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
 use ternoa_primitives::marketplace::MarketplaceId;
+use ternoa_primitives::nfts::NFTId;
 
 #[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -15,36 +16,22 @@ where
     AccountId: Clone + Default,
     Balance: Clone + Default,
 {
-    /// the owner of the nft that has listed the item on auction
+    /// The owner of the nft that has listed the item on auction
     pub creator: AccountId,
     /// `BlockNumber` at which the auction will accept bids
     pub start_block: BlockNumber,
     /// `BlockNumber` at which the auction will no longer accept bids
     pub end_block: BlockNumber,
-    /// floor `Balance` for creating a bid
+    /// Floor `Balance` for creating a bid
     pub start_price: Balance,
     /// Optional price at which the auction is stopped and item can be bought
     pub buy_it_price: Option<Balance>,
     /// List of last `MAX_COUNT` bids
     pub bidders: BidderList<AccountId, Balance>,
-    /// the marketplace where the auction has been listed
+    /// The marketplace where the auction has been listed
     pub marketplace_id: MarketplaceId,
-    /// the current state of the auction [Pending, InProcess, Extended, Completed]
-    pub state: AuctionState,
-}
-
-#[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
-#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-/// enum to store the current state of an auction
-pub enum AuctionState {
-    /// The auction has been created but not yet started
-    Pending,
-    /// The auction has started and is in process
-    InProcess,
-    /// The auction has been extended past the original end_block
-    Extended,
-    /// The auction has been completed, the nft has been assigned to highest bidder
-    Completed,
+    /// Is the auction going beyond the original end_block
+    pub is_extended: bool,
 }
 
 #[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
@@ -129,6 +116,61 @@ where
         // as long as MAX_COUNT remains small.
         self.0.iter().find(|&x| x.0 == account_id)
     }
+}
+
+#[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo, Default)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+/// wrapper type to store sorted list of all bids
+/// The wrapper exists to ensure a queue implementation of sorted bids
+pub struct DeadlineList<BlockNumber>(pub Vec<(NFTId, BlockNumber)>);
+
+impl<BlockNumber> DeadlineList<BlockNumber>
+where
+    BlockNumber: sp_std::cmp::PartialOrd,
+{
+    pub fn insert(&mut self, nft_id: NFTId, block_number: BlockNumber) {
+        let index = self.0.iter().position(|x| x.1 > block_number);
+        let index = index.unwrap_or_else(|| self.0.len());
+
+        self.0.insert(index, (nft_id, block_number));
+    }
+
+    pub fn remove(&mut self, nft_id: NFTId) -> bool {
+        let index = self.0.iter().position(|x| x.0 == nft_id);
+        if let Some(index) = index {
+            self.0.remove(index);
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn update(&mut self, nft_id: NFTId, block_number: BlockNumber) -> bool {
+        let removed = self.remove(nft_id);
+        if removed {
+            self.insert(nft_id, block_number);
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn next(&self, block_number: BlockNumber) -> Option<NFTId> {
+        let front = self.0.get(0)?;
+        if front.1 <= block_number {
+            Some(front.0)
+        } else {
+            None
+        }
+    }
+}
+
+#[test]
+mod deadline_list {
+    use super::*;
+
+    #[test]
+    fn test_sorted_bid_works() {}
 }
 
 #[test]

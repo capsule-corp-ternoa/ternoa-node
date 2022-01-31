@@ -1,6 +1,6 @@
 #[cfg(test)]
 use super::mock::*;
-use crate::types::{AuctionData, AuctionState, BidderList};
+use crate::types::{AuctionData, BidderList};
 use crate::{mock, Auctions as AuctionsStorage, Error};
 use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
@@ -11,14 +11,6 @@ use ternoa_primitives::{
     marketplace::{MarketplaceId, MarketplaceType},
     nfts::NFTId,
 };
-
-pub const MIN_AUCTION_DURATION: u64 = 14400;
-// min auction buffer of 1 hour (1*60*60)/6
-pub const MIN_AUCTION_BUFFER: u64 = 600;
-// max auction duration of 30 days (30*24*60*60)/6
-pub const MAX_AUCTION_DURATION: u64 = 432000;
-// auction grace period of 10min (10*60)/6
-pub const AUCTION_GRACE_PERIOD: u64 = 100;
 
 fn get_marketplace(owner: u64) -> MarketplaceId {
     let owner_signed: mock::Origin = RawOrigin::Signed(owner).into();
@@ -62,6 +54,7 @@ fn create_auction_happy() {
 
             // ensure nft is marked as listed for sale
             assert_eq!(NFTs::is_listed_for_sale(nft_id), Some(true));
+
             // ensure storage is populated correctly
             assert_eq!(
                 AuctionsStorage::<Test>::get(nft_id).unwrap(),
@@ -73,7 +66,7 @@ fn create_auction_happy() {
                     buy_it_price: Some(200),
                     bidders: BidderList::new(),
                     marketplace_id: mkp_id,
-                    state: AuctionState::Pending
+                    is_extended: false
                 }
             );
         })

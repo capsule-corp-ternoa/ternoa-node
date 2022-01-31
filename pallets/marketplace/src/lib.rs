@@ -25,7 +25,7 @@ use frame_system::Origin;
 use sp_std::vec::Vec;
 use ternoa_common::helpers::check_bounds;
 use ternoa_common::traits::MarketplaceTrait;
-use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::nfts::NFTId;
 use ternoa_primitives::TextFormat;
 
@@ -866,11 +866,11 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
     }
 
     // Return the owner account and commision for marketplace with `marketplace_id`
-    fn get_marketplace_info(
+    fn get_marketplace(
         marketplace_id: MarketplaceId,
-    ) -> Option<(T::AccountId, MarketplaceCommission)> {
+    ) -> Option<MarketplaceInformation<T::AccountId>> {
         match Marketplaces::<T>::get(marketplace_id) {
-            Some(marketplace) => Some((marketplace.owner, marketplace.commission_fee)),
+            Some(marketplace) => Some(marketplace),
             None => None,
         }
     }

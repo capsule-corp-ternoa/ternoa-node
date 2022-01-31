@@ -1,7 +1,7 @@
 use frame_support::dispatch::{
     DispatchErrorWithPostInfo, DispatchResult, DispatchResultWithPostInfo,
 };
-use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
 
@@ -55,10 +55,8 @@ pub trait MarketplaceTrait<AccountId> {
     /// Return if an account is permitted to list on given marketplace
     fn is_allowed_to_list(marketplace_id: MarketplaceId, account_id: AccountId) -> DispatchResult;
 
-    /// Return the commission charged by a given marketplace
-    fn get_marketplace_info(
-        marketplace_id: MarketplaceId,
-    ) -> Option<(AccountId, MarketplaceCommission)>;
+    /// Return marketplace
+    fn get_marketplace(marketplace_id: MarketplaceId) -> Option<MarketplaceInformation<AccountId>>;
 
     /// create a new marketplace
     fn create(

@@ -52,6 +52,7 @@ pub mod marketplace {
     use super::*;
     /// The type of marketplace Id
     pub type MarketplaceId = u32;
+
     /// Type of marketplace commission
     pub type MarketplaceCommission = u8;
 
@@ -60,6 +61,46 @@ pub mod marketplace {
     pub enum MarketplaceType {
         Public,
         Private,
+    }
+
+    #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
+    #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    pub struct MarketplaceInformation<AccountId> {
+        pub kind: MarketplaceType,
+        pub commission_fee: MarketplaceCommission,
+        pub owner: AccountId,
+        pub allow_list: Vec<AccountId>,
+        pub disallow_list: Vec<AccountId>,
+        pub name: TextFormat,
+        pub uri: Option<TextFormat>,
+        pub logo_uri: Option<TextFormat>,
+        pub description: Option<TextFormat>,
+    }
+
+    impl<AccountId> MarketplaceInformation<AccountId> {
+        pub fn new(
+            kind: MarketplaceType,
+            commission_fee: MarketplaceCommission,
+            owner: AccountId,
+            allow_list: Vec<AccountId>,
+            disallow_list: Vec<AccountId>,
+            name: TextFormat,
+            uri: Option<TextFormat>,
+            logo_uri: Option<TextFormat>,
+            description: Option<TextFormat>,
+        ) -> MarketplaceInformation<AccountId> {
+            Self {
+                kind,
+                commission_fee,
+                owner,
+                allow_list,
+                disallow_list,
+                name,
+                uri,
+                logo_uri,
+                description,
+            }
+        }
     }
 }
 
