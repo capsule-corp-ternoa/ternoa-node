@@ -1,0 +1,47 @@
+[package]
+name = 'chainbridge'
+version = '0.0.2'
+authors = ['david@chainsafe.io']
+edition = '2018'
+
+[dependencies]
+# third-party dependencies
+serde = { optional = true,  version = "1.0.132" }
+codec = { package = "parity-scale-codec",  default-features = false, features = ["derive"], version = "2.3.1" }
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+
+# primitives
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+
+# frame dependencies
+frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
+
+# Benchmarking primitives
+frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev", branch = "master" }
+
+[build-dependencies]
+wasm-builder-runner = { version = "3.0.0", package = "substrate-wasm-builder-runner"}
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+	"serde",
+	"sp-std/std",
+	"sp-runtime/std",
+    "sp-io/std",
+    "sp-core/std",
+    "frame-benchmarking/std",
+	"frame-support/std",
+	"frame-system/std",
+	"pallet-balances/std",
+]
+
+runtime-benchmarks = [
+	"frame-benchmarking"
+]

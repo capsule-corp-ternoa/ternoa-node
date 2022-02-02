@@ -47,7 +47,6 @@ pallet-tips = { git = "https://github.com/paritytech/substrate.git", default-fea
 pallet-mmr = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 pallet-bags-list = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 
-
 # Sp
 sp-api = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
@@ -82,6 +81,7 @@ ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
 ternoa-associated-accounts = { default-features = false, path = "../pallets/associated-accounts" }
 ternoa-primitives = { default-features = false, path = "../primitives" }
 ternoa-auctions = { default-features = false, path = "../pallets/auctions" }
+chainbridge = { default-features = false, path = "../pallets/chainbridge" }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev", branch = "master" }
@@ -149,6 +149,7 @@ std = [
 	"pallet-mmr/std",
 	"pallet-bags-list/std",
 	"ternoa-auctions/std",
+	"chainbridge/std",
 ]
 
 runtime-benchmarks = [
