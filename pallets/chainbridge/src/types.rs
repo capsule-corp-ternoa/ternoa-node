@@ -20,6 +20,7 @@
 // Substrate primitives
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
+use sp_std::{vec, vec::Vec};
 
 use sp_runtime::RuntimeDebug;
 

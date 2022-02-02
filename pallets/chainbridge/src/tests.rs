@@ -342,7 +342,7 @@ fn create_successful_remark_proposal() {
             let prop_id = 1;
 
             // Create a dummy system remark proposal
-            let proposal = Call::System(SystemCall::remark(vec![10]));
+            let proposal = Call::System(SystemCall::remark { remark: vec![10] });
 
             // Create proposal (& vote)
             assert_ok!(ChainBridge::acknowledge_proposal(
@@ -432,7 +432,7 @@ fn create_unsuccessful_transfer_proposal() {
             let prop_id = 1;
 
             // Create a dummy system remark proposal
-            let proposal = Call::System(SystemCall::remark(vec![11]));
+            let proposal = Call::System(SystemCall::remark { remark: vec![11] });
 
             // Create proposal (& vote)
             assert_ok!(ChainBridge::acknowledge_proposal(
@@ -519,7 +519,7 @@ fn execute_after_threshold_change() {
             let prop_id = 1;
 
             // Create a dummy system remark proposal
-            let proposal = Call::System(SystemCall::remark(vec![11]));
+            let proposal = Call::System(SystemCall::remark { remark: vec![11] });
 
             // Create proposal (& vote)
             assert_ok!(ChainBridge::acknowledge_proposal(
@@ -590,7 +590,7 @@ fn proposal_expires() {
             let prop_id = 1;
 
             // Create a dummy system remark proposal
-            let proposal = Call::System(SystemCall::remark(vec![10]));
+            let proposal = Call::System(SystemCall::remark { remark: vec![10] });
 
             // Create proposal (& vote)
             assert_ok!(ChainBridge::acknowledge_proposal(
