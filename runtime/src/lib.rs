@@ -124,6 +124,7 @@ construct_runtime!(
         TimedEscrow: ternoa_timed_escrow = 105,
         AssociatedAccounts: ternoa_associated_accounts = 106,
         Auctions: ternoa_auctions = 107,
+        Chainbridge: chainbridge = 108,
     }
 );
 
@@ -431,6 +432,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, ternoa_capsules, Capsules);
             list_benchmark!(list, extra, ternoa_associated_accounts, AssociatedAccounts);
             list_benchmark!(list, extra, ternoa_auctions, Auctions);
+            list_benchmark!(list, extra, chainbridge, Chainbridge);
 
             let storage_info = AllPalletsWithSystem::storage_info();
 
@@ -492,6 +494,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
             add_benchmark!(params, batches, ternoa_associated_accounts, AssociatedAccounts);
             add_benchmark!(params, batches, ternoa_auctions, Auctions);
+            add_benchmark!(params, batches, chainbridge, Chainbridge);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

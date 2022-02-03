@@ -988,3 +988,23 @@ impl ternoa_auctions::Config for Runtime {
     type PalletId = AuctionsPalletId;
     type WeightInfo = ();
 }
+
+// Parameterize chainbridge pallet
+parameter_types! {
+    pub const ChainBridgePalletId: PalletId = PalletId(*b"cb/bridg");
+    pub const ProposalLifetime: BlockNumber = 1000;
+    pub const SubstrateChainId: u8 = 5;
+    pub const RelayerVoteThreshold: u32 = chainbridge::DEFAULT_RELAYER_VOTE_THRESHOLD;
+}
+
+// Chainbridge
+impl chainbridge::Config for Runtime {
+    type Event = Event;
+    type AdminOrigin = frame_system::EnsureRoot<Self::AccountId>;
+    type Proposal = Call;
+    type ChainId = SubstrateChainId;
+    type PalletId = ChainBridgePalletId;
+    type ProposalLifetime = ProposalLifetime;
+    type RelayerVoteThreshold = RelayerVoteThreshold;
+    type WeightInfo = ();
+}
