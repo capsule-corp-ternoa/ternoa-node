@@ -119,8 +119,9 @@ pub mod pallet {
             ensure!(!nft.converted_to_capsule, Error::<T>::CannotListCapsules);
             ensure!(!nft.listed_for_sale, Error::<T>::AlreadyListedForSale);
 
-            let is_series_completed = T::NFTs::is_series_completed(nft_id) == Some(true);
-            ensure!(is_series_completed, Error::<T>::SeriesNotCompleted);
+            let is_nft_in_completed_series =
+                T::NFTs::is_nft_in_completed_series(nft_id) == Some(true);
+            ensure!(is_nft_in_completed_series, Error::<T>::SeriesNotCompleted);
 
             let market = Marketplaces::<T>::get(mkp_id).ok_or(Error::<T>::UnknownMarketplace)?;
 

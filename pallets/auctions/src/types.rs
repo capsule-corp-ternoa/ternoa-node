@@ -26,7 +26,7 @@ where
     pub start_price: Balance,
     /// Optional price at which the auction is stopped and item can be bought
     pub buy_it_price: Option<Balance>,
-    /// List of last `MAX_COUNT` bids
+    /// List of bidders
     pub bidders: BidderList<AccountId, Balance>,
     /// The marketplace where the auction has been listed
     pub marketplace_id: MarketplaceId,
@@ -38,18 +38,22 @@ where
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 /// wrapper type to store sorted list of all bids
 /// The wrapper exists to ensure a queue implementation of sorted bids
-pub struct BidderList<AccountId, Balance>(pub Vec<(AccountId, Balance)>);
+pub struct BidderList<AccountId, Balance> {
+    pub list: Vec<(AccountId, Balance)>,
+    pub max_size: u16,
+}
 
 impl<AccountId, Balance> BidderList<AccountId, Balance>
 where
     AccountId: sp_std::cmp::Ord + Clone,
     Balance: sp_std::cmp::PartialOrd,
 {
-    pub const MAX_COUNT: usize = 10;
-
     /// Create a new empty bidders list
-    pub fn new() -> Self {
-        Self(Vec::new())
+    pub fn new(max_size: u16) -> Self {
+        Self {
+            list: Vec::new(),
+            max_size,
+        }
     }
 
     /// Insert a new bid to the list
@@ -59,52 +63,49 @@ where
         value: Balance,
     ) -> Option<(AccountId, Balance)> {
         // If list is at max capacity, remove lowest bid
-        match self.0.len() {
-            Self::MAX_COUNT => {
-                let removed_bid = self.0.remove(0);
-                self.0.push((account_id, value));
-                // return removed bid
-                Some(removed_bid)
-            }
-            _ => {
-                self.0.push((account_id, value));
-                None
-            }
+        if self.list.len() >= self.max_size as usize {
+            let removed_bid = self.list.remove(0);
+            self.list.push((account_id, value));
+            // return removed bid
+            Some(removed_bid)
+        } else {
+            self.list.push((account_id, value));
+            None
         }
     }
 
     /// Get length of bidders list
     pub fn len(&self) -> usize {
-        self.0.len()
+        self.list.len()
     }
 
     /// Get current highest bid in list
     pub fn get_highest_bid(&self) -> Option<&(AccountId, Balance)> {
-        self.0.last()
+        self.list.last()
     }
 
     /// Get current lowest bid in list
     pub fn get_lowest_bid(&self) -> Option<&(AccountId, Balance)> {
-        self.0.first()
+        self.list.first()
     }
 
     /// Remove the lowest bid in list
     pub fn remove_lowest_bid(&mut self) -> (AccountId, Balance) {
-        self.0.remove(0)
+        self.list.remove(0)
     }
 
     /// Remove the highest bid in list
     pub fn remove_highest_bid(&mut self) -> Option<(AccountId, Balance)> {
-        match self.0.len() {
+        match self.list.len() {
             0 => None,
-            n => Some(self.0.remove(n - 1)),
+            n => Some(self.list.remove(n - 1)),
         }
     }
 
     /// Remove a specific bid from `account_id` from list if it exists
     pub fn remove_bid(&mut self, account_id: AccountId) -> Option<(AccountId, Balance)> {
-        match self.0.iter().position(|x| x.0 == account_id) {
-            Some(index) => Some(self.0.remove(index)),
+        match self.list.iter().position(|x| x.0 == account_id) {
+            Some(index) => Some(self.list.remove(index)),
             None => None,
         }
     }
@@ -113,8 +114,8 @@ where
     pub fn find_bid(&self, account_id: AccountId) -> Option<&(AccountId, Balance)> {
         // this is not optimal since we traverse the entire link, but we cannot use binary search here
         // since the list is not sorted by accountId but rather by bid value, this should not drastically affect performance
-        // as long as MAX_COUNT remains small.
-        self.0.iter().find(|&x| x.0 == account_id)
+        // as long as max_size remains small.
+        self.list.iter().find(|&x| x.0 == account_id)
     }
 }
 
@@ -165,30 +166,30 @@ where
     }
 }
 
-#[test]
+/* #[test]
 mod deadline_list {
     use super::*;
 
     #[test]
     fn test_sorted_bid_works() {}
-}
+} */
 
 #[test]
 fn test_sorted_bid_works() {
     type MockBalance = u32;
     type MockAccount = u32;
     // create a new list
-    let mut bidders_list: BidderList<MockAccount, MockBalance> = BidderList::new();
+    let max_size = 10;
+
+    let mut bidders_list: BidderList<MockAccount, MockBalance> = BidderList::new(max_size);
+    assert_eq!(bidders_list.max_size, max_size);
 
     // insert to list works
     bidders_list.insert_new_bid(1u32, 2u32);
-    assert_eq!(bidders_list, BidderList([(1u32, 2u32)].to_vec()));
+    assert_eq!(bidders_list.list, vec![(1u32, 2u32)]);
 
     bidders_list.insert_new_bid(2u32, 3u32);
-    assert_eq!(
-        bidders_list,
-        BidderList([(1u32, 2u32), (2u32, 3u32)].to_vec())
-    );
+    assert_eq!(bidders_list.list, vec![(1u32, 2u32), (2u32, 3u32)]);
 
     // get highest bid works
     assert_eq!(bidders_list.get_highest_bid(), Some(&(2u32, 3u32)));
@@ -203,22 +204,19 @@ fn test_sorted_bid_works() {
 
     // ensure the insertion has worked correctly
     assert_eq!(
-        bidders_list,
-        BidderList(
-            [
-                (1, 2),
-                (2, 3),
-                (4, 5),
-                (5, 6),
-                (6, 7),
-                (7, 8),
-                (8, 9),
-                (9, 10),
-                (10, 11),
-                (11, 12)
-            ]
-            .to_vec()
-        )
+        bidders_list.list,
+        vec![
+            (1, 2),
+            (2, 3),
+            (4, 5),
+            (5, 6),
+            (6, 7),
+            (7, 8),
+            (8, 9),
+            (9, 10),
+            (10, 11),
+            (11, 12)
+        ]
     );
 
     // inserting the new bid should replace the lowest bid
@@ -227,22 +225,19 @@ fn test_sorted_bid_works() {
 
     // ensure the insertion has worked correctly
     assert_eq!(
-        bidders_list,
-        BidderList(
-            [
-                (2, 3),
-                (4, 5),
-                (5, 6),
-                (6, 7),
-                (7, 8),
-                (8, 9),
-                (9, 10),
-                (10, 11),
-                (11, 12),
-                (1, 102)
-            ]
-            .to_vec()
-        )
+        bidders_list.list,
+        vec![
+            (2, 3),
+            (4, 5),
+            (5, 6),
+            (6, 7),
+            (7, 8),
+            (8, 9),
+            (9, 10),
+            (10, 11),
+            (11, 12),
+            (1, 102)
+        ]
     );
 
     // ensure find_bid works
@@ -254,40 +249,34 @@ fn test_sorted_bid_works() {
     // ensure remove_bid works
     assert_eq!(bidders_list.remove_bid(5), Some((5, 6)));
     assert_eq!(
-        bidders_list,
-        BidderList(
-            [
-                (2, 3),
-                (4, 5),
-                (6, 7),
-                (7, 8),
-                (8, 9),
-                (9, 10),
-                (10, 11),
-                (11, 12),
-                (1, 102)
-            ]
-            .to_vec()
-        )
+        bidders_list.list,
+        vec![
+            (2, 3),
+            (4, 5),
+            (6, 7),
+            (7, 8),
+            (8, 9),
+            (9, 10),
+            (10, 11),
+            (11, 12),
+            (1, 102)
+        ]
     );
 
     // ensure remove_bid works
     assert_eq!(bidders_list.remove_bid(11), Some((11, 12)));
     assert_eq!(
-        bidders_list,
-        BidderList(
-            [
-                (2, 3),
-                (4, 5),
-                (6, 7),
-                (7, 8),
-                (8, 9),
-                (9, 10),
-                (10, 11),
-                (1, 102)
-            ]
-            .to_vec()
-        )
+        bidders_list.list,
+        vec![
+            (2, 3),
+            (4, 5),
+            (6, 7),
+            (7, 8),
+            (8, 9),
+            (9, 10),
+            (10, 11),
+            (1, 102)
+        ]
     );
     assert_eq!(bidders_list.remove_bid(2022), None);
     // ensure remove_bid works till empty
@@ -299,7 +288,7 @@ fn test_sorted_bid_works() {
     assert_eq!(bidders_list.remove_bid(9), Some((9, 10)));
     assert_eq!(bidders_list.remove_bid(10), Some((10, 11)));
     assert_eq!(bidders_list.remove_bid(1), Some((1, 102)));
-    assert_eq!(bidders_list, BidderList([].to_vec()));
+    assert_eq!(bidders_list.list, vec![]);
 
     // insert max bids
     for n in 4..12 {

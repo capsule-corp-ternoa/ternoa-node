@@ -15,7 +15,7 @@ pub trait NFTTrait {
     fn owner(id: NFTId) -> Option<Self::AccountId>;
 
     /// Is series completed(locked)
-    fn is_series_completed(id: NFTId) -> Option<bool>;
+    fn is_nft_in_completed_series(id: NFTId) -> Option<bool>;
 
     /// Create NFT
     fn create_nft(
@@ -47,6 +47,9 @@ pub trait NFTTrait {
 
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
+
+    /// TODO!
+    fn set_series_completion(series_id: NFTSeriesId, value: bool) -> DispatchResult;
 }
 
 /// Trait that implements basic functionalities related to Ternoa Marketplace
