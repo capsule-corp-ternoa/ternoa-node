@@ -276,7 +276,7 @@ pub mod pallet {
                 // ensure the caller is not the owner of NFT
                 ensure!(
                     auction.creator != who.clone(),
-                    Error::<T>::OwnerNotAllowedToBid
+                    Error::<T>::CannotAddBidToYourOwnAuctions
                 );
 
                 // ensure the auction period has commenced
@@ -298,10 +298,7 @@ pub mod pallet {
                         Error::<T>::CannotBidLessThanTheStartingPrice
                     );
                 }
-                let remaining_blocks = auction
-                    .end_block
-                    .checked_sub(&current_block)
-                    .ok_or(Error::<T>::UnexpectedError)?;
+                let remaining_blocks = auction.end_block.saturating_sub(current_block);
 
                 if let Some(existing_bid) = auction.bidders.find_bid(who.clone()) {
                     let amount_difference = amount.saturating_sub(existing_bid.1);
@@ -370,7 +367,7 @@ pub mod pallet {
                 // ensure the auction period has not ended
                 ensure!(
                     remaining_blocks > T::AuctionEndingPeriod::get(),
-                    Error::<T>::CannotRevokeBid
+                    Error::<T>::CannotRemoveBidAtTheEndOfAuction
                 );
 
                 T::Currency::transfer(&Self::account_id(), &bid.0, bid.1, AllowDeath)?;
@@ -526,7 +523,7 @@ pub mod pallet {
         /// The specified auction does not exist
         AuctionDoesNotExist,
         /// Current owner cannot bid on NFT
-        OwnerNotAllowedToBid,
+        CannotAddBidToYourOwnAuctions,
         /// The auction has not started
         AuctionNotStarted,
         /// Unexpected error occured
@@ -538,7 +535,7 @@ pub mod pallet {
         /// The specified auction does not exist
         ClaimDoesNotExist,
         /// TODO!
-        CannotRevokeBid,
+        CannotRemoveBidAtTheEndOfAuction,
         /// TODO!
         CannotEndAuctionThatWasNotExtended,
         /// TODO!
