@@ -353,22 +353,18 @@ pub mod pallet {
                     .as_mut()
                     .ok_or(Error::<T>::AuctionDoesNotExist)?;
 
-                let remaining_blocks = auction
-                    .end_block
-                    .checked_sub(&current_block)
-                    .ok_or(Error::<T>::UnexpectedError)?;
+                let remaining_blocks = auction.end_block.saturating_sub(current_block);
+                // ensure the auction period has not ended
+                ensure!(
+                    remaining_blocks > T::AuctionEndingPeriod::get(),
+                    Error::<T>::CannotRemoveBidAtTheEndOfAuction
+                );
 
                 let bid = auction
                     .bidders
                     .find_bid(who.clone())
                     .ok_or(Error::<T>::BidDoesNotExist)?
                     .clone();
-
-                // ensure the auction period has not ended
-                ensure!(
-                    remaining_blocks > T::AuctionEndingPeriod::get(),
-                    Error::<T>::CannotRemoveBidAtTheEndOfAuction
-                );
 
                 T::Currency::transfer(&Self::account_id(), &bid.0, bid.1, AllowDeath)?;
 
@@ -405,7 +401,7 @@ pub mod pallet {
 
             if let Some(highest_bid) = auction.bidders.get_highest_bid() {
                 ensure!(
-                    amount < highest_bid.1,
+                    amount > highest_bid.1,
                     Error::<T>::CannotBuyItWhenABidIsHigherThanBuyItPrice
                 );
             }

@@ -25,9 +25,6 @@ pub const MAX_AUCTION_DELAY: u64 = 50;
 pub const AUCTION_GRACE_PERIOD: u64 = 10;
 pub const AUCTION_ENDING_PERIOD: u64 = 100;
 
-pub const ALICE_NFT_PRICE: u128 = 100;
-pub const ALICE_NFT_BUY_PRICE: Option<u128> = Some(200);
-
 pub const ALICE_NFT_ID: u32 = 1;
 pub const ALICE_SERIES_ID: u8 = 1;
 pub const ALICE_MARKET_ID: u32 = 1;
