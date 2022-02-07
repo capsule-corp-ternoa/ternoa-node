@@ -89,12 +89,13 @@ pub mod pallet {
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
         /// Weight: see `begin_block`
         fn on_initialize(now: T::BlockNumber) -> Weight {
-            let deadline = Deadlines::<T>::get();
-
-            while let Some(nft_id) = deadline.next(now) {
-                let ok = Self::complete_auction(RawOrigin::Root.into(), nft_id);
-                debug_assert!(ok.is_ok());
-            }
+            Deadlines::<T>::mutate(|deadlines| {
+                while let Some(nft_id) = deadlines.next(now) {
+                    let ok = Self::complete_auction(RawOrigin::Root.into(), nft_id);
+                    debug_assert_eq!(ok, Ok(().into()));
+                    deadlines.remove(nft_id);
+                }
+            });
 
             0
         }

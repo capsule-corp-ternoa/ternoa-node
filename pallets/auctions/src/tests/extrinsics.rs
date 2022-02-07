@@ -1,5 +1,4 @@
 use super::mock::AuctionState::{Before, Extended, InProgress};
-#[cfg(test)]
 use super::mock::*;
 use crate::tests::mock;
 use crate::types::{AuctionData, BidderList, DeadlineList};
