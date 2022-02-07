@@ -5,7 +5,7 @@ use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
+use ternoa_primitives::marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -16,7 +16,6 @@ pub const BOB: u64 = 2;
 pub const CHARLIE: u64 = 3;
 pub const DAVE: u64 = 4;
 pub const EVE: u64 = 5;
-pub const TREASURY: u64 = 2021;
 pub type BlockNumber = u64;
 
 pub const MIN_AUCTION_DURATION: u64 = 10;
@@ -201,13 +200,6 @@ impl ExtBuilder {
         Self::new(balances, state).build()
     }
 
-    pub fn caps(mut self, accounts: Vec<(u64, u128)>) -> Self {
-        for account in accounts {
-            self.balances.push(account);
-        }
-        self
-    }
-
     pub fn build(self) -> sp_io::TestExternalities {
         let mut t = frame_system::GenesisConfig::default()
             .build_storage::<Test>()
@@ -243,8 +235,8 @@ impl ExtBuilder {
         let alice_series = NFTSeriesDetails::new(ALICE, false);
         let bob_series = NFTSeriesDetails::new(ALICE, false);
 
-        let mut nfts = vec![(ALICE_NFT_ID, alice_nft), (BOB_NFT_ID, bob_nft)];
-        let mut series = vec![
+        let nfts = vec![(ALICE_NFT_ID, alice_nft), (BOB_NFT_ID, bob_nft)];
+        let series = vec![
             (vec![ALICE_SERIES_ID], alice_series),
             (vec![BOB_SERIES_ID], bob_series),
         ];
@@ -323,57 +315,6 @@ impl ExtBuilder {
         }
         .assimilate_storage(t)
         .unwrap();
-    }
-}
-
-#[allow(dead_code)]
-pub mod help {
-    use super::*;
-    use frame_support::assert_ok;
-    use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-    use ternoa_primitives::TextFormat;
-
-    pub fn create_nft(
-        owner: Origin,
-        ipfs_reference: TextFormat,
-        series_id: Option<NFTSeriesId>,
-    ) -> NFTId {
-        assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
-        return NFTs::nft_id_generator() - 1;
-    }
-
-    pub fn create_mkp(
-        owner: Origin,
-        kind: MarketplaceType,
-        fee: u8,
-        name: TextFormat,
-        list: Vec<u64>,
-    ) -> MarketplaceId {
-        assert_ok!(Marketplace::create(
-            owner.clone(),
-            kind,
-            fee,
-            name,
-            None,
-            None,
-            None,
-        ));
-        let mkp_id = Marketplace::marketplace_id_generator();
-
-        for acc in list {
-            match kind {
-                MarketplaceType::Private => {
-                    let ok = Marketplace::add_account_to_allow_list(owner.clone(), mkp_id, acc);
-                    assert_ok!(ok);
-                }
-                MarketplaceType::Public => {
-                    let ok = Marketplace::add_account_to_disallow_list(owner.clone(), mkp_id, acc);
-                    assert_ok!(ok);
-                }
-            }
-        }
-
-        return Marketplace::marketplace_id_generator();
     }
 }
 
