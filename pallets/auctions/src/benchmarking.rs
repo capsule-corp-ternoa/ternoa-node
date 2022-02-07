@@ -121,9 +121,38 @@ pub fn run_to_block<T: Config>(n: T::BlockNumber) {
     }
 }
 
+/* pub fn prepare_create_auction<T: Config>(data: &BenchmarkData) {
+    let alice: T::AccountId = get_account::<T>("ALICE");
+
+    // Create 10 000 additional auctions
+    for _i in 0..10_000 {
+        let nft_id = T::NFTHandler::create_nft(alice.clone(), vec![10], None).unwrap();
+        let series_id = T::NFTHandler::get_nft(nft_id).unwrap().series_id;
+        assert_ok!(T::NFTHandler::set_series_completion(&series_id, true));
+
+        let start_block = System::<T>::block_number() + T::MaxAuctionDelay::get() - 1u16.into();
+        let end_block = start_block + T::MinAuctionDuration::get();
+        let start_price = BalanceOf::<T>::max_value() / 100000u32.into();
+        let buy_it_price = start_price.saturating_mul(2u16.into());
+
+        let ok = TernoaAuctions::<T>::create_auction(
+            origin::<T>("ALICE"),
+            nft_id,
+            data.alice_market_id,
+            start_block,
+            end_block,
+            start_price,
+            Some(buy_it_price),
+        );
+        assert_ok!(ok);
+    }
+} */
+
 benchmarks! {
     create_auction {
         let bench_data = prepare_benchmarks::<T>(None);
+        //prepare_create_auction::<T>(&bench_data);
+
         let alice: T::AccountId = get_account::<T>("ALICE");
 
         let nft_id = bench_data.alice_nft_id;
