@@ -461,7 +461,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         return None;
     }
 
-    fn set_series_completion(series_id: NFTSeriesId, value: bool) -> DispatchResult {
+    fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult {
         Series::<T>::try_mutate(series_id, |x| -> DispatchResult {
             let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
             series.draft = !value;

@@ -281,7 +281,7 @@ pub mod create_auction {
     fn cannot_auction_nfts_in_uncompleted_series() {
         ExtBuilder::new_build(vec![], None).execute_with(|| {
             let (nft_id, market_id) = (ALICE_NFT_ID, ALICE_MARKET_ID);
-            assert_ok!(NFTs::set_series_completion(vec![ALICE_SERIES_ID], false));
+            assert_ok!(NFTs::set_series_completion(&vec![ALICE_SERIES_ID], false));
 
             let ok = Auctions::create_auction(
                 origin(ALICE),

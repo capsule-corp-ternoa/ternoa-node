@@ -18,11 +18,11 @@ pub const DAVE: u64 = 4;
 pub const EVE: u64 = 5;
 pub type BlockNumber = u64;
 
-pub const MIN_AUCTION_DURATION: u64 = 10;
+pub const MIN_AUCTION_DURATION: u64 = 100;
 pub const MAX_AUCTION_DURATION: u64 = 1000;
 pub const MAX_AUCTION_DELAY: u64 = 50;
-pub const AUCTION_GRACE_PERIOD: u64 = 10;
-pub const AUCTION_ENDING_PERIOD: u64 = 100;
+pub const AUCTION_GRACE_PERIOD: u64 = 5;
+pub const AUCTION_ENDING_PERIOD: u64 = 10;
 
 pub const ALICE_NFT_ID: u32 = 1;
 pub const ALICE_SERIES_ID: u8 = 1;
@@ -320,11 +320,20 @@ impl ExtBuilder {
 
 #[allow(dead_code)]
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    let t = frame_system::GenesisConfig::default()
+    let mut t = frame_system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap();
 
-    t.into()
+    ternoa_auctions::GenesisConfig::<Test> {
+        auctions: Default::default(),
+        bid_history_size: BID_HISTORY_SIZE,
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+
+    let mut ext = sp_io::TestExternalities::new(t);
+    ext.execute_with(|| System::set_block_number(1));
+    ext
 }
 
 pub fn run_to_block(n: u64) {

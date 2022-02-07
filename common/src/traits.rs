@@ -1,6 +1,4 @@
-use frame_support::dispatch::{
-    DispatchErrorWithPostInfo, DispatchResult, DispatchResultWithPostInfo,
-};
+use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
@@ -49,7 +47,7 @@ pub trait NFTTrait {
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
 
     /// TODO!
-    fn set_series_completion(series_id: NFTSeriesId, value: bool) -> DispatchResult;
+    fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult;
 }
 
 /// Trait that implements basic functionalities related to Ternoa Marketplace
@@ -70,5 +68,5 @@ pub trait MarketplaceTrait<AccountId> {
         uri: Option<TextFormat>,
         logo_uri: Option<TextFormat>,
         description: Option<TextFormat>,
-    ) -> DispatchResultWithPostInfo;
+    ) -> Result<MarketplaceId, DispatchErrorWithPostInfo>;
 }

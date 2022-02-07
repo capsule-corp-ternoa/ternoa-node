@@ -240,7 +240,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::cancel_auction())]
+        #[pallet::weight(T::WeightInfo::end_auction())]
         #[transactional]
         pub fn end_auction(origin: OriginFor<T>, nft_id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
@@ -447,7 +447,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::claim_bid())]
+        #[pallet::weight(T::WeightInfo::claim())]
         #[transactional]
         pub fn claim(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;

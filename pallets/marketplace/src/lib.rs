@@ -10,7 +10,7 @@ mod default_weights;
 mod migrations;
 mod types;
 
-use frame_support::dispatch::DispatchResult;
+use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 pub use pallet::*;
 pub use types::*;
 
@@ -885,7 +885,7 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
         uri: Option<TextFormat>,
         logo_uri: Option<TextFormat>,
         description: Option<TextFormat>,
-    ) -> DispatchResultWithPostInfo {
+    ) -> Result<MarketplaceId, DispatchErrorWithPostInfo> {
         Self::create(
             Origin::<T>::Signed(caller_id).into(),
             kind,
@@ -894,6 +894,8 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
             uri,
             logo_uri,
             description,
-        )
+        )?;
+
+        Ok(MarketplaceIdGenerator::<T>::get())
     }
 }
