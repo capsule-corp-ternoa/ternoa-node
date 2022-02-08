@@ -529,26 +529,12 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
-        /// buy_it_price should be greater then start_price
-        BuyItPriceCannotBeLowerOrEqualThanStartPrice,
-        /// The specified auction does not exist
-        AuctionDoesNotExist,
-        /// Current owner cannot bid on NFT
-        CannotAddBidToYourOwnAuctions,
         /// The auction has not started
         AuctionNotStarted,
-        /// Unexpected error occured
-        UnexpectedError,
-        /// The specified bid does not exist
-        BidDoesNotExist,
+        /// The specified auction does not exist
+        AuctionDoesNotExist,
         /// The auction does not have a buy it now price
         AuctionDoesNotSupportBuyItNow,
-        /// The specified auction does not exist
-        ClaimDoesNotExist,
-        /// TODO!
-        CannotRemoveBidAtTheEndOfAuction,
-        /// TODO!
-        CannotEndAuctionThatWasNotExtended,
         /// TODO!
         AuctionCannotStartInThePast,
         /// TODO!
@@ -559,6 +545,28 @@ pub mod pallet {
         AuctionDurationIsTooShort,
         /// TODO!
         AuctionStartIsTooFarAway,
+        /// buy_it_price should be greater then start_price
+        BuyItPriceCannotBeLowerOrEqualThanStartPrice,
+        /// The specified bid does not exist
+        BidDoesNotExist,
+        /// Current owner cannot bid on NFT
+        CannotAddBidToYourOwnAuctions,
+        /// TODO!
+        CannotCancelAuctionInProgress,
+        /// TODO
+        CannotBidLessThanTheHighestBid,
+        /// TODO
+        CannotBidLessThanTheStartingPrice,
+        /// TODO
+        CannotBuyItWhenABidIsHigherThanBuyItPrice,
+        /// TODO
+        CannotAuctionNFTsInUncompletedSeries,
+        /// The specified auction does not exist
+        ClaimDoesNotExist,
+        /// TODO!
+        CannotRemoveBidAtTheEndOfAuction,
+        /// TODO!
+        CannotEndAuctionThatWasNotExtended,
         /// TODO!
         CannotAuctionNFTsListedForSale,
         /// TODO!
@@ -573,16 +581,8 @@ pub mod pallet {
         NotTheNftOwner,
         /// TODO!
         NotTheAuctionCreator,
-        /// TODO!
-        CannotCancelAuctionInProgress,
-        /// TODO
-        CannotBidLessThanTheHighestBid,
-        /// TODO
-        CannotBidLessThanTheStartingPrice,
-        /// TODO
-        CannotBuyItWhenABidIsHigherThanBuyItPrice,
-        /// TODO
-        CannotAuctionNFTsInUncompletedSeries,
+        /// Unexpected error occured
+        UnexpectedError,
     }
 
     #[pallet::storage]
@@ -715,9 +715,5 @@ impl<T: Config> Pallet<T> {
 
     pub fn has_started(now: T::BlockNumber, start_block: T::BlockNumber) -> bool {
         now >= start_block
-    }
-
-    pub fn has_ended(now: T::BlockNumber, end_block: T::BlockNumber) -> bool {
-        now >= end_block
     }
 }
