@@ -993,7 +993,7 @@ impl ternoa_auctions::Config for Runtime {
 parameter_types! {
     pub const ChainBridgePalletId: PalletId = PalletId(*b"cb/bridg");
     pub const ProposalLifetime: BlockNumber = 1000;
-    pub const SubstrateChainId: u8 = 5;
+    pub const SubstrateChainId: u8 = 1;
     pub const RelayerVoteThreshold: u32 = chainbridge::DEFAULT_RELAYER_VOTE_THRESHOLD;
 }
 

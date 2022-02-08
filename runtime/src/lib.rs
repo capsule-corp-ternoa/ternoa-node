@@ -124,7 +124,7 @@ construct_runtime!(
         TimedEscrow: ternoa_timed_escrow = 105,
         AssociatedAccounts: ternoa_associated_accounts = 106,
         Auctions: ternoa_auctions = 107,
-        Chainbridge: chainbridge = 108,
+        ChainBridge: chainbridge = 108,
     }
 );
 
