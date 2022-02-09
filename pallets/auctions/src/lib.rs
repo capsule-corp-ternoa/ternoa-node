@@ -13,7 +13,6 @@ mod types;
 
 pub use default_weights::WeightInfo;
 use frame_support::pallet_prelude::*;
-use frame_support::sp_runtime::traits::CheckedSub;
 use frame_support::traits::ExistenceRequirement::{AllowDeath, KeepAlive};
 use frame_support::traits::{Currency, Get, StorageVersion};
 use frame_support::PalletId;
@@ -60,7 +59,7 @@ pub mod pallet {
         #[pallet::constant]
         type MaxAuctionDuration: Get<Self::BlockNumber>;
 
-        /// TODO!
+        /// Maximum distance between the current block and the start block of an auction.
         #[pallet::constant]
         type MaxAuctionDelay: Get<Self::BlockNumber>;
 
@@ -174,7 +173,7 @@ pub mod pallet {
 
             ensure!(
                 nft_data.owner == creator.clone(),
-                Error::<T>::NotTheNftOwner
+                Error::<T>::CannotAuctionNotOwnedNFTs
             );
 
             ensure!(
@@ -529,60 +528,58 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
-        /// The auction has not started
+        /// Operation not allowed because the auction has not started yet.
         AuctionNotStarted,
-        /// The specified auction does not exist
+        /// Operation not allowed because the auction does not exists.
         AuctionDoesNotExist,
-        /// The auction does not have a buy it now price
+        /// Buy-It-Now option is not available.
         AuctionDoesNotSupportBuyItNow,
-        /// TODO!
+        /// Auction start block cannot be lower than current block.
         AuctionCannotStartInThePast,
-        /// TODO!
+        /// Auction end block cannot be lower than start block.
         AuctionCannotEndBeforeItHasStarted,
-        /// TODO!
+        /// Auction duration exceeds the maximum allowed duration.
         AuctionDurationIsTooLong,
-        /// TODO!
+        /// Auction duration is lower than the minimum allowed duration.
         AuctionDurationIsTooShort,
-        /// TODO!
+        /// Auction start block cannot be exceed the maximum allowed start delay.
         AuctionStartIsTooFarAway,
-        /// buy_it_price should be greater then start_price
+        /// Buy-it-now price cannot be lower or equal tah the auction start price.
         BuyItPriceCannotBeLowerOrEqualThanStartPrice,
-        /// The specified bid does not exist
+        /// The specified bid does not exist.
         BidDoesNotExist,
-        /// Current owner cannot bid on NFT
+        /// Auction owner cannot add a bid to his own auction.
         CannotAddBidToYourOwnAuctions,
-        /// TODO!
+        /// Auction cannot be canceled if the auction has started.
         CannotCancelAuctionInProgress,
-        /// TODO
+        /// Cannot add a bid that is less than the current highest bid.
         CannotBidLessThanTheHighestBid,
-        /// TODO
+        /// Cannot add a bid that is less than the current starting price.
         CannotBidLessThanTheStartingPrice,
-        /// TODO
+        /// Cannot pay the buy-it-now price if a higher bid exists.
         CannotBuyItWhenABidIsHigherThanBuyItPrice,
-        /// TODO
+        /// Cannot auction NFTs that are in a uncompleted series.
         CannotAuctionNFTsInUncompletedSeries,
-        /// The specified auction does not exist
-        ClaimDoesNotExist,
-        /// TODO!
+        /// Cannot remove bid if the auction is soon to end.
         CannotRemoveBidAtTheEndOfAuction,
-        /// TODO!
+        /// Cannot end the auction if it was not extended.
         CannotEndAuctionThatWasNotExtended,
-        /// TODO!
+        /// Cannot auction NFTs that are listed for sale.
         CannotAuctionNFTsListedForSale,
-        /// TODO!
+        /// Cannot auction NFTs that are in transmission.
         CannotAuctionNFTsInTransmission,
-        /// TODO!
+        /// Cannot auction capsules.
         CannotAuctionCapsules,
-        /// TODO!
+        /// Cannot auction NFTs that are not owned by the caller.
         CannotAuctionNotOwnedNFTs,
-        /// TODO!
+        /// Cannot claim if the claim does not exist.
+        ClaimDoesNotExist,
+        /// Cannot auction NFTs that do not exit.
         NFTDoesNotExist,
-        /// TODO!
-        NotTheNftOwner,
-        /// TODO!
+        /// Operation not allowed because the caller is not the owner of the auction.
         NotTheAuctionCreator,
-        /// Unexpected error occured
-        UnexpectedError,
+        /// Unknown Marketplace found. This should never happen.
+        UnknownMarketplace,
     }
 
     #[pallet::storage]
@@ -658,13 +655,11 @@ impl<T: Config> Pallet<T> {
     ) -> DispatchResult {
         // Handle marketplace fees
         let marketplace = T::MarketplaceHandler::get_marketplace(auction.marketplace_id)
-            .ok_or(Error::<T>::UnexpectedError)?;
+            .ok_or(Error::<T>::UnknownMarketplace)?;
 
         let to_marketplace =
             price.saturating_mul(marketplace.commission_fee.into()) / 100u32.into();
-        let to_auctioneer = price
-            .checked_sub(&to_marketplace)
-            .ok_or(Error::<T>::UnexpectedError)?;
+        let to_auctioneer = price.saturating_sub(to_marketplace);
 
         let existence = if balance_source.is_none() {
             KeepAlive

@@ -219,6 +219,23 @@ pub mod create_auction {
             assert_noop!(ok, Error::<Test>::NFTDoesNotExist);
         })
     }
+    #[test]
+    fn cannot_auction_not_owned_nfts() {
+        ExtBuilder::new_build(vec![], None).execute_with(|| {
+            let (nft_id, market_id) = (BOB_NFT_ID, ALICE_MARKET_ID);
+
+            let ok = Auctions::create_auction(
+                origin(ALICE),
+                nft_id,
+                market_id,
+                System::block_number(),
+                System::block_number() + MIN_AUCTION_DURATION,
+                100,
+                Some(101),
+            );
+            assert_noop!(ok, Error::<Test>::CannotAuctionNotOwnedNFTs);
+        })
+    }
 
     #[test]
     fn cannot_auction_nfts_listed_for_sale() {

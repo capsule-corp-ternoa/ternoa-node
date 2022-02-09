@@ -46,7 +46,7 @@ pub trait NFTTrait {
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
 
-    /// TODO!
+    /// Set a series to be either completed or not-completed.
     fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult;
 }
 
