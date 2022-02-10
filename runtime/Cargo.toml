@@ -75,8 +75,6 @@ scale-info = { version = "1.0", default-features = false, features = ["derive"] 
 
 # Ternoa
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
-ternoa-timed-escrow = { default-features = false, path = "../pallets/timed-escrow" }
-ternoa-sgx = { default-features = false, path = "../pallets/sgx" }
 ternoa-nfts = { default-features = false, path = "../pallets/nfts" }
 ternoa-capsules = { default-features = false, path = "../pallets/capsules" }
 ternoa-associated-accounts = { default-features = false, path = "../pallets/associated-accounts" }
@@ -132,8 +130,6 @@ std = [
 	"ternoa-marketplace/std",
 	"ternoa-nfts/std",
 	"ternoa-primitives/std",
-	"ternoa-timed-escrow/std",
-	"ternoa-sgx/std",
 	"ternoa-capsules/std",
 	"ternoa-associated-accounts/std",
 	"pallet-multisig/std",
@@ -170,9 +166,7 @@ runtime-benchmarks = [
 	"pallet-utility/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"ternoa-nfts/runtime-benchmarks",
-	"ternoa-timed-escrow/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
-	"ternoa-sgx/runtime-benchmarks",
 	"ternoa-capsules/runtime-benchmarks",
 	"ternoa-associated-accounts/runtime-benchmarks",
 	"ternoa-auctions/runtime-benchmarks",

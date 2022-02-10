@@ -5,8 +5,8 @@ use crate::constants::time::{
 use crate::{
     voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
     ElectionProviderMultiPhase, Elections, Event, Grandpa, Historical, ImOnline, Marketplace, Nfts,
-    Offences, Origin, OriginCaller, PalletInfo, Runtime, Scheduler, Session, Signature,
-    SignedPayload, Staking, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+    Offences, Origin, OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload,
+    Staking, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
     UncheckedExtrinsic, VERSION,
 };
 use codec::{Decode, Encode, MaxEncodedLen};
@@ -262,16 +262,6 @@ impl ternoa_nfts::Config for Runtime {
     type MaxIpfsLen = MaxIpfsLen;
 }
 
-// Escrow
-impl ternoa_timed_escrow::Config for Runtime {
-    type Event = Event;
-    type NFTs = Nfts;
-    type Scheduler = Scheduler;
-    type PalletsOrigin = OriginCaller;
-    type PalletsCall = Call;
-    type WeightInfo = ();
-}
-
 // Marketplace
 impl ternoa_marketplace::Config for Runtime {
     type Event = Event;
@@ -283,18 +273,6 @@ impl ternoa_marketplace::Config for Runtime {
     type MaxNameLen = MaxMarketplaceNameLen;
     type MinDescriptionLen = MinMarketplaceDescriptionLen;
     type MaxDescriptionLen = MaxMarketplaceDescriptionLen;
-    type MinUriLen = MinUriLen;
-    type MaxUriLen = MaxUriLen;
-}
-
-// SGX
-impl ternoa_sgx::Config for Runtime {
-    type Event = Event;
-    type WeightInfo = ();
-    type Currency = Balances;
-    type EnclaveFee = EnclaveFee;
-    type FeesCollector = Treasury;
-    type ClusterSize = ClusterSize;
     type MinUriLen = MinUriLen;
     type MaxUriLen = MaxUriLen;
 }
