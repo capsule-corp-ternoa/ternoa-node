@@ -156,7 +156,6 @@ pub fn testnet_genesis(
         }))
         .collect::<Vec<_>>();
 
-    let num_endowed_accounts = endowed_accounts.len();
     let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
 
     const ENDOWMENT: Balance = UNITS * 1_000_000;

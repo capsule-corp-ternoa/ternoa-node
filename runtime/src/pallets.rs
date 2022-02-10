@@ -26,7 +26,6 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
 use scale_info::TypeInfo;
 use sp_core::crypto::KeyTypeId;
-use sp_core::u32_trait::{_1, _2};
 use sp_runtime::curve::PiecewiseLinear;
 use sp_runtime::generic::{self, Era};
 use sp_runtime::traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup};
