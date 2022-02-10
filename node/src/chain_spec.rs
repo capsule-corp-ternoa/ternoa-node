@@ -17,7 +17,7 @@ use ternoa_runtime::{
     wasm_binary_unwrap, AssociatedAccountsConfig, AuctionsConfig, AuthorityDiscoveryConfig,
     BabeConfig, BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig,
     ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, StakerStatus,
-    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, MAX_NOMINATIONS,
+    StakingConfig, SudoConfig, SystemConfig, MAX_NOMINATIONS,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -156,7 +156,6 @@ pub fn testnet_genesis(
         }))
         .collect::<Vec<_>>();
 
-    let num_endowed_accounts = endowed_accounts.len();
     let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
 
     const ENDOWMENT: Balance = UNITS * 1_000_000;
@@ -207,17 +206,6 @@ pub fn testnet_genesis(
         },
         treasury: Default::default(),
 
-        // Governance
-        technical_committee: TechnicalCommitteeConfig {
-            members: endowed_accounts
-                .iter()
-                .take((num_endowed_accounts + 1) / 2)
-                .cloned()
-                .collect(),
-            phantom: Default::default(),
-        },
-        technical_membership: Default::default(),
-
         // Ternoa
         nfts: NftsConfig {
             nfts: Default::default(),
@@ -250,7 +238,6 @@ pub fn testnet_genesis(
         associated_accounts: AssociatedAccountsConfig {
             ..Default::default()
         },
-        elections: Default::default(),
         indices: Default::default(),
         sudo: SudoConfig { key: root_key },
         scheduler: Default::default(),

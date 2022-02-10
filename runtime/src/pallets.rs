@@ -4,16 +4,15 @@ use crate::constants::time::{
 };
 use crate::{
     voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
-    ElectionProviderMultiPhase, Elections, Event, Grandpa, Historical, ImOnline, Marketplace, Nfts,
-    Offences, Origin, OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload,
-    Staking, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-    UncheckedExtrinsic, VERSION,
+    ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Marketplace, Nfts, Offences,
+    Origin, OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload, Staking, Sudo,
+    System, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
 };
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
 use frame_support::traits::{
-    Currency, EqualPrivilegeOnly, Imbalance, InstanceFilter, KeyOwnerProofSystem, LockIdentifier,
-    OnUnbalanced, U128CurrencyToVote,
+    ContainsLengthBound, Currency, EqualPrivilegeOnly, Imbalance, InstanceFilter,
+    KeyOwnerProofSystem, LockIdentifier, OnUnbalanced, SortedMembers, U128CurrencyToVote,
 };
 use frame_support::weights::constants::{
     BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
@@ -27,7 +26,6 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
 use scale_info::TypeInfo;
 use sp_core::crypto::KeyTypeId;
-use sp_core::u32_trait::{_1, _2};
 use sp_runtime::curve::PiecewiseLinear;
 use sp_runtime::generic::{self, Era};
 use sp_runtime::traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup};
@@ -196,35 +194,6 @@ parameter_types! {
     pub const MotionDuration: BlockNumber = 2 * DAYS;
     pub const TechnicalCollectiveMaxProposals: u32 = 100;
     pub const MaxMembers: u32 = 50;
-}
-
-// --- Technical committee
-pub type TechnicalCollective = pallet_collective::Instance1;
-pub type MoreThanHalfOfTheTechnicalCollective =
-    pallet_collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
-
-impl pallet_collective::Config<TechnicalCollective> for Runtime {
-    type Origin = Origin;
-    type Proposal = Call;
-    type Event = Event;
-    type MotionDuration = MotionDuration;
-    type MaxProposals = TechnicalCollectiveMaxProposals;
-    type WeightInfo = ();
-    type MaxMembers = MaxMembers;
-    type DefaultVote = pallet_collective::PrimeDefaultVote;
-}
-
-impl pallet_membership::Config for Runtime {
-    type Event = Event;
-    type AddOrigin = MoreThanHalfOfTheTechnicalCollective;
-    type RemoveOrigin = MoreThanHalfOfTheTechnicalCollective;
-    type SwapOrigin = MoreThanHalfOfTheTechnicalCollective;
-    type ResetOrigin = MoreThanHalfOfTheTechnicalCollective;
-    type PrimeOrigin = MoreThanHalfOfTheTechnicalCollective;
-    type MembershipInitialized = TechnicalCommittee;
-    type MembershipChanged = TechnicalCommittee;
-    type MaxMembers = MaxMembers;
-    type WeightInfo = ();
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -836,9 +805,7 @@ impl InstanceFilter<Call> for ProxyType {
                 c,
                 Call::Balances(..) | Call::Indices(pallet_indices::Call::transfer { .. })
             ),
-            ProxyType::Governance => {
-                matches!(c, Call::TechnicalCommittee(..))
-            }
+            ProxyType::Governance => true,
             ProxyType::Staking => matches!(c, Call::Staking(..)),
         }
     }
@@ -868,11 +835,27 @@ impl pallet_proxy::Config for Runtime {
     type AnnouncementDepositFactor = AnnouncementDepositFactor;
 }
 
+pub struct RootTippers;
+impl SortedMembers<AccountId> for RootTippers {
+    fn sorted_members() -> Vec<AccountId> {
+        vec![Sudo::key()]
+    }
+}
+
+impl ContainsLengthBound for RootTippers {
+    fn max_len() -> usize {
+        1
+    }
+    fn min_len() -> usize {
+        0
+    }
+}
+
 impl pallet_tips::Config for Runtime {
     type Event = Event;
     type DataDepositPerByte = DataDepositPerByte;
     type MaximumReasonLength = MaximumReasonLength;
-    type Tippers = Elections;
+    type Tippers = RootTippers;
     type TipCountdown = TipCountdown;
     type TipFindersFee = TipFindersFee;
     type TipReportDepositBase = TipReportDepositBase;
@@ -893,26 +876,6 @@ parameter_types! {
 
 // Make sure that there are no more than `MaxMembers` members elected via elections-phragmen.
 const_assert!(DesiredMembers::get() <= MaxMembers::get());
-
-impl pallet_elections_phragmen::Config for Runtime {
-    type Event = Event;
-    type PalletId = ElectionsPhragmenPalletId;
-    type Currency = Balances;
-    type ChangeMembers = TechnicalCommittee;
-    // NOTE: this implies that council's genesis members cannot be set directly and must come from
-    // this module.
-    type InitializeMembers = TechnicalCommittee;
-    type CurrencyToVote = U128CurrencyToVote;
-    type CandidacyBond = CandidacyBond;
-    type VotingBondBase = VotingBondBase;
-    type VotingBondFactor = VotingBondFactor;
-    type LoserCandidate = ();
-    type KickedMember = ();
-    type DesiredMembers = DesiredMembers;
-    type DesiredRunnersUp = DesiredRunnersUp;
-    type TermDuration = TermDuration;
-    type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
-}
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
