@@ -145,9 +145,9 @@ fn is_series_completed_happy() {
             let series_id = vec![50];
             let nft_id =
                 <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
-            assert_eq!(NFTs::is_series_completed(nft_id), Some(false));
+            assert_eq!(NFTs::is_nft_in_completed_series(nft_id), Some(false));
             assert_ok!(NFTs::finish_series(alice, series_id));
-            assert_eq!(NFTs::is_series_completed(nft_id), Some(true));
+            assert_eq!(NFTs::is_nft_in_completed_series(nft_id), Some(true));
         })
 }
 
@@ -155,6 +155,6 @@ fn is_series_completed_happy() {
 fn is_series_completed_unhappy() {
     ExtBuilder::default().build().execute_with(|| {
         // Unhappy invalid NFT Id
-        assert_eq!(NFTs::is_series_completed(1001), None);
+        assert_eq!(NFTs::is_nft_in_completed_series(1001), None);
     })
 }

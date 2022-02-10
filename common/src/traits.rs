@@ -1,7 +1,5 @@
-use frame_support::dispatch::{
-    DispatchErrorWithPostInfo, DispatchResult, DispatchResultWithPostInfo,
-};
-use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
+use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
 
@@ -15,7 +13,7 @@ pub trait NFTTrait {
     fn owner(id: NFTId) -> Option<Self::AccountId>;
 
     /// Is series completed(locked)
-    fn is_series_completed(id: NFTId) -> Option<bool>;
+    fn is_nft_in_completed_series(id: NFTId) -> Option<bool>;
 
     /// Create NFT
     fn create_nft(
@@ -47,6 +45,9 @@ pub trait NFTTrait {
 
     /// TODO!
     fn is_converted_to_capsule(id: NFTId) -> Option<bool>;
+
+    /// Set a series to be either completed or not-completed.
+    fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult;
 }
 
 /// Trait that implements basic functionalities related to Ternoa Marketplace
@@ -55,10 +56,8 @@ pub trait MarketplaceTrait<AccountId> {
     /// Return if an account is permitted to list on given marketplace
     fn is_allowed_to_list(marketplace_id: MarketplaceId, account_id: AccountId) -> DispatchResult;
 
-    /// Return the commission charged by a given marketplace
-    fn get_marketplace_info(
-        marketplace_id: MarketplaceId,
-    ) -> Option<(AccountId, MarketplaceCommission)>;
+    /// Return marketplace
+    fn get_marketplace(marketplace_id: MarketplaceId) -> Option<MarketplaceInformation<AccountId>>;
 
     /// create a new marketplace
     fn create(
@@ -69,5 +68,5 @@ pub trait MarketplaceTrait<AccountId> {
         uri: Option<TextFormat>,
         logo_uri: Option<TextFormat>,
         description: Option<TextFormat>,
-    ) -> DispatchResultWithPostInfo;
+    ) -> Result<MarketplaceId, DispatchErrorWithPostInfo>;
 }

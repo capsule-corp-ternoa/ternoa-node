@@ -380,7 +380,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         Some(Data::<T>::get(id)?.owner)
     }
 
-    fn is_series_completed(id: NFTId) -> Option<bool> {
+    fn is_nft_in_completed_series(id: NFTId) -> Option<bool> {
         let series_id = Data::<T>::get(id)?.series_id;
         Some(!Series::<T>::get(series_id)?.draft)
     }
@@ -459,6 +459,16 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         }
 
         return None;
+    }
+
+    fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult {
+        Series::<T>::try_mutate(series_id, |x| -> DispatchResult {
+            let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
+            series.draft = !value;
+            Ok(())
+        })?;
+
+        Ok(())
     }
 }
 

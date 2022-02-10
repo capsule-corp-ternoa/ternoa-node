@@ -10,7 +10,7 @@ mod default_weights;
 mod migrations;
 mod types;
 
-use frame_support::dispatch::DispatchResult;
+use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
 pub use pallet::*;
 pub use types::*;
 
@@ -25,7 +25,7 @@ use frame_system::Origin;
 use sp_std::vec::Vec;
 use ternoa_common::helpers::check_bounds;
 use ternoa_common::traits::MarketplaceTrait;
-use ternoa_primitives::marketplace::{MarketplaceCommission, MarketplaceId, MarketplaceType};
+use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::nfts::NFTId;
 use ternoa_primitives::TextFormat;
 
@@ -119,8 +119,9 @@ pub mod pallet {
             ensure!(!nft.converted_to_capsule, Error::<T>::CannotListCapsules);
             ensure!(!nft.listed_for_sale, Error::<T>::AlreadyListedForSale);
 
-            let is_series_completed = T::NFTs::is_series_completed(nft_id) == Some(true);
-            ensure!(is_series_completed, Error::<T>::SeriesNotCompleted);
+            let is_nft_in_completed_series =
+                T::NFTs::is_nft_in_completed_series(nft_id) == Some(true);
+            ensure!(is_nft_in_completed_series, Error::<T>::SeriesNotCompleted);
 
             let market = Marketplaces::<T>::get(mkp_id).ok_or(Error::<T>::UnknownMarketplace)?;
 
@@ -866,11 +867,11 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
     }
 
     // Return the owner account and commision for marketplace with `marketplace_id`
-    fn get_marketplace_info(
+    fn get_marketplace(
         marketplace_id: MarketplaceId,
-    ) -> Option<(T::AccountId, MarketplaceCommission)> {
+    ) -> Option<MarketplaceInformation<T::AccountId>> {
         match Marketplaces::<T>::get(marketplace_id) {
-            Some(marketplace) => Some((marketplace.owner, marketplace.commission_fee)),
+            Some(marketplace) => Some(marketplace),
             None => None,
         }
     }
@@ -884,7 +885,7 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
         uri: Option<TextFormat>,
         logo_uri: Option<TextFormat>,
         description: Option<TextFormat>,
-    ) -> DispatchResultWithPostInfo {
+    ) -> Result<MarketplaceId, DispatchErrorWithPostInfo> {
         Self::create(
             Origin::<T>::Signed(caller_id).into(),
             kind,
@@ -893,6 +894,8 @@ impl<T: Config> MarketplaceTrait<T::AccountId> for Pallet<T> {
             uri,
             logo_uri,
             description,
-        )
+        )?;
+
+        Ok(MarketplaceIdGenerator::<T>::get())
     }
 }

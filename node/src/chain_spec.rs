@@ -10,15 +10,15 @@ use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use sp_runtime::Perbill;
-use ternoa_marketplace::MarketplaceInformation;
-use ternoa_primitives::marketplace::MarketplaceType;
+use ternoa_primitives::marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::constants::currency::UNITS;
 use ternoa_runtime::{
-    wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
-    BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
-    MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig, StakerStatus,
-    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, MAX_NOMINATIONS,
+    wasm_binary_unwrap, AssociatedAccountsConfig, AuctionsConfig, AuthorityDiscoveryConfig,
+    BabeConfig, BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig,
+    ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig,
+    StakerStatus, StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig,
+    MAX_NOMINATIONS,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -260,6 +260,10 @@ pub fn testnet_genesis(
         sudo: SudoConfig { key: root_key },
         scheduler: Default::default(),
         transaction_payment: Default::default(),
+        auctions: AuctionsConfig {
+            auctions: Default::default(),
+            bid_history_size: 15,
+        },
     }
 }
 

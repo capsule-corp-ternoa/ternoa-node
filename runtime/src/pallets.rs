@@ -964,15 +964,15 @@ parameter_types! {
     // all calculations assume blocktime of 6secs
     // min auction duration of 24 hours (24*60*60)/6
     pub const MinAuctionDuration: BlockNumber = 14400;
-    // min auction buffer of 1 hour (1*60*60)/6
-    pub const MinAuctionBuffer: BlockNumber = 600;
     // max auction duration of 30 days (30*24*60*60)/6
     pub const MaxAuctionDuration: BlockNumber = 432000;
+    // max auction start delay of 7 days (24*7*60*60)/6
+    pub const MaxAuctionDelay: BlockNumber = 600;
     // auction grace period of 10min (10*60)/6
     pub const AuctionGracePeriod: BlockNumber = 100;
-    // auction ending period of 1hr (1*60*60)/6
-    pub const AuctionEndingPeriod: BlockNumber = 600;
-    pub const AuctionsPalletId: PalletId = PalletId(*b"py/enauc");
+    // auction ending period of 12 hr (12*60*60)/6
+    pub const AuctionEndingPeriod: BlockNumber = 7200;
+    pub const AuctionsPalletId: PalletId = PalletId(*b"tauction");
 }
 
 impl ternoa_auctions::Config for Runtime {
@@ -980,7 +980,7 @@ impl ternoa_auctions::Config for Runtime {
     type Currency = Balances;
     type NFTHandler = Nfts;
     type MarketplaceHandler = Marketplace;
-    type MinAuctionBuffer = MinAuctionBuffer;
+    type MaxAuctionDelay = MaxAuctionDelay;
     type MaxAuctionDuration = MaxAuctionDuration;
     type MinAuctionDuration = MinAuctionDuration;
     type AuctionGracePeriod = AuctionGracePeriod;
