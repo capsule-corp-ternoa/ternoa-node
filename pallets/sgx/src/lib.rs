@@ -250,7 +250,7 @@ pub mod pallet {
         pub fn create_cluster(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
 
-            let id = EnclaveIdGenerator::<T>::get();
+            let id = ClusterIdGenerator::<T>::get();
             let new_id = id.checked_add(1).ok_or(Error::<T>::ClusterIdOverflow)?;
             let cluster = Cluster::new(Default::default());
 
