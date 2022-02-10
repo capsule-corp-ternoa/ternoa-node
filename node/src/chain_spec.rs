@@ -16,9 +16,8 @@ use ternoa_runtime::constants::currency::UNITS;
 use ternoa_runtime::{
     wasm_binary_unwrap, AssociatedAccountsConfig, AuctionsConfig, AuthorityDiscoveryConfig,
     BabeConfig, BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig,
-    ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, SgxConfig,
-    StakerStatus, StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig,
-    MAX_NOMINATIONS,
+    ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, StakerStatus,
+    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig, MAX_NOMINATIONS,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -243,10 +242,6 @@ pub fn testnet_genesis(
                 ),
             )],
             marketplace_mint_fee: 10000000000000000000000,
-        },
-        sgx: SgxConfig {
-            clusters: Default::default(),
-            enclaves: Default::default(),
         },
         capsules: CapsulesConfig {
             capsule_mint_fee: 1000000000000000000000,

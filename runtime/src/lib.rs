@@ -120,10 +120,8 @@ construct_runtime!(
         Nfts: ternoa_nfts = 100,
         Capsules: ternoa_capsules = 102,
         Marketplace: ternoa_marketplace = 103,
-        Sgx: ternoa_sgx = 104,
-        TimedEscrow: ternoa_timed_escrow = 105,
-        AssociatedAccounts: ternoa_associated_accounts = 106,
-        Auctions: ternoa_auctions = 107,
+        AssociatedAccounts: ternoa_associated_accounts = 104,
+        Auctions: ternoa_auctions = 105,
     }
 );
 
@@ -425,9 +423,7 @@ impl_runtime_apis! {
             list_benchmark!(list, extra, pallet_utility, Utility);
 
             list_benchmark!(list, extra, ternoa_nfts, Nfts);
-            list_benchmark!(list, extra, ternoa_timed_escrow, TimedEscrow);
             list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
-            list_benchmark!(list, extra, ternoa_sgx, Sgx);
             list_benchmark!(list, extra, ternoa_capsules, Capsules);
             list_benchmark!(list, extra, ternoa_associated_accounts, AssociatedAccounts);
             list_benchmark!(list, extra, ternoa_auctions, Auctions);
@@ -486,9 +482,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
 
             add_benchmark!(params, batches, ternoa_nfts, Nfts);
-            add_benchmark!(params, batches, ternoa_timed_escrow, TimedEscrow);
             add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
-            add_benchmark!(params, batches, ternoa_sgx, Sgx);
             add_benchmark!(params, batches, ternoa_capsules, Capsules);
             add_benchmark!(params, batches, ternoa_associated_accounts, AssociatedAccounts);
             add_benchmark!(params, batches, ternoa_auctions, Auctions);
