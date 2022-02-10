@@ -194,6 +194,7 @@ fn create_cluster() {
         assert_eq!(ClusterIndex::<Test>::iter().count(), 0);
         assert_eq!(ClusterRegistry::<Test>::iter().count(), 0);
         assert_eq!(ClusterIdGenerator::<Test>::get(), 0);
+        assert_eq!(EnclaveIdGenerator::<Test>::get(), 0);
         let cluster_id: ClusterId = 0;
         let cluster = Cluster::new(Default::default());
 
@@ -202,6 +203,7 @@ fn create_cluster() {
         assert_eq!(ClusterIndex::<Test>::iter().count(), 0);
         assert_eq!(ClusterRegistry::<Test>::get(cluster_id), Some(cluster));
         assert_eq!(ClusterIdGenerator::<Test>::get(), 1);
+        assert_eq!(EnclaveIdGenerator::<Test>::get(), 0);
 
         // Alice should NOT be able to create a cluster.
         let ok = Sgx::create_cluster(alice.clone());
