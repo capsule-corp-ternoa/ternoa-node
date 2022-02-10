@@ -88,10 +88,7 @@ construct_runtime!(
 
         // Governance stuff. uncallable initially
         Sudo: pallet_sudo,
-        TechnicalCommittee: pallet_collective::<Instance1>,
-        TechnicalMembership: pallet_membership,
         Treasury: pallet_treasury,
-        Elections: pallet_elections_phragmen,
 
         // Cunning utilities. Usable initially.
         Utility: pallet_utility,
@@ -472,7 +469,6 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_bounties, Bounties);
             add_benchmark!(params, batches, pallet_grandpa, Grandpa);
             add_benchmark!(params, batches, pallet_im_online, ImOnline);
-            add_benchmark!(params, batches, pallet_collective, TechnicalCommittee);
             //add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
             add_benchmark!(params, batches, pallet_scheduler, Scheduler);
             //add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);

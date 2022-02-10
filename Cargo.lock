@@ -3959,23 +3959,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-collective"
-version = "4.0.0-dev"
-source = "git+https://github.com/paritytech/substrate.git?branch=master#7406442bea0194ffcafc4e8d48d895d4d8d11346"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "pallet-election-provider-multi-phase"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate.git?branch=master#7406442bea0194ffcafc4e8d48d895d4d8d11346"
@@ -4083,23 +4066,6 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-keyring",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "pallet-membership"
-version = "4.0.0-dev"
-source = "git+https://github.com/paritytech/substrate.git?branch=master#7406442bea0194ffcafc4e8d48d895d4d8d11346"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -7886,14 +7852,12 @@ dependencies = [
  "pallet-bags-list",
  "pallet-balances",
  "pallet-bounties",
- "pallet-collective",
  "pallet-election-provider-multi-phase",
  "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-identity",
  "pallet-im-online",
  "pallet-indices",
- "pallet-membership",
  "pallet-mmr",
  "pallet-multisig",
  "pallet-offences",
