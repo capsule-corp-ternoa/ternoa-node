@@ -54,7 +54,7 @@ fn create_unhappy() {
 
             // Unhappy nft creation failed
             let ok = TernoaCapsules::create(alice.clone(), vec![], vec![1], None);
-            assert_noop!(ok, ternoa_nfts::Error::<Test>::TooShortIpfsReference);
+            assert_noop!(ok, ternoa_nfts::Error::<Test>::IPFSReferenceIsTooShort);
         })
 }
 
@@ -102,7 +102,7 @@ fn create_transactional() {
 
             // Trigger an error
             let ok = TernoaCapsules::create(alice.clone(), vec![], vec![1], None);
-            assert_noop!(ok, ternoa_nfts::Error::<Test>::TooShortIpfsReference);
+            assert_noop!(ok, ternoa_nfts::Error::<Test>::IPFSReferenceIsTooShort);
 
             // She should not have lost any caps
             assert_eq!(Balances::free_balance(ALICE), balance);

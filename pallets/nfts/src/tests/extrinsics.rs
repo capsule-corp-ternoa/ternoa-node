@@ -68,11 +68,11 @@ fn create_unhappy() {
 
             // Unhappy too short name
             let ok = NFTs::create(alice.clone(), vec![], None);
-            assert_noop!(ok, Error::<Test>::TooShortIpfsReference);
+            assert_noop!(ok, Error::<Test>::IPFSReferenceIsTooShort);
 
             // Unhappy too long name
             let ok = NFTs::create(alice.clone(), vec![1, 2, 3, 4, 5, 6], None);
-            assert_noop!(ok, Error::<Test>::TooLongIpfsReference);
+            assert_noop!(ok, Error::<Test>::IPFSReferenceIsTooLong);
 
             // Unhappy not enough caps to mint an NFT
             let ok = NFTs::create(alice.clone(), vec![1], None);
@@ -83,7 +83,7 @@ fn create_unhappy() {
             <NFTs as NFTTrait>::create_nft(CHAD, vec![50], series_id.clone()).unwrap();
 
             let ok = NFTs::create(bob.clone(), vec![1], series_id);
-            assert_noop!(ok, Error::<Test>::NotSeriesOwner);
+            assert_noop!(ok, Error::<Test>::NotTheSeriesOwner);
             assert_eq!(Balances::free_balance(BOB), 100);
 
             // Unhappy cannot create nfts with complete (locked) series
@@ -92,7 +92,7 @@ fn create_unhappy() {
             NFTs::finish_series(bob.clone(), series_id.clone().unwrap()).unwrap();
 
             let ok = NFTs::create(bob.clone(), vec![1], series_id.clone());
-            assert_noop!(ok, Error::<Test>::SeriesIsCompleted);
+            assert_noop!(ok, Error::<Test>::CannotCreateNFTsWithCompletedSeries);
         })
 }
 
@@ -130,33 +130,33 @@ fn transfer_unhappy() {
 
             // Unhappy unknown NFT
             let ok = NFTs::transfer(alice.clone(), 1001, BOB);
-            assert_noop!(ok, Error::<Test>::UnknownNFT);
+            assert_noop!(ok, Error::<Test>::NFTNotFound);
 
             // Unhappy draft(open) series
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
-            assert_noop!(ok, Error::<Test>::SeriesIsInDraft);
+            assert_noop!(ok, Error::<Test>::CannotTransferNFTsInUncompletedSeries);
 
             // Unhappy NFT is listed for sale
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
             <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
 
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
-            assert_noop!(ok, Error::<Test>::ListedForSale);
+            assert_noop!(ok, Error::<Test>::CannotTransferNFTsListedForSale);
 
             // Unhappy NFT is converted to a capsule
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
             <NFTs as NFTTrait>::set_converted_to_capsule(nft_id, true).unwrap();
 
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
-            assert_noop!(ok, Error::<Test>::ConvertedToCapsule);
+            assert_noop!(ok, Error::<Test>::CannotTransferCapsules);
 
             // Unhappy NFT is in transmission
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![0], None).unwrap();
             <NFTs as NFTTrait>::set_in_transmission(nft_id, true).unwrap();
 
             let ok = NFTs::transfer(alice.clone(), nft_id, BOB);
-            assert_noop!(ok, Error::<Test>::InTransmission);
+            assert_noop!(ok, Error::<Test>::CannotTransferNFTsInTransmission);
         })
 }
 
@@ -187,26 +187,26 @@ fn burn_unhappy() {
 
             // Unhappy unknown NFT
             let ok = NFTs::burn(alice.clone(), 10001);
-            assert_noop!(ok, Error::<Test>::UnknownNFT);
+            assert_noop!(ok, Error::<Test>::NFTNotFound);
 
             // Unhappy not the owner
             let nft_id = <NFTs as NFTTrait>::create_nft(BOB, vec![1], Some(vec![3])).unwrap();
             let ok = NFTs::burn(alice.clone(), nft_id);
-            assert_noop!(ok, Error::<Test>::NotOwner);
+            assert_noop!(ok, Error::<Test>::NotTheNFTOwner);
 
             // Unhappy listed for sale
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2])).unwrap();
             <NFTs as NFTTrait>::set_listed_for_sale(nft_id, true).unwrap();
 
             let ok = NFTs::burn(alice.clone(), nft_id);
-            assert_noop!(ok, Error::<Test>::ListedForSale);
+            assert_noop!(ok, Error::<Test>::CannotBurnNFTsListedForSale);
 
             // Unhappy converted to capsule
             let nft_id = <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(vec![2])).unwrap();
             <NFTs as NFTTrait>::set_converted_to_capsule(nft_id, true).unwrap();
 
             let ok = NFTs::burn(alice.clone(), nft_id);
-            assert_noop!(ok, Error::<Test>::ConvertedToCapsule);
+            assert_noop!(ok, Error::<Test>::CannotBurnCapsules);
         })
 }
 
@@ -244,15 +244,7 @@ fn finish_series_unhappy() {
             let series_id = vec![3];
             <NFTs as NFTTrait>::create_nft(BOB, vec![1], Some(series_id.clone())).unwrap();
             let ok = NFTs::finish_series(alice.clone(), series_id);
-            assert_noop!(ok, Error::<Test>::NotSeriesOwner);
-
-            // Unhappy series is already completed(locked)
-            let series_id = vec![55];
-            <NFTs as NFTTrait>::create_nft(ALICE, vec![1], Some(series_id.clone())).unwrap();
-
-            assert_ok!(NFTs::finish_series(alice.clone(), series_id.clone()));
-            let ok = NFTs::finish_series(alice.clone(), series_id);
-            assert_noop!(ok, Error::<Test>::SeriesIsCompleted);
+            assert_noop!(ok, Error::<Test>::NotTheSeriesOwner);
         })
 }
 

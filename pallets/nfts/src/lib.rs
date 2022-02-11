@@ -92,19 +92,29 @@ pub mod pallet {
 
             check_bounds(
                 ipfs_reference.len(),
-                (T::MinIpfsLen::get(), Error::<T>::TooShortIpfsReference),
-                (T::MaxIpfsLen::get(), Error::<T>::TooLongIpfsReference),
+                (T::MinIpfsLen::get(), Error::<T>::IPFSReferenceIsTooShort),
+                (T::MaxIpfsLen::get(), Error::<T>::IPFSReferenceIsTooLong),
             )?;
 
             // Checks
             // The Caller needs to pay the NFT Mint fee.
-            let fee = NftMintFee::<T>::get();
+            let mint_fee = NftMintFee::<T>::get();
             let reason = WithdrawReasons::FEE;
-            let imbalance = T::Currency::withdraw(&who, fee, reason, KeepAlive)?;
+            let imbalance = T::Currency::withdraw(&who, mint_fee, reason, KeepAlive)?;
             T::FeesCollector::on_unbalanced(imbalance);
 
             // Check if the series exists. If it exists and the caller is not the owner throw error.
-            let series_exits = Self::series_exists(&who, &series_id)?;
+            let mut series_exists = false;
+            if let Some(id) = &series_id {
+                if let Some(series) = Series::<T>::get(id) {
+                    ensure!(series.owner == who, Error::<T>::NotTheSeriesOwner);
+                    ensure!(
+                        series.draft,
+                        Error::<T>::CannotCreateNFTsWithCompletedSeries
+                    );
+                    series_exists = true;
+                }
+            }
 
             // Execute
             let nft_id = Self::generate_nft_id();
@@ -122,16 +132,18 @@ pub mod pallet {
 
             // Save
             Data::<T>::insert(nft_id, value);
-            if !series_exits {
+            if !series_exists {
                 Series::<T>::insert(series_id.clone(), NFTSeriesDetails::new(who.clone(), true));
             }
 
-            Self::deposit_event(Event::Created {
+            let event = Event::NFTCreated {
                 nft_id,
                 owner: who,
                 series_id,
                 ipfs_reference,
-            });
+                mint_fee,
+            };
+            Self::deposit_event(event);
 
             Ok(().into())
         }
@@ -147,23 +159,36 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
             let to = T::Lookup::lookup(to)?;
 
-            let mut data = Data::<T>::get(id).ok_or(Error::<T>::UnknownNFT)?;
+            let mut data = Data::<T>::get(id).ok_or(Error::<T>::NFTNotFound)?;
             let series = Series::<T>::get(&data.series_id).ok_or(Error::<T>::SeriesNotFound)?;
 
-            ensure!(data.owner == who, Error::<T>::NotOwner);
-            ensure!(!data.listed_for_sale, Error::<T>::ListedForSale);
-            ensure!(!data.converted_to_capsule, Error::<T>::ConvertedToCapsule);
-            ensure!(!data.in_transmission, Error::<T>::InTransmission);
-            ensure!(!series.draft, Error::<T>::SeriesIsInDraft);
+            ensure!(data.owner == who, Error::<T>::NotTheNFTOwner);
+            ensure!(
+                !data.listed_for_sale,
+                Error::<T>::CannotTransferNFTsListedForSale
+            );
+            ensure!(
+                !data.converted_to_capsule,
+                Error::<T>::CannotTransferCapsules
+            );
+            ensure!(
+                !data.in_transmission,
+                Error::<T>::CannotTransferNFTsInTransmission
+            );
+            ensure!(
+                !series.draft,
+                Error::<T>::CannotTransferNFTsInUncompletedSeries
+            );
 
             data.owner = to.clone();
             Data::<T>::insert(id, data);
 
-            Self::deposit_event(Event::Transfer {
+            let event = Event::NFTTransferred {
                 nft_id: id,
                 old_owner: who,
                 new_owner: to,
-            });
+            };
+            Self::deposit_event(event);
 
             Ok(().into())
         }
@@ -175,15 +200,21 @@ pub mod pallet {
         #[pallet::weight(T::WeightInfo::burn())]
         pub fn burn(origin: OriginFor<T>, id: NFTId) -> DispatchResultWithPostInfo {
             let who = ensure_signed(origin)?;
-            let data = Data::<T>::get(id).ok_or(Error::<T>::UnknownNFT)?;
+            let data = Data::<T>::get(id).ok_or(Error::<T>::NFTNotFound)?;
 
-            ensure!(data.owner == who, Error::<T>::NotOwner);
-            ensure!(!data.listed_for_sale, Error::<T>::ListedForSale);
-            ensure!(!data.converted_to_capsule, Error::<T>::ConvertedToCapsule);
-            ensure!(!data.in_transmission, Error::<T>::InTransmission);
+            ensure!(data.owner == who, Error::<T>::NotTheNFTOwner);
+            ensure!(
+                !data.listed_for_sale,
+                Error::<T>::CannotBurnNFTsListedForSale
+            );
+            ensure!(!data.converted_to_capsule, Error::<T>::CannotBurnCapsules);
+            ensure!(
+                !data.in_transmission,
+                Error::<T>::CannotBurnNFTsInTransmission
+            );
 
             Data::<T>::remove(id);
-            Self::deposit_event(Event::Burned { nft_id: id });
+            Self::deposit_event(Event::NFTBurned { nft_id: id });
 
             Ok(().into())
         }
@@ -199,8 +230,7 @@ pub mod pallet {
 
             Series::<T>::mutate(&series_id, |x| -> DispatchResult {
                 let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
-                ensure!(series.owner == who, Error::<T>::NotSeriesOwner);
-                ensure!(series.draft, Error::<T>::SeriesIsCompleted);
+                ensure!(series.owner == who, Error::<T>::NotTheSeriesOwner);
 
                 series.draft = false;
 
@@ -221,7 +251,7 @@ pub mod pallet {
 
             NftMintFee::<T>::put(mint_fee);
 
-            Self::deposit_event(Event::NftMintFeeChanged { fee: mint_fee });
+            Self::deposit_event(Event::NFTMintFeeUpdated { fee: mint_fee });
 
             Ok(().into())
         }
@@ -231,65 +261,57 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// A new NFT was created.
-        Created {
+        NFTCreated {
             nft_id: NFTId,
             owner: T::AccountId,
             series_id: NFTSeriesId,
             ipfs_reference: TextFormat,
+            mint_fee: BalanceOf<T>,
         },
         /// An NFT was transferred to someone else.
-        Transfer {
+        NFTTransferred {
             nft_id: NFTId,
             old_owner: T::AccountId,
             new_owner: T::AccountId,
         },
-        /// An NFT was updated by its owner.
-        Mutated { nft_id: NFTId },
-        /// An NFT was sealed, preventing any new mutations.
-        Sealed { nft_id: NFTId },
-        /// An NFT has been locked, preventing transfers until it is unlocked.
-        Locked { nft_id: NFTId },
-        /// A locked NFT has been unlocked.
-        Unlocked { nft_id: NFTId },
         /// An NFT was burned.
-        Burned { nft_id: NFTId },
+        NFTBurned { nft_id: NFTId },
         /// A series has been completed.
         SeriesFinished { series_id: NFTSeriesId },
         /// Nft mint fee changed.
-        NftMintFeeChanged { fee: BalanceOf<T> },
+        NFTMintFeeUpdated { fee: BalanceOf<T> },
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        /// We do not have any NFT id left, a runtime upgrade is necessary.
-        NFTIdOverflow,
-        /// This function can only be called by the owner of the nft.
-        NotOwner,
-        /// NFT is sealed and no longer accepts mutations.
-        Sealed,
-        /// NFT is locked and thus its owner cannot be changed until it
-        /// is unlocked.
-        Locked,
-        /// Cannot add nfts to a series that is not owned.
-        NotSeriesOwner,
-        /// The operation is not allowed because the series is in draft.
-        SeriesIsInDraft,
-        /// The operation is not allowed because the series is completed.
-        SeriesIsCompleted,
-        /// Series not Found
-        SeriesNotFound,
-        /// No NFT was found with that NFT id.
-        UnknownNFT,
+        /// Operation not allowed because the nft is a capsule.
+        CannotTransferCapsules,
+        /// Operation not allowed because the nft is a capsule.
+        CannotBurnCapsules,
+        /// Operation not allowed because the nft is listed for sale.
+        CannotTransferNFTsListedForSale,
+        /// Operation not allowed because the nft is listed for sale.
+        CannotBurnNFTsListedForSale,
+        /// Operation not allowed because the nft is in transmission.
+        CannotTransferNFTsInTransmission,
+        /// Operation not allowed because the nft is in transmission.
+        CannotBurnNFTsInTransmission,
+        /// Operation is not allowed because the series is in draft.
+        CannotTransferNFTsInUncompletedSeries,
+        /// Operation is not allowed because the nft is inside a completed series.
+        CannotCreateNFTsWithCompletedSeries,
         /// Ipfs reference is too short.
-        TooShortIpfsReference,
+        IPFSReferenceIsTooShort,
         /// Ipfs reference is too long.
-        TooLongIpfsReference,
-        /// Nft is capsulized.
-        ConvertedToCapsule,
-        /// TODO!
-        ListedForSale,
-        /// TODO!
-        InTransmission,
+        IPFSReferenceIsTooLong,
+        /// No NFT was found with that NFT id.
+        NFTNotFound,
+        /// This function can only be called by the owner of the nft.
+        NotTheNFTOwner,
+        /// Cannot add nfts to a series that is not owned.
+        NotTheSeriesOwner,
+        /// Series not Found.
+        SeriesNotFound,
     }
 
     /// The number of NFTs managed by this pallet
@@ -368,7 +390,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
     fn set_owner(id: NFTId, owner: &Self::AccountId) -> DispatchResult {
         Data::<T>::try_mutate(id, |data| -> DispatchResult {
-            let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            let data = data.as_mut().ok_or(Error::<T>::NFTNotFound)?;
             data.owner = owner.clone();
             Ok(())
         })?;
@@ -406,7 +428,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
     fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult {
         Data::<T>::try_mutate(id, |data| -> DispatchResult {
-            let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            let data = data.as_mut().ok_or(Error::<T>::NFTNotFound)?;
             data.listed_for_sale = value;
             Ok(())
         })?;
@@ -425,7 +447,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
     fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult {
         Data::<T>::try_mutate(id, |data| -> DispatchResult {
-            let data = data.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            let data = data.as_mut().ok_or(Error::<T>::NFTNotFound)?;
             data.in_transmission = value;
             Ok(())
         })?;
@@ -444,7 +466,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 
     fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult {
         Data::<T>::try_mutate(id, |d| -> DispatchResult {
-            let data = d.as_mut().ok_or(Error::<T>::UnknownNFT)?;
+            let data = d.as_mut().ok_or(Error::<T>::NFTNotFound)?;
             data.converted_to_capsule = value;
             Ok(())
         })?;
@@ -500,26 +522,6 @@ impl<T: Config> Pallet<T> {
         );
 
         return u32_to_text(id);
-    }
-
-    fn series_exists(
-        owner: &T::AccountId,
-        series_id: &Option<NFTSeriesId>,
-    ) -> Result<bool, Error<T>> {
-        if let Some(id) = series_id {
-            if let Some(series) = Series::<T>::get(id) {
-                if series.owner != *owner {
-                    return Err(Error::<T>::NotSeriesOwner);
-                }
-                if !series.draft {
-                    return Err(Error::<T>::SeriesIsCompleted);
-                }
-
-                return Ok(true);
-            }
-        }
-
-        return Ok(false);
     }
 }
 
