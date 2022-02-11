@@ -115,10 +115,10 @@ construct_runtime!(
 
         // Ternoa
         Nfts: ternoa_nfts = 100,
-        Capsules: ternoa_capsules = 102,
-        Marketplace: ternoa_marketplace = 103,
-        AssociatedAccounts: ternoa_associated_accounts = 104,
-        Auctions: ternoa_auctions = 105,
+        AssociatedAccounts: ternoa_associated_accounts = 101,
+        // Capsules: ternoa_capsules = 102,
+        // Marketplace: ternoa_marketplace = 103,
+        // Auctions: ternoa_auctions = 104,
     }
 );
 

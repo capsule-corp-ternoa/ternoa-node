@@ -4,9 +4,9 @@ use crate::constants::time::{
 };
 use crate::{
     voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
-    ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Marketplace, Nfts, Offences,
-    Origin, OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload, Staking, Sudo,
-    System, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
+    ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
+    OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload, Staking, Sudo, System,
+    Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
 };
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
@@ -202,23 +202,9 @@ impl pallet_sudo::Config for Runtime {
 }
 
 parameter_types! {
-    pub const EnclaveFee: Balance = 500_000 * EUROS;
-    pub const MaxStringLength: u16 = 1000;
-    pub const MinStringLength: u16 = 1;
-    pub const ClusterSize: u32 = 8;
-    pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
-
     // Min Max string length
-    pub const MinMarketplaceNameLen : u8 = 1;
-    pub const MaxMarketplaceNameLen : u8 = 64;
-    pub const MinMarketplaceDescriptionLen: u16 = 1;
-    pub const MaxMarketplaceDescriptionLen: u16 = 512;
-    pub const MinAltvrUsernameLen: u16 = 1;     // AltVR says that the minimum is 8
-    pub const MaxAltvrUsernameLen: u16 = 32;    // AltVR says that the maximum is 20
-    pub const MinUriLen: u16 = 1;
-    pub const MaxUriLen: u16 = 256;
-    pub const MinIpfsLen: u16 = 1;
-    pub const MaxIpfsLen: u16 = 256;
+    pub const NFTsMinIpfsLen: u16 = 1;
+    pub const NFTsMaxIpfsLen: u16 = 256;
 }
 
 // NFTs
@@ -227,8 +213,18 @@ impl ternoa_nfts::Config for Runtime {
     type WeightInfo = ();
     type Currency = Balances;
     type FeesCollector = Treasury;
-    type MinIpfsLen = MinIpfsLen;
-    type MaxIpfsLen = MaxIpfsLen;
+    type MinIpfsLen = NFTsMinIpfsLen;
+    type MaxIpfsLen = NFTsMaxIpfsLen;
+}
+
+/* parameter_types! {
+    // Min Max string length
+    pub const MinMarketplaceNameLen : u8 = 1;
+    pub const MaxMarketplaceNameLen : u8 = 64;
+    pub const MinMarketplaceDescriptionLen: u16 = 1;
+    pub const MaxMarketplaceDescriptionLen: u16 = 512;
+    pub const MinUriLen: u16 = 1;
+    pub const MaxUriLen: u16 = 256;
 }
 
 // Marketplace
@@ -244,6 +240,12 @@ impl ternoa_marketplace::Config for Runtime {
     type MaxDescriptionLen = MaxMarketplaceDescriptionLen;
     type MinUriLen = MinUriLen;
     type MaxUriLen = MaxUriLen;
+} */
+
+/* parameter_types! {
+    pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
+    pub const CapsuleMinIpfsLen: u16 = 1;
+    pub const CapsuleMaxIpfsLen: u16 = 256;
 }
 
 // Capsules
@@ -253,8 +255,13 @@ impl ternoa_capsules::Config for Runtime {
     type Currency = Balances;
     type NFTTrait = Nfts;
     type PalletId = CapsulePalletId;
-    type MinIpfsLen = MinIpfsLen;
-    type MaxIpfsLen = MaxIpfsLen;
+    type MinIpfsLen = CapsuleMinIpfsLen;
+    type MaxIpfsLen = CapsuleMaxIpfsLen;
+} */
+
+parameter_types! {
+    pub const MinAltvrUsernameLen: u16 = 1;     // AltVR says that the minimum is 8
+    pub const MaxAltvrUsernameLen: u16 = 32;    // AltVR says that the maximum is 20
 }
 
 impl ternoa_associated_accounts::Config for Runtime {
@@ -901,7 +908,7 @@ impl pallet_bags_list::Config for Runtime {
     type BagThresholds = BagThresholds;
 }
 
-parameter_types! {
+/* parameter_types! {
     // all calculations assume blocktime of 6secs
     // min auction duration of 24 hours (24*60*60)/6
     pub const MinAuctionDuration: BlockNumber = 14400;
@@ -929,3 +936,4 @@ impl ternoa_auctions::Config for Runtime {
     type PalletId = AuctionsPalletId;
     type WeightInfo = ();
 }
+ */

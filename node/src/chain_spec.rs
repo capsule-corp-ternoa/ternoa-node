@@ -10,14 +10,12 @@ use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use sp_runtime::Perbill;
-use ternoa_primitives::marketplace::{MarketplaceInformation, MarketplaceType};
 use ternoa_primitives::{AccountId, Balance, Signature};
 use ternoa_runtime::constants::currency::UNITS;
 use ternoa_runtime::{
-    wasm_binary_unwrap, AssociatedAccountsConfig, AuctionsConfig, AuthorityDiscoveryConfig,
-    BabeConfig, BalancesConfig, Block, CapsulesConfig, GenesisConfig, GrandpaConfig,
-    ImOnlineConfig, MarketplaceConfig, NftsConfig, SessionConfig, SessionKeys, StakerStatus,
-    StakingConfig, SudoConfig, SystemConfig, MAX_NOMINATIONS,
+    wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
+    BalancesConfig, Block, GenesisConfig, GrandpaConfig, ImOnlineConfig, NftsConfig, SessionConfig,
+    SessionKeys, StakerStatus, StakingConfig, SudoConfig, SystemConfig, MAX_NOMINATIONS,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;
@@ -212,29 +210,6 @@ pub fn testnet_genesis(
             series: Default::default(),
             nft_mint_fee: 10000000000000000000,
         },
-        marketplace: MarketplaceConfig {
-            nfts_for_sale: Default::default(),
-            marketplaces: vec![(
-                0,
-                MarketplaceInformation::new(
-                    MarketplaceType::Public,
-                    0,
-                    // Alice
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    Default::default(),
-                    Default::default(),
-                    "Ternoa Marketplace".into(),
-                    None,
-                    None,
-                    None,
-                ),
-            )],
-            marketplace_mint_fee: 10000000000000000000000,
-        },
-        capsules: CapsulesConfig {
-            capsule_mint_fee: 1000000000000000000000,
-            ..Default::default()
-        },
         associated_accounts: AssociatedAccountsConfig {
             ..Default::default()
         },
@@ -242,10 +217,6 @@ pub fn testnet_genesis(
         sudo: SudoConfig { key: root_key },
         scheduler: Default::default(),
         transaction_payment: Default::default(),
-        auctions: AuctionsConfig {
-            auctions: Default::default(),
-            bid_history_size: 15,
-        },
     }
 }
 
