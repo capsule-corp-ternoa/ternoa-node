@@ -109,7 +109,7 @@ fn set_owner_unhappy() {
         .build()
         .execute_with(|| {
             // Unhappy Unknown NFT
-            assert_noop!(NFTs::set_owner(1000, &BOB), Error::<Test>::UnknownNFT);
+            assert_noop!(NFTs::set_owner(1000, &BOB), Error::<Test>::NFTNotFound);
         })
 }
 
