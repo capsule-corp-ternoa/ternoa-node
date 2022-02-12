@@ -112,6 +112,7 @@ construct_runtime!(
 
         Multisig: pallet_multisig,
         Proxy: pallet_proxy,
+        Preimage: pallet_preimage,
 
         // Ternoa
         Nfts: ternoa_nfts = 100,
@@ -158,7 +159,7 @@ pub type Executive = frame_executive::Executive<
     Block,
     frame_system::ChainContext<Runtime>,
     Runtime,
-    AllPallets,
+    AllPalletsWithSystem,
 >;
 
 /// MMR helper types.

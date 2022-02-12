@@ -13,7 +13,7 @@ use ternoa_primitives::nfts::NFTId;
 /// Structure to store Auction data
 pub struct AuctionData<AccountId, BlockNumber, Balance>
 where
-    AccountId: Clone + Default,
+    AccountId: Clone,
     Balance: Clone + Default,
 {
     /// The owner of the nft that has listed the item on auction

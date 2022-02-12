@@ -1,9 +1,8 @@
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use sc_chain_spec::{ChainSpecExtension, Properties};
+use sc_chain_spec::ChainSpecExtension;
 use sc_service::ChainType;
 use sc_telemetry::TelemetryEndpoints;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, Pair, Public};
@@ -214,18 +213,11 @@ pub fn testnet_genesis(
             ..Default::default()
         },
         indices: Default::default(),
-        sudo: SudoConfig { key: root_key },
-        scheduler: Default::default(),
+        sudo: SudoConfig {
+            key: Some(root_key),
+        },
         transaction_payment: Default::default(),
     }
-}
-
-fn build_local_properties() -> Properties {
-    let mut props = Properties::new();
-    props.insert("tokenDecimals".to_string(), json!(18));
-    props.insert("tokenSymbol".to_string(), json!("CAPS"));
-
-    props
 }
 
 pub fn staging_net_config() -> ChainSpec {
@@ -248,6 +240,10 @@ fn development_config_genesis() -> GenesisConfig {
 
 /// Development config (single validator Alice)
 pub fn development_config() -> ChainSpec {
+    let mut properties = sc_chain_spec::Properties::new();
+    properties.insert("tokenSymbol".into(), "CAPS".into());
+    properties.insert("tokenDecimals".into(), 18.into());
+
     ChainSpec::from_genesis(
         "Development",
         "dev",
@@ -256,7 +252,8 @@ pub fn development_config() -> ChainSpec {
         vec![],
         None,
         Some("ternoa"),
-        Some(build_local_properties()),
+        None,
+        Some(properties),
         Default::default(),
     )
 }
@@ -274,6 +271,10 @@ fn local_testnet_genesis() -> GenesisConfig {
 
 /// Local testnet config (multivalidator Alice + Bob)
 pub fn local_testnet_config() -> ChainSpec {
+    let mut properties = sc_chain_spec::Properties::new();
+    properties.insert("tokenSymbol".into(), "CAPS".into());
+    properties.insert("tokenDecimals".into(), 18.into());
+
     ChainSpec::from_genesis(
         "Local Testnet",
         "local_testnet",
@@ -282,7 +283,8 @@ pub fn local_testnet_config() -> ChainSpec {
         vec![],
         None,
         Some("ternoa"),
-        Some(build_local_properties()),
+        None,
+        Some(properties),
         Default::default(),
     )
 }
@@ -307,6 +309,10 @@ fn local_validator_testnet_genesis() -> GenesisConfig {
 
 /// Local Validator testnet config
 pub fn local_validator_testnet_config() -> ChainSpec {
+    let mut properties = sc_chain_spec::Properties::new();
+    properties.insert("tokenSymbol".into(), "CAPS".into());
+    properties.insert("tokenDecimals".into(), 18.into());
+
     ChainSpec::from_genesis(
         "Local Validator Testnet",
         "local_validator_testnet",
@@ -322,7 +328,8 @@ pub fn local_validator_testnet_config() -> ChainSpec {
                 .expect("Staging telemetry url is valid"),
         ),
         Some("ternoa"),
-        Some(build_local_properties()),
+        None,
+        Some(properties),
         Default::default(),
     )
 }

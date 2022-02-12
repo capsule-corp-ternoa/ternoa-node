@@ -44,17 +44,17 @@ pallet-proxy = { git = "https://github.com/paritytech/substrate.git", default-fe
 pallet-tips = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 pallet-mmr = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 pallet-bags-list = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-
+pallet-preimage = { git = "https://github.com/paritytech/substrate", default-features = false, version = "4.0.0-dev", branch = "master" }
 
 # Sp
 sp-api = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-block-builder = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-consensus-babe = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev", branch = "master" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 sp-inherents = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-offchain = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 sp-session = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-staking = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
@@ -62,7 +62,7 @@ sp-tracing = { git = "https://github.com/paritytech/substrate.git", default-feat
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-version = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 sp-npos-elections = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 
 # Rest
 static_assertions = { version = "1.1.0" }
@@ -140,6 +140,8 @@ std = [
 	"pallet-mmr/std",
 	"pallet-bags-list/std",
 	"ternoa-auctions/std",
+	"pallet-elections-phragmen/std",
+	"pallet-preimage/std",
 ]
 
 runtime-benchmarks = [
