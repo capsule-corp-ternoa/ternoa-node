@@ -267,8 +267,6 @@ parameter_types! {
 impl ternoa_associated_accounts::Config for Runtime {
     type Event = Event;
     type WeightInfo = ();
-    type MinAltvrUsernameLen = MinAltvrUsernameLen;
-    type MaxAltvrUsernameLen = MaxAltvrUsernameLen;
 }
 
 parameter_types! {

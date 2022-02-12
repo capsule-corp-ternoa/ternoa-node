@@ -1,6 +1,6 @@
-use crate::{self as ternoa_associated_accounts, Config};
+use crate::{self as ternoa_associated_accounts, Config, SupportedAccount};
 use frame_support::parameter_types;
-use frame_support::traits::Contains;
+use frame_support::traits::{Contains, GenesisBuild};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
@@ -9,6 +9,9 @@ type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
 pub const ALICE: u64 = 1;
+pub const BOB: u64 = 2;
+pub const SERVICE_NAME: &[u8] = b"ternoa";
+pub const INVALID_SERVICE_NAME: &[u8] = b"babushka";
 
 frame_support::construct_runtime!(
     pub enum Test where
@@ -17,7 +20,7 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        TernoaAssociatedAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Event<T>},
+        AAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Event<T>},
     }
 );
 
@@ -64,31 +67,40 @@ impl frame_system::Config for Test {
     type OnSetCode = ();
 }
 
-parameter_types! {
-    pub const MinAltvrUsernameLen: u8 = 1;
-    pub const MaxAltvrUsernameLen: u8 = 20;
-}
-
 impl Config for Test {
     type Event = Event;
     type WeightInfo = ();
-    type MinAltvrUsernameLen = MinAltvrUsernameLen;
-    type MaxAltvrUsernameLen = MaxAltvrUsernameLen;
 }
 
 pub struct ExtBuilder {}
 
 impl Default for ExtBuilder {
     fn default() -> Self {
-        ExtBuilder {}
+        Self {}
     }
 }
 
 impl ExtBuilder {
+    pub fn new() -> Self {
+        Self {}
+    }
+
+    pub fn new_build() -> sp_io::TestExternalities {
+        Self::new().build()
+    }
+
     pub fn build(self) -> sp_io::TestExternalities {
-        let t = frame_system::GenesisConfig::default()
+        let mut t = frame_system::GenesisConfig::default()
             .build_storage::<Test>()
             .unwrap();
+
+        let supp = SupportedAccount::new(SERVICE_NAME.into(), 1, 10, true);
+        ternoa_associated_accounts::GenesisConfig::<Test> {
+            users: Default::default(),
+            supported_accounts: vec![supp],
+        }
+        .assimilate_storage(&mut t)
+        .unwrap();
 
         let mut ext = sp_io::TestExternalities::new(t);
         ext.execute_with(|| System::set_block_number(1));
