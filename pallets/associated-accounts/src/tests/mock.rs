@@ -9,6 +9,7 @@ type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
 pub const ALICE: u64 = 1;
+pub const BOB: u64 = 2;
 pub const SERVICE_NAME: &[u8] = b"ternoa";
 pub const INVALID_SERVICE_NAME: &[u8] = b"babushka";
 
@@ -19,7 +20,7 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        TernoaAssociatedAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Event<T>},
+        AAccounts: ternoa_associated_accounts::{Pallet, Call, Storage, Event<T>},
     }
 );
 

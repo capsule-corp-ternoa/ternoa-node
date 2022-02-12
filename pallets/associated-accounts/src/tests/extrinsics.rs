@@ -21,11 +21,7 @@ mod set_account {
             let service_name: Vec<u8> = SERVICE_NAME.into();
             let acc = Account::new(service_name.clone(), "Marko".into());
 
-            let ok = TernoaAssociatedAccounts::set_account(
-                origin(ALICE),
-                acc.key.clone(),
-                acc.value.clone(),
-            );
+            let ok = AAccounts::set_account(origin(ALICE), acc.key.clone(), acc.value.clone());
             assert_ok!(ok);
 
             // Storage
@@ -37,7 +33,7 @@ mod set_account {
                 account_key: acc.key,
                 account_value: acc.value,
             };
-            let event = Event::TernoaAssociatedAccounts(event);
+            let event = Event::AAccounts(event);
             assert_eq!(System::events().last().unwrap().event, event);
         })
     }
@@ -48,22 +44,15 @@ mod set_account {
             let service_name: Vec<u8> = SERVICE_NAME.into();
             let acc = Account::new(service_name.clone(), vec![10]);
 
-            let ok = TernoaAssociatedAccounts::set_account(
-                origin(ALICE),
-                acc.key.clone(),
-                acc.value.clone(),
-            );
+            let ok = AAccounts::set_account(origin(ALICE), acc.key.clone(), acc.value.clone());
             assert_ok!(ok);
 
             let mut new_acc = acc.clone();
             new_acc.value = vec![20];
 
             assert_ne!(acc.value, new_acc.value);
-            let ok = TernoaAssociatedAccounts::set_account(
-                origin(ALICE),
-                new_acc.key.clone(),
-                new_acc.value.clone(),
-            );
+            let ok =
+                AAccounts::set_account(origin(ALICE), new_acc.key.clone(), new_acc.value.clone());
             assert_ok!(ok);
 
             // Storage
@@ -75,7 +64,7 @@ mod set_account {
                 account_key: new_acc.key,
                 account_value: new_acc.value,
             };
-            let event = Event::TernoaAssociatedAccounts(event);
+            let event = Event::AAccounts(event);
             assert_eq!(System::events().last().unwrap().event, event);
         })
     }
@@ -85,8 +74,8 @@ mod set_account {
         ExtBuilder::new_build().execute_with(|| {
             let service_name: Vec<u8> = INVALID_SERVICE_NAME.into();
 
-            let ok = TernoaAssociatedAccounts::set_account(origin(ALICE), service_name, vec![20]);
-            assert_noop!(ok, Error::<Test>::AccountIsNotSupported);
+            let ok = AAccounts::set_account(origin(ALICE), service_name, vec![20]);
+            assert_noop!(ok, Error::<Test>::UnknownAccountKey);
         })
     }
 
@@ -99,7 +88,7 @@ mod set_account {
             let value: Vec<u8> = vec![];
             assert!(value.len() < supp.min_length as usize);
 
-            let ok = TernoaAssociatedAccounts::set_account(origin(ALICE), supp.name, value);
+            let ok = AAccounts::set_account(origin(ALICE), supp.key, value);
             assert_noop!(ok, Error::<Test>::ValueIsTooShort);
         })
     }
@@ -113,7 +102,7 @@ mod set_account {
             let value: Vec<u8> = "Lorem ipsum dolor sit amet".into();
             assert!(value.len() > supp.max_length as usize);
 
-            let ok = TernoaAssociatedAccounts::set_account(origin(ALICE), supp.name, value);
+            let ok = AAccounts::set_account(origin(ALICE), supp.key, value);
             assert_noop!(ok, Error::<Test>::ValueIsTooLong);
         })
     }
@@ -128,7 +117,7 @@ mod add_new_supported_account {
             let mut supports = SupportedAccounts::<Test>::get();
             let supp = supports.last().unwrap().clone();
 
-            let ok = TernoaAssociatedAccounts::remove_supported_account(root(), supp.name.clone());
+            let ok = AAccounts::remove_supported_account(root(), supp.key.clone());
             assert_ok!(ok);
 
             // Storage
@@ -137,8 +126,8 @@ mod add_new_supported_account {
             assert_eq!(SupportedAccounts::<Test>::get(), supports);
 
             // Events
-            let event = AccountEvent::SupportedAccountRemoved { name: supp.name };
-            let event = Event::TernoaAssociatedAccounts(event);
+            let event = AccountEvent::SupportedAccountRemoved { key: supp.key };
+            let event = Event::AAccounts(event);
             assert_eq!(System::events().last().unwrap().event, event);
         })
     }
@@ -152,9 +141,9 @@ mod remove_supported_account {
         ExtBuilder::new_build().execute_with(|| {
             let supp = SupportedAccount::new(vec![65], 1, 10, true);
 
-            let ok = TernoaAssociatedAccounts::add_new_supported_account(
+            let ok = AAccounts::add_new_supported_account(
                 root(),
-                supp.name.clone(),
+                supp.key.clone(),
                 supp.min_length,
                 supp.max_length,
                 supp.initial_set_fee,
@@ -167,12 +156,12 @@ mod remove_supported_account {
 
             // Events
             let event = AccountEvent::SupportedAccountAdded {
-                name: supp.name,
+                key: supp.key,
                 min_length: supp.min_length,
                 max_length: supp.max_length,
                 initial_set_fee: supp.initial_set_fee,
             };
-            let event = Event::TernoaAssociatedAccounts(event);
+            let event = Event::AAccounts(event);
             assert_eq!(System::events().last().unwrap().event, event);
         })
     }

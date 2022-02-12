@@ -14,9 +14,9 @@ benchmarks! {
 
         // Add supported account
         let supp = SupportedAccount::new(vec![20], 1, 20, true);
-        assert_ok!(AAcounts::<T>::add_new_supported_account(RawOrigin::Root.into(), supp.name.clone(), supp.min_length, supp.max_length, supp.initial_set_fee));
+        assert_ok!(AAcounts::<T>::add_new_supported_account(RawOrigin::Root.into(), supp.key.clone(), supp.min_length, supp.max_length, supp.initial_set_fee));
 
-        let acc = Account {key: vec![40], value: vec![50]};
+        let acc = Account {key: supp.key.clone(), value: vec![50]};
     }: _(RawOrigin::Signed(alice.clone()), acc.key.clone(), acc.value.clone())
     verify {
         assert_eq!(Users::<T>::get(&alice), Some(vec![acc]));
@@ -24,7 +24,7 @@ benchmarks! {
 
     add_new_supported_account {
         let supp = SupportedAccount::new(vec![20], 1, 20, true);
-    }: _(RawOrigin::Root, supp.name.clone(), supp.min_length, supp.max_length, supp.initial_set_fee)
+    }: _(RawOrigin::Root, supp.key.clone(), supp.min_length, supp.max_length, supp.initial_set_fee)
     verify {
         assert_eq!(SupportedAccounts::<T>::get(), vec![supp]);
     }
@@ -32,9 +32,9 @@ benchmarks! {
     remove_supported_account {
         // Add supported account
         let supp = SupportedAccount::new(vec![20], 1, 20, true);
-        assert_ok!(AAcounts::<T>::add_new_supported_account(RawOrigin::Root.into(), supp.name.clone(), supp.min_length, supp.max_length, supp.initial_set_fee));
+        assert_ok!(AAcounts::<T>::add_new_supported_account(RawOrigin::Root.into(), supp.key.clone(), supp.min_length, supp.max_length, supp.initial_set_fee));
 
-    }: _(RawOrigin::Root, supp.name)
+    }: _(RawOrigin::Root, supp.key)
     verify {
         assert_eq!(SupportedAccounts::<T>::get(), vec![]);
     }

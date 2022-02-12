@@ -21,6 +21,7 @@ pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
+    use sp_std::vec;
     use sp_std::vec::Vec;
     use ternoa_common::helpers::check_bounds;
     use ternoa_primitives::TextFormat;
@@ -44,7 +45,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Set account
-        #[pallet::weight(100_000)]
+        #[pallet::weight(T::WeightInfo::set_account())]
         pub fn set_account(
             origin: OriginFor<T>,
             account_key: TextFormat,
@@ -53,8 +54,8 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
 
             let supported_accounts = Self::supported_accounts();
-            let supported_account = supported_accounts.iter().find(|x| x.name == account_key);
-            let supported_account = supported_account.ok_or(Error::<T>::AccountIsNotSupported)?;
+            let supported_account = supported_accounts.iter().find(|x| x.key == account_key);
+            let supported_account = supported_account.ok_or(Error::<T>::UnknownAccountKey)?;
 
             check_bounds(
                 account_value.len(),
@@ -95,10 +96,10 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(T::WeightInfo::set_altvr_username())]
+        #[pallet::weight(T::WeightInfo::add_new_supported_account())]
         pub fn add_new_supported_account(
             origin: OriginFor<T>,
-            name: TextFormat,
+            key: TextFormat,
             min_length: u16,
             max_length: u16,
             initial_set_fee: bool,
@@ -107,14 +108,14 @@ pub mod pallet {
 
             SupportedAccounts::<T>::mutate(|x| {
                 x.push(SupportedAccount {
-                    name: name.clone(),
+                    key: key.clone(),
                     min_length,
                     max_length,
                     initial_set_fee,
                 });
             });
             let event = Event::SupportedAccountAdded {
-                name,
+                key,
                 min_length,
                 max_length,
                 initial_set_fee,
@@ -124,21 +125,21 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(T::WeightInfo::set_altvr_username())]
+        #[pallet::weight(T::WeightInfo::remove_supported_account())]
         pub fn remove_supported_account(
             origin: OriginFor<T>,
-            name: TextFormat,
+            key: TextFormat,
         ) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
 
             SupportedAccounts::<T>::mutate(|supported_accounts| {
-                let pos = supported_accounts.iter().position(|x| x.name == name);
+                let pos = supported_accounts.iter().position(|x| x.key == key);
                 if let Some(pos) = pos {
                     supported_accounts.remove(pos);
                 }
             });
 
-            let event = Event::SupportedAccountRemoved { name };
+            let event = Event::SupportedAccountRemoved { key };
             Self::deposit_event(event);
 
             Ok(().into())
@@ -154,24 +155,24 @@ pub mod pallet {
             account_value: TextFormat,
         },
         SupportedAccountAdded {
-            name: TextFormat,
+            key: TextFormat,
             min_length: u16,
             max_length: u16,
             initial_set_fee: bool,
         },
         SupportedAccountRemoved {
-            name: TextFormat,
+            key: TextFormat,
         },
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        /// TODO!
+        /// Value length is lower than the minimal allowed length.
         ValueIsTooShort,
-        /// TODO!
+        /// Value length is higher than the maximal allowed length.
         ValueIsTooLong,
-        /// TODO!
-        AccountIsNotSupported,
+        /// That account key was not found.
+        UnknownAccountKey,
     }
 
     /// List of Altvr datas create.
