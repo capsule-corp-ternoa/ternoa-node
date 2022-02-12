@@ -5,13 +5,13 @@ use crate::constants::time::{
 use crate::{
     voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
     ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
-    OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload, Staking, Sudo, System,
-    Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
+    OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking, Sudo,
+    System, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
 };
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
 use frame_support::traits::{
-    ContainsLengthBound, Currency, EqualPrivilegeOnly, Imbalance, InstanceFilter,
+    ConstU32, ContainsLengthBound, Currency, EqualPrivilegeOnly, Imbalance, InstanceFilter,
     KeyOwnerProofSystem, LockIdentifier, OnUnbalanced, SortedMembers, U128CurrencyToVote,
 };
 use frame_support::weights::constants::{
@@ -106,12 +106,14 @@ impl frame_system::Config for Runtime {
     type SystemWeightInfo = frame_system::weights::SubstrateWeight<Runtime>;
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
+    type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
 parameter_types! {
     pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
         RuntimeBlockWeights::get().max_block;
     pub const MaxScheduledPerBlock: u32 = 50;
+    pub const NoPreimagePostponement: Option<u32> = Some(10);
 }
 
 impl pallet_scheduler::Config for Runtime {
@@ -124,6 +126,8 @@ impl pallet_scheduler::Config for Runtime {
     type MaxScheduledPerBlock = MaxScheduledPerBlock;
     type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
     type OriginPrivilegeCmp = EqualPrivilegeOnly;
+    type PreimageProvider = Preimage;
+    type NoPreimagePostponement = NoPreimagePostponement;
 }
 
 // Utility
@@ -282,7 +286,6 @@ impl pallet_timestamp::Config for Runtime {
 
 parameter_types! {
     pub const ProposalBond: Permill = Permill::from_percent(5);
-    pub const ProposalBondMinimum: Balance = 1 * EUROS;
     pub const SpendPeriod: BlockNumber = 1 * DAYS;
     pub const Burn: Permill = Permill::from_percent(0);
     pub const TipCountdown: BlockNumber = 1 * DAYS;
@@ -297,6 +300,8 @@ parameter_types! {
     pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
     pub const BountyValueMinimum: Balance = 5 * EUROS;
     pub const MaxApprovals: u32 = 100;
+    pub const ProposalBondMinimum: Balance = 1 * EUROS;
+    pub const ProposalBondMaximum: Balance = 5 * EUROS;
 }
 
 impl pallet_treasury::Config for Runtime {
@@ -307,13 +312,14 @@ impl pallet_treasury::Config for Runtime {
     type Event = Event;
     type OnSlash = ();
     type ProposalBond = ProposalBond;
-    type ProposalBondMinimum = ProposalBondMinimum;
     type SpendPeriod = SpendPeriod;
     type Burn = Burn;
     type BurnDestination = ();
     type SpendFunds = Bounties;
     type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
     type MaxApprovals = MaxApprovals;
+    type ProposalBondMinimum = ProposalBondMinimum;
+    type ProposalBondMaximum = ProposalBondMaximum;
 }
 
 impl pallet_bounties::Config for Runtime {
@@ -326,6 +332,7 @@ impl pallet_bounties::Config for Runtime {
     type DataDepositPerByte = DataDepositPerByte;
     type MaximumReasonLength = MaximumReasonLength;
     type WeightInfo = pallet_bounties::weights::SubstrateWeight<Runtime>;
+    type ChildBountyManager = ();
 }
 
 parameter_types! {
@@ -550,8 +557,8 @@ pallet_staking_reward_curve::build! {
 
 parameter_types! {
     pub const SessionsPerEra: sp_staking::SessionIndex = 6;
-    pub const BondingDuration: pallet_staking::EraIndex = 28;
-    pub const SlashDeferDuration: pallet_staking::EraIndex = 27; // 1/4 the bonding duration.
+    pub const BondingDuration: sp_staking::EraIndex = 28;
+    pub const SlashDeferDuration: sp_staking::EraIndex = 27; // 1/4 the bonding duration.
     pub const RewardCurve: &'static PiecewiseLinear<'static> = &REWARD_CURVE;
     pub const MaxNominatorRewardedPerValidator: u32 = 256;
     pub OffchainRepeat: BlockNumber = 5;
@@ -565,13 +572,20 @@ parameter_types! {
         .saturating_sub(BlockExecutionWeight::get());
 }
 
+/// A reasonable benchmarking config for staking pallet.
+pub struct StakingBenchmarkingConfig;
+impl pallet_staking::BenchmarkingConfig for StakingBenchmarkingConfig {
+    type MaxValidators = ConstU32<1000>;
+    type MaxNominators = ConstU32<1000>;
+}
+
 impl onchain::Config for Runtime {
     type Accuracy = Perbill;
     type DataProvider = Staking;
 }
 
 impl pallet_staking::Config for Runtime {
-    const MAX_NOMINATIONS: u32 = MAX_NOMINATIONS;
+    type MaxNominations = ConstU32<32>;
     type Currency = Balances;
     type UnixTime = Timestamp;
     type CurrencyToVote = U128CurrencyToVote;
@@ -594,6 +608,7 @@ impl pallet_staking::Config for Runtime {
     // Alternatively, use pallet_staking::UseNominatorsMap<Runtime> to just use the nominators map.
     // Note that the aforementioned does not scale to a very large number of nominators.
     type SortedListProvider = BagsList;
+    type BenchmarkingConfig = StakingBenchmarkingConfig;
     type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
 }
 
@@ -710,6 +725,8 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
     type ForceOrigin = EnsureRoot<AccountId>;
     type BenchmarkingConfig = BenchmarkConfig;
     type VoterSnapshotPerBlock = VoterSnapshotPerBlock;
+    type GovernanceFallback =
+        frame_election_provider_support::onchain::OnChainSequentialPhragmen<Self>;
 }
 
 parameter_types! {
@@ -843,7 +860,7 @@ impl pallet_proxy::Config for Runtime {
 pub struct RootTippers;
 impl SortedMembers<AccountId> for RootTippers {
     fn sorted_members() -> Vec<AccountId> {
-        vec![Sudo::key()]
+        vec![Sudo::key().unwrap()]
     }
 }
 
@@ -904,6 +921,22 @@ impl pallet_bags_list::Config for Runtime {
     type VoteWeightProvider = Staking;
     type WeightInfo = pallet_bags_list::weights::SubstrateWeight<Runtime>;
     type BagThresholds = BagThresholds;
+}
+
+parameter_types! {
+    pub const PreimageMaxSize: u32 = 4096 * 1024;
+    pub const PreimageBaseDeposit: Balance = deposit(2, 64);
+    pub const PreimageByteDeposit: Balance = deposit(0, 1);
+}
+
+impl pallet_preimage::Config for Runtime {
+    type WeightInfo = pallet_preimage::weights::SubstrateWeight<Runtime>;
+    type Event = Event;
+    type Currency = Balances;
+    type ManagerOrigin = EnsureRoot<AccountId>;
+    type MaxSize = PreimageMaxSize;
+    type BaseDeposit = PreimageBaseDeposit;
+    type ByteDeposit = PreimageByteDeposit;
 }
 
 /* parameter_types! {

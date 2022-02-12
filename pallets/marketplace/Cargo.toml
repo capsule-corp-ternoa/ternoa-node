@@ -14,7 +14,7 @@ frame-support = { git = "https://github.com/paritytech/substrate.git", default-f
 frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 
 # Sp
-sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 log = { default-features = false, version = "0.4.14"}
 
@@ -30,8 +30,8 @@ ternoa-nfts = { default-features = false, path = "../nfts" }
 
 [dev-dependencies]
 pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 
 [features]
 default = ["std"]

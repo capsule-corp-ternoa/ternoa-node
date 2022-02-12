@@ -15,6 +15,7 @@ runtime-benchmarks = [
 ]
 cli = [
 	"ternoa-executor/wasmi-errno",
+	"clap",
 ]
 
 [package.metadata.wasm-pack.profile.release]
@@ -26,7 +27,7 @@ wasm-opt = false
 ternoa-executor = { path = "../executor", features = [ "wasmtime" ] }
 sc-cli = { git = "https://github.com/paritytech/substrate.git", features = [ "wasmtime" ], version = "0.10.0-dev", branch = "master" }
 sc-service = { git = "https://github.com/paritytech/substrate.git", default-features = false, features = [ "wasmtime" ], version = "0.10.0-dev", branch = "master"}
-sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, features = ["memory-tracker"], branch = "master" }
+sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, features = ["memory-tracker"], version = "5.0.0", branch = "master" }
 
 [dependencies]
 # Frame
@@ -67,11 +68,11 @@ sp-block-builder = { git = "https://github.com/paritytech/substrate.git", versio
 sc-chain-spec = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
 sp-consensus = { git = "https://github.com/paritytech/substrate.git", version = "0.10.0-dev", branch = "master" }
 sp-consensus-babe = { git = "https://github.com/paritytech/substrate.git", version = "0.10.0-dev", branch = "master" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 sp-finality-grandpa = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
 sp-inherents = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
-sp-keystore = { git = "https://github.com/paritytech/substrate.git", version = "0.10.0-dev", branch = "master" }
-sp-runtime = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
+sp-keystore = { git = "https://github.com/paritytech/substrate.git", version = "0.11.0", branch = "master" }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0", branch = "master" }
 sp-timestamp = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
 sp-transaction-storage-proof = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
@@ -86,11 +87,11 @@ hex-literal = { version = "0.3.4" }
 jsonrpc-core = { version = "18.0.0" }
 jsonrpc-pubsub = { version = "18.0.0" }
 serde_json = { version = "1.0.73" }
-structopt = { version = "0.3.25" }
 futures = { features = ["compat"], version = "0.3.19" }
 codec = { package = "parity-scale-codec", version = "2.3.1" }
 serde = { version = "1.0.132" }
 rand = { version = "0.8.4" }
+clap = { version = "3.0", features = ["derive"], optional = true }
 
 # Ternoa
 ternoa-executor = { path = "../executor" }

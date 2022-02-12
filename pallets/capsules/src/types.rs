@@ -12,7 +12,7 @@ use ternoa_primitives::TextFormat;
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct CapsuleData<AccountId>
 where
-    AccountId: Clone + Default,
+    AccountId: Clone,
 {
     pub owner: AccountId,
     pub ipfs_reference: TextFormat,
@@ -20,24 +20,12 @@ where
 
 impl<AccountId> CapsuleData<AccountId>
 where
-    AccountId: Clone + Default,
+    AccountId: Clone,
 {
     pub fn new(owner: AccountId, ipfs_reference: TextFormat) -> CapsuleData<AccountId> {
         Self {
             owner,
             ipfs_reference,
-        }
-    }
-}
-
-impl<AccountId> Default for CapsuleData<AccountId>
-where
-    AccountId: Clone + Default,
-{
-    fn default() -> Self {
-        Self {
-            owner: Default::default(),
-            ipfs_reference: Default::default(),
         }
     }
 }

@@ -9,11 +9,11 @@ license = "Apache 2.0"
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
 
 # Sp
-sp-state-machine = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev", branch = "master" }
+sp-state-machine = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.11.0", branch = "master" }
 sc-executor = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "0.10.0-dev", branch = "master" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
+sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
 
 # Ternoa
 ternoa-primitives = { path = "../primitives" }
