@@ -1,4 +1,4 @@
-pub mod v5;
+/* pub mod v5;
 pub mod v6;
 
 use crate::{Config, Pallet};
@@ -25,3 +25,4 @@ pub fn migrate<T: Config>() -> Weight {
 
     weight
 }
+ */

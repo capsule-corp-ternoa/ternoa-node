@@ -62,17 +62,15 @@ construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic
     {
         // Basic stuff; balances is uncallable initially
-        System: frame_system,
-        Scheduler: pallet_scheduler,
-        RandomnessCollectiveFlip: pallet_randomness_collective_flip,
+        System: frame_system = 0,
 
          // Babe must be before session.
-        Babe: pallet_babe,
+        Babe: pallet_babe = 1,
 
-        Timestamp: pallet_timestamp,
-        Indices: pallet_indices,
-        Balances: pallet_balances,
-        TransactionPayment: pallet_transaction_payment,
+        Timestamp: pallet_timestamp = 2,
+        Indices: pallet_indices = 3,
+        Balances: pallet_balances = 4,
+        TransactionPayment: pallet_transaction_payment = 5,
 
         // Consensus support.
         // Authorship must be before session in order to note author in the correct session and era
@@ -86,6 +84,11 @@ construct_runtime!(
         ImOnline: pallet_im_online,
         AuthorityDiscovery: pallet_authority_discovery,
 
+        // Election pallet. Only works with staking
+        ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
+        // Provides a semi-sorted list of nominators for staking.
+        BagsList: pallet_bags_list,
+
         // Governance stuff. uncallable initially
         Sudo: pallet_sudo,
         Treasury: pallet_treasury,
@@ -93,28 +96,10 @@ construct_runtime!(
         // Cunning utilities. Usable initially.
         Utility: pallet_utility,
 
-        // Identity. Late addition.
-        Identity: pallet_identity,
-
-        // Bounties module.
-        Bounties: pallet_bounties,
-
-        // Tips module.
-        Tips: pallet_tips,
-
-        // Election pallet. Only works with staking, but placed here to maintain indices.
-        ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
-
-        // Provides a semi-sorted list of nominators for staking.
-        BagsList: pallet_bags_list,
-
-        Mmr: pallet_mmr,
-
         Multisig: pallet_multisig,
-        Proxy: pallet_proxy,
         Preimage: pallet_preimage,
 
-        // Ternoa
+        // Ternoa pallets.  Start indices at 100 to leave room.
         Nfts: ternoa_nfts = 100,
         AssociatedAccounts: ternoa_associated_accounts = 101,
         // Capsules: ternoa_capsules = 102,
@@ -161,16 +146,6 @@ pub type Executive = frame_executive::Executive<
     Runtime,
     AllPalletsWithSystem,
 >;
-
-/// MMR helper types.
-mod mmr {
-    use super::Runtime;
-    pub use pallet_mmr::primitives::*;
-
-    pub type Leaf = <<Runtime as pallet_mmr::Config>::LeafData as LeafDataProvider>::LeafData;
-    pub type Hash = <Runtime as pallet_mmr::Config>::Hash;
-    pub type Hashing = <Runtime as pallet_mmr::Config>::Hashing;
-}
 
 impl_runtime_apis! {
     impl sp_api::Core<Block> for Runtime {
@@ -341,37 +316,6 @@ impl_runtime_apis! {
         }
     }
 
-    impl pallet_mmr::primitives::MmrApi<
-        Block,
-        mmr::Hash,
-    > for Runtime {
-        fn generate_proof(leaf_index: pallet_mmr::primitives::LeafIndex)
-            -> Result<(mmr::EncodableOpaqueLeaf, mmr::Proof<mmr::Hash>), mmr::Error>
-        {
-            Mmr::generate_proof(leaf_index)
-                .map(|(leaf, proof)| (mmr::EncodableOpaqueLeaf::from_leaf(&leaf), proof))
-        }
-
-        fn verify_proof(leaf: mmr::EncodableOpaqueLeaf, proof: mmr::Proof<mmr::Hash>)
-            -> Result<(), mmr::Error>
-        {
-            let leaf: mmr::Leaf = leaf
-                .into_opaque_leaf()
-                .try_decode()
-                .ok_or(mmr::Error::Verify)?;
-            Mmr::verify_leaf(leaf, proof)
-        }
-
-        fn verify_proof_stateless(
-            root: mmr::Hash,
-            leaf: mmr::EncodableOpaqueLeaf,
-            proof: mmr::Proof<mmr::Hash>
-        ) -> Result<(), mmr::Error> {
-            let node = mmr::DataOrHash::Data(leaf.into_opaque_leaf());
-            pallet_mmr::verify_leaf_proof::<mmr::Hashing, _>(root, node, proof)
-        }
-    }
-
     impl sp_session::SessionKeys<Block> for Runtime {
         fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
             SessionKeys::generate(seed)
@@ -470,8 +414,6 @@ mod benches {
         [runtime_common::ternoa_nfts, Nfts]
         [runtime_common::ternoa_associated_accounts, AssociatedAccounts]
         // Substrate
-        [pallet_scheduler, Scheduler]
-        // [pallet_randomness_collective_flip, RandomnessCollectiveFlip]
         [pallet_babe, Babe]
         [pallet_timestamp, Timestamp]
         // [pallet_indices, Indices]
@@ -488,14 +430,9 @@ mod benches {
         // [pallet_sudo, Sudo]
         [pallet_treasury, Treasury]
         [pallet_utility, Utility]
-        // [pallet_identity, Identity]
-        [pallet_bounties, Bounties]
-        // [pallet_tips, Tips]
-        // [pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
-        // [pallet_bags_list, BagsList]
-        // [pallet_mmr, Mmr]
+        [pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
+        [pallet_bags_list, BagsList]
         // [pallet_multisig, Multisig]
-        // [pallet_proxy, Proxy]
         // [pallet_preimage, Preimage]
         [frame_benchmarking::baseline, Baseline::<Runtime>]
         [frame_system, SystemBench::<Runtime>]
