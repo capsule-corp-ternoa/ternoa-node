@@ -62,9 +62,7 @@ construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic
     {
         // Basic stuff; balances is uncallable initially
-        System: frame_system,
-        Scheduler: pallet_scheduler,
-        RandomnessCollectiveFlip: pallet_randomness_collective_flip,
+        System: frame_system = 0,
 
          // Babe must be before session.
         Babe: pallet_babe,
@@ -470,15 +468,13 @@ mod benches {
         [runtime_common::ternoa_nfts, Nfts]
         [runtime_common::ternoa_associated_accounts, AssociatedAccounts]
         // Substrate
-        [pallet_scheduler, Scheduler]
-        // [pallet_randomness_collective_flip, RandomnessCollectiveFlip]
         [pallet_babe, Babe]
         [pallet_timestamp, Timestamp]
         // [pallet_indices, Indices]
         [pallet_balances, Balances]
         // [pallet_transaction_payment, TransactionPayment]
         // [pallet_authorship, Authorship]
-        [pallet_staking, Staking]
+        // [pallet_staking, Staking]
         // [pallet_offences, Offences]
         // [pallet_session_historical, Historical]
         // [pallet_session, Session]
@@ -491,8 +487,8 @@ mod benches {
         // [pallet_identity, Identity]
         [pallet_bounties, Bounties]
         // [pallet_tips, Tips]
-        // [pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
-        // [pallet_bags_list, BagsList]
+        [pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
+        [pallet_bags_list, BagsList]
         // [pallet_mmr, Mmr]
         // [pallet_multisig, Multisig]
         // [pallet_proxy, Proxy]

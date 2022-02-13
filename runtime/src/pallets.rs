@@ -5,14 +5,14 @@ use crate::constants::time::{
 use crate::{
     voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Bounties, Call,
     ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
-    OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking, Sudo,
-    System, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
+    OriginCaller, PalletInfo, Runtime, Session, Signature, SignedPayload, Staking, Sudo, System,
+    Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
 };
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_election_provider_support::onchain;
 use frame_support::traits::{
-    ConstU32, ContainsLengthBound, Currency, EqualPrivilegeOnly, Imbalance, InstanceFilter,
-    KeyOwnerProofSystem, LockIdentifier, OnUnbalanced, SortedMembers, U128CurrencyToVote,
+    ConstU32, ContainsLengthBound, Currency, Imbalance, InstanceFilter, KeyOwnerProofSystem,
+    LockIdentifier, OnUnbalanced, SortedMembers, U128CurrencyToVote,
 };
 use frame_support::weights::constants::{
     BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
@@ -109,27 +109,6 @@ impl frame_system::Config for Runtime {
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
     type MaxConsumers = ConstU32<16>;
-}
-
-parameter_types! {
-    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
-        RuntimeBlockWeights::get().max_block;
-    pub const MaxScheduledPerBlock: u32 = 50;
-    pub const NoPreimagePostponement: Option<u32> = Some(10);
-}
-
-impl pallet_scheduler::Config for Runtime {
-    type Event = Event;
-    type Origin = Origin;
-    type PalletsOrigin = OriginCaller;
-    type Call = Call;
-    type MaximumWeight = MaximumSchedulerWeight;
-    type ScheduleOrigin = EnsureRoot<AccountId>;
-    type MaxScheduledPerBlock = MaxScheduledPerBlock;
-    type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
-    type OriginPrivilegeCmp = EqualPrivilegeOnly;
-    type PreimageProvider = Preimage;
-    type NoPreimagePostponement = NoPreimagePostponement;
 }
 
 // Utility
@@ -901,8 +880,6 @@ parameter_types! {
 
 // Make sure that there are no more than `MaxMembers` members elected via elections-phragmen.
 const_assert!(DesiredMembers::get() <= MaxMembers::get());
-
-impl pallet_randomness_collective_flip::Config for Runtime {}
 
 // Mmr
 impl pallet_mmr::Config for Runtime {
