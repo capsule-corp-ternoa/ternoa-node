@@ -1,10 +1,9 @@
 /* use super::Config;
 use frame_support::traits::Get;
 use frame_support::weights::Weight;
- */
 
 pub mod v7 {
-    /* use super::super::v6::v6;
+    use super::super::v6::v6;
     use crate::Config;
     use codec::{Decode, Encode};
     use frame_support::pallet_prelude::{OptionQuery, ValueQuery};
@@ -94,10 +93,10 @@ pub mod v7 {
     #[allow(dead_code)]
     pub fn get_nft_mint_fee<T: Config>() -> BalanceCaps<T> {
         MarketplaceMintFee::<T>::get()
-    } */
+    }
 }
 
-/* pub fn migrate<T: Config>() -> Weight {
+pub fn migrate<T: Config>() -> Weight {
     // Migrate Marketplaces
     v7::migrate_marketplaces::<T>();
 

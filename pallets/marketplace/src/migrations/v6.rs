@@ -1,4 +1,4 @@
-pub mod v6 {
+/* pub mod v6 {
     use crate::Config;
     use codec::{Decode, Encode};
     use frame_support::Blake2_128Concat;
@@ -54,3 +54,4 @@ pub mod v6 {
         Marketplaces::<T>::insert(id, data);
     }
 }
+ */

@@ -1,4 +1,4 @@
-pub mod v6;
+/* pub mod v6;
 pub mod v7;
 
 use crate::{Config, Pallet, Weight};
@@ -14,13 +14,14 @@ pub fn migrate<T: Config>() -> Weight {
     }
 
     if storage_version == 6 {
-        /*         log::info!(target: "runtime::marketplace", "Marketplace pallet: migrating to StorageVersion V7");
+        log::info!(target: "runtime::marketplace", "Marketplace pallet: migrating to StorageVersion V7");
 
         weight = v7::migrate::<T>();
         StorageVersion::new(7).put::<Pallet<T>>();
 
-        log::info!(target: "runtime::marketplace", "Marketplace pallet: migration to StorageVersion V7 done"); */
+        log::info!(target: "runtime::marketplace", "Marketplace pallet: migration to StorageVersion V7 done");
     }
 
     weight
 }
+ */

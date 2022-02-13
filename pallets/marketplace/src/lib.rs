@@ -20,7 +20,7 @@ use frame_support::pallet_prelude::DispatchResultWithPostInfo;
 use frame_support::traits::{
     Currency, ExistenceRequirement::KeepAlive, Get, OnUnbalanced, StorageVersion, WithdrawReasons,
 };
-use frame_support::weights::Weight;
+// use frame_support::weights::Weight;
 use frame_system::Origin;
 use sp_std::vec::Vec;
 use ternoa_common::helpers::check_bounds;
@@ -30,7 +30,7 @@ use ternoa_primitives::nfts::NFTId;
 use ternoa_primitives::TextFormat;
 
 /// The current storage version.
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(7);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -97,9 +97,9 @@ pub mod pallet {
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-        fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        /*         fn on_runtime_upgrade() -> frame_support::weights::Weight {
             migrations::migrate::<T>()
-        }
+        } */
     }
 
     #[pallet::call]

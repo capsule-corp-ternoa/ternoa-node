@@ -22,7 +22,7 @@ use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
 use ternoa_primitives::TextFormat;
 
-const STORAGE_VERSION: StorageVersion = StorageVersion::new(6);
+const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -70,9 +70,9 @@ pub mod pallet {
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-        fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        /*         fn on_runtime_upgrade() -> frame_support::weights::Weight {
             migrations::migrate::<T>()
-        }
+        } */
     }
 
     #[pallet::call]
