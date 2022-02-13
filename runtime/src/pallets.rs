@@ -108,7 +108,7 @@ impl frame_system::Config for Runtime {
     type SystemWeightInfo = frame_system::weights::SubstrateWeight<Runtime>;
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
-    type MaxConsumers = frame_support::traits::ConstU32<16>;
+    type MaxConsumers = ConstU32<16>;
 }
 
 parameter_types! {
@@ -574,6 +574,7 @@ parameter_types! {
         .get(DispatchClass::Normal)
         .max_extrinsic.expect("Normal extrinsics have a weight limit configured; qed")
         .saturating_sub(BlockExecutionWeight::get());
+    pub const MaxNominations: u32 = <NposCompactSolution24 as sp_npos_elections::NposSolution>::LIMIT as u32;
 }
 
 /// A reasonable benchmarking config for staking pallet.
@@ -589,7 +590,7 @@ impl onchain::Config for Runtime {
 }
 
 impl pallet_staking::Config for Runtime {
-    type MaxNominations = ConstU32<32>;
+    type MaxNominations = MaxNominations;
     type Currency = Balances;
     type UnixTime = Timestamp;
     type CurrencyToVote = U128CurrencyToVote;
@@ -650,14 +651,12 @@ parameter_types! {
 
 sp_npos_elections::generate_solution_type!(
     #[compact]
-    pub struct NposSolution16::<
+    pub struct NposCompactSolution24::<
         VoterIndex = u32,
         TargetIndex = u16,
         Accuracy = sp_runtime::PerU16,
-    >(16)
+    >(24)
 );
-
-pub const MAX_NOMINATIONS: u32 = <NposSolution16 as sp_npos_elections::NposSolution>::LIMIT as u32;
 
 /// The numbers configured here should always be more than the the maximum limits of staking pallet
 /// to ensure election snapshot will not run out of memory.
@@ -718,7 +717,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
     type SlashHandler = (); // burn slashes
     type RewardHandler = (); // nothing to do upon rewards
     type DataProvider = Staking;
-    type Solution = NposSolution16;
+    type Solution = NposCompactSolution24;
     type Fallback = pallet_election_provider_multi_phase::NoFallback<Self>;
     type Solver = frame_election_provider_support::SequentialPhragmen<
         AccountId,

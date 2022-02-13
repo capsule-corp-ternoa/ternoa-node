@@ -1,6 +1,6 @@
 use crate::{self as ternoa_associated_accounts, Config, SupportedAccount};
 use frame_support::parameter_types;
-use frame_support::traits::{Contains, GenesisBuild};
+use frame_support::traits::{ConstU32, Contains, GenesisBuild};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
@@ -65,6 +65,7 @@ impl frame_system::Config for Test {
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<16>;
 }
 
 impl Config for Test {

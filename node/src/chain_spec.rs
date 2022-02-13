@@ -136,7 +136,7 @@ pub fn testnet_genesis(
         .map(|x| (x.0.clone(), x.1.clone(), STASH, StakerStatus::Validator))
         .chain(initial_nominators.iter().map(|x| {
             use rand::{seq::SliceRandom, Rng};
-            let limit = (MAX_NOMINATIONS as usize).min(initial_authorities.len());
+            let limit = (MAX_NOMINATIONS::get() as usize).min(initial_authorities.len());
             let count = rng.gen::<usize>() % limit;
             let nominations = initial_authorities
                 .as_slice()

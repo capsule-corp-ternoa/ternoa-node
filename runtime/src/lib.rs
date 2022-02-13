@@ -30,9 +30,9 @@ mod voter_bags;
 
 pub use pallet_balances::Call as BalancesCall;
 use pallets::EpochDuration;
+pub use pallets::MaxNominations as MAX_NOMINATIONS;
 pub use pallets::SessionKeys;
 pub use pallets::BABE_GENESIS_EPOCH_CONFIG;
-pub use pallets::MAX_NOMINATIONS;
 pub use version::VERSION;
 
 #[cfg(feature = "std")]
@@ -398,51 +398,37 @@ impl_runtime_apis! {
             Vec<frame_benchmarking::BenchmarkList>,
             Vec<frame_support::traits::StorageInfo>,
         ) {
-            use frame_benchmarking::{list_benchmark, Benchmarking, BenchmarkList};
+            use frame_benchmarking::{Benchmarking, BenchmarkList};
             use frame_support::traits::StorageInfoTrait;
 
             // Trying to add benchmarks directly to the Session Pallet caused cyclic dependency
             // issues. To get around that, we separated the Session benchmarks into its own crate,
             // which is why we need these two lines below.
             use frame_system_benchmarking::Pallet as SystemBench;
+            use frame_benchmarking::baseline::Pallet as Baseline;
+
 
             let mut list = Vec::<BenchmarkList>::new();
-
-            list_benchmark!(list, extra, pallet_babe, Babe);
-            list_benchmark!(list, extra, pallet_balances, Balances);
-            list_benchmark!(list, extra, pallet_bounties, Bounties);
-            list_benchmark!(list, extra, pallet_grandpa, Grandpa);
-            list_benchmark!(list, extra, pallet_im_online, ImOnline);
-            list_benchmark!(list, extra, pallet_scheduler, Scheduler);
-            list_benchmark!(list, extra, pallet_staking, Staking);
-            list_benchmark!(list, extra, frame_system, SystemBench::<Runtime>);
-            list_benchmark!(list, extra, pallet_timestamp, Timestamp);
-            list_benchmark!(list, extra, pallet_treasury, Treasury);
-            list_benchmark!(list, extra, pallet_utility, Utility);
-
-            list_benchmark!(list, extra, ternoa_nfts, Nfts);
-            list_benchmark!(list, extra, ternoa_associated_accounts, AssociatedAccounts);
-            //list_benchmark!(list, extra, ternoa_marketplace, Marketplace);
-            //list_benchmark!(list, extra, ternoa_capsules, Capsules);
-            //list_benchmark!(list, extra, ternoa_auctions, Auctions);
+            list_benchmarks!(list, extra);
 
             let storage_info = AllPalletsWithSystem::storage_info();
-
             return (list, storage_info)
         }
 
         fn dispatch_benchmark(
             config: frame_benchmarking::BenchmarkConfig
         ) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
-            use frame_benchmarking::{Benchmarking, BenchmarkBatch, add_benchmark, TrackedStorageKey};
+            use frame_benchmarking::{Benchmarking, BenchmarkBatch, TrackedStorageKey};
             //use pallet_session_benchmarking::Module as SessionBench;
             //use pallet_offences_benchmarking::Module as OffencesBench;
             use frame_system_benchmarking::Pallet as SystemBench;
+            use frame_benchmarking::baseline::Pallet as Baseline;
 
             // those two depends on pallets we do not use and pause compile time issues
             //impl pallet_session_benchmarking::Config for Runtime {}
             //impl pallet_offences_benchmarking::Config for Runtime {}
             impl frame_system_benchmarking::Config for Runtime {}
+            impl frame_benchmarking::baseline::Config for Runtime {}
 
             // We took this from the substrate examples as the configurations are pretty close.
             let whitelist: Vec<TrackedStorageKey> = vec![
@@ -463,29 +449,55 @@ impl_runtime_apis! {
             let mut batches = Vec::<BenchmarkBatch>::new();
             let params = (&config, &whitelist);
 
-            add_benchmark!(params, batches, pallet_babe, Babe);
-            // There is a bug in the substrate implementation, pallet_balances
-            // can only be benchmarked if it is instantiated only once in the runtime.
-            //add_benchmark!(params, batches, pallet_balances, Balances);
-            add_benchmark!(params, batches, pallet_bounties, Bounties);
-            add_benchmark!(params, batches, pallet_grandpa, Grandpa);
-            add_benchmark!(params, batches, pallet_im_online, ImOnline);
-            //add_benchmark!(params, batches, pallet_offences, OffencesBench::<Runtime>);
-            add_benchmark!(params, batches, pallet_scheduler, Scheduler);
-            //add_benchmark!(params, batches, pallet_session, SessionBench::<Runtime>);
-            add_benchmark!(params, batches, pallet_staking, Staking);
-            add_benchmark!(params, batches, frame_system, SystemBench::<Runtime>);
-            add_benchmark!(params, batches, pallet_treasury, Treasury);
-            add_benchmark!(params, batches, pallet_timestamp, Timestamp);
-
-            add_benchmark!(params, batches, ternoa_nfts, Nfts);
-            add_benchmark!(params, batches, ternoa_associated_accounts, AssociatedAccounts);
-            //add_benchmark!(params, batches, ternoa_marketplace, Marketplace);
-            //add_benchmark!(params, batches, ternoa_capsules, Capsules);
-            //add_benchmark!(params, batches, ternoa_auctions, Auctions);
+            add_benchmarks!(params, batches);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)
         }
     }
+}
+
+#[cfg(feature = "runtime-benchmarks")]
+#[macro_use]
+extern crate frame_benchmarking;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benches {
+    define_benchmarks!(
+        // Ternoa
+        // NOTE: Make sure to prefix these with `runtime_common::` so
+        // the that path resolves correctly in the generated file.
+        [runtime_common::ternoa_nfts, Nfts]
+        [runtime_common::ternoa_associated_accounts, AssociatedAccounts]
+        // Substrate
+        [pallet_scheduler, Scheduler]
+        // [pallet_randomness_collective_flip, RandomnessCollectiveFlip]
+        [pallet_babe, Babe]
+        [pallet_timestamp, Timestamp]
+        // [pallet_indices, Indices]
+        [pallet_balances, Balances]
+        // [pallet_transaction_payment, TransactionPayment]
+        // [pallet_authorship, Authorship]
+        [pallet_staking, Staking]
+        // [pallet_offences, Offences]
+        // [pallet_session_historical, Historical]
+        // [pallet_session, Session]
+        [pallet_grandpa, Grandpa]
+        [pallet_im_online, ImOnline]
+        // [pallet_authority_discovery, AuthorityDiscovery]
+        // [pallet_sudo, Sudo]
+        [pallet_treasury, Treasury]
+        [pallet_utility, Utility]
+        // [pallet_identity, Identity]
+        [pallet_bounties, Bounties]
+        // [pallet_tips, Tips]
+        // [pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
+        // [pallet_bags_list, BagsList]
+        // [pallet_mmr, Mmr]
+        // [pallet_multisig, Multisig]
+        // [pallet_proxy, Proxy]
+        // [pallet_preimage, Preimage]
+        [frame_benchmarking::baseline, Baseline::<Runtime>]
+        [frame_system, SystemBench::<Runtime>]
+    );
 }

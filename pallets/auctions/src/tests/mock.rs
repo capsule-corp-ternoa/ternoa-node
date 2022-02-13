@@ -1,6 +1,6 @@
 use crate::types::{AuctionData, BidderList};
 use crate::{self as ternoa_auctions, Config};
-use frame_support::traits::{Contains, GenesisBuild, OnFinalize, OnInitialize};
+use frame_support::traits::{ConstU32, Contains, GenesisBuild, OnFinalize, OnInitialize};
 use frame_support::{parameter_types, PalletId};
 use sp_core::H256;
 use sp_runtime::testing::Header;
@@ -97,6 +97,7 @@ impl frame_system::Config for Test {
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<16>;
 }
 
 parameter_types! {
