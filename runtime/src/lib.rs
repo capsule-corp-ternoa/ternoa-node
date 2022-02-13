@@ -30,9 +30,9 @@ mod voter_bags;
 
 pub use pallet_balances::Call as BalancesCall;
 use pallets::EpochDuration;
+pub use pallets::MaxNominations as MAX_NOMINATIONS;
 pub use pallets::SessionKeys;
 pub use pallets::BABE_GENESIS_EPOCH_CONFIG;
-pub use pallets::MAX_NOMINATIONS;
 pub use version::VERSION;
 
 #[cfg(feature = "std")]

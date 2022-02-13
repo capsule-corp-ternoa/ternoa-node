@@ -1,6 +1,6 @@
 use crate::{self as ternoa_nfts, Config, NegativeImbalanceOf};
 use frame_support::parameter_types;
-use frame_support::traits::{Contains, Currency, GenesisBuild};
+use frame_support::traits::{ConstU32, Contains, Currency, GenesisBuild};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
@@ -63,6 +63,7 @@ impl frame_system::Config for Test {
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type OnSetCode = ();
+    type MaxConsumers = ConstU32<16>;
 }
 
 parameter_types! {
