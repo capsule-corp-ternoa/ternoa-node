@@ -420,7 +420,7 @@ mod benches {
         [pallet_balances, Balances]
         // [pallet_transaction_payment, TransactionPayment]
         // [pallet_authorship, Authorship]
-        // [pallet_staking, Staking]
+        [pallet_staking, Staking]
         // [pallet_offences, Offences]
         // [pallet_session_historical, Historical]
         // [pallet_session, Session]
