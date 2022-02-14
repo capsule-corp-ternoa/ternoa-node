@@ -2,9 +2,9 @@ name: CI for Chain on macOS-11 Environement
 
 on:
   push:
-    branches: [ soufiane ]
+    branches: [ main ]
   pull_request:
-    branches: [ soufiane ]
+    branches: [ main ]
 
 env:
   CARGO_TERM_COLOR: always
