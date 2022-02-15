@@ -49,7 +49,7 @@ pub trait NFTTrait {
     /// Set a series to be either completed or not-completed.
     fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult;
 
-    /// TODO!
+    /// Set the NFT viewer to a value.
     fn set_viewer(id: NFTId, value: Option<Self::AccountId>) -> DispatchResult;
 }
 
