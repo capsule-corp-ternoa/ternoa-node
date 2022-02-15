@@ -121,15 +121,8 @@ pub mod pallet {
             let nft_id = Self::generate_nft_id();
             let series_id = series_id.unwrap_or_else(|| Self::generate_series_id());
 
-            let value = NFTData::new(
-                who.clone(),
-                who.clone(),
-                ipfs_reference.clone(),
-                series_id.clone(),
-                false,
-                false,
-                false,
-            );
+            let value =
+                NFTData::new_default(who.clone(), ipfs_reference.clone(), series_id.clone());
 
             // Save
             Data::<T>::insert(nft_id, value);
@@ -176,6 +169,7 @@ pub mod pallet {
                 !data.in_transmission,
                 Error::<T>::CannotTransferNFTsInTransmission
             );
+            ensure!(data.viewer.is_none(), Error::<T>::CannotTransferLentNFTs);
             ensure!(
                 !series.draft,
                 Error::<T>::CannotTransferNFTsInUncompletedSeries
@@ -213,6 +207,7 @@ pub mod pallet {
                 !data.in_transmission,
                 Error::<T>::CannotBurnNFTsInTransmission
             );
+            ensure!(data.viewer.is_none(), Error::<T>::CannotBurnLentNFTs);
 
             Data::<T>::remove(id);
             Self::deposit_event(Event::NFTBurned { nft_id: id });
@@ -256,6 +251,39 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(T::WeightInfo::lend())]
+        pub fn lend(
+            origin: OriginFor<T>,
+            nft_id: NFTId,
+            viewer: Option<T::AccountId>,
+        ) -> DispatchResultWithPostInfo {
+            let who = ensure_signed(origin)?;
+
+            Data::<T>::try_mutate(nft_id, |maybe_data| -> DispatchResult {
+                let data = maybe_data.as_mut().ok_or(Error::<T>::NFTNotFound)?;
+
+                ensure!(data.owner == who, Error::<T>::NotTheNFTOwner);
+                ensure!(
+                    !data.listed_for_sale,
+                    Error::<T>::CannotLendNFTsListedForSale
+                );
+                ensure!(!data.converted_to_capsule, Error::<T>::CannotLendCapsules);
+                ensure!(
+                    !data.in_transmission,
+                    Error::<T>::CannotLendNFTsInTransmission
+                );
+
+                data.viewer = viewer.clone();
+
+                Ok(().into())
+            })?;
+
+            let event = Event::NFTLent { nft_id, viewer };
+            Self::deposit_event(event);
+
+            Ok(().into())
+        }
     }
 
     #[pallet::event]
@@ -281,25 +309,44 @@ pub mod pallet {
         SeriesFinished { series_id: NFTSeriesId },
         /// Nft mint fee changed.
         NFTMintFeeUpdated { fee: BalanceOf<T> },
+        /// An NFT was lent to someone else or it was returned.
+        NFTLent {
+            nft_id: NFTId,
+            viewer: Option<T::AccountId>,
+        },
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        /// Operation not allowed because the nft is a capsule.
+        /// Operation not allowed because the NFT is a capsule.
         CannotTransferCapsules,
-        /// Operation not allowed because the nft is a capsule.
+        /// Operation not allowed because the NFT is a capsule.
         CannotBurnCapsules,
-        /// Operation not allowed because the nft is listed for sale.
+        /// Operation not allowed because the NFT is a capsule.
+        CannotLendCapsules,
+
+        /// Operation not allowed because the NFT is listed for sale.
         CannotTransferNFTsListedForSale,
-        /// Operation not allowed because the nft is listed for sale.
+        /// Operation not allowed because the NFT is listed for sale.
         CannotBurnNFTsListedForSale,
-        /// Operation not allowed because the nft is in transmission.
+        /// Operation not allowed because the NFT is listed for sale.
+        CannotLendNFTsListedForSale,
+
+        /// Operation not allowed because the NFT is in transmission.
         CannotTransferNFTsInTransmission,
-        /// Operation not allowed because the nft is in transmission.
+        /// Operation not allowed because the NFT is in transmission.
         CannotBurnNFTsInTransmission,
+        /// Operation not allowed because the NFT is in transmission.
+        CannotLendNFTsInTransmission,
+
+        /// Operation is not allowed because the NFT is lent.
+        CannotTransferLentNFTs,
+        /// Operation is not allowed because the NFT is lent.
+        CannotBurnLentNFTs,
+
         /// Operation is not allowed because the series is in draft.
         CannotTransferNFTsInUncompletedSeries,
-        /// Operation is not allowed because the nft is inside a completed series.
+        /// Operation is not allowed because the NFT is inside a completed series.
         CannotCreateNFTsWithCompletedSeries,
         /// Ipfs reference is too short.
         IPFSReferenceIsTooShort,
@@ -307,9 +354,9 @@ pub mod pallet {
         IPFSReferenceIsTooLong,
         /// No NFT was found with that NFT id.
         NFTNotFound,
-        /// This function can only be called by the owner of the nft.
+        /// This function can only be called by the owner of the NFT.
         NotTheNFTOwner,
-        /// Cannot add nfts to a series that is not owned.
+        /// Cannot add NFTs to a series that is not owned.
         NotTheSeriesOwner,
         /// Series not Found.
         SeriesNotFound,
@@ -417,14 +464,14 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         return Ok(Self::nft_id_generator() - 1);
     }
 
+    fn get_nft(id: NFTId) -> Option<NFTData<Self::AccountId>> {
+        Data::<T>::get(id)
+    }
+
     fn benchmark_lock_series(series_id: NFTSeriesId) {
         Series::<T>::mutate(&series_id, |x| {
             x.as_mut().unwrap().draft = false;
         });
-    }
-
-    fn get_nft(id: NFTId) -> Option<NFTData<Self::AccountId>> {
-        Data::<T>::get(id)
     }
 
     fn set_listed_for_sale(id: NFTId, value: bool) -> DispatchResult {
@@ -488,6 +535,16 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         Series::<T>::try_mutate(series_id, |x| -> DispatchResult {
             let series = x.as_mut().ok_or(Error::<T>::SeriesNotFound)?;
             series.draft = !value;
+            Ok(())
+        })?;
+
+        Ok(())
+    }
+
+    fn set_viewer(id: NFTId, value: Option<Self::AccountId>) -> DispatchResult {
+        Data::<T>::try_mutate(id, |maybe_data| -> DispatchResult {
+            let data = maybe_data.as_mut().ok_or(Error::<T>::NFTNotFound)?;
+            data.viewer = value;
             Ok(())
         })?;
 

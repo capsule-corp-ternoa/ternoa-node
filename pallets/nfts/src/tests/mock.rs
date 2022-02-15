@@ -4,6 +4,7 @@ use frame_support::traits::{ConstU32, Contains, Currency, GenesisBuild};
 use sp_core::H256;
 use sp_runtime::testing::Header;
 use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use ternoa_primitives::nfts::NFTId;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -39,6 +40,9 @@ parameter_types! {
     pub BlockWeights: frame_system::limits::BlockWeights =
         frame_system::limits::BlockWeights::simple_max(1024);
 }
+
+pub type Balance = u64;
+
 impl frame_system::Config for Test {
     type BaseCallFilter = TestBaseCallFilter;
     type BlockWeights = ();
@@ -57,7 +61,7 @@ impl frame_system::Config for Test {
     type BlockHashCount = BlockHashCount;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = pallet_balances::AccountData<u64>;
+    type AccountData = pallet_balances::AccountData<Balance>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
@@ -67,7 +71,7 @@ impl frame_system::Config for Test {
 }
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = 1;
+    pub const ExistentialDeposit: Balance = 1;
     pub const MaxLocks: u32 = 50;
     pub const MaxReserves: u32 = 50;
 }
@@ -75,7 +79,7 @@ impl pallet_balances::Config for Test {
     type MaxLocks = MaxLocks;
     type MaxReserves = MaxReserves;
     type ReserveIdentifier = [u8; 8];
-    type Balance = u64;
+    type Balance = Balance;
     type DustRemoval = ();
     type Event = Event;
     type ExistentialDeposit = ExistentialDeposit;
@@ -111,26 +115,35 @@ pub const BOB: u64 = 2;
 pub const CHAD: u64 = 3;
 pub const COLLECTOR: u64 = 99;
 
-pub const NFT_MINT_FEE: u64 = 10;
+pub const NFT_MINT_FEE: Balance = 10;
+pub const INVALID_NFT_ID: NFTId = 1001;
 
 pub struct ExtBuilder {
-    endowed_accounts: Vec<(u64, u64)>,
+    balances: Vec<(u64, Balance)>,
 }
 
 impl Default for ExtBuilder {
     fn default() -> Self {
-        ExtBuilder {
-            endowed_accounts: Vec::new(),
+        Self {
+            balances: Vec::new(),
         }
     }
 }
 
 impl ExtBuilder {
-    pub fn caps(mut self, accounts: Vec<(u64, u64)>) -> Self {
+    pub fn caps(mut self, accounts: Vec<(u64, Balance)>) -> Self {
         for account in accounts {
-            self.endowed_accounts.push(account);
+            self.balances.push(account);
         }
         self
+    }
+
+    pub fn new(balances: Vec<(u64, Balance)>) -> Self {
+        Self { balances }
+    }
+
+    pub fn new_build(balances: Vec<(u64, Balance)>) -> sp_io::TestExternalities {
+        Self::new(balances).build()
     }
 
     pub fn build(self) -> sp_io::TestExternalities {
@@ -139,7 +152,7 @@ impl ExtBuilder {
             .unwrap();
 
         pallet_balances::GenesisConfig::<Test> {
-            balances: self.endowed_accounts,
+            balances: self.balances,
         }
         .assimilate_storage(&mut t)
         .unwrap();
