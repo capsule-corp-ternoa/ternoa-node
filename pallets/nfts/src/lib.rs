@@ -252,7 +252,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000)]
+        #[pallet::weight(T::WeightInfo::lend())]
         pub fn lend(
             origin: OriginFor<T>,
             nft_id: NFTId,

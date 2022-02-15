@@ -411,8 +411,8 @@ mod benches {
         // Ternoa
         // NOTE: Make sure to prefix these with `runtime_common::` so
         // the that path resolves correctly in the generated file.
-        [runtime_common::ternoa_nfts, Nfts]
-        [runtime_common::ternoa_associated_accounts, AssociatedAccounts]
+        [ternoa_nfts, Nfts]
+        [ternoa_associated_accounts, AssociatedAccounts]
         // Substrate
         [pallet_babe, Babe]
         [pallet_timestamp, Timestamp]
