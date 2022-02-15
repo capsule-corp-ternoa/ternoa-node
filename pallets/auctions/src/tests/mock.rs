@@ -222,16 +222,8 @@ impl ExtBuilder {
     }
 
     fn build_nfts(t: &mut sp_runtime::Storage) {
-        let alice_nft = NFTData::new(
-            ALICE,
-            ALICE,
-            vec![10],
-            vec![ALICE_SERIES_ID],
-            false,
-            false,
-            false,
-        );
-        let bob_nft = NFTData::new(BOB, BOB, vec![10], vec![BOB_SERIES_ID], false, false, false);
+        let alice_nft = NFTData::new_default(ALICE, vec![10], vec![ALICE_SERIES_ID]);
+        let bob_nft = NFTData::new_default(BOB, vec![10], vec![BOB_SERIES_ID]);
 
         let alice_series = NFTSeriesDetails::new(ALICE, false);
         let bob_series = NFTSeriesDetails::new(ALICE, false);

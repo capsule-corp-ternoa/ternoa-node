@@ -189,7 +189,7 @@ pub mod pallet {
 
             ensure!(
                 nft_data.converted_to_capsule == false,
-                Error::<T>::CannotAuctionLentNFTs
+                Error::<T>::CannotAuctionCapsules
             );
 
             ensure!(nft_data.viewer.is_none(), Error::<T>::CannotAuctionLentNFTs);

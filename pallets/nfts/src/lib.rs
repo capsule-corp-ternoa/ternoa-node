@@ -121,16 +121,8 @@ pub mod pallet {
             let nft_id = Self::generate_nft_id();
             let series_id = series_id.unwrap_or_else(|| Self::generate_series_id());
 
-            let value = NFTData::new(
-                who.clone(),
-                who.clone(),
-                ipfs_reference.clone(),
-                series_id.clone(),
-                false,
-                false,
-                false,
-                None,
-            );
+            let value =
+                NFTData::new_default(who.clone(), ipfs_reference.clone(), series_id.clone());
 
             // Save
             Data::<T>::insert(nft_id, value);
@@ -549,10 +541,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
         Ok(())
     }
 
-    fn set_viewer(id: NFTId, viewer: Option<Self::AccountId>) -> DispatchResult {
+    fn set_viewer(id: NFTId, value: Option<Self::AccountId>) -> DispatchResult {
         Data::<T>::try_mutate(id, |maybe_data| -> DispatchResult {
             let data = maybe_data.as_mut().ok_or(Error::<T>::NFTNotFound)?;
-            data.viewer = viewer;
+            data.viewer = value;
             Ok(())
         })?;
 

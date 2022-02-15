@@ -116,7 +116,10 @@ pub mod nfts {
     /// Data related to an NFT, such as who is its owner.
     #[derive(Encode, Decode, Clone, PartialEq, Eq, Default, RuntimeDebug, TypeInfo)]
     #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-    pub struct NFTData<AccountId> {
+    pub struct NFTData<AccountId>
+    where
+        AccountId: Clone,
+    {
         // NFT owner
         pub owner: AccountId,
         // NFT creator
@@ -135,7 +138,10 @@ pub mod nfts {
         pub viewer: Option<AccountId>,
     }
 
-    impl<AccountId> NFTData<AccountId> {
+    impl<AccountId> NFTData<AccountId>
+    where
+        AccountId: Clone,
+    {
         pub fn new(
             owner: AccountId,
             creator: AccountId,
@@ -156,6 +162,23 @@ pub mod nfts {
                 converted_to_capsule,
                 viewer,
             }
+        }
+
+        pub fn new_default(
+            owner: AccountId,
+            ipfs_reference: TextFormat,
+            series_id: NFTSeriesId,
+        ) -> Self {
+            Self::new(
+                owner.clone(),
+                owner,
+                ipfs_reference,
+                series_id,
+                false,
+                false,
+                false,
+                None,
+            )
         }
     }
 
