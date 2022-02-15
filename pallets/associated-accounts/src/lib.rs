@@ -6,13 +6,13 @@ mod benchmarking;
 #[cfg(test)]
 mod tests;
 
-mod default_weights;
 mod types;
+pub mod weights;
 
-pub use default_weights::WeightInfo;
 use frame_support::traits::StorageVersion;
 pub use pallet::*;
 pub use types::*;
+pub use weights::WeightInfo;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 

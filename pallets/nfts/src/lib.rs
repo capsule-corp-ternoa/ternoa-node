@@ -6,21 +6,20 @@ mod benchmarking;
 #[cfg(test)]
 mod tests;
 
-mod default_weights;
 mod migrations;
+pub mod weights;
 
-pub use default_weights::WeightInfo;
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
-use frame_system::Origin;
-pub use pallet::*;
-
 use frame_support::pallet_prelude::ensure;
 use frame_support::traits::StorageVersion;
+use frame_system::Origin;
+pub use pallet::*;
 use sp_std::vec;
 use sp_std::vec::Vec;
 use ternoa_common::traits;
 use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
 use ternoa_primitives::TextFormat;
+pub use weights::WeightInfo;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
