@@ -189,8 +189,10 @@ pub mod pallet {
 
             ensure!(
                 nft_data.converted_to_capsule == false,
-                Error::<T>::CannotAuctionCapsules
+                Error::<T>::CannotAuctionLentNFTs
             );
+
+            ensure!(nft_data.viewer.is_none(), Error::<T>::CannotAuctionLentNFTs);
 
             ensure!(
                 is_nft_in_completed_series == Some(true),
@@ -573,6 +575,8 @@ pub mod pallet {
         CannotAuctionCapsules,
         /// Cannot auction NFTs that are not owned by the caller.
         CannotAuctionNotOwnedNFTs,
+        /// Cannot auction lent NFTs.
+        CannotAuctionLentNFTs,
         /// Cannot claim if the claim does not exist.
         ClaimDoesNotExist,
         /// Cannot auction NFTs that do not exit.

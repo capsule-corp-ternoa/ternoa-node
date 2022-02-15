@@ -48,6 +48,9 @@ pub trait NFTTrait {
 
     /// Set a series to be either completed or not-completed.
     fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult;
+
+    /// TODO!
+    fn set_viewer(id: NFTId, viewer: Option<Self::AccountId>) -> DispatchResult;
 }
 
 /// Trait that implements basic functionalities related to Ternoa Marketplace

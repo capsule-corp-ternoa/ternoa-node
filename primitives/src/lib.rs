@@ -131,6 +131,8 @@ pub mod nfts {
         pub in_transmission: bool,
         // Is NFT converted to capsule
         pub converted_to_capsule: bool,
+        // NFT Viewer
+        pub viewer: Option<AccountId>,
     }
 
     impl<AccountId> NFTData<AccountId> {
@@ -142,6 +144,7 @@ pub mod nfts {
             listed_for_sale: bool,
             in_transmission: bool,
             converted_to_capsule: bool,
+            viewer: Option<AccountId>,
         ) -> Self {
             Self {
                 owner,
@@ -151,6 +154,7 @@ pub mod nfts {
                 listed_for_sale,
                 in_transmission,
                 converted_to_capsule,
+                viewer,
             }
         }
     }

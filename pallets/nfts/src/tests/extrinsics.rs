@@ -7,6 +7,10 @@ use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::NFTTrait;
 
+mod transfer {
+    use super::*;
+}
+
 #[test]
 fn create_happy() {
     ExtBuilder::default()
@@ -41,7 +45,7 @@ fn create_happy() {
             );
 
             // Happy path NFT without series
-            let data = NFTData::new(ALICE, ALICE, vec![0], vec![48], false, false, false);
+            let data = NFTData::new(ALICE, ALICE, vec![0], vec![48], false, false, false, None);
             let series = NFTSeriesDetails::new(ALICE, true);
 
             let ok = NFTs::create(alice.clone(), vec![0], None);
