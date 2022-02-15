@@ -4,7 +4,7 @@ use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
 use ternoa_primitives::TextFormat;
 
 pub trait NFTTrait {
-    type AccountId;
+    type AccountId: Clone;
 
     /// Change the owner of an NFT.
     fn set_owner(id: NFTId, owner: &Self::AccountId) -> DispatchResult;
@@ -48,6 +48,9 @@ pub trait NFTTrait {
 
     /// Set a series to be either completed or not-completed.
     fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult;
+
+    /// Set the NFT viewer to a value.
+    fn set_viewer(id: NFTId, value: Option<Self::AccountId>) -> DispatchResult;
 }
 
 /// Trait that implements basic functionalities related to Ternoa Marketplace

@@ -334,6 +334,25 @@ pub mod create_auction {
             assert_noop!(ok, MarketError::<Test>::NotAllowedToList);
         })
     }
+
+    #[test]
+    fn cannot_auction_lent_nfts() {
+        ExtBuilder::new_build(vec![], None).execute_with(|| {
+            let (nft_id, market_id) = (ALICE_NFT_ID, ALICE_MARKET_ID);
+            assert_ok!(NFTs::set_viewer(nft_id, Some(BOB)));
+
+            let ok = Auctions::create_auction(
+                origin(ALICE),
+                nft_id,
+                market_id,
+                System::block_number(),
+                System::block_number() + MIN_AUCTION_DURATION,
+                100,
+                Some(101),
+            );
+            assert_noop!(ok, Error::<Test>::CannotAuctionLentNFTs);
+        })
+    }
 }
 
 pub mod cancel_auction {

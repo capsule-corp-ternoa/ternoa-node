@@ -1,11 +1,124 @@
 use super::mock::*;
 use crate::tests::mock;
-use crate::{Error, NFTData, NFTSeriesDetails};
+use crate::{Error, Event as NFTsEvent, NFTData, NFTSeriesDetails};
 use frame_support::error::BadOrigin;
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::NFTTrait;
+
+fn origin(account: u64) -> mock::Origin {
+    RawOrigin::Signed(account).into()
+}
+
+/* fn root() -> mock::Origin {
+    RawOrigin::Root.into()
+} */
+
+mod transfer {
+    use super::*;
+
+    #[test]
+    fn cannot_transfer_lent_nfts() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+            assert_ok!(NFTs::set_viewer(nft_id, Some(BOB)));
+
+            let ok = NFTs::transfer(origin(ALICE), nft_id, BOB);
+            assert_noop!(ok, Error::<Test>::CannotTransferLentNFTs);
+        })
+    }
+}
+
+mod burn {
+    use super::*;
+
+    #[test]
+    fn cannot_burn_lent_nfts() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+            assert_ok!(NFTs::set_viewer(nft_id, Some(BOB)));
+
+            let ok = NFTs::burn(origin(ALICE), nft_id);
+            assert_noop!(ok, Error::<Test>::CannotBurnLentNFTs);
+        })
+    }
+}
+
+mod lend {
+    use super::*;
+
+    #[test]
+    fn lend() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+            let mut nft = NFTs::data(nft_id).unwrap();
+            let viewer = Some(BOB);
+
+            assert_ok!(NFTs::lend(origin(ALICE), nft_id, viewer.clone()));
+
+            // Storage
+            nft.viewer = viewer.clone();
+            assert_eq!(NFTs::data(nft_id), Some(nft));
+
+            // Event
+            let event = NFTsEvent::NFTLent { nft_id, viewer };
+            let event = Event::NFTs(event);
+            assert_eq!(System::events().last().unwrap().event, event);
+        })
+    }
+
+    #[test]
+    fn nft_not_found() {
+        ExtBuilder::new_build(vec![]).execute_with(|| {
+            let ok = NFTs::lend(origin(ALICE), INVALID_NFT_ID, None);
+            assert_noop!(ok, Error::<Test>::NFTNotFound);
+        })
+    }
+
+    #[test]
+    fn not_the_nft_owner() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+
+            let ok = NFTs::lend(origin(BOB), nft_id, None);
+            assert_noop!(ok, Error::<Test>::NotTheNFTOwner);
+        })
+    }
+
+    #[test]
+    fn cannot_lend_nfts_listed_for_sale() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+            assert_ok!(NFTs::set_listed_for_sale(nft_id, true));
+
+            let ok = NFTs::lend(origin(ALICE), nft_id, None);
+            assert_noop!(ok, Error::<Test>::CannotLendNFTsListedForSale);
+        })
+    }
+
+    #[test]
+    fn cannot_lend_capsules() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+            assert_ok!(NFTs::set_converted_to_capsule(nft_id, true));
+
+            let ok = NFTs::lend(origin(ALICE), nft_id, None);
+            assert_noop!(ok, Error::<Test>::CannotLendCapsules);
+        })
+    }
+
+    #[test]
+    fn cannot_lend_nfts_in_transmission() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+            assert_ok!(NFTs::set_in_transmission(nft_id, true));
+
+            let ok = NFTs::lend(origin(ALICE), nft_id, None);
+            assert_noop!(ok, Error::<Test>::CannotLendNFTsInTransmission);
+        })
+    }
+}
 
 #[test]
 fn create_happy() {
@@ -21,7 +134,7 @@ fn create_happy() {
 
             // Happy path NFT with series
             let series = NFTSeriesDetails::new(ALICE, true);
-            let data = NFTData::new(ALICE, ALICE, vec![1], vec![50], false, false, false);
+            let data = NFTData::new_default(ALICE, vec![1], vec![50]);
             let alice_balance = Balances::free_balance(ALICE);
 
             let ok = NFTs::create(
@@ -41,7 +154,7 @@ fn create_happy() {
             );
 
             // Happy path NFT without series
-            let data = NFTData::new(ALICE, ALICE, vec![0], vec![48], false, false, false);
+            let data = NFTData::new_default(ALICE, vec![0], vec![48]);
             let series = NFTSeriesDetails::new(ALICE, true);
 
             let ok = NFTs::create(alice.clone(), vec![0], None);

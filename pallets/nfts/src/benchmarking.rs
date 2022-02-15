@@ -35,7 +35,7 @@ pub fn get_account<T: Config>(name: &'static str) -> T::AccountId {
     account
 }
 
-pub fn get_origin<T: Config>(name: &'static str) -> RawOrigin<T::AccountId> {
+pub fn origin<T: Config>(name: &'static str) -> RawOrigin<T::AccountId> {
     RawOrigin::Signed(get_account::<T>(name))
 }
 
@@ -53,7 +53,7 @@ benchmarks! {
     transfer {
         prepare_benchmarks::<T>();
 
-        let alice = get_origin::<T>("ALICE");
+        let alice = origin::<T>("ALICE");
         let bob: T::AccountId = get_account::<T>("BOB");
         let bob_lookup: <T::Lookup as StaticLookup>::Source = T::Lookup::unlookup(bob.clone());
 
@@ -66,7 +66,7 @@ benchmarks! {
     burn {
         prepare_benchmarks::<T>();
 
-    }: _(get_origin::<T>("ALICE"), NFT_ID)
+    }: _(origin::<T>("ALICE"), NFT_ID)
     verify {
         assert_eq!(NFTs::<T>::data(NFT_ID), None);
     }
@@ -76,7 +76,7 @@ benchmarks! {
 
         let series_id: Vec<u8> = vec![SERIES_ID];
 
-    }: _(get_origin::<T>("ALICE"), series_id.clone())
+    }: _(origin::<T>("ALICE"), series_id.clone())
     verify {
         assert_eq!(NFTs::<T>::series(&series_id).unwrap().draft, false);
     }
@@ -91,6 +91,16 @@ benchmarks! {
     verify {
         assert_ne!(old_mint_fee, new_mint_fee.clone().into());
         assert_eq!(NFTs::<T>::nft_mint_fee(), new_mint_fee.into());
+    }
+
+    lend {
+        prepare_benchmarks::<T>();
+
+        let bob: T::AccountId = get_account::<T>("BOB");
+
+    }: _(origin::<T>("ALICE"), NFT_ID, Some(bob.clone()))
+    verify {
+        assert_eq!(NFTs::<T>::data(NFT_ID).unwrap().viewer, Some(bob));
     }
 }
 
