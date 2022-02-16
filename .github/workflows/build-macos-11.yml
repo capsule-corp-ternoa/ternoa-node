@@ -2,9 +2,9 @@ name: CI for Chain on macOS-11 Environement
 
 on:
   push:
-    branches: [ main ]
+    branches: '*'
   pull_request:
-    branches: [ main ]
+    branches: '*'
 
 env:
   CARGO_TERM_COLOR: always
