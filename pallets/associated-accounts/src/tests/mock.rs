@@ -1,4 +1,4 @@
-use crate::{self as ternoa_associated_accounts, Config, SupportedAccount};
+use crate::{self as ternoa_associated_accounts, weights, Config, SupportedAccount};
 use frame_support::parameter_types;
 use frame_support::traits::{ConstU32, Contains, GenesisBuild};
 use sp_core::H256;
@@ -70,7 +70,7 @@ impl frame_system::Config for Test {
 
 impl Config for Test {
     type Event = Event;
-    type WeightInfo = ();
+    type WeightInfo = weights::TernoaWeights<Test>;
 }
 
 pub struct ExtBuilder {}

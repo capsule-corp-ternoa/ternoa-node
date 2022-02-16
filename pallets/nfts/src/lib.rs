@@ -273,6 +273,10 @@ pub mod pallet {
                     Error::<T>::CannotLendNFTsInTransmission
                 );
 
+                if let Some(viewer) = &viewer {
+                    ensure!(who != *viewer, Error::<T>::CannotLendNFTsToYourself);
+                }
+
                 data.viewer = viewer.clone();
 
                 Ok(().into())
@@ -347,6 +351,8 @@ pub mod pallet {
         CannotTransferNFTsInUncompletedSeries,
         /// Operation is not allowed because the NFT is inside a completed series.
         CannotCreateNFTsWithCompletedSeries,
+        /// Cannot lends NFTs to yourself.
+        CannotLendNFTsToYourself,
         /// Ipfs reference is too short.
         IPFSReferenceIsTooShort,
         /// Ipfs reference is too long.
