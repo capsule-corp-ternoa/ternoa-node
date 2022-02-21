@@ -1,0 +1,44 @@
+name: CI for Chain on Linux Environement
+
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: '*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: self-hosted 
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      run: /root/.cargo/bin/cargo build --release
+
+    - name: Test 
+      run: /root/.cargo/bin/cargo test --all-targets --all-features --workspace
+
+    - name: Configure AWS credentials from Test account
+      uses: s3-actions/s3cmd@v0
+      with:
+        provider: "aws"
+        access_key: ${{ secrets.SW_ACCESS_KEY_ID }}
+        secret_key: ${{ secrets.SW_SECRET_ACCESS_KEY }}
+        region: fr-par
+        
+    - name: Copy Binary to Scaleway Bucket /chain/${GITHUB_REF##*/}/latest
+      run: |
+        s3cmd sync ./target/release/ternoa s3://ternoa/chain/${GITHUB_REF##*/}/linux/ternoa --host https://s3.fr-par.scw.cloud --host-bucket https://s3.fr-par.scw.cloud --acl-public
+
+    - name: Copy Binary to Scaleway Bucket  ${{ github.sha }}.zip
+      run: |
+        s3cmd sync ./target/release/ternoa s3://ternoa/chain/${GITHUB_REF##*/}/linux/${{ github.sha }} --host https://s3.fr-par.scw.cloud --host-bucket https://s3.fr-par.scw.cloud --acl-public
+        
+    - name: Notify Ops
+      uses: craftech-io/slack-action@v1
+      with:
+        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
