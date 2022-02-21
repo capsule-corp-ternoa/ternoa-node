@@ -1,8 +1,10 @@
-name: CI for Chain on Linux Environement
+# CI for Chain on Linux Environment
+name: Linux-Environment
 
 on:
   push:
-    branches: '*'
+    branches:
+      - main
   pull_request:
     branches: '*'
 
