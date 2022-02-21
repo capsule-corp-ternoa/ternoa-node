@@ -195,7 +195,7 @@ parameter_types! {
 // NFTs
 impl ternoa_nfts::Config for Runtime {
     type Event = Event;
-    type WeightInfo = ();
+    type WeightInfo = ternoa_nfts::weights::TernoaWeight<Runtime>;
     type Currency = Balances;
     type FeesCollector = Treasury;
     type MinIpfsLen = NFTsMinIpfsLen;
@@ -251,7 +251,7 @@ parameter_types! {
 
 impl ternoa_associated_accounts::Config for Runtime {
     type Event = Event;
-    type WeightInfo = ();
+    type WeightInfo = ternoa_associated_accounts::weights::TernoaWeights<Runtime>;
 }
 
 parameter_types! {

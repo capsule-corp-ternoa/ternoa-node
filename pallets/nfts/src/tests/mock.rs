@@ -1,4 +1,4 @@
-use crate::{self as ternoa_nfts, Config, NegativeImbalanceOf};
+use crate::{self as ternoa_nfts, weights, Config, NegativeImbalanceOf};
 use frame_support::parameter_types;
 use frame_support::traits::{ConstU32, Contains, Currency, GenesisBuild};
 use sp_core::H256;
@@ -94,7 +94,7 @@ parameter_types! {
 
 impl Config for Test {
     type Event = Event;
-    type WeightInfo = ();
+    type WeightInfo = weights::TernoaWeight<Test>;
     type Currency = Balances;
     type FeesCollector = MockFeeCollector;
     type MinIpfsLen = MinIpfsLen;

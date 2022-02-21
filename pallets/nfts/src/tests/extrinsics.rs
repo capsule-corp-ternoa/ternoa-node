@@ -118,6 +118,16 @@ mod lend {
             assert_noop!(ok, Error::<Test>::CannotLendNFTsInTransmission);
         })
     }
+
+    #[test]
+    fn cannot_lend_nfts_to_yourself() {
+        ExtBuilder::new_build(vec![(ALICE, 100)]).execute_with(|| {
+            let nft_id = NFTs::create_nft(ALICE, vec![0], None).unwrap();
+
+            let ok = NFTs::lend(origin(ALICE), nft_id, Some(ALICE));
+            assert_noop!(ok, Error::<Test>::CannotLendNFTsToYourself);
+        })
+    }
 }
 
 #[test]

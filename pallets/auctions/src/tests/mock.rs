@@ -131,7 +131,7 @@ parameter_types! {
 
 impl ternoa_nfts::Config for Test {
     type Event = Event;
-    type WeightInfo = ();
+    type WeightInfo = ternoa_nfts::weights::TernoaWeight<Test>;
     type Currency = Balances;
     type FeesCollector = ();
     type MinIpfsLen = MinIpfsLen;
