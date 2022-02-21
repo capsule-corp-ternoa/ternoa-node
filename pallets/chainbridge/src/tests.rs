@@ -180,9 +180,7 @@ fn asset_transfer_success() {
             let dest_id = 2;
             let to = vec![2];
             let resource_id = [1; 32];
-            let metadata = vec![];
             let amount = 100;
-            let token_id = vec![1, 2, 3, 4];
 
             assert_ok!(ChainBridge::set_threshold(
                 Origin::root(),
@@ -212,38 +210,6 @@ fn asset_transfer_success() {
                     to.clone(),
                 )),
             ]);
-
-            assert_ok!(ChainBridge::transfer_nonfungible(
-                dest_id.clone(),
-                resource_id.clone(),
-                token_id.clone(),
-                to.clone(),
-                metadata.clone()
-            ));
-            assert_events(vec![Event::ChainBridge(
-                pallet::Event::<MockRuntime>::NonFungibleTransfer(
-                    dest_id.clone(),
-                    2,
-                    resource_id.clone(),
-                    token_id,
-                    to.clone(),
-                    metadata.clone(),
-                ),
-            )]);
-
-            assert_ok!(ChainBridge::transfer_generic(
-                dest_id.clone(),
-                resource_id.clone(),
-                metadata.clone()
-            ));
-            assert_events(vec![Event::ChainBridge(
-                pallet::Event::<MockRuntime>::GenericTransfer(
-                    dest_id.clone(),
-                    3,
-                    resource_id,
-                    metadata,
-                ),
-            )]);
         })
 }
 
@@ -271,22 +237,6 @@ fn asset_transfer_invalid_chain() {
                     vec![],
                     U256::zero()
                 ),
-                Error::<MockRuntime>::ChainNotWhitelisted
-            );
-
-            assert_noop!(
-                ChainBridge::transfer_nonfungible(
-                    bad_dest_id,
-                    resource_id.clone(),
-                    vec![],
-                    vec![],
-                    vec![]
-                ),
-                Error::<MockRuntime>::ChainNotWhitelisted
-            );
-
-            assert_noop!(
-                ChainBridge::transfer_generic(bad_dest_id, resource_id.clone(), vec![]),
                 Error::<MockRuntime>::ChainNotWhitelisted
             );
         })

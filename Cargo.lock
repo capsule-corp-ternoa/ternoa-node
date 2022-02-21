@@ -7822,6 +7822,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-erc20-bridge"
+version = "0.0.1"
+dependencies = [
+ "chainbridge",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "substrate-wasm-builder-runner",
+]
+
+[[package]]
 name = "ternoa-executor"
 version = "0.1.0"
 dependencies = [
@@ -7959,6 +7978,7 @@ dependencies = [
  "ternoa-associated-accounts",
  "ternoa-auctions",
  "ternoa-capsules",
+ "ternoa-erc20-bridge",
  "ternoa-marketplace",
  "ternoa-nfts",
  "ternoa-primitives",

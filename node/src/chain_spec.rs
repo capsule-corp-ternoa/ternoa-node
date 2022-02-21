@@ -260,6 +260,7 @@ pub fn testnet_genesis(
         sudo: SudoConfig { key: root_key },
         scheduler: Default::default(),
         transaction_payment: Default::default(),
+        erc20_bridge: Default::default(),
     }
 }
 

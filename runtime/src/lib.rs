@@ -125,6 +125,7 @@ construct_runtime!(
         AssociatedAccounts: ternoa_associated_accounts = 106,
         Auctions: ternoa_auctions = 107,
         ChainBridge: chainbridge = 108,
+        ERC20Bridge: ternoa_erc20_bridge = 109,
     }
 );
 

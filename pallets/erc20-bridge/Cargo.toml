@@ -1,0 +1,54 @@
+[package]
+name = 'ternoa-erc20-bridge'
+version = '0.0.1'
+authors = ['david@chainsafe.io']
+edition = '2018'
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+# third-party dependencies
+serde = { optional = true, version = "1.0.132" }
+codec = { package = "parity-scale-codec", default-features = false, features = [
+	"derive",
+], version = "2.3.1" }
+scale-info = { version = "1.0", default-features = false, features = [
+	"derive",
+] }
+
+# primitives
+sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-arithmetic = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+
+# frame dependencies
+frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+
+# local dependencies
+chainbridge = { path = "../chainbridge" , default-features = false}
+
+[dev-dependencies]
+pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
+
+[build-dependencies]
+wasm-builder-runner = { version = "3.0.0", package = "substrate-wasm-builder-runner"}
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+	"scale-info/std",
+	"serde",
+	"sp-std/std",
+	"sp-runtime/std",
+    "sp-io/std",
+    "sp-core/std",
+    "sp-arithmetic/std",
+	"frame-support/std",
+	"frame-system/std",
+	"chainbridge/std",
+]

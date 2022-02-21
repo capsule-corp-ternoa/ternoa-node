@@ -82,6 +82,7 @@ ternoa-associated-accounts = { default-features = false, path = "../pallets/asso
 ternoa-primitives = { default-features = false, path = "../primitives" }
 ternoa-auctions = { default-features = false, path = "../pallets/auctions" }
 chainbridge = { default-features = false, path = "../pallets/chainbridge" }
+ternoa-erc20-bridge = { default-features = false, path = "../pallets/erc20-bridge" }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate.git", version = "5.0.0-dev", branch = "master" }
@@ -150,6 +151,7 @@ std = [
 	"pallet-bags-list/std",
 	"ternoa-auctions/std",
 	"chainbridge/std",
+	"ternoa-erc20-bridge/std",
 ]
 
 runtime-benchmarks = [

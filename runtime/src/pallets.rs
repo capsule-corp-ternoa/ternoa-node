@@ -28,6 +28,7 @@ use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustm
 use scale_info::TypeInfo;
 use sp_core::crypto::KeyTypeId;
 use sp_core::u32_trait::{_1, _2};
+use sp_io::hashing::blake2_128;
 use sp_runtime::curve::PiecewiseLinear;
 use sp_runtime::generic::{self, Era};
 use sp_runtime::traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup};
@@ -1006,5 +1007,17 @@ impl chainbridge::Config for Runtime {
     type PalletId = ChainBridgePalletId;
     type ProposalLifetime = ProposalLifetime;
     type RelayerVoteThreshold = RelayerVoteThreshold;
+    type WeightInfo = ();
+}
+
+parameter_types! {
+    pub NativeTokenId: chainbridge::ResourceId = chainbridge::derive_resource_id(1, &blake2_128(b"CAPS"));
+}
+
+impl ternoa_erc20_bridge::Config for Runtime {
+    type Event = Event;
+    type BridgeOrigin = chainbridge::EnsureBridge<Runtime>;
+    type Currency = Balances;
+    type NativeTokenId = NativeTokenId;
     type WeightInfo = ();
 }

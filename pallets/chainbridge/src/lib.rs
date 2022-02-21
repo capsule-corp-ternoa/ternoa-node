@@ -49,8 +49,6 @@
 //! RelayerAdded(T::AccountId) - A new relayer was added to the brige.
 //! RelayerRemoved(T::AccountId) - A relayer was removed from the bridge.
 //! FungibleTransfer(ChainId, DepositNonce, ResourceId, U256, Vec<u8>) - A fungible asset was relayed.
-//! NonFungibleTransfer(ChainId, DepositNonce, ResourceId, Vec<u8>, Vec<u8>, Vec<u8>) - A non-fungible token is transfered.
-//! GenericTransfer(ChainId, DepositNonce, ResourceId, Vec<u8>) - Generic asset is transfered.
 //! VoteFor(ChainId, DepositNonce, T::AccountId) - Vote submitted in favour of proposal
 //! VoteAgainst(ChainId, DepositNonce, T::AccountId) - Vote submitted against proposal
 //! ProposalApproved(ChainId, DepositNonce) - Voting successful for a proposal
@@ -237,10 +235,6 @@ pub mod pallet {
         RelayerRemoved(T::AccountId),
         /// FunglibleTransfer is for relaying fungibles (dest_id, nonce, resource_id, amount, recipient, metadata)
         FungibleTransfer(ChainId, DepositNonce, ResourceId, U256, Vec<u8>),
-        /// NonFungibleTransfer is for relaying NFTS (dest_id, nonce, resource_id, token_id, recipient, metadata)
-        NonFungibleTransfer(ChainId, DepositNonce, ResourceId, Vec<u8>, Vec<u8>, Vec<u8>),
-        /// GenericTransfer is for a generic data payload (dest_id, nonce, resource_id, metadata)
-        GenericTransfer(ChainId, DepositNonce, ResourceId, Vec<u8>),
         /// Vote submitted in favour of proposal
         VoteFor(ChainId, DepositNonce, T::AccountId),
         /// Vot submitted against proposal
@@ -736,50 +730,6 @@ impl<T: Config> Pallet<T> {
             resource_id,
             amount,
             to,
-        ));
-        Ok(())
-    }
-
-    /// Initiates a transfer of a nonfungible asset out of the chain. This should be called by another pallet.
-    pub fn transfer_nonfungible(
-        dest_id: ChainId,
-        resource_id: ResourceId,
-        token_id: Vec<u8>,
-        to: Vec<u8>,
-        metadata: Vec<u8>,
-    ) -> DispatchResult {
-        ensure!(
-            Self::chain_whitelisted(dest_id),
-            Error::<T>::ChainNotWhitelisted
-        );
-        let nonce = Self::bump_nonce(dest_id);
-        Self::deposit_event(Event::NonFungibleTransfer(
-            dest_id,
-            nonce,
-            resource_id,
-            token_id,
-            to,
-            metadata,
-        ));
-        Ok(())
-    }
-
-    /// Initiates a transfer of generic data out of the chain. This should be called by another pallet.
-    pub fn transfer_generic(
-        dest_id: ChainId,
-        resource_id: ResourceId,
-        metadata: Vec<u8>,
-    ) -> DispatchResult {
-        ensure!(
-            Self::chain_whitelisted(dest_id),
-            Error::<T>::ChainNotWhitelisted
-        );
-        let nonce = Self::bump_nonce(dest_id);
-        Self::deposit_event(Event::GenericTransfer(
-            dest_id,
-            nonce,
-            resource_id,
-            metadata,
         ));
         Ok(())
     }
