@@ -8,5 +8,7 @@ members = [
     'node',
     'pallets/*',
     'primitives',
-    'runtime',
+    'runtime/chaosnet',
+    'runtime/alphanet',
+    'runtime/mainnet',
 ]

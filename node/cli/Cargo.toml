@@ -1,0 +1,12 @@
+[package]
+name = "ternoa-cli"
+authors = [ "Ternoa" ]
+edition = "2018"
+version = "0.1.0"
+
+[features]
+default = [ "chaosnet-native", "alphanet-native", "mainnet-native" ]
+
+chaosnet-native = [ "service/choasnet-native" ]
+alphanet-native = [ "service/alphanet-native" ]
+mainnet-native = [ "service/mainnet-native" ]
