@@ -24,7 +24,7 @@ jobs:
       run: /root/.cargo/bin/cargo test --all-targets --all-features --workspace
 
     - name: Configure AWS credentials from Test account
-      uses: s3-actions/s3cmd@v0
+      uses: s3-actions/s3cmd@v1.1
       with:
         provider: "aws"
         access_key: ${{ secrets.SW_ACCESS_KEY_ID }}
