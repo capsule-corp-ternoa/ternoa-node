@@ -179,4 +179,5 @@ runtime-benchmarks = [
 	"ternoa-capsules/runtime-benchmarks",
 	"ternoa-associated-accounts/runtime-benchmarks",
 	"ternoa-auctions/runtime-benchmarks",
+	"chainbridge/runtime-benchmarks",
 ]
