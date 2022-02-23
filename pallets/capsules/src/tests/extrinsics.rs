@@ -1,8 +1,6 @@
 use super::mock::*;
-use crate::tests::mock;
-use crate::{CapsuleData, Error};
-use frame_support::error::BadOrigin;
-use frame_support::{assert_noop, assert_ok};
+use crate::{tests::mock, CapsuleData, Error};
+use frame_support::{assert_noop, assert_ok, error::BadOrigin};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::NFTTrait;

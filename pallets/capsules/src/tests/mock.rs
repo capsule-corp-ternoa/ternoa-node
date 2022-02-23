@@ -1,9 +1,14 @@
 use crate::{self as ternoa_capsules, Config};
-use frame_support::traits::{ConstU32, Contains, GenesisBuild};
-use frame_support::{parameter_types, PalletId};
+use frame_support::{
+	parameter_types,
+	traits::{ConstU32, Contains, GenesisBuild},
+	PalletId,
+};
 use sp_core::H256;
-use sp_runtime::testing::Header;
-use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
+use sp_runtime::{
+	testing::Header,
+	traits::{BlakeTwo256, IdentityLookup},
+};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -161,8 +166,10 @@ impl ExtBuilder {
 pub mod help {
 	use super::*;
 	use frame_support::assert_ok;
-	use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-	use ternoa_primitives::TextFormat;
+	use ternoa_primitives::{
+		nfts::{NFTId, NFTSeriesId},
+		TextFormat,
+	};
 
 	pub fn create_capsule_fast(owner: Origin) -> NFTId {
 		let nft_id = create_nft(owner.clone(), vec![50], None);

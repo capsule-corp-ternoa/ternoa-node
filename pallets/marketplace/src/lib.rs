@@ -15,19 +15,23 @@ pub use pallet::*;
 pub use types::*;
 
 use default_weights::WeightInfo;
-use frame_support::ensure;
-use frame_support::pallet_prelude::DispatchResultWithPostInfo;
-use frame_support::traits::{
-	Currency, ExistenceRequirement::KeepAlive, Get, OnUnbalanced, StorageVersion, WithdrawReasons,
+use frame_support::{
+	ensure,
+	pallet_prelude::DispatchResultWithPostInfo,
+	traits::{
+		Currency, ExistenceRequirement::KeepAlive, Get, OnUnbalanced, StorageVersion,
+		WithdrawReasons,
+	},
 };
 // use frame_support::weights::Weight;
 use frame_system::Origin;
 use sp_std::vec::Vec;
-use ternoa_common::helpers::check_bounds;
-use ternoa_common::traits::MarketplaceTrait;
-use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
-use ternoa_primitives::nfts::NFTId;
-use ternoa_primitives::TextFormat;
+use ternoa_common::{helpers::check_bounds, traits::MarketplaceTrait};
+use ternoa_primitives::{
+	marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType},
+	nfts::NFTId,
+	TextFormat,
+};
 
 /// The current storage version.
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
@@ -35,8 +39,7 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::pallet_prelude::*;
-	use frame_support::transactional;
+	use frame_support::{pallet_prelude::*, transactional};
 	use frame_system::pallet_prelude::*;
 	use sp_runtime::traits::{CheckedDiv, CheckedSub, StaticLookup};
 	use ternoa_common::traits::NFTTrait;

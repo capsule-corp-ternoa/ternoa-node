@@ -1,12 +1,22 @@
-use crate::types::{AuctionData, BidderList};
-use crate::{self as ternoa_auctions, Config};
-use frame_support::traits::{ConstU32, Contains, GenesisBuild, OnFinalize, OnInitialize};
-use frame_support::{parameter_types, PalletId};
+use crate::{
+	self as ternoa_auctions,
+	types::{AuctionData, BidderList},
+	Config,
+};
+use frame_support::{
+	parameter_types,
+	traits::{ConstU32, Contains, GenesisBuild, OnFinalize, OnInitialize},
+	PalletId,
+};
 use sp_core::H256;
-use sp_runtime::testing::Header;
-use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_primitives::marketplace::{MarketplaceInformation, MarketplaceType};
-use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
+use sp_runtime::{
+	testing::Header,
+	traits::{BlakeTwo256, IdentityLookup},
+};
+use ternoa_primitives::{
+	marketplace::{MarketplaceInformation, MarketplaceType},
+	nfts::{NFTData, NFTSeriesDetails},
+};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;

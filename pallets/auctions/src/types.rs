@@ -5,8 +5,7 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 use sp_std::vec::Vec;
-use ternoa_primitives::marketplace::MarketplaceId;
-use ternoa_primitives::nfts::NFTId;
+use ternoa_primitives::{marketplace::MarketplaceId, nfts::NFTId};
 
 #[derive(Encode, Decode, Clone, PartialEq, RuntimeDebug, TypeInfo)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
@@ -109,9 +108,9 @@ where
 
 	/// Return the bid of `account_id` if it exists
 	pub fn find_bid(&self, account_id: AccountId) -> Option<&(AccountId, Balance)> {
-		// this is not optimal since we traverse the entire link, but we cannot use binary search here
-		// since the list is not sorted by accountId but rather by bid value, this should not drastically affect performance
-		// as long as max_size remains small.
+		// this is not optimal since we traverse the entire link, but we cannot use binary search
+		// here since the list is not sorted by accountId but rather by bid value, this should not
+		// drastically affect performance as long as max_size remains small.
 		self.list.iter().find(|&x| x.0 == account_id)
 	}
 }

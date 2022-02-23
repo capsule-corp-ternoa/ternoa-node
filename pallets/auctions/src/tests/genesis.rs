@@ -1,6 +1,8 @@
 use super::mock::*;
-use crate::types::{AuctionData, BidderList, DeadlineList};
-use crate::GenesisConfig;
+use crate::{
+	types::{AuctionData, BidderList, DeadlineList},
+	GenesisConfig,
+};
 use frame_support::traits::GenesisBuild;
 
 #[test]

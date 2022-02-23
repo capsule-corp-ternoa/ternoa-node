@@ -21,8 +21,7 @@ pub mod pallet {
 	use super::*;
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
-	use sp_std::vec;
-	use sp_std::vec::Vec;
+	use sp_std::{vec, vec::Vec};
 	use ternoa_common::helpers::check_bounds;
 	use ternoa_primitives::TextFormat;
 

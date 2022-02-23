@@ -1,6 +1,8 @@
 use crate::{self as ternoa_sgx, Config};
-use frame_support::traits::Contains;
-use frame_support::{parameter_types, traits::ConstU32};
+use frame_support::{
+	parameter_types,
+	traits::{ConstU32, Contains},
+};
 use sp_core::H256;
 use sp_runtime::{
 	testing::Header,

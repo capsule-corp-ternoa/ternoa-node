@@ -9,16 +9,19 @@ mod tests;
 mod migrations;
 pub mod weights;
 
-use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
-use frame_support::pallet_prelude::ensure;
-use frame_support::traits::StorageVersion;
+use frame_support::{
+	dispatch::{DispatchErrorWithPostInfo, DispatchResult},
+	pallet_prelude::ensure,
+	traits::StorageVersion,
+};
 use frame_system::Origin;
 pub use pallet::*;
-use sp_std::vec;
-use sp_std::vec::Vec;
+use sp_std::{vec, vec::Vec};
 use ternoa_common::traits;
-use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId};
-use ternoa_primitives::TextFormat;
+use ternoa_primitives::{
+	nfts::{NFTData, NFTId, NFTSeriesDetails, NFTSeriesId},
+	TextFormat,
+};
 pub use weights::WeightInfo;
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
@@ -26,9 +29,11 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::traits::ExistenceRequirement::KeepAlive;
-	use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
-	use frame_support::{pallet_prelude::*, transactional};
+	use frame_support::{
+		pallet_prelude::*,
+		traits::{Currency, ExistenceRequirement::KeepAlive, OnUnbalanced, WithdrawReasons},
+		transactional,
+	};
 	use frame_system::pallet_prelude::*;
 	use sp_runtime::traits::StaticLookup;
 	use ternoa_common::helpers::check_bounds;
@@ -420,7 +425,7 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 		series_id: Option<NFTSeriesId>,
 	) -> Result<NFTId, DispatchErrorWithPostInfo> {
 		Self::create(Origin::<T>::Signed(owner).into(), ipfs_reference, series_id)?;
-		return Ok(Self::nft_id_generator() - 1);
+		return Ok(Self::nft_id_generator() - 1)
 	}
 
 	fn get_nft(id: NFTId) -> Option<NFTData<Self::AccountId>> {
@@ -446,10 +451,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 	fn is_listed_for_sale(id: NFTId) -> Option<bool> {
 		let nft = Data::<T>::get(id);
 		if let Some(nft) = nft {
-			return Some(nft.listed_for_sale);
+			return Some(nft.listed_for_sale)
 		}
 
-		return None;
+		return None
 	}
 
 	fn set_in_transmission(id: NFTId, value: bool) -> DispatchResult {
@@ -465,10 +470,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 	fn is_in_transmission(id: NFTId) -> Option<bool> {
 		let nft = Data::<T>::get(id);
 		if let Some(nft) = nft {
-			return Some(nft.in_transmission);
+			return Some(nft.in_transmission)
 		}
 
-		return None;
+		return None
 	}
 
 	fn set_converted_to_capsule(id: NFTId, value: bool) -> DispatchResult {
@@ -484,10 +489,10 @@ impl<T: Config> traits::NFTTrait for Pallet<T> {
 	fn is_converted_to_capsule(id: NFTId) -> Option<bool> {
 		let nft = Data::<T>::get(id);
 		if let Some(nft) = nft {
-			return Some(nft.converted_to_capsule);
+			return Some(nft.converted_to_capsule)
 		}
 
-		return None;
+		return None
 	}
 
 	fn set_series_completion(series_id: &NFTSeriesId, value: bool) -> DispatchResult {
@@ -519,7 +524,7 @@ impl<T: Config> Pallet<T> {
 			.expect("If u32 is not enough we should crash for safety; qed.");
 		NftIdGenerator::<T>::put(next_id);
 
-		return nft_id;
+		return nft_id
 	}
 
 	fn generate_series_id() -> NFTSeriesId {
@@ -527,7 +532,7 @@ impl<T: Config> Pallet<T> {
 		loop {
 			let id_vec = u32_to_text(id);
 			if !Series::<T>::contains_key(&id_vec) {
-				break;
+				break
 			}
 			id = id
 				.checked_add(1)
@@ -538,7 +543,7 @@ impl<T: Config> Pallet<T> {
 				.expect("If u32 is not enough we should crash for safety; qed."),
 		);
 
-		return u32_to_text(id);
+		return u32_to_text(id)
 	}
 }
 
@@ -565,5 +570,5 @@ fn u32_to_text(num: u32) -> Vec<u8> {
 }
 
 const fn u8_to_char(num: u8) -> u8 {
-	return num + 48;
+	return num + 48
 }

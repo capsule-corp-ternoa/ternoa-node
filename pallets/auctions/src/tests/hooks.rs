@@ -1,7 +1,9 @@
 use super::mock::*;
-use crate::tests::mock;
-use crate::types::{AuctionData, BidderList, DeadlineList};
-use crate::{Auctions as AuctionsStorage, Deadlines};
+use crate::{
+	tests::mock,
+	types::{AuctionData, BidderList, DeadlineList},
+	Auctions as AuctionsStorage, Deadlines,
+};
 use frame_support::assert_ok;
 use frame_system::RawOrigin;
 

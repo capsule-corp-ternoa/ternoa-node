@@ -7,14 +7,16 @@ use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, Pair, Public};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::traits::{IdentifyAccount, Verify};
-use sp_runtime::Perbill;
+use sp_runtime::{
+	traits::{IdentifyAccount, Verify},
+	Perbill,
+};
 use ternoa_primitives::{AccountId, Balance, Signature};
-use ternoa_runtime::constants::currency::UNITS;
 use ternoa_runtime::{
-	wasm_binary_unwrap, AssociatedAccountsConfig, AuthorityDiscoveryConfig, BabeConfig,
-	BalancesConfig, Block, GenesisConfig, GrandpaConfig, ImOnlineConfig, NftsConfig, SessionConfig,
-	SessionKeys, StakerStatus, StakingConfig, SudoConfig, SystemConfig, MAX_NOMINATIONS,
+	constants::currency::UNITS, wasm_binary_unwrap, AssociatedAccountsConfig,
+	AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, Block, GenesisConfig, GrandpaConfig,
+	ImOnlineConfig, NftsConfig, SessionConfig, SessionKeys, StakerStatus, StakingConfig,
+	SudoConfig, SystemConfig, MAX_NOMINATIONS,
 };
 
 type AccountPublic = <Signature as Verify>::Signer;

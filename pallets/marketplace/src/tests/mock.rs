@@ -1,11 +1,17 @@
 use crate::{self as ternoa_marketplace, Config, MarketplaceInformation};
-use frame_support::parameter_types;
-use frame_support::traits::{ConstU32, Contains, GenesisBuild};
+use frame_support::{
+	parameter_types,
+	traits::{ConstU32, Contains, GenesisBuild},
+};
 use sp_core::H256;
-use sp_runtime::testing::Header;
-use sp_runtime::traits::{BlakeTwo256, IdentityLookup};
-use ternoa_primitives::marketplace::MarketplaceType;
-use ternoa_primitives::nfts::{NFTData, NFTSeriesDetails};
+use sp_runtime::{
+	testing::Header,
+	traits::{BlakeTwo256, IdentityLookup},
+};
+use ternoa_primitives::{
+	marketplace::MarketplaceType,
+	nfts::{NFTData, NFTSeriesDetails},
+};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -238,8 +244,10 @@ pub mod help {
 
 	use super::*;
 	use frame_support::assert_ok;
-	use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-	use ternoa_primitives::TextFormat;
+	use ternoa_primitives::{
+		nfts::{NFTId, NFTSeriesId},
+		TextFormat,
+	};
 
 	pub fn create_nft(
 		owner: Origin,
@@ -247,7 +255,7 @@ pub mod help {
 		series_id: Option<NFTSeriesId>,
 	) -> NFTId {
 		assert_ok!(NFTs::create(owner, ipfs_reference, series_id));
-		return NFTs::nft_id_generator() - 1;
+		return NFTs::nft_id_generator() - 1
 	}
 
 	pub fn create_nft_and_lock_series(
@@ -284,7 +292,7 @@ pub mod help {
 			}
 		}
 
-		return Marketplace::marketplace_id_generator();
+		return Marketplace::marketplace_id_generator()
 	}
 
 	pub fn finish_series(owner: Origin, series_id: Vec<u8>) {

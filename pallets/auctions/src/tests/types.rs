@@ -202,7 +202,7 @@ mod deadline_list {
 				nfts.push(nft_id);
 				deadlines.remove(nft_id);
 			} else {
-				break;
+				break
 			}
 		}
 		assert_eq!(nfts, vec![1, 0, 2]);

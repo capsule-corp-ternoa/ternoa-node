@@ -1,6 +1,8 @@
 use super::mock::*;
-use crate::types::{Account, SupportedAccount};
-use crate::GenesisConfig;
+use crate::{
+	types::{Account, SupportedAccount},
+	GenesisConfig,
+};
 use frame_support::traits::GenesisBuild;
 
 #[test]

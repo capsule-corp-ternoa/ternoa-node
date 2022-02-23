@@ -1,5 +1,4 @@
-use super::mock;
-use super::mock::*;
+use super::{mock, mock::*};
 use crate::{
 	Cluster, ClusterId, ClusterIdGenerator, ClusterIndex, ClusterRegistry, Enclave, EnclaveId,
 	EnclaveIdGenerator, EnclaveIndex, EnclaveRegistry, Error,
@@ -118,7 +117,8 @@ fn unassign_enclave() {
 			assert_eq!(cluster.enclaves, empty);
 			assert_eq!(ClusterIndex::<Test>::get(enclave_id), None);
 
-			// Alice should NOT be able to unassign her enclave if the enclave is already unassigned.
+			// Alice should NOT be able to unassign her enclave if the enclave is already
+			// unassigned.
 			let ok = Sgx::unassign_enclave(alice.clone());
 			assert_noop!(ok, Error::<Test>::EnclaveNotAssigned);
 

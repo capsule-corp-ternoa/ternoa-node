@@ -6,11 +6,10 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
-use sp_runtime::RuntimeDebug;
 use sp_runtime::{
 	generic,
 	traits::{BlakeTwo256, IdentifyAccount, Verify},
-	MultiSignature, OpaqueExtrinsic,
+	MultiSignature, OpaqueExtrinsic, RuntimeDebug,
 };
 use sp_std::vec::Vec;
 
@@ -178,7 +177,8 @@ pub mod nfts {
 	#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 	pub struct NFTSeriesDetails<AccountId> {
 		pub owner: AccountId, // Series Owner
-		pub draft: bool, // If Yes, the owner can add new nfts to that series but cannot list that nft for sale
+		pub draft: bool,      /* If Yes, the owner can add new nfts to that series but cannot
+		                       * list that nft for sale */
 	}
 
 	impl<AccountId> NFTSeriesDetails<AccountId> {

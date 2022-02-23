@@ -1,10 +1,13 @@
-use super::mock::AuctionState::{Before, Extended, InProgress};
-use super::mock::*;
-use crate::tests::mock;
-use crate::types::{AuctionData, BidderList, DeadlineList};
-use crate::{Auctions as AuctionsStorage, Claims, Deadlines, Error, Event as AuctionEvent};
-use frame_support::error::BadOrigin;
-use frame_support::{assert_noop, assert_ok};
+use super::mock::{
+	AuctionState::{Before, Extended, InProgress},
+	*,
+};
+use crate::{
+	tests::mock,
+	types::{AuctionData, BidderList, DeadlineList},
+	Auctions as AuctionsStorage, Claims, Deadlines, Error, Event as AuctionEvent,
+};
+use frame_support::{assert_noop, assert_ok, error::BadOrigin};
 use frame_system::RawOrigin;
 use pallet_balances::Error as BalanceError;
 use ternoa_common::traits::{MarketplaceTrait, NFTTrait};

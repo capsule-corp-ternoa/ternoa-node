@@ -22,10 +22,11 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::pallet_prelude::*;
-	use frame_support::traits::ExistenceRequirement::KeepAlive;
-	use frame_support::traits::{Currency, OnUnbalanced, WithdrawReasons};
-	use frame_support::transactional;
+	use frame_support::{
+		pallet_prelude::*,
+		traits::{Currency, ExistenceRequirement::KeepAlive, OnUnbalanced, WithdrawReasons},
+		transactional,
+	};
 	use frame_system::pallet_prelude::*;
 	use sp_runtime::traits::StaticLookup;
 	use ternoa_common::helpers::check_bounds;
@@ -136,7 +137,7 @@ pub mod pallet {
 			ClusterRegistry::<T>::mutate(cluster_id, |cluster_opt| {
 				if let Some(cluster) = cluster_opt {
 					if cluster.enclaves.len() >= T::ClusterSize::get() as usize {
-						return Err(Error::<T>::ClusterIsAlreadyFull);
+						return Err(Error::<T>::ClusterIsAlreadyFull)
 					}
 
 					cluster.enclaves.push(enclave_id);
@@ -257,7 +258,7 @@ pub mod pallet {
 				if let Some(cluster) = cluster_opt {
 					for enclave_id in &cluster.enclaves {
 						if ClusterIndex::<T>::take(enclave_id).is_none() {
-							return Err(Error::<T>::InternalLogicalError);
+							return Err(Error::<T>::InternalLogicalError)
 						}
 					}
 					Ok(())

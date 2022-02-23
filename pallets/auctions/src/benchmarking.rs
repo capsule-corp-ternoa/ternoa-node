@@ -3,15 +3,18 @@
 use super::*;
 use crate::{Auctions as AuctionsStorage, Claims, Pallet as TernoaAuctions};
 use frame_benchmarking::{account as benchmark_account, benchmarks, impl_benchmark_test_suite};
-use frame_support::assert_ok;
-use frame_support::traits::{Currency, OnFinalize, OnInitialize};
-use frame_system::pallet_prelude::OriginFor;
-use frame_system::{Pallet as System, RawOrigin};
+use frame_support::{
+	assert_ok,
+	traits::{Currency, OnFinalize, OnInitialize},
+};
+use frame_system::{pallet_prelude::OriginFor, Pallet as System, RawOrigin};
 use sp_runtime::traits::Bounded;
 use sp_std::prelude::*;
 use ternoa_common::traits::{MarketplaceTrait, NFTTrait};
-use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceType};
-use ternoa_primitives::nfts::NFTId;
+use ternoa_primitives::{
+	marketplace::{MarketplaceId, MarketplaceType},
+	nfts::NFTId,
+};
 
 pub enum AuctionState {
 	Before,
@@ -63,9 +66,8 @@ pub fn prepare_benchmarks<T: Config>(state: Option<AuctionState>) -> BenchmarkDa
 	// Create auctions
 	if let Some(state) = state {
 		let (start_block, is_extended) = match state {
-			AuctionState::Before => {
-				(System::<T>::block_number() + T::MaxAuctionDelay::get(), false)
-			},
+			AuctionState::Before =>
+				(System::<T>::block_number() + T::MaxAuctionDelay::get(), false),
 			AuctionState::InProgress => (System::<T>::block_number(), false),
 			AuctionState::Extended => (System::<T>::block_number(), true),
 		};

@@ -1,8 +1,10 @@
-use crate::constants::currency::{deposit, CENTS, EUROS, MILLICENTS};
-use crate::constants::time::{
-	DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
-};
 use crate::{
+	constants::{
+		currency::{deposit, CENTS, EUROS, MILLICENTS},
+		time::{
+			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
+		},
+	},
 	voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase,
 	Event, Grandpa, Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Runtime,
 	Session, Signature, SignedPayload, Staking, System, Timestamp, TransactionPayment, Treasury,
@@ -10,30 +12,35 @@ use crate::{
 };
 use codec::{Decode, Encode};
 use frame_election_provider_support::onchain;
-use frame_support::traits::{
-	ConstU32, Currency, Imbalance, KeyOwnerProofSystem, LockIdentifier, OnUnbalanced,
-	U128CurrencyToVote,
+use frame_support::{
+	parameter_types,
+	traits::{
+		ConstU32, Currency, Imbalance, KeyOwnerProofSystem, LockIdentifier, OnUnbalanced,
+		U128CurrencyToVote,
+	},
+	weights::{
+		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
+		DispatchClass, IdentityFee, Weight,
+	},
+	PalletId,
 };
-use frame_support::weights::constants::{
-	BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND,
+use frame_system::{
+	limits::{BlockLength, BlockWeights},
+	EnsureRoot,
 };
-use frame_support::weights::{DispatchClass, IdentityFee, Weight};
-use frame_support::{parameter_types, PalletId};
-use frame_system::limits::{BlockLength, BlockWeights};
-use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
 use sp_core::crypto::KeyTypeId;
-use sp_runtime::curve::PiecewiseLinear;
-use sp_runtime::generic::{self, Era};
-use sp_runtime::traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup};
-use sp_runtime::transaction_validity::TransactionPriority;
 use sp_runtime::{
-	impl_opaque_keys, FixedPointNumber, Perbill, Percent, Permill, Perquintill, SaturatedConversion,
+	curve::PiecewiseLinear,
+	generic::{self, Era},
+	impl_opaque_keys,
+	traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup},
+	transaction_validity::TransactionPriority,
+	FixedPointNumber, Perbill, Percent, Permill, Perquintill, SaturatedConversion,
 };
-use sp_std::vec;
-use sp_std::vec::Vec;
+use sp_std::{vec, vec::Vec};
 use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
 use ternoa_primitives::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
@@ -639,8 +646,8 @@ impl frame_support::pallet_prelude::Get<Option<(usize, sp_npos_elections::Extend
 			max @ _ => {
 				let seed = sp_io::offchain::random_seed();
 				let random = <u32>::decode(&mut TrailingZeroInput::new(&seed))
-					.expect("input is padded with zeroes; qed")
-					% max.saturating_add(1);
+					.expect("input is padded with zeroes; qed") %
+					max.saturating_add(1);
 				random as usize
 			},
 		};

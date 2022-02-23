@@ -2,8 +2,7 @@
 
 use super::*;
 use frame_benchmarking::{account as benchmark_account, benchmarks, impl_benchmark_test_suite};
-use frame_support::assert_ok;
-use frame_support::traits::Currency;
+use frame_support::{assert_ok, traits::Currency};
 use frame_system::RawOrigin;
 use sp_runtime::traits::{Bounded, StaticLookup};
 use sp_std::prelude::*;

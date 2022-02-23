@@ -1,6 +1,5 @@
 use super::mock::*;
-use crate::CapsuleData;
-use crate::GenesisConfig;
+use crate::{CapsuleData, GenesisConfig};
 use frame_support::traits::GenesisBuild;
 
 #[test]

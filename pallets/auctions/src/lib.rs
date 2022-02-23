@@ -12,10 +12,15 @@ mod default_weights;
 mod types;
 
 pub use default_weights::WeightInfo;
-use frame_support::pallet_prelude::*;
-use frame_support::traits::ExistenceRequirement::{AllowDeath, KeepAlive};
-use frame_support::traits::{Currency, Get, StorageVersion};
-use frame_support::PalletId;
+use frame_support::{
+	pallet_prelude::*,
+	traits::{
+		Currency,
+		ExistenceRequirement::{AllowDeath, KeepAlive},
+		Get, StorageVersion,
+	},
+	PalletId,
+};
 use sp_runtime::traits::{AccountIdConversion, Saturating};
 use ternoa_common::traits::{MarketplaceTrait, NFTTrait};
 use ternoa_primitives::nfts::NFTId;
@@ -26,10 +31,8 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::dispatch::DispatchResultWithPostInfo;
-	use frame_support::transactional;
-	use frame_system::pallet_prelude::*;
-	use frame_system::{ensure_root, RawOrigin};
+	use frame_support::{dispatch::DispatchResultWithPostInfo, transactional};
+	use frame_system::{ensure_root, pallet_prelude::*, RawOrigin};
 	use ternoa_common::traits::{MarketplaceTrait, NFTTrait};
 	use ternoa_primitives::marketplace::MarketplaceId;
 
@@ -100,7 +103,7 @@ pub mod pallet {
 					let ok = Self::complete_auction(RawOrigin::Root.into(), nft_id);
 					debug_assert_eq!(ok, Ok(().into()));
 				} else {
-					break;
+					break
 				}
 
 				read += 1;

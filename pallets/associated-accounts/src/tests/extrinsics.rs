@@ -1,6 +1,7 @@
 use super::mock::*;
-use crate::tests::mock;
-use crate::{Account, Error, Event as AccountEvent, SupportedAccount, SupportedAccounts, Users};
+use crate::{
+	tests::mock, Account, Error, Event as AccountEvent, SupportedAccount, SupportedAccounts, Users,
+};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::RawOrigin;
 

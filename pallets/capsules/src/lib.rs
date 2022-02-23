@@ -14,14 +14,20 @@ use frame_support::dispatch::DispatchResult;
 pub use pallet::*;
 pub use types::*;
 
-use frame_support::traits::ExistenceRequirement::{AllowDeath, KeepAlive};
-use frame_support::traits::{Currency, Get, StorageVersion};
-use frame_support::traits::{ExistenceRequirement, WithdrawReasons};
-use frame_support::PalletId;
+use frame_support::{
+	traits::{
+		Currency, ExistenceRequirement,
+		ExistenceRequirement::{AllowDeath, KeepAlive},
+		Get, StorageVersion, WithdrawReasons,
+	},
+	PalletId,
+};
 use sp_runtime::traits::AccountIdConversion;
 use sp_std::vec;
-use ternoa_primitives::nfts::{NFTId, NFTSeriesId};
-use ternoa_primitives::TextFormat;
+use ternoa_primitives::{
+	nfts::{NFTId, NFTSeriesId},
+	TextFormat,
+};
 
 const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
@@ -29,13 +35,11 @@ const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 pub mod pallet {
 	use super::*;
 
-	use frame_support::transactional;
-	use frame_support::{ensure, pallet_prelude::*};
+	use frame_support::{ensure, pallet_prelude::*, transactional};
 	use frame_system::pallet_prelude::*;
 	use sp_runtime::traits::CheckedAdd;
 	use sp_std::convert::TryInto;
-	use ternoa_common::helpers::check_bounds;
-	use ternoa_common::traits::NFTTrait;
+	use ternoa_common::{helpers::check_bounds, traits::NFTTrait};
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -79,7 +83,7 @@ pub mod pallet {
 				let fee: BalanceOf<T> = 1000000000000000000000u128.try_into().ok().unwrap();
 				CapsuleMintFee::<T>::put(fee);
 
-				return 1;
+				return 1
 			}
 
 			0

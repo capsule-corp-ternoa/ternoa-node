@@ -1,7 +1,9 @@
 use frame_support::dispatch::{DispatchErrorWithPostInfo, DispatchResult};
-use ternoa_primitives::marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType};
-use ternoa_primitives::nfts::{NFTData, NFTId, NFTSeriesId};
-use ternoa_primitives::TextFormat;
+use ternoa_primitives::{
+	marketplace::{MarketplaceId, MarketplaceInformation, MarketplaceType},
+	nfts::{NFTData, NFTId, NFTSeriesId},
+	TextFormat,
+};
 
 pub trait NFTTrait {
 	type AccountId: Clone;
