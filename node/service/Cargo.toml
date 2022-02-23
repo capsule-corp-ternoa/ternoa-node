@@ -1,0 +1,33 @@
+[package]
+name = "ternoa-service"
+authors = [ "Ternoa" ]
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+pallet-transaction-payment-rpc = { git = "https://github.com/paritytech/substrate", branch = "master" }
+
+# Ternoa
+ternoa-primitives = { path = "../../primitives" }
+
+# Substrate
+sc-client-api = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-consensus-babe = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-consensus-babe-rpc = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-consensus-epochs = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-finality-grandpa = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-finality-grandpa-rpc = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-rpc = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-rpc-api = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sc-transaction-pool-api = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sp-api = { git = "https://github.com/paritytech/substrate", branch = "master", default-features = false }
+sp-block-builder = { git = "https://github.com/paritytech/substrate", branch = "master", default-features = false }
+sp-blockchain = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sp-consensus = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sp-consensus-babe = { git = "https://github.com/paritytech/substrate", branch = "master" }
+sp-keystore = { git = "https://github.com/paritytech/substrate", branch = "master" }
+
+# Moonbeam runtimes
+ternoa-alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
+ternoa-chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
+ternoa-mainnet-runtime = { path = "../../runtime/mainnet", optional = true }

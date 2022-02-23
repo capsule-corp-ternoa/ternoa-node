@@ -16,7 +16,6 @@ runtime-benchmarks = [
 	"ternoa-mainnet-runtime/runtime-benchmarks",
 ]
 cli = [
-	"ternoa-executor/wasmi-errno",
 	"clap",
 ]
 
@@ -26,7 +25,6 @@ cli = [
 wasm-opt = false
 
 [target.'cfg(target_arch="x86_64")'.dependencies]
-ternoa-executor = { path = "../executor", features = [ "wasmtime" ] }
 sc-cli = { git = "https://github.com/paritytech/substrate.git", features = [ "wasmtime" ], version = "0.10.0-dev", branch = "master" }
 sc-service = { git = "https://github.com/paritytech/substrate.git", default-features = false, features = [ "wasmtime" ], version = "0.10.0-dev", branch = "master"}
 sp-trie = { git = "https://github.com/paritytech/substrate.git", default-features = false, features = ["memory-tracker"], version = "5.0.0", branch = "master" }
@@ -95,7 +93,6 @@ rand = { version = "0.8.4" }
 clap = { version = "3.0", features = ["derive"], optional = true }
 
 # Ternoa
-ternoa-executor = { path = "../executor" }
 ternoa-primitives = { path = "../primitives" }
 ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
 ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }

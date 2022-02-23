@@ -1,4 +1,5 @@
-use super::node_rpc;
+mod rpc;
+
 use futures::prelude::*;
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
