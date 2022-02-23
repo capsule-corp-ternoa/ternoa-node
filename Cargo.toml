@@ -3,10 +3,8 @@ panic = 'unwind'
 
 [workspace]
 members = [
-    'common',
     'node',
     "node/service",
-    'pallets/*',
     'primitives',
     'runtime/chaosnet',
     'runtime/alphanet',

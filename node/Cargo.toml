@@ -98,7 +98,6 @@ ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
 ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
 ternoa-runtime-common = { path = "../runtime/common" }
 ternoa-mainnet-runtime = { path = "../runtime/mainnet" }
-ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 
 [build-dependencies]
 vergen = "6.0.0"
