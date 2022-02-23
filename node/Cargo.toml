@@ -11,7 +11,10 @@ path = "src/main.rs"
 [features]
 default = [ "cli" ]
 runtime-benchmarks = [
-	"ternoa-runtime/runtime-benchmarks",
+	"ternoa-alphanet-runtime/runtime-benchmarks",
+	"ternoa-chaosnet-runtime/runtime-benchmarks",
+	"ternoa-common-runtime/runtime-benchmarks",
+	"ternoa-mainnet-runtime/runtime-benchmarks",
 ]
 cli = [
 	"ternoa-executor/wasmi-errno",
@@ -95,7 +98,10 @@ clap = { version = "3.0", features = ["derive"], optional = true }
 # Ternoa
 ternoa-executor = { path = "../executor" }
 ternoa-primitives = { path = "../primitives" }
-ternoa-runtime = { path = "../runtime" }
+ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
+ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
+ternoa-common-runtime = { path = "../runtime/common" }
+ternoa-mainnet-runtime = { path = "../runtime/mainnet" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 
 [build-dependencies]

@@ -17,7 +17,10 @@ sp-trie = { git = "https://github.com/paritytech/substrate.git", default-feature
 
 # Ternoa
 ternoa-primitives = { path = "../primitives" }
-ternoa-runtime = { path = "../runtime" }
+ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
+ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
+ternoa-common-runtime = { path = "../runtime/common" }
+ternoa-mainnet-runtime = { path = "../runtime/mainnet" }
 
 # Rest
 parity-scale-codec = { version = "2.3.1" }
