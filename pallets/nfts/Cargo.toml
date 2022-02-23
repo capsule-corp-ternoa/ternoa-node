@@ -9,13 +9,13 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 # Frame
-frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", default-features = false, optional = true, version = "4.0.0-dev", branch = "master" }
-frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
-frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
+frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 
 # Sp
-sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
-sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "4.0.0-dev", branch = "master" }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 
 # Rest
 codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.3.1" }
@@ -28,9 +28,9 @@ ternoa-common = { default-features = false, path = "../../common" }
 ternoa-primitives = { default-features = false, path = "../../primitives" }
 
 [dev-dependencies]
-pallet-balances = { git = "https://github.com/paritytech/substrate.git", version = "4.0.0-dev", branch = "master" }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "5.0.0", branch = "master" }
+pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+sp-io = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 
 [features]
 default = ["std"]
