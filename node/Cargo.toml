@@ -13,7 +13,6 @@ default = [ "cli" ]
 runtime-benchmarks = [
 	"ternoa-alphanet-runtime/runtime-benchmarks",
 	"ternoa-chaosnet-runtime/runtime-benchmarks",
-	"ternoa-common-runtime/runtime-benchmarks",
 	"ternoa-mainnet-runtime/runtime-benchmarks",
 ]
 cli = [
@@ -100,7 +99,7 @@ ternoa-executor = { path = "../executor" }
 ternoa-primitives = { path = "../primitives" }
 ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
 ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
-ternoa-common-runtime = { path = "../runtime/common" }
+ternoa-runtime-common = { path = "../runtime/common" }
 ternoa-mainnet-runtime = { path = "../runtime/mainnet" }
 ternoa-marketplace = { default-features = false, path = "../pallets/marketplace" }
 

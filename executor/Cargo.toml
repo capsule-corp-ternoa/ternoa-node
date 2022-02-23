@@ -19,7 +19,7 @@ sp-trie = { git = "https://github.com/paritytech/substrate.git", default-feature
 ternoa-primitives = { path = "../primitives" }
 ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
 ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
-ternoa-common-runtime = { path = "../runtime/common" }
+ternoa-runtime-common = { path = "../runtime/common" }
 ternoa-mainnet-runtime = { path = "../runtime/mainnet" }
 
 # Rest

@@ -1,6 +1,15 @@
 [package]
-name = "ternoa-common-runtime"
+name = "ternoa-runtime-common"
 authors = [ "Ternoa" ]
 version = "0.1.0"
 edition = "2018"
-build = "build.rs"
+
+[dependencies]
+# Ternoa
+ternoa-primitives = { default-features = false, path = "../../primitives" }
+
+[features]
+default = ["std"]
+std = [
+    "ternoa-primitives/std",
+]

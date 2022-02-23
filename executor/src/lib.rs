@@ -11,10 +11,12 @@ impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
     type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
     fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-        ternoa_runtime::api::dispatch(method, data)
+        // TODO: don't know which runtime to use to picked the alphanet one to make it pass at compilation, to fix
+        ternoa_alphanet_runtime::api::dispatch(method, data)
     }
 
     fn native_version() -> sc_executor::NativeVersion {
-        ternoa_runtime::native_version()
+        // TODO: don't know which runtime to use to picked the alphanet one to make it pass at compilation, to fix
+        ternoa_alphanet_runtime::native_version()
     }
 }
