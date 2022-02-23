@@ -12,22 +12,19 @@ use ternoa_primitives::TextFormat;
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct CapsuleData<AccountId>
 where
-    AccountId: Clone,
+	AccountId: Clone,
 {
-    pub owner: AccountId,
-    pub ipfs_reference: TextFormat,
+	pub owner: AccountId,
+	pub ipfs_reference: TextFormat,
 }
 
 impl<AccountId> CapsuleData<AccountId>
 where
-    AccountId: Clone,
+	AccountId: Clone,
 {
-    pub fn new(owner: AccountId, ipfs_reference: TextFormat) -> CapsuleData<AccountId> {
-        Self {
-            owner,
-            ipfs_reference,
-        }
-    }
+	pub fn new(owner: AccountId, ipfs_reference: TextFormat) -> CapsuleData<AccountId> {
+		Self { owner, ipfs_reference }
+	}
 }
 
 pub type CapsuleLedger<Balance> = Vec<(NFTId, Balance)>;
