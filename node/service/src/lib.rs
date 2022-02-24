@@ -3,45 +3,91 @@ mod rpc;
 use futures::prelude::*;
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
-use sc_executor::NativeElseWasmExecutor;
+use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
 use sc_network::{Event, NetworkService};
-use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager};
+use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager, TFullClient};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
-use ternoa_executor::ExecutorDispatch;
 use ternoa_primitives::Block;
-use ternoa_runtime::RuntimeApi;
 
 /// The full client type definition.
-pub type FullClient =
-	sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
+type FullClient<RuntimeApi, Executor> =
+	TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<Executor>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
-type FullGrandpaBlockImport =
-	sc_finality_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient, FullSelectChain>;
+type FullGrandpaBlockImport<RuntimeApi, Executor> =
+	sc_finality_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient<RuntimeApi, Executor>, FullSelectChain>;
 
 /// The transaction pool type defintion.
-pub type TransactionPool = sc_transaction_pool::FullPool<Block, FullClient>;
+pub type TransactionPool<RuntimeApi, Executor> = sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, Executor>>;
+
+#[cfg(feature = "alphanet-native")]
+pub struct AlphanetExecutor;
+
+#[cfg(feature = "alphanet-native")]
+impl sc_executor::NativeExecutionDispatch for AlphanetExecutor {
+	type ExtendHostFunctions = HostFunctions;
+
+	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+		alphanet_runtime::api::dispatch(method, data)
+	}
+
+	fn native_version() -> sc_executor::NativeVersion {
+		alphanet_runtime::native_version()
+	}
+}
+
+#[cfg(feature = "chaosnet-native")]
+pub struct ChaosnetExecutor;
+
+#[cfg(feature = "chaosnet-native")]
+impl sc_executor::NativeExecutionDispatch for ChaosnetExecutor {
+	type ExtendHostFunctions = HostFunctions;
+
+	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+		chaosnet_runtime::api::dispatch(method, data)
+	}
+
+	fn native_version() -> sc_executor::NativeVersion {
+		chaosnet_runtime::native_version()
+	}
+}
+
+#[cfg(feature = "mainnet-native")]
+pub struct MainnetExecutor;
+
+#[cfg(feature = "mainnet-native")]
+impl sc_executor::NativeExecutionDispatch for MainnetExecutor {
+	type ExtendHostFunctions = HostFunctions;
+
+	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+		chaosnet_runtime::api::dispatch(method, data)
+	}
+
+	fn native_version() -> sc_executor::NativeVersion {
+		chaosnet_runtime::native_version()
+	}
+}
 
 /// Creates a new partial node.
-pub fn new_partial(
+pub fn new_partial<RuntimeApi, Executor>(
 	config: &Configuration,
 ) -> Result<
 	sc_service::PartialComponents<
-		FullClient,
+		FullClient<RuntimeApi, Executor>,
 		FullBackend,
 		FullSelectChain,
-		sc_consensus::DefaultImportQueue<Block, FullClient>,
-		sc_transaction_pool::FullPool<Block, FullClient>,
+		sc_consensus::DefaultImportQueue<Block, FullClient<RuntimeApi, Executor>>,
+		sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, Executor>>,
 		(
 			impl Fn(
-				node_rpc::DenyUnsafe,
+				rpc::DenyUnsafe,
 				sc_rpc::SubscriptionTaskExecutor,
-			) -> Result<node_rpc::IoHandler, sc_service::Error>,
+			) -> Result<rpc::IoHandler, sc_service::Error>,
 			(
-				sc_consensus_babe::BabeBlockImport<Block, FullClient, FullGrandpaBlockImport>,
-				sc_finality_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
+				sc_consensus_babe::BabeBlockImport<Block, FullClient<RuntimeApi, Executor>, FullGrandpaBlockImport<RuntimeApi, Executor>>,
+				sc_finality_grandpa::LinkHalf<Block, FullClient<RuntimeApi, Executor>, FullSelectChain>,
 				sc_consensus_babe::BabeLink<Block>,
 			),
 			sc_finality_grandpa::SharedVoterState,
@@ -61,7 +107,7 @@ pub fn new_partial(
 		})
 		.transpose()?;
 
-	let executor = NativeElseWasmExecutor::<ExecutorDispatch>::new(
+	let executor = NativeElseWasmExecutor::<Executor>::new(
 		config.wasm_method,
 		config.default_heap_pages,
 		config.max_runtime_instances,
@@ -157,18 +203,18 @@ pub fn new_partial(
 		let chain_spec = config.chain_spec.cloned_box();
 
 		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| {
-			let deps = node_rpc::FullDeps {
+			let deps = rpc::FullDeps {
 				client: client.clone(),
 				pool: pool.clone(),
 				select_chain: select_chain.clone(),
 				chain_spec: chain_spec.cloned_box(),
 				deny_unsafe,
-				babe: node_rpc::BabeDeps {
+				babe: rpc::BabeDeps {
 					babe_config: babe_config.clone(),
 					shared_epoch_changes: shared_epoch_changes.clone(),
 					keystore: keystore.clone(),
 				},
-				grandpa: node_rpc::GrandpaDeps {
+				grandpa: rpc::GrandpaDeps {
 					shared_voter_state: shared_voter_state.clone(),
 					shared_authority_set: shared_authority_set.clone(),
 					justification_stream: justification_stream.clone(),
@@ -177,7 +223,7 @@ pub fn new_partial(
 				},
 			};
 
-			node_rpc::create_full(deps).map_err(Into::into)
+			rpc::create_full(deps).map_err(Into::into)
 		};
 
 		(rpc_extensions_builder, rpc_setup)
@@ -196,27 +242,27 @@ pub fn new_partial(
 }
 
 /// Result of [`new_full_base`].
-pub struct NewFullBase {
+pub struct NewFullBase<RuntimeApi, Executor> {
 	/// The task manager of the node.
 	pub task_manager: TaskManager,
 	/// The client instance of the node.
-	pub client: Arc<FullClient>,
+	pub client: Arc<FullClient<RuntimeApi, Executor>>,
 	/// The networking service of the node.
 	pub network: Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
 	/// The transaction pool of the node.
-	pub transaction_pool: Arc<TransactionPool>,
+	pub transaction_pool: Arc<TransactionPool<RuntimeApi, Executor>>,
 	/// The rpc handlers of the node.
 	pub rpc_handlers: RpcHandlers,
 }
 
 /// Creates a full service from the configuration.
-pub fn new_full_base(
+pub fn new_full_base<RuntimeApi, Executor>(
 	mut config: Configuration,
 	with_startup_data: impl FnOnce(
-		&sc_consensus_babe::BabeBlockImport<Block, FullClient, FullGrandpaBlockImport>,
+		&sc_consensus_babe::BabeBlockImport<Block, FullClient<RuntimeApi, Executor>, FullGrandpaBlockImport<RuntimeApi, Executor>>,
 		&sc_consensus_babe::BabeLink<Block>,
 	),
-) -> Result<NewFullBase, ServiceError> {
+) -> Result<NewFullBase<RuntimeApi, Executor>, ServiceError> {
 	let sc_service::PartialComponents {
 		client,
 		backend,
