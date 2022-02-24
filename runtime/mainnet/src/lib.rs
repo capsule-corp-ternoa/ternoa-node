@@ -24,7 +24,7 @@ use sp_runtime::{
 };
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
-use ternoa_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
+use ternoa_primitives_ternoa::{AccountId, Balance, BlockNumber, Index, Signature};
 
 pub mod constants;
 mod pallets;
@@ -59,7 +59,7 @@ pub fn wasm_binary_unwrap() -> &'static [u8] {
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
-		NodeBlock = ternoa_primitives::Block,
+		NodeBlock = ternoa_primitives_ternoa::Block,
 		UncheckedExtrinsic = UncheckedExtrinsic
 	{
 		// Basic stuff; balances is uncallable initially

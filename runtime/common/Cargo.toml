@@ -6,10 +6,10 @@ edition = "2018"
 
 [dependencies]
 # Ternoa
-ternoa-primitives = { default-features = false, path = "../../primitives" }
+ternoa-primitives-ternoa = { default-features = false, path = "../../primitives/ternoa" }
 
 [features]
 default = ["std"]
 std = [
-    "ternoa-primitives/std",
+    "ternoa-primitives-ternoa/std",
 ]

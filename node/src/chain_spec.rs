@@ -11,7 +11,7 @@ use sp_runtime::{
 	traits::{IdentifyAccount, Verify},
 	Perbill,
 };
-use ternoa_primitives::{AccountId, Balance, Signature};
+use ternoa_primitives_ternoa::{AccountId, Balance, Signature};
 use ternoa_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AssociatedAccountsConfig,
 	AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, Block, GenesisConfig, GrandpaConfig,

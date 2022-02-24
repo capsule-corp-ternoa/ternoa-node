@@ -5,7 +5,7 @@ panic = 'unwind'
 members = [
     'node',
     "node/service",
-    'primitives',
+    'primitives/ternoa',
     'runtime/chaosnet',
     'runtime/alphanet',
     'runtime/mainnet',

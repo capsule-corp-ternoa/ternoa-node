@@ -10,7 +10,8 @@ jsonrpc-core = '18.0'
 pallet-transaction-payment-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Ternoa
-ternoa-primitives = { path = "../../primitives" }
+ternoa-primitives-ternoa = { path = "../../primitives/ternoa" }
+ternoa-primitives-ext = { path = "../../primitives/ext" }
 
 # Substrate
 sc-client-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
@@ -42,6 +43,9 @@ sc-consensus-slots = { git = "https://github.com/capsule-corp-ternoa/substrate",
 sc-basic-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 sc-consensus-uncles = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 sc-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+
+# Benchmarking
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Ternoa runtimes
 ternoa-alphanet-runtime = { path = "../../runtime/alphanet", optional = true }

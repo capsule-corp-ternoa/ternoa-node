@@ -7400,7 +7400,7 @@ dependencies = [
  "ternoa-alphanet-runtime",
  "ternoa-chaosnet-runtime",
  "ternoa-mainnet-runtime",
- "ternoa-primitives",
+ "ternoa-primitives-ternoa",
  "ternoa-runtime-common",
  "vergen",
 ]
@@ -7462,7 +7462,7 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
  "ternoa-nfts",
- "ternoa-primitives",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -7540,7 +7540,7 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
  "ternoa-nfts",
- "ternoa-primitives",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -7611,7 +7611,7 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
  "ternoa-nfts",
- "ternoa-primitives",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -7645,7 +7645,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "ternoa-primitives"
+name = "ternoa-primitives-ext"
+version = "0.1.0"
+dependencies = [
+ "sp-runtime-interface",
+]
+
+[[package]]
+name = "ternoa-primitives-ternoa"
 version = "0.1.0"
 dependencies = [
  "frame-system",
@@ -7662,13 +7669,14 @@ dependencies = [
 name = "ternoa-runtime-common"
 version = "0.1.0"
 dependencies = [
- "ternoa-primitives",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]
 name = "ternoa-service"
 version = "0.1.0"
 dependencies = [
+ "frame-benchmarking",
  "futures 0.3.21",
  "jsonrpc-core",
  "pallet-transaction-payment-rpc",
@@ -7704,7 +7712,8 @@ dependencies = [
  "ternoa-alphanet-runtime",
  "ternoa-chaosnet-runtime",
  "ternoa-mainnet-runtime",
- "ternoa-primitives",
+ "ternoa-primitives-ext",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]

@@ -3,13 +3,21 @@ mod rpc;
 use futures::prelude::*;
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
-use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
+use sc_executor::NativeElseWasmExecutor;
 use sc_network::{Event, NetworkService};
 use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager, TFullClient};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
-use ternoa_primitives::Block;
+use ternoa_primitives_ternoa::Block;
+use futures::StreamExt;
+#[cfg(feature = "alphanet-native")]
+pub use ternoa_alphanet_runtime;
+#[cfg(feature = "chaosnet-native")]
+pub use ternoa_chaosnet_runtime;
+#[cfg(feature = "mainnet-native")]
+pub use ternoa_mainnet_runtime;
+
 
 /// The full client type definition.
 type FullClient<RuntimeApi, Executor> =
@@ -22,6 +30,11 @@ type FullGrandpaBlockImport<RuntimeApi, Executor> =
 /// The transaction pool type defintion.
 pub type TransactionPool<RuntimeApi, Executor> = sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, Executor>>;
 
+pub type HostFunctions = (
+	frame_benchmarking::benchmarking::HostFunctions,
+	ternoa_primitives_ext::ternoa_ext::HostFunctions,
+);
+
 #[cfg(feature = "alphanet-native")]
 pub struct AlphanetExecutor;
 
@@ -30,11 +43,11 @@ impl sc_executor::NativeExecutionDispatch for AlphanetExecutor {
 	type ExtendHostFunctions = HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		alphanet_runtime::api::dispatch(method, data)
+		ternoa_alphanet_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		alphanet_runtime::native_version()
+		ternoa_alphanet_runtime::native_version()
 	}
 }
 
@@ -46,11 +59,11 @@ impl sc_executor::NativeExecutionDispatch for ChaosnetExecutor {
 	type ExtendHostFunctions = HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		chaosnet_runtime::api::dispatch(method, data)
+		ternoa_chaosnet_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		chaosnet_runtime::native_version()
+		ternoa_chaosnet_runtime::native_version()
 	}
 }
 
@@ -62,11 +75,11 @@ impl sc_executor::NativeExecutionDispatch for MainnetExecutor {
 	type ExtendHostFunctions = HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		chaosnet_runtime::api::dispatch(method, data)
+		ternoa_mainnet_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		chaosnet_runtime::native_version()
+		ternoa_mainnet_runtime::native_version()
 	}
 }
 

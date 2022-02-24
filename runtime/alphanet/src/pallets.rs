@@ -43,7 +43,7 @@ use sp_runtime::{
 use sp_std::{vec, vec::Vec};
 use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
-use ternoa_primitives::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
+use ternoa_primitives_ternoa::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;

@@ -1,5 +1,5 @@
 [package]
-name = "ternoa-primitives"
+name = "ternoa-primitives-ternoa"
 version = "0.1.0"
 edition = "2018"
 license = "Apache 2.0"
