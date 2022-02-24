@@ -1,4 +1,4 @@
-/* // This file is part of Substrate.
+// This file is part of Substrate.
 
 // Copyright (C) 2021 Parity Technologies (UK) Ltd.
 // SPDX-License-Identifier: Apache-2.0
@@ -233,4 +233,3 @@ pub const THRESHOLDS: [u64; 200] = [
 	17_356_326_621_502_140_416,
 	18_446_744_073_709_551_615,
 ];
- */

@@ -1,12 +1,6 @@
 use crate::{
-	constants::{
-		currency::{deposit, CENTS, EUROS, MILLICENTS},
-		time::{
-			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
-		},
-	},
-	voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase,
-	Event, Grandpa, Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Runtime,
+	AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase, Event, Grandpa,
+	Historical, ImOnline, Marketplace, Nfts, Offences, Origin, OriginCaller, PalletInfo, Runtime,
 	Session, Signature, SignedPayload, Staking, System, Timestamp, TransactionPayment, Treasury,
 	UncheckedExtrinsic, VERSION,
 };
@@ -44,6 +38,15 @@ use sp_std::{vec, vec::Vec};
 use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
 use ternoa_core_primitives::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
+use ternoa_runtime_common::{
+	constants::{
+		currency::{deposit, CENTS, EUROS, MILLICENTS},
+		time::{
+			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
+		},
+	},
+	voter_bags,
+};
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
@@ -209,7 +212,7 @@ impl ternoa_nfts::Config for Runtime {
 	type MaxIpfsLen = NFTsMaxIpfsLen;
 }
 
-/* parameter_types! {
+parameter_types! {
 	// Min Max string length
 	pub const MinMarketplaceNameLen : u8 = 1;
 	pub const MaxMarketplaceNameLen : u8 = 64;
@@ -232,9 +235,9 @@ impl ternoa_marketplace::Config for Runtime {
 	type MaxDescriptionLen = MaxMarketplaceDescriptionLen;
 	type MinUriLen = MinUriLen;
 	type MaxUriLen = MaxUriLen;
-} */
+}
 
-/* parameter_types! {
+parameter_types! {
 	pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
 	pub const CapsuleMinIpfsLen: u16 = 1;
 	pub const CapsuleMaxIpfsLen: u16 = 256;
@@ -249,7 +252,7 @@ impl ternoa_capsules::Config for Runtime {
 	type PalletId = CapsulePalletId;
 	type MinIpfsLen = CapsuleMinIpfsLen;
 	type MaxIpfsLen = CapsuleMaxIpfsLen;
-} */
+}
 
 parameter_types! {
 	pub const MinAltvrUsernameLen: u16 = 1;     // AltVR says that the minimum is 8
@@ -764,7 +767,7 @@ impl pallet_preimage::Config for Runtime {
 	type ByteDeposit = PreimageByteDeposit;
 }
 
-/* parameter_types! {
+parameter_types! {
 	// all calculations assume blocktime of 6secs
 	// min auction duration of 24 hours (24*60*60)/6
 	pub const MinAuctionDuration: BlockNumber = 14400;
@@ -792,4 +795,3 @@ impl ternoa_auctions::Config for Runtime {
 	type PalletId = AuctionsPalletId;
 	type WeightInfo = ();
 }
- */

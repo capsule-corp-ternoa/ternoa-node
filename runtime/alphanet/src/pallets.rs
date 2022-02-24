@@ -1,14 +1,8 @@
 use crate::{
-	constants::{
-		currency::{deposit, CENTS, EUROS, MILLICENTS},
-		time::{
-			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
-		},
-	},
-	voter_bags, AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase,
-	Event, Grandpa, Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Runtime,
-	Session, Signature, SignedPayload, Staking, System, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, VERSION,
+	AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase, Event, Grandpa,
+	Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Runtime, Session, Signature,
+	SignedPayload, Staking, System, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic,
+	VERSION,
 };
 use codec::{Decode, Encode};
 use frame_election_provider_support::onchain;
@@ -43,7 +37,16 @@ use sp_runtime::{
 use sp_std::{vec, vec::Vec};
 use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
-use ternoa_core_primitives::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
+use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
+use ternoa_runtime_common::{
+	constants::{
+		currency::{deposit, CENTS, EUROS, MILLICENTS},
+		time::{
+			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
+		},
+	},
+	voter_bags,
+};
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
@@ -191,74 +194,6 @@ parameter_types! {
 impl pallet_sudo::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
-}
-
-parameter_types! {
-	// Min Max string length
-	pub const NFTsMinIpfsLen: u16 = 1;
-	pub const NFTsMaxIpfsLen: u16 = 256;
-}
-
-// NFTs
-impl ternoa_nfts::Config for Runtime {
-	type Event = Event;
-	type WeightInfo = ternoa_nfts::weights::TernoaWeight<Runtime>;
-	type Currency = Balances;
-	type FeesCollector = Treasury;
-	type MinIpfsLen = NFTsMinIpfsLen;
-	type MaxIpfsLen = NFTsMaxIpfsLen;
-}
-
-/* parameter_types! {
-	// Min Max string length
-	pub const MinMarketplaceNameLen : u8 = 1;
-	pub const MaxMarketplaceNameLen : u8 = 64;
-	pub const MinMarketplaceDescriptionLen: u16 = 1;
-	pub const MaxMarketplaceDescriptionLen: u16 = 512;
-	pub const MinUriLen: u16 = 1;
-	pub const MaxUriLen: u16 = 256;
-}
-
-// Marketplace
-impl ternoa_marketplace::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type NFTs = Nfts;
-	type WeightInfo = ();
-	type FeesCollector = Treasury;
-	type MinNameLen = MinMarketplaceNameLen;
-	type MaxNameLen = MaxMarketplaceNameLen;
-	type MinDescriptionLen = MinMarketplaceDescriptionLen;
-	type MaxDescriptionLen = MaxMarketplaceDescriptionLen;
-	type MinUriLen = MinUriLen;
-	type MaxUriLen = MaxUriLen;
-} */
-
-/* parameter_types! {
-	pub const CapsulePalletId: PalletId = PalletId(*b"tcapsule");
-	pub const CapsuleMinIpfsLen: u16 = 1;
-	pub const CapsuleMaxIpfsLen: u16 = 256;
-}
-
-// Capsules
-impl ternoa_capsules::Config for Runtime {
-	type Event = Event;
-	type WeightInfo = ();
-	type Currency = Balances;
-	type NFTTrait = Nfts;
-	type PalletId = CapsulePalletId;
-	type MinIpfsLen = CapsuleMinIpfsLen;
-	type MaxIpfsLen = CapsuleMaxIpfsLen;
-} */
-
-parameter_types! {
-	pub const MinAltvrUsernameLen: u16 = 1;     // AltVR says that the minimum is 8
-	pub const MaxAltvrUsernameLen: u16 = 32;    // AltVR says that the maximum is 20
-}
-
-impl ternoa_associated_accounts::Config for Runtime {
-	type Event = Event;
-	type WeightInfo = ternoa_associated_accounts::weights::TernoaWeights<Runtime>;
 }
 
 parameter_types! {
@@ -692,36 +627,6 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 }
 
 parameter_types! {
-	// One storage item; key size is 32; value is size 4+4+16+32 bytes = 56 bytes.
-	pub const DepositBase: Balance = deposit(1, 88);
-	// Additional storage item size of 32 bytes.
-	pub const DepositFactor: Balance = deposit(0, 32);
-	pub const MaxSignatories: u16 = 100;
-}
-
-impl pallet_multisig::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
-	type Currency = Balances;
-	type DepositBase = DepositBase;
-	type DepositFactor = DepositFactor;
-	type MaxSignatories = MaxSignatories;
-	type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
-}
-
-parameter_types! {
-	pub const IndexDeposit: Balance = 1 * EUROS;
-}
-
-impl pallet_indices::Config for Runtime {
-	type AccountIndex = AccountIndex;
-	type Currency = Balances;
-	type Deposit = IndexDeposit;
-	type Event = Event;
-	type WeightInfo = pallet_indices::weights::SubstrateWeight<Runtime>;
-}
-
-parameter_types! {
 	pub const CandidacyBond: Balance = 10 * EUROS;
 	// 1 storage item created, key size is 32 bytes, value size is 16+16.
 	pub const VotingBondBase: Balance = deposit(1, 64);
@@ -763,33 +668,3 @@ impl pallet_preimage::Config for Runtime {
 	type BaseDeposit = PreimageBaseDeposit;
 	type ByteDeposit = PreimageByteDeposit;
 }
-
-/* parameter_types! {
-	// all calculations assume blocktime of 6secs
-	// min auction duration of 24 hours (24*60*60)/6
-	pub const MinAuctionDuration: BlockNumber = 14400;
-	// max auction duration of 30 days (30*24*60*60)/6
-	pub const MaxAuctionDuration: BlockNumber = 432000;
-	// max auction start delay of 7 days (24*7*60*60)/6
-	pub const MaxAuctionDelay: BlockNumber = 600;
-	// auction grace period of 10min (10*60)/6
-	pub const AuctionGracePeriod: BlockNumber = 100;
-	// auction ending period of 12 hr (12*60*60)/6
-	pub const AuctionEndingPeriod: BlockNumber = 7200;
-	pub const AuctionsPalletId: PalletId = PalletId(*b"tauction");
-}
-
-impl ternoa_auctions::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type NFTHandler = Nfts;
-	type MarketplaceHandler = Marketplace;
-	type MaxAuctionDelay = MaxAuctionDelay;
-	type MaxAuctionDuration = MaxAuctionDuration;
-	type MinAuctionDuration = MinAuctionDuration;
-	type AuctionGracePeriod = AuctionGracePeriod;
-	type AuctionEndingPeriod = AuctionEndingPeriod;
-	type PalletId = AuctionsPalletId;
-	type WeightInfo = ();
-}
- */

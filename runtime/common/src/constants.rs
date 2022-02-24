@@ -1,5 +1,4 @@
-use ternoa_core_primitives::Balance;
-/* //! A set of constant values used in the runtime.
+//! A set of constant values used in the runtime.
 
 /// Money matters.
 pub mod currency {
@@ -49,4 +48,3 @@ pub mod time {
 	// 1 in 4 blocks (on average, not counting collisions) will be primary BABE blocks.
 	pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
 }
- */

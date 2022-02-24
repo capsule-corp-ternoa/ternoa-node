@@ -8,12 +8,10 @@ license = "Apache 2.0"
 # Sp
 sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
-sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 
 [features]
 default = ["std"]
 std = [
 	"sp-runtime/std",
 	"sp-core/std",
-    "sp-std/std",
 ]

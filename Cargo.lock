@@ -7426,8 +7426,6 @@ dependencies = [
  "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-im-online",
- "pallet-indices",
- "pallet-multisig",
  "pallet-offences",
  "pallet-preimage",
  "pallet-session",
@@ -7460,14 +7458,48 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-associated-accounts",
  "ternoa-core-primitives",
- "ternoa-nfts",
  "ternoa-runtime-common",
 ]
 
 [[package]]
 name = "ternoa-associated-accounts"
+version = "0.1.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-pallets-primitives",
+]
+
+[[package]]
+name = "ternoa-auctions"
+version = "0.1.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-pallets-primitives",
+]
+
+[[package]]
+name = "ternoa-capsules"
 version = "0.1.0"
 source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
 dependencies = [
@@ -7540,8 +7572,12 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
+ "ternoa-auctions",
+ "ternoa-capsules",
  "ternoa-core-primitives",
+ "ternoa-marketplace",
  "ternoa-nfts",
+ "ternoa-runtime-common",
 ]
 
 [[package]]
@@ -7561,7 +7597,6 @@ version = "0.1.0"
 dependencies = [
  "sp-core",
  "sp-runtime",
- "sp-std",
 ]
 
 [[package]]
@@ -7619,9 +7654,26 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-associated-accounts",
  "ternoa-core-primitives",
- "ternoa-nfts",
+ "ternoa-runtime-common",
+]
+
+[[package]]
+name = "ternoa-marketplace"
+version = "0.1.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-pallets-primitives",
 ]
 
 [[package]]
@@ -8049,7 +8101,7 @@ version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ee73e6e4924fe940354b8d4d98cad5231175d615cd855b758adc658c0aac6a0"
 dependencies = [
- "cfg-if 1.0.0",
+ "cfg-if 0.1.10",
  "rand 0.8.5",
  "static_assertions",
 ]

@@ -5,9 +5,6 @@ version = "0.1.0"
 edition = "2018"
 build = "build.rs"
 
-[package.metadata.docs.rs]
-targets = ["x86_64-unknown-linux-gnu"]
-
 [dependencies]
 # Frame
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
@@ -59,19 +56,15 @@ sp-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate"
 sp-version = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 
 # Rest
-codec = { package = "parity-scale-codec", default-features = false, features = ["derive"], version = "2.3.1" }
-hex-literal = { optional = true, version = "0.3.4" }
+codec = { version = "2.3.1", package = "parity-scale-codec", default-features = false, features = ["derive"] }
+hex-literal = { version = "0.3.4", optional = true }
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
-serde = { optional = true, version = "1.0.132" }
+serde = { version = "1.0.132", optional = true }
 static_assertions = { version = "1.1.0" }
 
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
-ternoa-nfts = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-ternoa-associated-accounts = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-# ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-# ternoa-capsules = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-# ternoa-auctions = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
+ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
@@ -81,11 +74,7 @@ default = ["std"]
 std = [
 	# Ternoa
 	"ternoa-core-primitives/std",
-	"ternoa-nfts/std",
-	"ternoa-associated-accounts/std",
-	# "ternoa-auctions/std",
-	# "ternoa-marketplace/std",
-	# "ternoa-capsules/std",
+	"ternoa-runtime-common/std",
 	# Substrate
 	"codec/std",
 	"frame-election-provider-support/std",
@@ -102,8 +91,6 @@ std = [
 	"pallet-elections-phragmen/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
-	"pallet-indices/std",
-	"pallet-multisig/std",
 	"pallet-offences/std",
 	"pallet-preimage/std",
 	"pallet-session/std",
@@ -135,10 +122,6 @@ std = [
 
 runtime-benchmarks = [
 	# Ternoa
-	"ternoa-nfts/runtime-benchmarks",
-	"ternoa-associated-accounts/runtime-benchmarks",
-	# "ternoa-marketplace/runtime-benchmarks",
-	# "ternoa-capsules/runtime-benchmarks",
 	# Substrate
 	"frame-benchmarking",
 	"frame-election-provider-support/runtime-benchmarks",

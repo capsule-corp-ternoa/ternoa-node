@@ -5,9 +5,8 @@
 use sp_runtime::{
 	generic,
 	traits::{BlakeTwo256, IdentifyAccount, Verify},
-	MultiSignature, OpaqueExtrinsic, RuntimeDebug,
+	MultiSignature, OpaqueExtrinsic,
 };
-use sp_std::vec::Vec;
 
 /// An index to a block.
 pub type BlockNumber = u32;

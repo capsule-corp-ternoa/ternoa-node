@@ -11,13 +11,13 @@ use sp_runtime::{
 	traits::{IdentifyAccount, Verify},
 	Perbill,
 };
-use ternoa_core_primitives::{AccountId, Balance, Signature};
-use ternoa_runtime::{
+use ternoa_chaosnet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AssociatedAccountsConfig,
 	AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, Block, GenesisConfig, GrandpaConfig,
 	ImOnlineConfig, NftsConfig, SessionConfig, SessionKeys, StakerStatus, StakingConfig,
 	SudoConfig, SystemConfig, MAX_NOMINATIONS,
 };
+use ternoa_core_primitives::{AccountId, Balance, Signature};
 
 type AccountPublic = <Signature as Verify>::Signer;
 const VALIDATOR_TEST_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";

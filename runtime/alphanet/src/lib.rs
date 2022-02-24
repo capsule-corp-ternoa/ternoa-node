@@ -6,12 +6,20 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+pub use ternoa_runtime_common::constants;
+
+mod pallets;
+mod version;
+
 use frame_support::{construct_runtime, traits::KeyOwnerProofSystem};
+pub use pallet_balances::Call as BalancesCall;
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
 use pallet_session::historical as pallet_session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
+use pallets::EpochDuration;
+pub use pallets::{MaxNominations as MAX_NOMINATIONS, SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
 use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
@@ -25,15 +33,6 @@ use sp_runtime::{
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
-
-pub mod constants;
-mod pallets;
-mod version;
-mod voter_bags;
-
-pub use pallet_balances::Call as BalancesCall;
-use pallets::EpochDuration;
-pub use pallets::{MaxNominations as MAX_NOMINATIONS, SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
 pub use version::VERSION;
 
 #[cfg(feature = "std")]
@@ -69,9 +68,8 @@ construct_runtime!(
 		Babe: pallet_babe = 1,
 
 		Timestamp: pallet_timestamp = 2,
-		Indices: pallet_indices = 3,
-		Balances: pallet_balances = 4,
-		TransactionPayment: pallet_transaction_payment = 5,
+		Balances: pallet_balances = 3,
+		TransactionPayment: pallet_transaction_payment = 4,
 
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era
@@ -97,15 +95,7 @@ construct_runtime!(
 		// Cunning utilities. Usable initially.
 		Utility: pallet_utility,
 
-		Multisig: pallet_multisig,
 		Preimage: pallet_preimage,
-
-		// Ternoa pallets.  Start indices at 100 to leave room.
-		Nfts: ternoa_nfts = 100,
-		AssociatedAccounts: ternoa_associated_accounts = 101,
-		// Capsules: ternoa_capsules = 102,
-		// Marketplace: ternoa_marketplace = 103,
-		// Auctions: ternoa_auctions = 104,
 	}
 );
 
