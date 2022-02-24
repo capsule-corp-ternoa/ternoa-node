@@ -10,7 +10,7 @@ jsonrpc-core = '18.0'
 pallet-transaction-payment-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Ternoa
-ternoa-primitives-ternoa = { path = "../../primitives/ternoa" }
+ternoa-core-primitives = { path = "../../core-primitives" }
 ternoa-primitives-ext = { path = "../../primitives/ext" }
 
 # Substrate

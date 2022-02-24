@@ -17,7 +17,7 @@ use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_consensus::SelectChain;
 use sp_consensus_babe::BabeApi;
 use sp_keystore::SyncCryptoStorePtr;
-use ternoa_primitives_ternoa::{AccountId, Balance, Block, BlockNumber, Hash, Index};
+use ternoa_core_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Index};
 
 /// Extra dependencies for BABE.
 pub struct BabeDeps {

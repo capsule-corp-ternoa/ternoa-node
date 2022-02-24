@@ -7399,8 +7399,8 @@ dependencies = [
  "substrate-frame-rpc-system",
  "ternoa-alphanet-runtime",
  "ternoa-chaosnet-runtime",
+ "ternoa-core-primitives",
  "ternoa-mainnet-runtime",
- "ternoa-primitives-ternoa",
  "ternoa-runtime-common",
  "vergen",
 ]
@@ -7461,8 +7461,9 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
+ "ternoa-core-primitives",
  "ternoa-nfts",
- "ternoa-primitives-ternoa",
+ "ternoa-runtime-common",
 ]
 
 [[package]]
@@ -7539,8 +7540,8 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
+ "ternoa-core-primitives",
  "ternoa-nfts",
- "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -7552,6 +7553,15 @@ dependencies = [
  "sp-runtime",
  "sp-std",
  "ternoa-pallets-primitives",
+]
+
+[[package]]
+name = "ternoa-core-primitives"
+version = "0.1.0"
+dependencies = [
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -7610,8 +7620,8 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-associated-accounts",
+ "ternoa-core-primitives",
  "ternoa-nfts",
- "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -7652,24 +7662,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "ternoa-primitives-ternoa"
-version = "0.1.0"
-dependencies = [
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-application-crypto",
- "sp-core",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "ternoa-runtime-common"
 version = "0.1.0"
 dependencies = [
- "ternoa-primitives-ternoa",
+ "ternoa-core-primitives",
 ]
 
 [[package]]
@@ -7711,9 +7707,9 @@ dependencies = [
  "substrate-frame-rpc-system",
  "ternoa-alphanet-runtime",
  "ternoa-chaosnet-runtime",
+ "ternoa-core-primitives",
  "ternoa-mainnet-runtime",
  "ternoa-primitives-ext",
- "ternoa-primitives-ternoa",
 ]
 
 [[package]]

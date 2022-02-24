@@ -1,8 +1,9 @@
-//! A set of constant values used in the runtime.
+use ternoa_core_primitives::Balance;
+/* //! A set of constant values used in the runtime.
 
 /// Money matters.
 pub mod currency {
-	use ternoa_primitives_ternoa::Balance;
+	use ternoa_core_primitives::Balance;
 
 	pub const UNITS: Balance = 1_000_000_000_000_000_000;
 	pub const EUROS: Balance = UNITS;
@@ -16,7 +17,7 @@ pub mod currency {
 
 /// Time.
 pub mod time {
-	use ternoa_primitives_ternoa::{BlockNumber, Moment};
+	use ternoa_core_primitives::{BlockNumber, Moment};
 
 	/// Since BABE is probabilistic this is the average expected block time that
 	/// we are targetting. Blocks will be produced at a minimum duration defined
@@ -48,3 +49,4 @@ pub mod time {
 	// 1 in 4 blocks (on average, not counting collisions) will be primary BABE blocks.
 	pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
 }
+ */

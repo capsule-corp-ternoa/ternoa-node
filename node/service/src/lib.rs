@@ -1,34 +1,39 @@
 mod rpc;
 
-use futures::prelude::*;
+use futures::{prelude::*, StreamExt};
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
 use sc_executor::NativeElseWasmExecutor;
 use sc_network::{Event, NetworkService};
-use sc_service::{config::Configuration, error::Error as ServiceError, RpcHandlers, TaskManager, TFullClient};
+use sc_service::{
+	config::Configuration, error::Error as ServiceError, RpcHandlers, TFullClient, TaskManager,
+};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
-use ternoa_primitives_ternoa::Block;
-use futures::StreamExt;
 #[cfg(feature = "alphanet-native")]
 pub use ternoa_alphanet_runtime;
 #[cfg(feature = "chaosnet-native")]
 pub use ternoa_chaosnet_runtime;
+use ternoa_core_primitives::Block;
 #[cfg(feature = "mainnet-native")]
 pub use ternoa_mainnet_runtime;
-
 
 /// The full client type definition.
 type FullClient<RuntimeApi, Executor> =
 	TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<Executor>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
-type FullGrandpaBlockImport<RuntimeApi, Executor> =
-	sc_finality_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient<RuntimeApi, Executor>, FullSelectChain>;
+type FullGrandpaBlockImport<RuntimeApi, Executor> = sc_finality_grandpa::GrandpaBlockImport<
+	FullBackend,
+	Block,
+	FullClient<RuntimeApi, Executor>,
+	FullSelectChain,
+>;
 
 /// The transaction pool type defintion.
-pub type TransactionPool<RuntimeApi, Executor> = sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, Executor>>;
+pub type TransactionPool<RuntimeApi, Executor> =
+	sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, Executor>>;
 
 pub type HostFunctions = (
 	frame_benchmarking::benchmarking::HostFunctions,
@@ -99,8 +104,16 @@ pub fn new_partial<RuntimeApi, Executor>(
 				sc_rpc::SubscriptionTaskExecutor,
 			) -> Result<rpc::IoHandler, sc_service::Error>,
 			(
-				sc_consensus_babe::BabeBlockImport<Block, FullClient<RuntimeApi, Executor>, FullGrandpaBlockImport<RuntimeApi, Executor>>,
-				sc_finality_grandpa::LinkHalf<Block, FullClient<RuntimeApi, Executor>, FullSelectChain>,
+				sc_consensus_babe::BabeBlockImport<
+					Block,
+					FullClient<RuntimeApi, Executor>,
+					FullGrandpaBlockImport<RuntimeApi, Executor>,
+				>,
+				sc_finality_grandpa::LinkHalf<
+					Block,
+					FullClient<RuntimeApi, Executor>,
+					FullSelectChain,
+				>,
 				sc_consensus_babe::BabeLink<Block>,
 			),
 			sc_finality_grandpa::SharedVoterState,
@@ -272,7 +285,11 @@ pub struct NewFullBase<RuntimeApi, Executor> {
 pub fn new_full_base<RuntimeApi, Executor>(
 	mut config: Configuration,
 	with_startup_data: impl FnOnce(
-		&sc_consensus_babe::BabeBlockImport<Block, FullClient<RuntimeApi, Executor>, FullGrandpaBlockImport<RuntimeApi, Executor>>,
+		&sc_consensus_babe::BabeBlockImport<
+			Block,
+			FullClient<RuntimeApi, Executor>,
+			FullGrandpaBlockImport<RuntimeApi, Executor>,
+		>,
 		&sc_consensus_babe::BabeLink<Block>,
 	),
 ) -> Result<NewFullBase<RuntimeApi, Executor>, ServiceError> {

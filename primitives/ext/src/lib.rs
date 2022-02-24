@@ -2,5 +2,4 @@
 use sp_runtime_interface::runtime_interface;
 
 #[runtime_interface]
-pub trait TernoaExt {
-}
+pub trait TernoaExt {}

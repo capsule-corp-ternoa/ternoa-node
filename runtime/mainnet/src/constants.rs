@@ -2,7 +2,7 @@
 
 /// Money matters.
 pub mod currency {
-	use ternoa_primitives_ternoa::Balance;
+	use ternoa_core_primitives::Balance;
 
 	pub const UNITS: Balance = 1_000_000_000_000_000_000;
 	pub const EUROS: Balance = UNITS;
@@ -16,7 +16,7 @@ pub mod currency {
 
 /// Time.
 pub mod time {
-	use ternoa_primitives_ternoa::{BlockNumber, Moment};
+	use ternoa_core_primitives::{BlockNumber, Moment};
 
 	/// Since BABE is probabilistic this is the average expected block time that
 	/// we are targetting. Blocks will be produced at a minimum duration defined

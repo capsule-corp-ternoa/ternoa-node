@@ -93,7 +93,7 @@ rand = { version = "0.8.4" }
 clap = { version = "3.0", features = ["derive"], optional = true }
 
 # Ternoa
-ternoa-primitives-ternoa = { path = "../primitives/ternoa" }
+ternoa-core-primitives = { path = "../core-primitives" }
 ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
 ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
 ternoa-runtime-common = { path = "../runtime/common" }

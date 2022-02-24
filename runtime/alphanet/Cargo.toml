@@ -5,9 +5,6 @@ version = "0.1.0"
 edition = "2018"
 build = "build.rs"
 
-[package.metadata.docs.rs]
-targets = ["x86_64-unknown-linux-gnu"]
-
 [dependencies]
 # Frame
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
@@ -66,12 +63,10 @@ serde = { optional = true, version = "1.0.132" }
 static_assertions = { version = "1.1.0" }
 
 # Ternoa
-ternoa-primitives-ternoa = { default-features = false, path = "../../primitives/ternoa" }
+ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-nfts = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
 ternoa-associated-accounts = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-# ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-# ternoa-capsules = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-# ternoa-auctions = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
+ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
@@ -80,9 +75,10 @@ substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substra
 default = ["std"]
 std = [
 	# Ternoa
-	"ternoa-primitives-ternoa/std",
+	"ternoa-core-primitives/std",
 	"ternoa-nfts/std",
 	"ternoa-associated-accounts/std",
+	"ternoa-runtime-common/std",
 	# "ternoa-auctions/std",
 	# "ternoa-marketplace/std",
 	# "ternoa-capsules/std",

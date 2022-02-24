@@ -66,7 +66,7 @@ serde = { optional = true, version = "1.0.132" }
 static_assertions = { version = "1.1.0" }
 
 # Ternoa
-ternoa-primitives-ternoa = { default-features = false, path = "../../primitives/ternoa" }
+ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-nfts = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
 ternoa-associated-accounts = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
 # ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
@@ -80,7 +80,7 @@ substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substra
 default = ["std"]
 std = [
 	# Ternoa
-	"ternoa-primitives-ternoa/std",
+	"ternoa-core-primitives/std",
 	"ternoa-nfts/std",
 	"ternoa-associated-accounts/std",
 	# "ternoa-auctions/std",
