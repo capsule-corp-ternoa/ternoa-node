@@ -1921,9 +1921,9 @@ dependencies = [
 
 [[package]]
 name = "git2"
-version = "0.13.25"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f29229cc1b24c0e6062f6e742aa3e256492a5323365e5ed3413599f8a5eff7d6"
+checksum = "94781080dd1a6b55dea7c46540d5bac87742a22f6dc2d84e54a5071ad6f0e387"
 dependencies = [
  "bitflags",
  "libc",
@@ -2608,9 +2608,9 @@ checksum = "1bf2e165bb3457c8e098ea76f3e3bc9db55f87aa90d52d0e6be741470916aaa4"
 
 [[package]]
 name = "libgit2-sys"
-version = "0.12.26+1.3.0"
+version = "0.13.0+1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19e1c899248e606fbfe68dcb31d8b0176ebab833b103824af31bddf4b7457494"
+checksum = "864e22fc06cae62860398cd854c93d5867f11c02ec916aa1417b440f170df23a"
 dependencies = [
  "cc",
  "libc",
@@ -7292,9 +7292,9 @@ dependencies = [
 
 [[package]]
 name = "sysinfo"
-version = "0.23.3"
+version = "0.23.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9339fea9ca4725be840dd294b24156ba4fe7aa6b86deac222e99954757ee15e9"
+checksum = "70d06c623c041b6aec9830080e9069b4ab6a84de3b4b4d14b4bbb09c629efdc0"
 dependencies = [
  "cfg-if 1.0.0",
  "core-foundation-sys",
@@ -7468,7 +7468,7 @@ dependencies = [
 [[package]]
 name = "ternoa-associated-accounts"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#ac3810e768af106bfa44156727d976b62dd69de3"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7546,7 +7546,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#ac3810e768af106bfa44156727d976b62dd69de3"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
 dependencies = [
  "frame-support",
  "sp-runtime",
@@ -7617,7 +7617,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nfts"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#ac3810e768af106bfa44156727d976b62dd69de3"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7635,7 +7635,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#ac3810e768af106bfa44156727d976b62dd69de3"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#2a3472d2ac2ed3319ba969ad6099f24cd04bee6b"
 dependencies = [
  "parity-scale-codec",
  "scale-info",
