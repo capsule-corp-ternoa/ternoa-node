@@ -20,7 +20,7 @@ use ternoa_core_primitives::Block;
 #[cfg(feature = "mainnet-native")]
 pub use mainnet_runtime;
 
-pub use client::*;
+mod client;
 
 /// The full client type definition.
 type FullClient<RuntimeApi, Executor> =
