@@ -1,6 +1,14 @@
+mod client;
 mod rpc;
 
+#[cfg(feature = "alphanet-native")]
+pub use alphanet_runtime;
+#[cfg(feature = "chaosnet-native")]
+pub use chaosnet_runtime;
+use client::*;
 use futures::{prelude::*, StreamExt};
+#[cfg(feature = "mainnet-native")]
+pub use mainnet_runtime;
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
 use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
@@ -12,15 +20,7 @@ use sc_telemetry::{Telemetry, TelemetryWorker};
 use sp_api::ConstructRuntimeApi;
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
-#[cfg(feature = "alphanet-native")]
-pub use alphanet_runtime;
-#[cfg(feature = "chaosnet-native")]
-pub use chaosnet_runtime;
 use ternoa_core_primitives::Block;
-#[cfg(feature = "mainnet-native")]
-pub use mainnet_runtime;
-
-mod client;
 
 /// The full client type definition.
 type FullClient<RuntimeApi, Executor> =
