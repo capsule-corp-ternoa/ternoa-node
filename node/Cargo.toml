@@ -11,9 +11,9 @@ path = "src/main.rs"
 [features]
 default = [ "cli" ]
 runtime-benchmarks = [
-	"ternoa-alphanet-runtime/runtime-benchmarks",
-	"ternoa-chaosnet-runtime/runtime-benchmarks",
-	"ternoa-mainnet-runtime/runtime-benchmarks",
+	"alphanet-runtime/runtime-benchmarks",
+	"chaosnet-runtime/runtime-benchmarks",
+	"mainnet-runtime/runtime-benchmarks",
 ]
 cli = [
 	"clap",
@@ -30,6 +30,9 @@ sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch 
 sp-trie = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, features = ["memory-tracker"] }
 
 [dependencies]
+
+ternoa-cli = { path = "cli", default-features = false }
+
 # Frame
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
@@ -97,7 +100,7 @@ ternoa-core-primitives = { path = "../core-primitives" }
 ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
 ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
 ternoa-runtime-common = { path = "../runtime/common" }
-ternoa-mainnet-runtime = { path = "../runtime/mainnet" }
+mainnet-runtime = { path = "../runtime/mainnet" }
 
 [build-dependencies]
 vergen = "6.0.0"

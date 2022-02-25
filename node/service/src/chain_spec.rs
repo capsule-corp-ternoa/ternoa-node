@@ -37,8 +37,14 @@ pub struct Extensions {
 	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
 }
 
-/// Specialized `ChainSpec`.
-pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig, Extensions>;
+/// The `ChainSpec` parameterized for the Alphanet runtime.
+pub type AlphanetChainSpec = sc_service::GenericChainSpec<alphanet::GenesisConfig, Extensions>;
+
+/// The `ChainSpec` parameterized for the Chaosnet runtime.
+pub type ChaosnetChainSpec = sc_service::GenericChainSpec<chaosnet::GenesisConfig, Extensions>;
+
+/// The `ChainSpec` parameterized for the Mainenet runtime.
+pub type MainnetChainSpec = sc_service::GenericChainSpec<mainnet::GenesisConfig, Extensions>;
 
 fn session_keys(
 	grandpa: GrandpaId,

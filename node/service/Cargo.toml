@@ -43,14 +43,17 @@ sc-consensus-slots = { git = "https://github.com/capsule-corp-ternoa/substrate",
 sc-basic-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 sc-consensus-uncles = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 sc-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+sp-transaction-storage-proof = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+sp-timestamp = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+sp-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Ternoa runtimes
-ternoa-alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
-ternoa-chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
-ternoa-mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
+alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
+chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
+mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 
 [features]
 default = [
@@ -59,6 +62,6 @@ default = [
 	"mainnet-native",
 ]
 
-alphanet-native = [ "ternoa-alphanet-runtime" ]
-chaosnet-native = [ "ternoa-chaosnet-runtime" ]
-mainnet-native = [ "ternoa-mainnet-runtime" ]
+alphanet-native = [ "alphanet-runtime" ]
+chaosnet-native = [ "chaosnet-runtime" ]
+mainnet-native = [ "mainnet-runtime" ]

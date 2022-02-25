@@ -1,5 +1,5 @@
 [package]
-name = "ternoa-mainnet-runtime"
+name = "mainnet-runtime"
 authors = [ "Ternoa" ]
 version = "0.1.0"
 edition = "2018"

@@ -4,9 +4,10 @@ authors = [ "Ternoa" ]
 edition = "2018"
 version = "0.1.0"
 
-[features]
-default = [ "chaosnet-native", "alphanet-native", "mainnet-native" ]
+[dependencies]
 
-chaosnet-native = [ "service/choasnet-native" ]
-alphanet-native = [ "service/alphanet-native" ]
-mainnet-native = [ "service/mainnet-native" ]
+# Ternoa
+service = { package = "ternoa-service", path = "../service", default-features = false }
+
+[build-dependencies]
+substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "master" }

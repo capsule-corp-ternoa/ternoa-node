@@ -1,5 +1,5 @@
 [package]
-name = "ternoa-alphanet-runtime"
+name = "alphanet-runtime"
 authors = [ "Ternoa" ]
 version = "0.1.0"
 edition = "2018"

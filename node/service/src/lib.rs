@@ -3,12 +3,13 @@ mod rpc;
 use futures::{prelude::*, StreamExt};
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
-use sc_executor::NativeElseWasmExecutor;
+use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
 use sc_network::{Event, NetworkService};
 use sc_service::{
 	config::Configuration, error::Error as ServiceError, RpcHandlers, TFullClient, TaskManager,
 };
 use sc_telemetry::{Telemetry, TelemetryWorker};
+use sp_api::ConstructRuntimeApi;
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
 #[cfg(feature = "alphanet-native")]
@@ -18,6 +19,8 @@ pub use ternoa_chaosnet_runtime;
 use ternoa_core_primitives::Block;
 #[cfg(feature = "mainnet-native")]
 pub use ternoa_mainnet_runtime;
+
+pub use client::*;
 
 /// The full client type definition.
 type FullClient<RuntimeApi, Executor> =
@@ -48,11 +51,11 @@ impl sc_executor::NativeExecutionDispatch for AlphanetExecutor {
 	type ExtendHostFunctions = HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		ternoa_alphanet_runtime::api::dispatch(method, data)
+		alphanet_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		ternoa_alphanet_runtime::native_version()
+		alphanet_runtime::native_version()
 	}
 }
 
@@ -64,11 +67,11 @@ impl sc_executor::NativeExecutionDispatch for ChaosnetExecutor {
 	type ExtendHostFunctions = HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		ternoa_chaosnet_runtime::api::dispatch(method, data)
+		chaosnet_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		ternoa_chaosnet_runtime::native_version()
+		chaosnet_runtime::native_version()
 	}
 }
 
@@ -80,11 +83,11 @@ impl sc_executor::NativeExecutionDispatch for MainnetExecutor {
 	type ExtendHostFunctions = HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		ternoa_mainnet_runtime::api::dispatch(method, data)
+		mainnet_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		ternoa_mainnet_runtime::native_version()
+		mainnet_runtime::native_version()
 	}
 }
 
@@ -121,7 +124,14 @@ pub fn new_partial<RuntimeApi, Executor>(
 		),
 	>,
 	ServiceError,
-> {
+>
+where
+	RuntimeApi:
+		ConstructRuntimeApi<Block, FullClient<RuntimeApi, Executor>> + Send + Sync + 'static,
+	RuntimeApi::RuntimeApi:
+		RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+	Executor: NativeExecutionDispatch + 'static,
+{
 	let telemetry = config
 		.telemetry_endpoints
 		.clone()

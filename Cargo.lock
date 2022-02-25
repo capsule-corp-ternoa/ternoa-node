@@ -83,6 +83,66 @@ dependencies = [
 ]
 
 [[package]]
+name = "alphanet-runtime"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "hex-literal",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-bags-list",
+ "pallet-balances",
+ "pallet-election-provider-multi-phase",
+ "pallet-elections-phragmen",
+ "pallet-grandpa",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-multisig",
+ "pallet-offences",
+ "pallet-preimage",
+ "pallet-session",
+ "pallet-staking",
+ "pallet-staking-reward-curve",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-npos-elections",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-tracing",
+ "sp-transaction-pool",
+ "sp-version",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "ternoa-associated-accounts",
+ "ternoa-nfts",
+ "ternoa-primitives-ternoa",
+]
+
+[[package]]
 name = "ansi_term"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -708,6 +768,66 @@ dependencies = [
  "cipher",
  "poly1305",
  "zeroize",
+]
+
+[[package]]
+name = "chaosnet-runtime"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "hex-literal",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-bags-list",
+ "pallet-balances",
+ "pallet-election-provider-multi-phase",
+ "pallet-elections-phragmen",
+ "pallet-grandpa",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-multisig",
+ "pallet-offences",
+ "pallet-preimage",
+ "pallet-session",
+ "pallet-staking",
+ "pallet-staking-reward-curve",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-npos-elections",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-tracing",
+ "sp-transaction-pool",
+ "sp-version",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "ternoa-associated-accounts",
+ "ternoa-nfts",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -3293,6 +3413,66 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b823e83b2affd8f40a9ee8c29dbc56404c1e34cd2710921f2801e2cf29527afa"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "mainnet-runtime"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "hex-literal",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-bags-list",
+ "pallet-balances",
+ "pallet-election-provider-multi-phase",
+ "pallet-elections-phragmen",
+ "pallet-grandpa",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-multisig",
+ "pallet-offences",
+ "pallet-preimage",
+ "pallet-session",
+ "pallet-staking",
+ "pallet-staking-reward-curve",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-npos-elections",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-tracing",
+ "sp-transaction-pool",
+ "sp-version",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "ternoa-associated-accounts",
+ "ternoa-nfts",
+ "ternoa-primitives-ternoa",
 ]
 
 [[package]]
@@ -7204,6 +7384,14 @@ dependencies = [
 [[package]]
 name = "substrate-build-script-utils"
 version = "3.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=master#f54e1a2f294c9baa1d8d335c18a7c3e49c47cf6b"
+dependencies = [
+ "platforms",
+]
+
+[[package]]
+name = "substrate-build-script-utils"
+version = "3.0.0"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-02-03#59649dd117969467d8046df86afe56810f596545"
 dependencies = [
  "platforms",
@@ -7343,6 +7531,8 @@ dependencies = [
 name = "ternoa"
 version = "0.2.2"
 dependencies = [
+ "alphanet-runtime",
+ "chaosnet-runtime",
  "clap",
  "frame-benchmarking",
  "frame-benchmarking-cli",
@@ -7350,6 +7540,7 @@ dependencies = [
  "hex-literal",
  "jsonrpc-core",
  "jsonrpc-pubsub",
+ "mainnet-runtime",
  "node-inspect",
  "pallet-im-online",
  "pallet-transaction-payment-rpc",
@@ -7395,7 +7586,7 @@ dependencies = [
  "sp-transaction-pool",
  "sp-transaction-storage-proof",
  "sp-trie",
- "substrate-build-script-utils",
+ "substrate-build-script-utils 3.0.0 (git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-02-03)",
  "substrate-frame-rpc-system",
  "ternoa-alphanet-runtime",
  "ternoa-chaosnet-runtime",
@@ -7724,9 +7915,12 @@ dependencies = [
 name = "ternoa-service"
 version = "0.1.0"
 dependencies = [
+ "alphanet-runtime",
+ "chaosnet-runtime",
  "frame-benchmarking",
  "futures 0.3.21",
  "jsonrpc-core",
+ "mainnet-runtime",
  "pallet-transaction-payment-rpc",
  "sc-authority-discovery",
  "sc-basic-authorship",
@@ -7750,12 +7944,15 @@ dependencies = [
  "sc-transaction-pool",
  "sc-transaction-pool-api",
  "sp-api",
+ "sp-authorship",
  "sp-block-builder",
  "sp-blockchain",
  "sp-consensus",
  "sp-consensus-babe",
  "sp-keystore",
  "sp-runtime",
+ "sp-timestamp",
+ "sp-transaction-storage-proof",
  "substrate-frame-rpc-system",
  "ternoa-alphanet-runtime",
  "ternoa-chaosnet-runtime",
