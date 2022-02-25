@@ -11,7 +11,7 @@ use sp_runtime::{
 	traits::{IdentifyAccount, Verify},
 	Perbill,
 };
-use ternoa_chaosnet_runtime::{
+use chaosnet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AssociatedAccountsConfig,
 	AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, Block, GenesisConfig, GrandpaConfig,
 	ImOnlineConfig, NftsConfig, SessionConfig, SessionKeys, StakerStatus, StakingConfig,

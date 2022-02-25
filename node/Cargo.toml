@@ -97,8 +97,8 @@ clap = { version = "3.0", features = ["derive"], optional = true }
 
 # Ternoa
 ternoa-core-primitives = { path = "../core-primitives" }
-ternoa-alphanet-runtime = { path = "../runtime/alphanet" }
-ternoa-chaosnet-runtime = { path = "../runtime/chaosnet" }
+alphanet-runtime = { path = "../runtime/alphanet" }
+chaosnet-runtime = { path = "../runtime/chaosnet" }
 ternoa-runtime-common = { path = "../runtime/common" }
 mainnet-runtime = { path = "../runtime/mainnet" }
 

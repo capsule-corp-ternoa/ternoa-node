@@ -1,6 +1,6 @@
 {
     "name": "Ternoa Mainnet",
-    "id": "ternoa_mainnet",
+    "id": "mainnet",
     "chainType": "Live",
     "bootNodes": [
         "/dns/validator.staging.chaos.ternoa.com/tcp/30333/p2p/12D3KooWGmhwxN5Wr5d8hiHa3FL16a8QyYkYPXngt2NeFtRq655W"

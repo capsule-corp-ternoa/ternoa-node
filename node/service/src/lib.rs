@@ -13,12 +13,12 @@ use sp_api::ConstructRuntimeApi;
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
 #[cfg(feature = "alphanet-native")]
-pub use ternoa_alphanet_runtime;
+pub use alphanet_runtime;
 #[cfg(feature = "chaosnet-native")]
-pub use ternoa_chaosnet_runtime;
+pub use chaosnet_runtime;
 use ternoa_core_primitives::Block;
 #[cfg(feature = "mainnet-native")]
-pub use ternoa_mainnet_runtime;
+pub use mainnet_runtime;
 
 pub use client::*;
 

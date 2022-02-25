@@ -12,14 +12,14 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	/// Identifies the different Substrate runtimes. There'll be at least polkadot and node.
 	/// A different on-chain spec_name to that of the native runtime would normally result
 	/// in node not attempting to sync or author blocks.
-	spec_name: create_runtime_str!("ternoa-alphanet"),
+	spec_name: create_runtime_str!("alphanet"),
 
 	/// Name of the implementation of the spec. This is of little consequence for the node
 	/// and serves only to differentiate code of different implementation teams. For this
 	/// codebase, it will be parity-polkadot. If there were a non-Rust implementation of the
 	/// Polkadot runtime (e.g. C++), then it would identify itself with an accordingly different
 	/// `impl_name`.
-	impl_name: create_runtime_str!("ternoa-alphanet"),
+	impl_name: create_runtime_str!("alphanet"),
 
 	/// `authoring_version` is the version of the authorship interface. An authoring node
 	/// will not attempt to author blocks unless this is equal to its native runtime.
