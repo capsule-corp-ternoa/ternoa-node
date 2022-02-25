@@ -5,9 +5,19 @@ edition = "2018"
 version = "0.1.0"
 
 [dependencies]
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Ternoa
 service = { package = "ternoa-service", path = "../service", default-features = false }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "master" }
+substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+
+[features]
+default = [ "alphanet-native", "chaosnet-native", "mainnet-native", "wasmtime" ]
+
+alphanet-native = [ "service/alphanet-native" ]
+chaosnet-native = [ "service/chaosnet-native" ]
+mainnet-native = [ "service/mainnet-native" ]
+
+wasmtime = [ "sc-cli/wasmtime" ]

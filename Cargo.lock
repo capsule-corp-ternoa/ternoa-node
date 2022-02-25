@@ -8014,14 +8014,6 @@ dependencies = [
 [[package]]
 name = "substrate-build-script-utils"
 version = "3.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=master#f54e1a2f294c9baa1d8d335c18a7c3e49c47cf6b"
-dependencies = [
- "platforms",
-]
-
-[[package]]
-name = "substrate-build-script-utils"
-version = "3.0.0"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-02-03#59649dd117969467d8046df86afe56810f596545"
 dependencies = [
  "platforms",
@@ -8315,7 +8307,7 @@ dependencies = [
  "sp-transaction-pool",
  "sp-transaction-storage-proof",
  "sp-trie",
- "substrate-build-script-utils 3.0.0 (git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-02-03)",
+ "substrate-build-script-utils",
  "substrate-frame-rpc-system",
  "ternoa-cli",
  "ternoa-core-primitives",
@@ -8381,7 +8373,8 @@ dependencies = [
 name = "ternoa-cli"
 version = "0.1.0"
 dependencies = [
- "substrate-build-script-utils 3.0.0 (git+https://github.com/capsule-corp-ternoa/substrate?branch=master)",
+ "sc-cli",
+ "substrate-build-script-utils",
  "ternoa-service",
 ]
 
@@ -8543,7 +8536,7 @@ dependencies = [
  "sp-transaction-storage-proof",
  "sp-trie",
  "structopt",
- "substrate-build-script-utils 3.0.0 (git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-02-03)",
+ "substrate-build-script-utils",
  "substrate-frame-rpc-system",
  "substrate-prometheus-endpoint",
  "substrate-test-client",
