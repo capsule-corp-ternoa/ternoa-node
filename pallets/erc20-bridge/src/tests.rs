@@ -75,7 +75,6 @@ fn transfer() {
                 Origin::signed(ChainBridge::account_id()),
                 RELAYER_A,
                 10,
-                resource_id,
             ));
             assert_eq!(Balances::free_balance(&bridge_id), ENDOWED_BALANCE - 10);
             assert_eq!(Balances::free_balance(RELAYER_A), ENDOWED_BALANCE + 10);

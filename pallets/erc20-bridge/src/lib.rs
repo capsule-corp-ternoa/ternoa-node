@@ -216,7 +216,6 @@ pub mod pallet {
             origin: OriginFor<T>,
             to: <T as frame_system::Config>::AccountId,
             amount: BalanceOf<T>,
-            _r_id: ResourceId,
         ) -> DispatchResultWithPostInfo {
             let source = T::BridgeOrigin::ensure_origin(origin)?;
             <T as Config>::Currency::transfer(&source, &to, amount.into(), AllowDeath)?;

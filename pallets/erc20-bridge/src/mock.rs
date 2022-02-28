@@ -282,7 +282,6 @@ pub(crate) mod helpers {
         Call::Example(crate::Call::transfer {
             to,
             amount: amount.into(),
-            r_id: resource_id,
         })
     }
 } // end of 'helpers' module
