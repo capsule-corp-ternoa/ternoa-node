@@ -103,6 +103,7 @@ pub mod pallet {
         /// The currency mechanism.
         type Currency: Currency<<Self as frame_system::Config>::AccountId>;
 
+        #[pallet::constant]
         type NativeTokenId: Get<ResourceId>;
 
         /// Weight information for extrinsics in this pallet
