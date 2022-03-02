@@ -1,7 +1,7 @@
 use crate::cli::{Cli, Subcommand};
 use sc_cli::{ChainSpec, Result, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
-use ternoa_service::{chain_spec, new_partial, IdentifyVariant};
+use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
 
 #[cfg(feature = "chaosnet-native")]
 use ternoa_service::chaosnet_runtime;
@@ -44,46 +44,38 @@ impl SubstrateCli for Cli {
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
-		let spec = match id {
-			#[cfg(feature = "chaosnet-native")]
-			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
-			#[cfg(feature = "mainnet-native")]
-			"mainnet" => Box::new(chain_spec::mainnet_config()?),
-			_ => return Err("Please specify which chain you want to run!".into()),
-		};
-
-		return Ok(spec)
-
 		/* 		let spec = match id {
-			#[cfg(feature = "chaosnet-native")]
 			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
-			#[cfg(feature = "alphanet-native")]
-			"alphanet" => Box::new(chain_spec::alphanet_config()?),
-			//"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "chaosnet-native")]
 			"chaosnet-dev" | "dev" => Box::new(chain_spec::chaosnet::development_config()),
+
+			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
 			"alphanet-dev" | "dev" => Box::new(chain_spec::alphanet::development_config()),
-			// #[cfg(feature = "mainnet-native")]
-			// "mainnet-dev" | "dev" => Box::new(chain_spec::mainnet::development_config()),
-			// "" => return Err("Please specify which chain you want to run!".into()),
-			// path => {
-			// 	let path = std::path::PathBuf::from(path);
 
-			// 	let chain_spec =
-			// 		Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
-			// 			as Box<dyn sc_service::ChainSpec>;
+			"mainnet" => Box::new(chain_spec::mainnet_config()?),
+			#[cfg(feature = "mainnet-native")]
+			"mainnet-dev" | "dev" => Box::new(chain_spec::mainnet::development_config()),
 
-			// 	if chain_spec.is_chaosnet() {
-			// 		Box::new(chain_spec::ChaosnetChainSpec::from_json_file(path.clone())?)
-			// 	} else if chain_spec.is_alphanet() {
-			// 		Box::new(chain_spec::AlphanetChainSpec::from_json_file(path.clone())?)
-			// 	} else {
-			// 		Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
-			// 	}
-			// },
+			"" => return Err("Please specify which chain you want to run!".into()),
+			path => {
+				let path = std::path::PathBuf::from(path);
+
+				let chain_spec =
+					Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
+						as Box<dyn sc_service::ChainSpec>;
+
+				if chain_spec.is_chaosnet() {
+					Box::new(chain_spec::ChaosnetChainSpec::from_json_file(path.clone())?)
+				} else if chain_spec.is_alphanet() {
+					Box::new(chain_spec::AlphanetChainSpec::from_json_file(path.clone())?)
+				} else {
+					Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
+				}
+			},
 		};
 		Ok(spec) */
+		panic!("")
 	}
 
 	fn native_runtime_version(spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
@@ -114,9 +106,34 @@ pub fn run() -> Result<()> {
 	match &cli.subcommand {
 		None => {
 			let runner = cli.create_runner(&cli.run)?;
-			runner.run_node_until_exit(|config| async move {
-				service::new_full(config).map_err(sc_cli::Error::Service)
-			})
+			let chain_spec = &runner.config().chain_spec;
+
+			#[cfg(feature = "chaosnet-native")]
+			if chain_spec.is_chaosnet() {
+				return runner.run_node_until_exit(|config| async move {
+					new_full::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(config)
+						.map_err(sc_cli::Error::Service)
+				})
+			}
+
+			#[cfg(feature = "alphanet-native")]
+			if chain_spec.is_alphanet() {
+				return runner.run_node_until_exit(|config| async move {
+					new_full::<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(config)
+						.map_err(sc_cli::Error::Service)
+				})
+			}
+
+			#[cfg(feature = "mainnet-native")]
+			{
+				return runner.run_node_until_exit(|config| async move {
+					new_full::<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(config)
+						.map_err(sc_cli::Error::Service)
+				})
+			}
+
+			#[cfg(not(feature = "mainnet-native"))]
+			panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled")
 		},
 		Some(Subcommand::Inspect(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
@@ -139,9 +156,7 @@ pub fn run() -> Result<()> {
 			#[cfg(feature = "mainnet-native")]
 			{
 				return runner.sync_run(|config| {
-					runner.sync_run(|config| {
-						cmd.run::<mainnet_runtime::Block, mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(config)
-					})
+					cmd.run::<mainnet_runtime::Block, mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(config)
 				})
 			}
 
@@ -188,36 +203,152 @@ pub fn run() -> Result<()> {
 		Some(Subcommand::Vanity(cmd)) => cmd.run(),
 		Some(Subcommand::BuildSpec(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
+			let chain_spec = &runner.config().chain_spec;
+
 			runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
 		},
 		Some(Subcommand::CheckBlock(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
+			let chain_spec = &runner.config().chain_spec;
+
 			runner.async_run(|config| {
-				let PartialComponents { client, task_manager, import_queue, .. } =
-					new_partial(&config)?;
-				Ok((cmd.run(client, import_queue), task_manager))
+				#[cfg(feature = "chaosnet-native")]
+				if chain_spec.is_chaosnet() {
+					let PartialComponents { client, task_manager, import_queue, .. } = new_partial::<
+						chaosnet_runtime::RuntimeApi,
+						ChaosnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				}
+
+				#[cfg(feature = "alphanet-native")]
+				if chain_spec.is_alphanet() {
+					let PartialComponents { client, task_manager, import_queue, .. } = new_partial::<
+						alphanet_runtime::RuntimeApi,
+						AlphanetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				}
+
+				#[cfg(feature = "mainnet-native")]
+				{
+					let PartialComponents { client, task_manager, import_queue, .. } = new_partial::<
+						mainnet_runtime::RuntimeApi,
+						MainnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				}
+
+				#[cfg(not(feature = "mainnet-native"))]
+				panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
 			})
 		},
 		Some(Subcommand::ExportBlocks(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
+			let chain_spec = &runner.config().chain_spec;
+
 			runner.async_run(|config| {
-				let PartialComponents { client, task_manager, .. } = new_partial(&config)?;
-				Ok((cmd.run(client, config.database), task_manager))
+				#[cfg(feature = "chaosnet-native")]
+				if chain_spec.is_chaosnet() {
+					let PartialComponents { client, task_manager, .. } = new_partial::<
+						chaosnet_runtime::RuntimeApi,
+						ChaosnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, config.database), task_manager))
+				}
+
+				#[cfg(feature = "alphanet-native")]
+				if chain_spec.is_alphanet() {
+					let PartialComponents { client, task_manager, .. } = new_partial::<
+						alphanet_runtime::RuntimeApi,
+						AlphanetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, config.database), task_manager))
+				}
+
+				#[cfg(feature = "mainnet-native")]
+				{
+					let PartialComponents { client, task_manager, .. } = new_partial::<
+						mainnet_runtime::RuntimeApi,
+						MainnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, config.database), task_manager))
+				}
+
+				#[cfg(not(feature = "mainnet-native"))]
+				panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
 			})
 		},
 		Some(Subcommand::ExportState(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
+			let chain_spec = &runner.config().chain_spec;
+
 			runner.async_run(|config| {
-				let PartialComponents { client, task_manager, .. } = new_partial(&config)?;
-				Ok((cmd.run(client, config.chain_spec), task_manager))
+				#[cfg(feature = "chaosnet-native")]
+				if chain_spec.is_chaosnet() {
+					let PartialComponents { client, task_manager, .. } = new_partial::<
+						chaosnet_runtime::RuntimeApi,
+						ChaosnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, config.chain_spec), task_manager))
+				}
+
+				#[cfg(feature = "alphanet-native")]
+				if chain_spec.is_alphanet() {
+					let PartialComponents { client, task_manager, .. } = new_partial::<
+						alphanet_runtime::RuntimeApi,
+						AlphanetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, config.chain_spec), task_manager))
+				}
+
+				#[cfg(feature = "mainnet-native")]
+				{
+					let PartialComponents { client, task_manager, .. } = new_partial::<
+						mainnet_runtime::RuntimeApi,
+						MainnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, config.chain_spec), task_manager))
+				}
+
+				#[cfg(not(feature = "mainnet-native"))]
+				panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
 			})
 		},
 		Some(Subcommand::ImportBlocks(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
+			let chain_spec = &runner.config().chain_spec;
+
 			runner.async_run(|config| {
-				let PartialComponents { client, task_manager, import_queue, .. } =
-					new_partial(&config)?;
-				Ok((cmd.run(client, import_queue), task_manager))
+				#[cfg(feature = "chaosnet-native")]
+				if chain_spec.is_chaosnet() {
+					let PartialComponents { client, task_manager, import_queue, .. } = new_partial::<
+						chaosnet_runtime::RuntimeApi,
+						ChaosnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				}
+
+				#[cfg(feature = "alphanet-native")]
+				if chain_spec.is_alphanet() {
+					let PartialComponents { client, task_manager, import_queue, .. } = new_partial::<
+						alphanet_runtime::RuntimeApi,
+						AlphanetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				}
+
+				#[cfg(feature = "mainnet-native")]
+				{
+					let PartialComponents { client, task_manager, import_queue, .. } = new_partial::<
+						mainnet_runtime::RuntimeApi,
+						MainnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				}
+
+				#[cfg(not(feature = "mainnet-native"))]
+				panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
 			})
 		},
 		Some(Subcommand::PurgeChain(cmd)) => {
@@ -226,9 +357,38 @@ pub fn run() -> Result<()> {
 		},
 		Some(Subcommand::Revert(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
+			let chain_spec = &runner.config().chain_spec;
+
 			runner.async_run(|config| {
-				let PartialComponents { client, task_manager, backend, .. } = new_partial(&config)?;
-				Ok((cmd.run(client, backend), task_manager))
+				#[cfg(feature = "chaosnet-native")]
+				if chain_spec.is_chaosnet() {
+					let PartialComponents { client, task_manager, backend, .. } = new_partial::<
+						chaosnet_runtime::RuntimeApi,
+						ChaosnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, backend), task_manager))
+				}
+
+				#[cfg(feature = "alphanet-native")]
+				if chain_spec.is_alphanet() {
+					let PartialComponents { client, task_manager, backend, .. } = new_partial::<
+						alphanet_runtime::RuntimeApi,
+						AlphanetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, backend), task_manager))
+				}
+
+				#[cfg(feature = "mainnet-native")]
+				{
+					let PartialComponents { client, task_manager, backend, .. } = new_partial::<
+						mainnet_runtime::RuntimeApi,
+						MainnetExecutorDispatch,
+					>(&config)?;
+					Ok((cmd.run(client, backend), task_manager))
+				}
+
+				#[cfg(not(feature = "mainnet-native"))]
+				panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
 			})
 		},
 		#[cfg(feature = "try-runtime")]
