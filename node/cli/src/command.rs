@@ -1,26 +1,22 @@
 use crate::cli::{Cli, Subcommand};
 use sc_cli::{ChainSpec, Result, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
-use ternoa_client::Block;
 use ternoa_service::{chain_spec, new_partial, IdentifyVariant};
 
 #[cfg(feature = "chaosnet-native")]
-use chaosnet_runtime;
-
-#[cfg(feature = "alphanet-native")]
-use alphanet_runtime;
-
-#[cfg(feature = "mainnet-native")]
-use mainnet_runtime;
-
+use ternoa_service::chaosnet_runtime;
 #[cfg(feature = "chaosnet-native")]
-use ternoa_client::ChaosnetExecutorDispatch;
+use ternoa_service::ChaosnetExecutorDispatch;
 
 #[cfg(feature = "alphanet-native")]
-use ternoa_client::AlphanetExecutorDispatch;
+use ternoa_service::alphanet_runtime;
+#[cfg(feature = "alphanet-native")]
+use ternoa_service::AlphanetExecutorDispatch;
 
 #[cfg(feature = "mainnet-native")]
-use ternoa_client::MainnetExecutorDispatch;
+use ternoa_service::mainnet_runtime;
+#[cfg(feature = "mainnet-native")]
+use ternoa_service::MainnetExecutorDispatch;
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
@@ -49,36 +45,45 @@ impl SubstrateCli for Cli {
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
 		let spec = match id {
+			#[cfg(feature = "chaosnet-native")]
 			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
-			"alphanet" => Box::new(chain_spec::alphanet_config()?),
+			#[cfg(feature = "mainnet-native")]
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
+			_ => return Err("Please specify which chain you want to run!".into()),
+		};
 
+		return Ok(spec)
+
+		/* 		let spec = match id {
+			#[cfg(feature = "chaosnet-native")]
+			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
+			#[cfg(feature = "alphanet-native")]
+			"alphanet" => Box::new(chain_spec::alphanet_config()?),
+			//"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "chaosnet-native")]
 			"chaosnet-dev" | "dev" => Box::new(chain_spec::chaosnet::development_config()),
 			#[cfg(feature = "alphanet-native")]
 			"alphanet-dev" | "dev" => Box::new(chain_spec::alphanet::development_config()),
-			#[cfg(feature = "mainnet-native")]
-			"mainnet-dev" | "dev" => Box::new(chain_spec::mainnet::development_config()),
+			// #[cfg(feature = "mainnet-native")]
+			// "mainnet-dev" | "dev" => Box::new(chain_spec::mainnet::development_config()),
+			// "" => return Err("Please specify which chain you want to run!".into()),
+			// path => {
+			// 	let path = std::path::PathBuf::from(path);
 
-			"" => return Err("Please specify which chain you want to run!".into()),
+			// 	let chain_spec =
+			// 		Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
+			// 			as Box<dyn sc_service::ChainSpec>;
 
-			path => {
-				let path = std::path::PathBuf::from(path);
-
-				let chain_spec =
-					Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
-						as Box<dyn sc_service::ChainSpec>;
-
-				if chain_spec.is_chaosnet() {
-					Box::new(chain_spec::ChaosnetChainSpec::from_json_file(path.clone())?)
-				} else if chain_spec.is_alphanet() {
-					Box::new(chain_spec::AlphanetChainSpec::from_json_file(path.clone())?)
-				} else {
-					chain_spec
-				}
-			},
+			// 	if chain_spec.is_chaosnet() {
+			// 		Box::new(chain_spec::ChaosnetChainSpec::from_json_file(path.clone())?)
+			// 	} else if chain_spec.is_alphanet() {
+			// 		Box::new(chain_spec::AlphanetChainSpec::from_json_file(path.clone())?)
+			// 	} else {
+			// 		Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
+			// 	}
+			// },
 		};
-		Ok(spec)
+		Ok(spec) */
 	}
 
 	fn native_runtime_version(spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {

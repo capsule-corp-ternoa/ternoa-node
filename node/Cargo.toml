@@ -98,8 +98,8 @@ clap = { version = "3.1", features = ["derive"], optional = true }
 ternoa-core-primitives = { path = "../core-primitives" }
 alphanet-runtime = { path = "../runtime/alphanet" }
 chaosnet-runtime = { path = "../runtime/chaosnet" }
-ternoa-runtime-common = { path = "../runtime/common" }
 mainnet-runtime = { path = "../runtime/mainnet" }
+ternoa-runtime-common = { path = "../runtime/common" }
 
 [build-dependencies]
 vergen = "6.0.0"

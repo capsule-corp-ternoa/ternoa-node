@@ -1,13 +1,6 @@
 pub mod chain_spec;
 mod rpc;
 
-#[cfg(feature = "alphanet-native")]
-pub use alphanet_runtime;
-#[cfg(feature = "chaosnet-native")]
-pub use chaosnet_runtime;
-#[cfg(feature = "mainnet-native")]
-pub use mainnet_runtime;
-
 use futures::{prelude::*, StreamExt};
 use sc_chain_spec::ChainSpec;
 use sc_client_api::{BlockBackend, ExecutorProvider};
@@ -24,14 +17,23 @@ use std::sync::Arc;
 use ternoa_client::RuntimeApiCollection;
 use ternoa_core_primitives::Block;
 
-/* #[cfg(feature = "chaosnet-native")]
+#[cfg(feature = "chaosnet-native")]
 pub use ternoa_client::ChaosnetExecutorDispatch;
 
 #[cfg(feature = "alphanet-native")]
 pub use ternoa_client::AlphanetExecutorDispatch;
 
 #[cfg(feature = "mainnet-native")]
-pub use ternoa_client::MainnetExecutorDispatch; */
+pub use ternoa_client::MainnetExecutorDispatch;
+
+#[cfg(feature = "chaosnet-native")]
+pub use chaosnet_runtime;
+
+#[cfg(feature = "alphanet-native")]
+pub use alphanet_runtime;
+
+#[cfg(feature = "mainnet-native")]
+pub use mainnet_runtime;
 
 //pub use client::*;
 

@@ -149,8 +149,6 @@ pub fn testnet_genesis(
 			..Default::default()
 		},
 		treasury: Default::default(),
-
-		// Ternoa
 		sudo: SudoConfig { key: Some(root_key) },
 		transaction_payment: Default::default(),
 	}
