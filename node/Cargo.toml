@@ -92,7 +92,7 @@ futures = { features = ["compat"], version = "0.3.19" }
 codec = { package = "parity-scale-codec", version = "2.3.1" }
 serde = { version = "1.0.132" }
 rand = { version = "0.8.4" }
-clap = { version = "3.0", features = ["derive"], optional = true }
+clap = { version = "3.1", features = ["derive"], optional = true }
 
 # Ternoa
 ternoa-core-primitives = { path = "../core-primitives" }

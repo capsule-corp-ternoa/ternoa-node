@@ -5,19 +5,43 @@ edition = "2018"
 version = "0.1.0"
 
 [dependencies]
-sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+# Frame
+node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+
+# SC
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+
+# Rest
+clap = { version = "3.1", features = ["derive"], optional = true }
 
 # Ternoa
 ternoa-service = { path = "../service", default-features = false }
+ternoa-client = { path = "../client", default-features = false }
+
+# Ternoa runtimes
+chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
+alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
+mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 [features]
-default = [ "alphanet-native", "chaosnet-native", "mainnet-native", "wasmtime" ]
-
-alphanet-native = [ "ternoa-service/alphanet-native" ]
-chaosnet-native = [ "ternoa-service/chaosnet-native" ]
-mainnet-native = [ "ternoa-service/mainnet-native" ]
-
+default = [ "wasmtime", "cli", "mainnet-native"]
 wasmtime = [ "sc-cli/wasmtime" ]
+cli = [
+    "clap",
+    "sc-cli",
+    "sc-service",
+    "frame-benchmarking-cli",
+    "node-inspect"
+]
+
+# Configure the native runtimes to use. Polkadot is enabled by default.
+#
+# Validators require the native runtime currently
+chaosnet-native = [ "ternoa-service/chaosnet-native", "chaosnet-runtime" ]
+alphanet-native = [ "ternoa-service/alphanet-native", "alphanet-runtime" ]
+mainnet-native = [ "ternoa-service/mainnet-native", "mainnet-runtime" ]

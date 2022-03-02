@@ -11,12 +11,8 @@ use sc_finality_grandpa_rpc::{GrandpaApi, GrandpaRpcHandler};
 use sc_rpc::SubscriptionTaskExecutor;
 pub use sc_rpc_api::DenyUnsafe;
 use sc_sync_state_rpc::{SyncStateRpcApi, SyncStateRpcHandler};
-use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
-use sp_block_builder::BlockBuilder;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
-use sp_consensus::SelectChain;
-use sp_consensus_babe::BabeApi;
 use sp_keystore::SyncCryptoStorePtr;
 use ternoa_core_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Index};
 
@@ -79,10 +75,10 @@ where
 		+ 'static,
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
-	C::Api: BabeApi<Block>,
-	C::Api: BlockBuilder<Block>,
-	P: TransactionPool + 'static,
-	SC: SelectChain<Block> + 'static,
+	C::Api: sp_consensus_babe::BabeApi<Block>,
+	C::Api: sp_block_builder::BlockBuilder<Block>,
+	P: sc_transaction_pool_api::TransactionPool + 'static,
+	SC: sp_consensus::SelectChain<Block> + 'static,
 	B: sc_client_api::Backend<Block> + Send + Sync + 'static,
 	B::State: sc_client_api::backend::StateBackend<sp_runtime::traits::HashFor<Block>>,
 {
@@ -106,7 +102,7 @@ where
 	// more context: https://github.com/paritytech/substrate/pull/3480
 	// These RPCs should use an asynchronous caller instead.
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client.clone())));
-	io.extend_with(BabeApi::to_delegate(BabeRpcHandler::new(
+	io.extend_with(sc_consensus_babe_rpc::BabeApi::to_delegate(BabeRpcHandler::new(
 		client.clone(),
 		shared_epoch_changes.clone(),
 		keystore,

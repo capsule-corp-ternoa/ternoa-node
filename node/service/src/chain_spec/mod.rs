@@ -1,7 +1,7 @@
 use sc_chain_spec::{ChainSpecExtension, GenericChainSpec};
 use serde::{Deserialize, Serialize};
 use sp_core::{Pair, Public};
-use sp_runtime::traits::Verify;
+use sp_runtime::traits::{IdentifyAccount, Verify};
 use ternoa_core_primitives::{AccountId, Block, Signature};
 
 #[cfg(feature = "alphanet-native")]
@@ -52,15 +52,15 @@ pub type MainnetChainSpec = GenericChainSpec<mainnet_runtime::GenesisConfig, Ext
 pub type MainnetChainSpec = GenericChainSpec<DummyChainSpec, Extensions>;
 
 pub fn chaosnet_config() -> Result<ChaosnetChainSpec, String> {
-	ChaosnetChainSpec::from_json_bytes(&include_bytes!("../../../../specs/chaosnet/raw.json"))
+	ChaosnetChainSpec::from_json_bytes(&include_bytes!("../../../../specs/chaosnet/raw.json")[..])
 }
 
 pub fn alphanet_config() -> Result<AlphanetChainSpec, String> {
-	AlphanetChainSpec::from_json_bytes(&include_bytes!("../../../../specs/alphanet/raw.json"))
+	AlphanetChainSpec::from_json_bytes(&include_bytes!("../../../../specs/alphanet/raw.json")[..])
 }
 
 pub fn mainnet_config() -> Result<MainnetChainSpec, String> {
-	MainnetChainSpec::from_json_bytes(&include_bytes!("../../../../specs/mainnet/raw.json"))
+	MainnetChainSpec::from_json_bytes(&include_bytes!("../../../../specs/mainnet/raw.json")[..])
 }
 
 /// Helper function to generate a crypto pair from seeds

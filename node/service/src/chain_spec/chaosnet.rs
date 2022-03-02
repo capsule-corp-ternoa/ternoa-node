@@ -161,6 +161,9 @@ pub fn testnet_genesis(
 		indices: Default::default(),
 		sudo: SudoConfig { key: Some(root_key) },
 		transaction_payment: Default::default(),
+		auctions: Default::default(),
+		capsules: Default::default(),
+		marketplace: Default::default(),
 	}
 }
 

@@ -8373,8 +8373,16 @@ dependencies = [
 name = "ternoa-cli"
 version = "0.1.0"
 dependencies = [
+ "alphanet-runtime",
+ "chaosnet-runtime",
+ "clap 3.1.2",
+ "frame-benchmarking-cli",
+ "mainnet-runtime",
+ "node-inspect",
  "sc-cli",
+ "sc-service",
  "substrate-build-script-utils",
+ "ternoa-client",
  "ternoa-service",
 ]
 
