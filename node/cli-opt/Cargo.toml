@@ -1,5 +1,0 @@
-[package]
-name = "ternoa-cli-opt"
-authors = [ "Ternoa" ]
-edition = "2018"
-version = "0.1.0"

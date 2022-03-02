@@ -8,7 +8,7 @@ version = "0.1.0"
 sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 # Ternoa
-service = { package = "ternoa-service", path = "../service", default-features = false }
+ternoa-service = { path = "../service", default-features = false }
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
@@ -16,8 +16,8 @@ substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/s
 [features]
 default = [ "alphanet-native", "chaosnet-native", "mainnet-native", "wasmtime" ]
 
-alphanet-native = [ "service/alphanet-native" ]
-chaosnet-native = [ "service/chaosnet-native" ]
-mainnet-native = [ "service/mainnet-native" ]
+alphanet-native = [ "ternoa-service/alphanet-native" ]
+chaosnet-native = [ "ternoa-service/chaosnet-native" ]
+mainnet-native = [ "ternoa-service/mainnet-native" ]
 
 wasmtime = [ "sc-cli/wasmtime" ]

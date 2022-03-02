@@ -30,7 +30,6 @@ sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch 
 sp-trie = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, features = ["memory-tracker"] }
 
 [dependencies]
-
 ternoa-cli = { path = "cli", default-features = false }
 
 # Frame

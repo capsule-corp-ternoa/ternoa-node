@@ -7,9 +7,10 @@ use sc_consensus_epochs::SharedEpochChanges;
 use sc_finality_grandpa::{
 	FinalityProofProvider, GrandpaJustificationStream, SharedAuthoritySet, SharedVoterState,
 };
-use sc_finality_grandpa_rpc::GrandpaRpcHandler;
+use sc_finality_grandpa_rpc::{GrandpaApi, GrandpaRpcHandler};
 use sc_rpc::SubscriptionTaskExecutor;
 pub use sc_rpc_api::DenyUnsafe;
+use sc_sync_state_rpc::{SyncStateRpcApi, SyncStateRpcHandler};
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
@@ -105,7 +106,7 @@ where
 	// more context: https://github.com/paritytech/substrate/pull/3480
 	// These RPCs should use an asynchronous caller instead.
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client.clone())));
-	io.extend_with(sc_consensus_babe_rpc::BabeApi::to_delegate(BabeRpcHandler::new(
+	io.extend_with(BabeApi::to_delegate(BabeRpcHandler::new(
 		client.clone(),
 		shared_epoch_changes.clone(),
 		keystore,
@@ -113,7 +114,7 @@ where
 		select_chain,
 		deny_unsafe,
 	)));
-	io.extend_with(sc_finality_grandpa_rpc::GrandpaApi::to_delegate(GrandpaRpcHandler::new(
+	io.extend_with(GrandpaApi::to_delegate(GrandpaRpcHandler::new(
 		shared_authority_set.clone(),
 		shared_voter_state,
 		justification_stream,
@@ -121,15 +122,13 @@ where
 		finality_provider,
 	)));
 
-	io.extend_with(sc_sync_state_rpc::SyncStateRpcApi::to_delegate(
-		sc_sync_state_rpc::SyncStateRpcHandler::new(
-			chain_spec,
-			client,
-			shared_authority_set,
-			shared_epoch_changes,
-			deny_unsafe,
-		)?,
-	));
+	io.extend_with(SyncStateRpcApi::to_delegate(SyncStateRpcHandler::new(
+		chain_spec,
+		client,
+		shared_authority_set,
+		shared_epoch_changes,
+		deny_unsafe,
+	)?));
 
 	Ok(io)
 }
