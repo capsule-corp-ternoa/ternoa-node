@@ -52,11 +52,11 @@ impl SubstrateCli for Cli {
 		Ok(match id {
 			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
 			#[cfg(feature = "chaosnet-native")]
-			"chaosnet-dev" => Box::new(chain_spec::chaosnet::development_config()),
+			"chaosnet-dev" | "c-dev" => Box::new(chain_spec::chaosnet::development_config()),
 
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
-			"alphanet-dev" => Box::new(chain_spec::alphanet::development_config()),
+			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
 
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "mainnet-native")]
@@ -105,6 +105,9 @@ impl SubstrateCli for Cli {
 /// Parse command line arguments into service configuration.
 pub fn run() -> Result<()> {
 	let cli = Cli::from_args();
+
+	// When we call cli.create_runner() it automatically calls the cli.load_spec() function. The
+	// loaded spec is stored inside runner.config().chain_spec.
 
 	match &cli.subcommand {
 		None => run_wo_args(&cli),

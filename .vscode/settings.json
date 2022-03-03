@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "Alphanet",
+        "Chaosnet",
+        "ipfs",
+        "ternoa"
+    ],
+    "rust-analyzer.cargo.allFeatures": true,
+    "rust-analyzer.assist.importGranularity": "module"
+}

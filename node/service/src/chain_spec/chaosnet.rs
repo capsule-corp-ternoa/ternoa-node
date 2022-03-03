@@ -49,7 +49,7 @@ pub fn development_config() -> ChainSpec {
 	properties.insert("tokenDecimals".into(), 18.into());
 
 	ChainSpec::from_genesis(
-		"Development",
+		"Ternoa Chaosnet Development",
 		"chaosnet-dev",
 		ChainType::Development,
 		development_config_genesis,
