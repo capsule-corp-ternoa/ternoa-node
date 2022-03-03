@@ -50,7 +50,7 @@ pub fn development_config() -> ChainSpec {
 
 	ChainSpec::from_genesis(
 		"Development",
-		"dev",
+		"chaosnet-dev",
 		ChainType::Development,
 		development_config_genesis,
 		vec![],

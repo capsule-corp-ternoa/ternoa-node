@@ -48,8 +48,8 @@ pub fn development_config() -> ChainSpec {
 	properties.insert("tokenDecimals".into(), 18.into());
 
 	ChainSpec::from_genesis(
-		"Development",
-		"dev",
+		"Ternoa Alphanet Development",
+		"alphanet-dev",
 		ChainType::Development,
 		development_config_genesis,
 		vec![],
