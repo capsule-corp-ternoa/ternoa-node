@@ -5,7 +5,7 @@ path = "src/main.rs"
 [package]
 name = "ternoa"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 readme = "README.md"
 
 [dependencies]
@@ -20,6 +20,7 @@ members = [
     'runtime/chaosnet',
     'runtime/alphanet',
     'runtime/mainnet',
+    "core-primitives"
 ]
 
 [profile.release]
@@ -43,4 +44,4 @@ overflow-checks = true
 
 [features]
 runtime-benchmarks= [ "ternoa-cli/runtime-benchmarks" ]
-try-runtime = [ "ternoa-cli/try-runtime" ]
+# try-runtime = [ "ternoa-cli/try-runtime" ]

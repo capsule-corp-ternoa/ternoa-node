@@ -2,17 +2,15 @@
 name = "alphanet-runtime"
 authors = [ "Ternoa" ]
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 
 [dependencies]
 # Frame
-frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
 frame-election-provider-support = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 frame-executive = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
-frame-system-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
 frame-system-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
@@ -34,9 +32,15 @@ pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/sub
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-utility = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+
+# Benchmarking
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
+frame-system-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
+
+# Try Runtime
 frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
 
-# Sp
+# Substrate Primitives
 sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
@@ -121,16 +125,16 @@ std = [
 ]
 
 runtime-benchmarks = [
-	# Ternoa
-	# Substrate
 	"frame-benchmarking",
-	"frame-election-provider-support/runtime-benchmarks",
-	# "frame-executive/runtime-benchmarks", does not have runtime benchmarks
-	"frame-support/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"frame-system-benchmarking",
-	# "pallet-authority-discovery/runtime-benchmarks",  does not have this feature
-	# "pallet-authorship/runtime-benchmarks",  does not have this feature
+	# # Ternoa
+	# # Substrate
+	"frame-election-provider-support/runtime-benchmarks",
+	# # "frame-executive/runtime-benchmarks", does not have runtime benchmarks
+	"frame-support/runtime-benchmarks",
+	# # "pallet-authority-discovery/runtime-benchmarks",  does not have this feature
+	# # "pallet-authorship/runtime-benchmarks",  does not have this feature
 	"pallet-babe/runtime-benchmarks",
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
@@ -143,10 +147,10 @@ runtime-benchmarks = [
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-utility/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
-	# Rest
+	# # Rest
 	"hex-literal",
 ]
 
-try-runtime = [
-	"frame-try-runtime"
-]
+# try-runtime = [
+# 	"frame-try-runtime"
+# ]

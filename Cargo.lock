@@ -3394,7 +3394,6 @@ dependencies = [
  "pallet-grandpa",
  "pallet-im-online",
  "pallet-indices",
- "pallet-multisig",
  "pallet-offences",
  "pallet-preimage",
  "pallet-session",

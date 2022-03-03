@@ -1,7 +1,7 @@
 [package]
 name = "ternoa-cli"
 authors = [ "Ternoa" ]
-edition = "2018"
+edition = "2021"
 version = "0.1.0"
 
 [package.metadata.wasm-pack.profile.release]
@@ -13,11 +13,11 @@ wasm-opt = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# Frame
+# Substrate Frame
 node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
 frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
 
-# SC
+# Substrate Client
 sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
 sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
 
@@ -42,7 +42,7 @@ cli = [
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]
-try-runtime = ["ternoa-service/try-runtime"]
+# try-runtime = ["ternoa-service/try-runtime"]
 
 # Configure the native runtimes to use. Mainnet is enabled by default.
 #

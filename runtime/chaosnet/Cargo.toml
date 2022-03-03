@@ -2,7 +2,7 @@
 name = "chaosnet-runtime"
 authors = [ "Ternoa" ]
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 
 [dependencies]
@@ -136,6 +136,10 @@ std = [
 ]
 
 runtime-benchmarks = [
+	"frame-benchmarking",
+	"frame-system/runtime-benchmarks",
+	"frame-system-benchmarking",
+	"frame-support/runtime-benchmarks",
 	# Ternoa
 	"ternoa-nfts/runtime-benchmarks",
 	"ternoa-associated-accounts/runtime-benchmarks",
@@ -143,10 +147,8 @@ runtime-benchmarks = [
 	"ternoa-capsules/runtime-benchmarks",
 	"ternoa-auctions/runtime-benchmarks",
 	# Substrate
-	"frame-benchmarking",
 	"frame-election-provider-support/runtime-benchmarks",
 	# "frame-executive/runtime-benchmarks", does not have runtime benchmarks
-	"frame-support/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"frame-system-benchmarking",
 	# "pallet-authority-discovery/runtime-benchmarks",  does not have this feature
@@ -167,6 +169,6 @@ runtime-benchmarks = [
 	"hex-literal",
 ]
 
-try-runtime = [
-	"frame-try-runtime"
-]
+# try-runtime = [
+# 	"frame-try-runtime"
+# ]
