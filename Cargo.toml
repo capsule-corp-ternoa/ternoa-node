@@ -9,9 +9,6 @@ edition = "2018"
 readme = "README.md"
 
 [dependencies]
-# SC
-sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", features = [ "wasmtime" ] }
-
 # Mainnet is enabled by default
 ternoa-cli = { path = "node/cli", features = [ "chaosnet-native", "alphanet-native" ] }
 
@@ -27,3 +24,22 @@ members = [
 
 [profile.release]
 panic = 'unwind'
+
+# make sure dev builds with backtrace do
+# not slow us down
+[profile.dev.package.backtrace]
+inherits = "release"
+
+[profile.production]
+inherits = "release"
+lto = true
+codegen-units = 1
+
+[profile.testnet]
+inherits = "release"
+debug = 1 # debug symbols are useful for profilers
+debug-assertions = true
+overflow-checks = true
+
+[features]
+runtime-benchmarks= [ "ternoa-cli/runtime-benchmarks" ]

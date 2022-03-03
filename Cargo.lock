@@ -7567,7 +7567,6 @@ dependencies = [
 name = "ternoa"
 version = "0.1.0"
 dependencies = [
- "sc-cli",
  "ternoa-cli",
 ]
 
