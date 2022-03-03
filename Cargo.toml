@@ -43,3 +43,4 @@ overflow-checks = true
 
 [features]
 runtime-benchmarks= [ "ternoa-cli/runtime-benchmarks" ]
+try-runtime = [ "ternoa-cli/try-runtime" ]

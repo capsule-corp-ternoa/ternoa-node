@@ -9,6 +9,9 @@ version = "0.1.0"
 # https://github.com/rustwasm/wasm-pack/issues/781 etc.
 wasm-opt = false
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 # Frame
 node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
@@ -39,6 +42,7 @@ cli = [
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]
+try-runtime = ["ternoa-service/try-runtime"]
 
 # Configure the native runtimes to use. Mainnet is enabled by default.
 #

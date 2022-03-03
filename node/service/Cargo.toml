@@ -90,3 +90,9 @@ runtime-benchmarks = [
 	"alphanet-runtime/runtime-benchmarks",
 	"mainnet-runtime/runtime-benchmarks",
 ]
+
+try-runtime = [
+	"chaosnet-runtime/try-runtime",
+	"alphanet-runtime/try-runtime",
+	"mainnet-runtime/try-runtime",
+]

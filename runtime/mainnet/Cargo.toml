@@ -36,6 +36,8 @@ pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/sub
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-utility = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
+
 
 # Sp
 sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
@@ -118,6 +120,7 @@ std = [
 	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"frame-try-runtime/std",
 ]
 
 runtime-benchmarks = [
@@ -145,4 +148,8 @@ runtime-benchmarks = [
 	"sp-runtime/runtime-benchmarks",
 	# Rest
 	"hex-literal",
+]
+
+try-runtime = [
+	"frame-try-runtime"
 ]
