@@ -9,6 +9,9 @@ edition = "2018"
 readme = "README.md"
 
 [dependencies]
+# SC
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", features = [ "wasmtime" ] }
+
 # Mainnet is enabled by default
 ternoa-cli = { path = "node/cli", features = [ "chaosnet-native", "alphanet-native" ] }
 
