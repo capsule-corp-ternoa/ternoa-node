@@ -49,7 +49,7 @@ impl SubstrateCli for Cli {
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
-		/* 		let spec = match id {
+		Ok(match id {
 			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
 			#[cfg(feature = "chaosnet-native")]
 			"chaosnet-dev" | "dev" => Box::new(chain_spec::chaosnet::development_config()),
@@ -78,9 +78,7 @@ impl SubstrateCli for Cli {
 					Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
 				}
 			},
-		};
-		Ok(spec) */
-		panic!("")
+		})
 	}
 
 	fn native_runtime_version(spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
