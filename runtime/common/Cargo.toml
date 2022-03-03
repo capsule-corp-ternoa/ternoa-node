@@ -1,0 +1,16 @@
+[package]
+name = "ternoa-runtime-common"
+authors = [ "Ternoa" ]
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Ternoa
+ternoa-core-primitives = { path = "../../core-primitives", default-features = false }
+
+[features]
+default = ["std"]
+no_std = []
+std = [
+    "ternoa-core-primitives/std",
+]

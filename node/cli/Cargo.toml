@@ -1,0 +1,52 @@
+[package]
+name = "ternoa-cli"
+authors = [ "Ternoa" ]
+edition = "2021"
+version = "0.1.0"
+
+[package.metadata.wasm-pack.profile.release]
+# `wasm-opt` has some problems on Linux, see
+# https://github.com/rustwasm/wasm-pack/issues/781 etc.
+wasm-opt = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Substrate Frame
+node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+
+# Substrate Client
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
+
+# Rest
+clap = { version = "3.1", features = ["derive"], optional = true }
+
+# Ternoa
+ternoa-service = { path = "../service", default-features = false, optional = true }
+
+[build-dependencies]
+substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+
+[features]
+default = [ "wasmtime", "cli", "full-node", "mainnet-native" ]
+wasmtime = [ "sc-cli/wasmtime" ]
+cli = [
+    "clap",
+    "sc-cli",
+    "sc-service",
+    "frame-benchmarking-cli",
+    "node-inspect"
+]
+runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
+full-node = ["ternoa-service/full-node"]
+# try-runtime = ["ternoa-service/try-runtime"]
+
+# Configure the native runtimes to use. Mainnet is enabled by default.
+#
+# Validators require the native runtime currently
+chaosnet-native = [ "ternoa-service/chaosnet-native" ]
+alphanet-native = [ "ternoa-service/alphanet-native" ]
+mainnet-native = [ "ternoa-service/mainnet-native" ]

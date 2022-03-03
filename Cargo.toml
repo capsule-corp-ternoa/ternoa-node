@@ -1,12 +1,47 @@
-[profile.release]
-panic = 'unwind'
+[[bin]]
+name = "ternoa"
+path = "src/main.rs"
+
+[package]
+name = "ternoa"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+
+[dependencies]
+# Mainnet is enabled by default
+ternoa-cli = { path = "node/cli", features = [ "chaosnet-native", "alphanet-native" ] }
 
 [workspace]
 members = [
-    'common',
-    'executor',
-    'node',
-    'pallets/*',
-    'primitives',
-    'runtime',
+    'node/cli',
+    'node/client',
+    "node/service",
+    'runtime/chaosnet',
+    'runtime/alphanet',
+    'runtime/mainnet',
+    "core-primitives"
 ]
+
+[profile.release]
+panic = 'unwind'
+
+# make sure dev builds with backtrace do
+# not slow us down
+[profile.dev.package.backtrace]
+inherits = "release"
+
+[profile.production]
+inherits = "release"
+lto = true
+codegen-units = 1
+
+[profile.testnet]
+inherits = "release"
+debug = 1 # debug symbols are useful for profilers
+debug-assertions = true
+overflow-checks = true
+
+[features]
+runtime-benchmarks= [ "ternoa-cli/runtime-benchmarks" ]
+# try-runtime = [ "ternoa-cli/try-runtime" ]
