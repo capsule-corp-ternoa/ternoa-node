@@ -21,7 +21,6 @@ pub type FullClient<RuntimeApi, ExecutorDispatch> =
 #[cfg(not(any(feature = "chaosnet", feature = "alphanet", feature = "mainnet")))]
 compile_error!("at least one runtime feature must be enabled");
 
-/// The native executor instance for Polkadot.
 #[cfg(feature = "chaosnet")]
 pub struct ChaosnetExecutorDispatch;
 
