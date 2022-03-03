@@ -1,7 +1,7 @@
 pub mod chain_spec;
 mod rpc;
 
-use futures::{prelude::*, StreamExt};
+use futures::StreamExt;
 use sc_chain_spec::ChainSpec;
 use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
@@ -51,11 +51,6 @@ type FullGrandpaBlockImport<RuntimeApi, Executor> = sc_finality_grandpa::Grandpa
 /// The transaction pool type defintion.
 pub type TransactionPool<RuntimeApi, Executor> =
 	sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, Executor>>;
-
-pub type HostFunctions = (
-	frame_benchmarking::benchmarking::HostFunctions,
-	ternoa_primitives_ext::ternoa_ext::HostFunctions,
-);
 
 /// Can be called for a `Configuration` to identify which network the configuration targets.
 pub trait IdentifyVariant {

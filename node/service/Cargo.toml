@@ -68,6 +68,10 @@ sc-sync-state-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", 
 sc-consensus-slots = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 sc-consensus-uncles = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
+# Benchmarking
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
+
 # Rest
 ansi_term = "0.12.1"
 async-io = "1.3"
@@ -92,17 +96,12 @@ trie-root = "0.15.2"
 
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives" }
-ternoa-primitives-ext = { path = "../../primitives/ext" }
 ternoa-client = { path = "../client", default-features = false, optional = true }
 
 # Ternoa runtimes
 alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
 chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
 mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
-
-# Benchmarking
-frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
-frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 [dev-dependencies]
 assert_cmd = "0.12"
@@ -122,17 +121,14 @@ default = [ "full-node", "mainnet-native"]
 
 full-node = [ "ternoa-client" ]
 
-chaosnet-native = [ "chaosnet-runtime" ]
-alphanet-native = [ "alphanet-runtime" ]
-mainnet-native = [ "mainnet-runtime" ]
+chaosnet-native = [ "chaosnet-runtime", "ternoa-client/chaosnet" ]
+alphanet-native = [ "alphanet-runtime", "ternoa-client/alphanet" ]
+mainnet-native = [ "mainnet-runtime", "ternoa-client/mainnet" ]
 
 test-spec = []
 
 runtime-benchmarks = [
-	"chaosnet-native",
 	"chaosnet-runtime/runtime-benchmarks",
-	"alphanet-native",
 	"alphanet-runtime/runtime-benchmarks",
-	"mainnet-native",
 	"mainnet-runtime/runtime-benchmarks",
 ]

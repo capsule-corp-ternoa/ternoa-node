@@ -1,11 +1,26 @@
-[profile.release]
-panic = 'unwind'
+[[bin]]
+name = "ternoa"
+path = "src/main.rs"
+
+[package]
+name = "ternoa"
+version = "0.1.0"
+edition = "2018"
+readme = "README.md"
+
+[dependencies]
+# Mainnet is enabled by default
+ternoa-cli = { path = "node/cli", features = [ "chaosnet-native", "alphanet-native" ] }
 
 [workspace]
 members = [
-    'node',
+    'node/cli',
+    'node/client',
     "node/service",
     'runtime/chaosnet',
     'runtime/alphanet',
     'runtime/mainnet',
 ]
+
+[profile.release]
+panic = 'unwind'

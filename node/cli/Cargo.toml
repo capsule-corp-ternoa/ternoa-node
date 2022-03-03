@@ -4,6 +4,11 @@ authors = [ "Ternoa" ]
 edition = "2018"
 version = "0.1.0"
 
+[package.metadata.wasm-pack.profile.release]
+# `wasm-opt` has some problems on Linux, see
+# https://github.com/rustwasm/wasm-pack/issues/781 etc.
+wasm-opt = false
+
 [dependencies]
 # Frame
 node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", optional = true }
@@ -23,7 +28,7 @@ ternoa-service = { path = "../service", default-features = false, optional = tru
 substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
 
 [features]
-default = [ "wasmtime", "cli", "mainnet-native"]
+default = [ "wasmtime", "cli", "full-node", "mainnet-native" ]
 wasmtime = [ "sc-cli/wasmtime" ]
 cli = [
     "clap",
@@ -32,8 +37,10 @@ cli = [
     "frame-benchmarking-cli",
     "node-inspect"
 ]
+runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
+full-node = ["ternoa-service/full-node"]
 
-# Configure the native runtimes to use. Polkadot is enabled by default.
+# Configure the native runtimes to use. Mainnet is enabled by default.
 #
 # Validators require the native runtime currently
 chaosnet-native = [ "ternoa-service/chaosnet-native" ]

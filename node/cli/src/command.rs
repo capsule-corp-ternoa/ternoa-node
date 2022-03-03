@@ -110,26 +110,26 @@ pub fn run() -> Result<()> {
 
 			#[cfg(feature = "chaosnet-native")]
 			if chain_spec.is_chaosnet() {
-				return runner.run_node_until_exit(|config| async move {
+				return Ok(runner.run_node_until_exit(|config| async move {
 					new_full::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(config)
 						.map_err(sc_cli::Error::Service)
-				})
+				})?)
 			}
 
 			#[cfg(feature = "alphanet-native")]
 			if chain_spec.is_alphanet() {
-				return runner.run_node_until_exit(|config| async move {
+				return Ok(runner.run_node_until_exit(|config| async move {
 					new_full::<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(config)
 						.map_err(sc_cli::Error::Service)
-				})
+				})?)
 			}
 
 			#[cfg(feature = "mainnet-native")]
 			{
-				return runner.run_node_until_exit(|config| async move {
+				return Ok(runner.run_node_until_exit(|config| async move {
 					new_full::<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(config)
 						.map_err(sc_cli::Error::Service)
-				})
+				})?)
 			}
 
 			#[cfg(not(feature = "mainnet-native"))]
@@ -141,23 +141,23 @@ pub fn run() -> Result<()> {
 
 			#[cfg(feature = "chaosnet-native")]
 			if chain_spec.is_chaosnet() {
-				return runner.sync_run(|config| {
+				return Ok(runner.sync_run(|config| {
 					cmd.run::<chaosnet_runtime::Block, chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(config)
-				})
+				})?)
 			}
 
 			#[cfg(feature = "alphanet-native")]
 			if chain_spec.is_alphanet() {
-				return runner.sync_run(|config| {
+				return Ok(runner.sync_run(|config| {
 					cmd.run::<alphanet_runtime::Block, alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(config)
-				})
+				})?)
 			}
 
 			#[cfg(feature = "mainnet-native")]
 			{
-				return runner.sync_run(|config| {
+				return Ok(runner.sync_run(|config| {
 					cmd.run::<mainnet_runtime::Block, mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(config)
-				})
+				})?)
 			}
 
 			#[cfg(not(feature = "mainnet-native"))]
@@ -175,37 +175,37 @@ pub fn run() -> Result<()> {
 
 			#[cfg(feature = "chaosnet-native")]
 			if chain_spec.is_chaosnet() {
-				return runner.sync_run(|config| {
+				return Ok(runner.sync_run(|config| {
 					cmd.run::<chaosnet_runtime::Block, ChaosnetExecutorDispatch>(config)
-				})
+				})?)
 			}
 
 			#[cfg(feature = "alphanet-native")]
 			if chain_spec.is_alphanet() {
-				return runner.sync_run(|config| {
+				return Ok(runner.sync_run(|config| {
 					cmd.run::<alphanet_runtime::Block, AlphanetExecutorDispatch>(config)
-				})
+				})?)
 			}
 
 			#[cfg(feature = "mainnet-native")]
 			{
-				return runner.sync_run(|config| {
+				return Ok(runner.sync_run(|config| {
 					cmd.run::<mainnet_runtime::Block, MainnetExecutorDispatch>(config)
-				})
+				})?)
 			}
 
 			#[cfg(not(feature = "mainnet-native"))]
 			panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled")
 		},
-		Some(Subcommand::Key(cmd)) => cmd.run(&cli),
-		Some(Subcommand::Sign(cmd)) => cmd.run(),
-		Some(Subcommand::Verify(cmd)) => cmd.run(),
-		Some(Subcommand::Vanity(cmd)) => cmd.run(),
+		Some(Subcommand::Key(cmd)) => Ok(cmd.run(&cli)?),
+		Some(Subcommand::Sign(cmd)) => Ok(cmd.run()?),
+		Some(Subcommand::Verify(cmd)) => Ok(cmd.run()?),
+		Some(Subcommand::Vanity(cmd)) => Ok(cmd.run()?),
 		Some(Subcommand::BuildSpec(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 			let chain_spec = &runner.config().chain_spec;
 
-			runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
+			Ok(runner.sync_run(|config| cmd.run(config.chain_spec, config.network))?)
 		},
 		Some(Subcommand::CheckBlock(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
@@ -353,7 +353,7 @@ pub fn run() -> Result<()> {
 		},
 		Some(Subcommand::PurgeChain(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
-			runner.sync_run(|config| cmd.run(config.database))
+			Ok(runner.sync_run(|config| cmd.run(config.database))?)
 		},
 		Some(Subcommand::Revert(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
@@ -409,5 +409,7 @@ pub fn run() -> Result<()> {
 		Some(Subcommand::TryRuntime) => Err("TryRuntime wasn't enabled when building the node. \
 				You can enable it with `--features try-runtime`."
 			.into()),
-	}
+	}?;
+
+	Ok(())
 }

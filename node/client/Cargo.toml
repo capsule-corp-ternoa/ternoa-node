@@ -95,7 +95,6 @@ trie-root = "0.15.2"
 
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives" }
-ternoa-primitives-ext = { path = "../../primitives/ext" }
 
 # Ternoa runtimes
 alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
