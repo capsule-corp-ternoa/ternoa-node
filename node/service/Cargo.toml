@@ -70,15 +70,9 @@ alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
 chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
 mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 
-[dev-dependencies]
-substrate-test-client = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
-substrate-test-runtime-client = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
-
 [features]
 default = [ "db", "full-node", "mainnet-native"]
-
 full-node = [ "ternoa-client" ]
-
 db = [
 	"sc-service/db"
 ]
@@ -86,9 +80,6 @@ db = [
 chaosnet-native = [ "chaosnet-runtime", "ternoa-client/chaosnet" ]
 alphanet-native = [ "alphanet-runtime", "ternoa-client/alphanet" ]
 mainnet-native = [ "mainnet-runtime", "ternoa-client/mainnet" ]
-
-test-spec = []
-
 runtime-benchmarks = [
 	"chaosnet-runtime/runtime-benchmarks",
 	"alphanet-runtime/runtime-benchmarks",
