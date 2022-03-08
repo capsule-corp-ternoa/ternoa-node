@@ -1,56 +1,43 @@
+use ternoa_runtime_common as common;
+
+use codec::Encode;
+pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
+use common::{
+	constants::{
+		currency::{CENTS, EUROS},
+		time::{DAYS, SLOT_DURATION},
+	},
+	system::BlockHashCount,
+};
+use frame_support::{
+	parameter_types,
+	traits::{
+		ConstU32, Currency, Imbalance, KeyOwnerProofSystem, OnUnbalanced, U128CurrencyToVote,
+	},
+	weights::{constants::RocksDbWeight, IdentityFee},
+	PalletId,
+};
+use frame_system::EnsureRoot;
+use pallet_grandpa::AuthorityId as GrandpaId;
+use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
+use pallet_transaction_payment::CurrencyAdapter;
+use sp_core::crypto::KeyTypeId;
+use sp_runtime::{
+	generic::{self, Era},
+	impl_opaque_keys,
+	traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup},
+	Perbill, Percent, Permill, SaturatedConversion,
+};
+use sp_std::vec::Vec;
+use sp_version::RuntimeVersion;
+use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
+
 use crate::{
 	AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase, Event, Grandpa,
 	Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Runtime, Session, Signature,
 	SignedPayload, Staking, System, Timestamp, TransactionPayment, Treasury, UncheckedExtrinsic,
 	VERSION,
 };
-use codec::{Decode, Encode};
-pub use common::blocks::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
-use common::system::BlockHashCount;
-use frame_election_provider_support::onchain;
-use frame_support::{
-	parameter_types,
-	traits::{
-		ConstU32, Currency, Imbalance, KeyOwnerProofSystem, LockIdentifier, OnUnbalanced,
-		U128CurrencyToVote,
-	},
-	weights::{
-		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
-		DispatchClass, IdentityFee, Weight,
-	},
-	PalletId,
-};
-use frame_system::{
-	limits::{BlockLength, BlockWeights},
-	EnsureRoot,
-};
-use pallet_grandpa::AuthorityId as GrandpaId;
-use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
-use sp_core::crypto::KeyTypeId;
-use sp_runtime::{
-	curve::PiecewiseLinear,
-	generic::{self, Era},
-	impl_opaque_keys,
-	traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup},
-	transaction_validity::TransactionPriority,
-	FixedPointNumber, Perbill, Percent, Permill, Perquintill, SaturatedConversion,
-};
-use sp_std::{vec, vec::Vec};
-use sp_version::RuntimeVersion;
-use static_assertions::const_assert;
-use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
-use ternoa_runtime_common::{
-	constants::{
-		currency::{deposit, CENTS, EUROS, MILLICENTS},
-		time::{
-			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
-		},
-	},
-	voter_bags,
-};
-
-use ternoa_runtime_common as common;
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
@@ -145,14 +132,10 @@ impl pallet_sudo::Config for Runtime {
 	type Call = Call;
 }
 
-parameter_types! {
-	pub const TimestampMinimumPeriod: Moment = SLOT_DURATION / 2;
-}
-
 impl pallet_timestamp::Config for Runtime {
 	type Moment = Moment;
 	type OnTimestampSet = Babe;
-	type MinimumPeriod = TimestampMinimumPeriod;
+	type MinimumPeriod = common::others::TimestampMinimumPeriod;
 	type WeightInfo = pallet_timestamp::weights::SubstrateWeight<Runtime>;
 }
 
@@ -189,8 +172,8 @@ impl pallet_treasury::Config for Runtime {
 
 // Babe
 impl pallet_babe::Config for Runtime {
-	type EpochDuration = common::blocks::EpochDuration;
-	type ExpectedBlockTime = common::blocks::ExpectedBlockTime;
+	type EpochDuration = common::authority::EpochDuration;
+	type ExpectedBlockTime = common::authority::ExpectedBlockTime;
 	// session module is the trigger
 	type EpochChangeTrigger = pallet_babe::ExternalTrigger;
 	type DisabledValidators = Session;
@@ -206,10 +189,10 @@ impl pallet_babe::Config for Runtime {
 	type HandleEquivocation = pallet_babe::EquivocationHandler<
 		Self::KeyOwnerIdentification,
 		Offences,
-		common::blocks::ReportLongevity,
+		common::authority::ReportLongevity,
 	>;
 	type WeightInfo = ();
-	type MaxAuthorities = common::system::MaxAuthorities;
+	type MaxAuthorities = common::authority::MaxAuthorities;
 }
 
 // Grandpa
@@ -226,10 +209,10 @@ impl pallet_grandpa::Config for Runtime {
 	type HandleEquivocation = pallet_grandpa::EquivocationHandler<
 		Self::KeyOwnerIdentification,
 		Offences,
-		common::blocks::ReportLongevity,
+		common::authority::ReportLongevity,
 	>;
 	type WeightInfo = ();
-	type MaxAuthorities = common::system::MaxAuthorities;
+	type MaxAuthorities = common::authority::MaxAuthorities;
 }
 
 impl_opaque_keys! {
@@ -274,15 +257,7 @@ impl pallet_authorship::Config for Runtime {
 }
 
 impl pallet_authority_discovery::Config for Runtime {
-	type MaxAuthorities = common::system::MaxAuthorities;
-}
-
-parameter_types! {
-	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
-	/// We prioritize im-online heartbeats over election solution submission.
-	pub const MaxKeys: u32 = 10_000;
-	pub const MaxPeerInHeartbeats: u32 = 10_000;
-	pub const MaxPeerDataEncodingSize: u32 = 1_000;
+	type MaxAuthorities = common::authority::MaxAuthorities;
 }
 
 impl<LocalCall> frame_system::offchain::CreateSignedTransaction<LocalCall> for Runtime
@@ -345,11 +320,11 @@ impl pallet_im_online::Config for Runtime {
 	type NextSessionRotation = Babe;
 	type ValidatorSet = Historical;
 	type ReportUnresponsiveness = Offences;
-	type UnsignedPriority = ImOnlineUnsignedPriority;
+	type UnsignedPriority = common::authority::ImOnlineUnsignedPriority;
 	type WeightInfo = pallet_im_online::weights::SubstrateWeight<Runtime>;
-	type MaxKeys = MaxKeys;
-	type MaxPeerInHeartbeats = MaxPeerInHeartbeats;
-	type MaxPeerDataEncodingSize = MaxPeerDataEncodingSize;
+	type MaxKeys = common::authority::MaxKeys;
+	type MaxPeerInHeartbeats = common::authority::MaxPeerInHeartbeats;
+	type MaxPeerDataEncodingSize = common::authority::MaxPeerDataEncodingSize;
 }
 
 impl pallet_offences::Config for Runtime {
@@ -359,7 +334,7 @@ impl pallet_offences::Config for Runtime {
 }
 
 impl frame_election_provider_support::onchain::Config for Runtime {
-	type Accuracy = Perbill;
+	type Accuracy = common::elections::OnChainAccuracy;
 	type DataProvider = Staking;
 }
 
@@ -430,22 +405,12 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type VoterSnapshotPerBlock = common::elections::VoterSnapshotPerBlock;
 }
 
-parameter_types! {
-	pub const BagThresholds: &'static [u64] = &voter_bags::THRESHOLDS;
-}
-
 // BagsList
 impl pallet_bags_list::Config for Runtime {
 	type Event = Event;
 	type VoteWeightProvider = Staking;
 	type WeightInfo = pallet_bags_list::weights::SubstrateWeight<Runtime>;
-	type BagThresholds = BagThresholds;
-}
-
-parameter_types! {
-	pub const PreimageMaxSize: u32 = 4096 * 1024;
-	pub const PreimageBaseDeposit: Balance = deposit(2, 64);
-	pub const PreimageByteDeposit: Balance = deposit(0, 1);
+	type BagThresholds = common::others::BagThresholds;
 }
 
 impl pallet_preimage::Config for Runtime {
@@ -453,7 +418,7 @@ impl pallet_preimage::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type ManagerOrigin = EnsureRoot<AccountId>;
-	type MaxSize = PreimageMaxSize;
-	type BaseDeposit = PreimageBaseDeposit;
-	type ByteDeposit = PreimageByteDeposit;
+	type MaxSize = common::others::PreimageMaxSize;
+	type BaseDeposit = common::others::PreimageBaseDeposit;
+	type ByteDeposit = common::others::PreimageByteDeposit;
 }

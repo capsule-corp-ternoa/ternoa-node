@@ -81,3 +81,5 @@ pub type Solver<R> = frame_election_provider_support::SequentialPhragmen<
 	pallet_election_provider_multi_phase::SolutionAccuracyOf<R>,
 	(),
 >;
+
+pub type OnChainAccuracy = Perbill;
