@@ -2,20 +2,10 @@ use ternoa_runtime_common as common;
 
 use codec::Encode;
 pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
-use common::{
-	constants::{
-		currency::{CENTS, EUROS},
-		time::{DAYS, SLOT_DURATION},
-	},
-	system::BlockHashCount,
-};
 use frame_support::{
 	parameter_types,
-	traits::{
-		ConstU32, Currency, Imbalance, KeyOwnerProofSystem, OnUnbalanced, U128CurrencyToVote,
-	},
+	traits::{ConstU32, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, IdentityFee},
-	PalletId,
 };
 use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
@@ -26,7 +16,7 @@ use sp_runtime::{
 	generic::{self, Era},
 	impl_opaque_keys,
 	traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup},
-	Perbill, Percent, Permill, SaturatedConversion,
+	Perbill, SaturatedConversion,
 };
 use sp_std::vec::Vec;
 use sp_version::RuntimeVersion;
@@ -41,8 +31,6 @@ use crate::{
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
-
-pub type NegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalance;
 
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
@@ -83,46 +71,22 @@ impl pallet_utility::Config for Runtime {
 	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }
 
-pub struct DealWithFees;
-impl OnUnbalanced<NegativeImbalance> for DealWithFees {
-	fn on_unbalanceds<B>(mut fees_then_tips: impl Iterator<Item = NegativeImbalance>) {
-		if let Some(fees) = fees_then_tips.next() {
-			// for fees, 80% to treasury, 20% to author
-			let mut split = fees.ration(80, 20);
-			if let Some(tips) = fees_then_tips.next() {
-				// for tips, if any, 80% to treasury, 20% to author (though this can be anything)
-				tips.ration_merge_into(80, 20, &mut split);
-			}
-			Treasury::on_unbalanced(split.0);
-			Treasury::on_unbalanced(split.1);
-		}
-	}
-}
-
 impl pallet_transaction_payment::Config for Runtime {
-	type OnChargeTransaction = CurrencyAdapter<Balances, DealWithFees>;
+	type OnChargeTransaction = CurrencyAdapter<Balances, common::staking::DealWithFees<Runtime>>;
 	type TransactionByteFee = common::transactions::TransactionByteFee;
 	type OperationalFeeMultiplier = common::transactions::OperationalFeeMultiplier;
 	type WeightToFee = IdentityFee<Balance>;
 	type FeeMultiplierUpdate = common::transactions::SlowAdjustingFeeUpdate<Self>; // TODO!
 }
 
-parameter_types! {
-	pub const ExistentialDeposit: Balance = 5 * CENTS;
-	// For weight estimation, we assume that the most locks on an individual account will be 50.
-	// This number may need to be adjusted in the future if this assumption no longer holds true.
-	pub const MaxLocks: u32 = 50;
-	pub const MaxReserves: u32 = 50;
-}
-
 impl pallet_balances::Config for Runtime {
-	type MaxLocks = MaxLocks;
+	type MaxLocks = common::other::MaxLocks;
 	type Balance = Balance;
-	type MaxReserves = MaxReserves;
+	type MaxReserves = common::other::MaxReserves;
 	type ReserveIdentifier = [u8; 8];
 	type DustRemoval = ();
 	type Event = Event;
-	type ExistentialDeposit = ExistentialDeposit;
+	type ExistentialDeposit = common::other::ExistentialDeposit;
 	type AccountStore = frame_system::Pallet<Runtime>;
 	type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }
@@ -135,39 +99,26 @@ impl pallet_sudo::Config for Runtime {
 impl pallet_timestamp::Config for Runtime {
 	type Moment = Moment;
 	type OnTimestampSet = Babe;
-	type MinimumPeriod = common::others::TimestampMinimumPeriod;
+	type MinimumPeriod = common::other::TimestampMinimumPeriod;
 	type WeightInfo = pallet_timestamp::weights::SubstrateWeight<Runtime>;
 }
 
-parameter_types! {
-	pub const ProposalBond: Permill = Permill::from_percent(5);
-	pub const SpendPeriod: BlockNumber = 1 * DAYS;
-	pub const Burn: Permill = Permill::from_percent(0);
-	pub const TipCountdown: BlockNumber = 1 * DAYS;
-	pub const TipFindersFee: Percent = Percent::from_percent(20);
-	pub const TipReportDepositBase: Balance = 1 * EUROS;
-	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
-	pub const MaxApprovals: u32 = 100;
-	pub const ProposalBondMinimum: Balance = 1 * EUROS;
-	pub const ProposalBondMaximum: Balance = 5 * EUROS;
-}
-
 impl pallet_treasury::Config for Runtime {
-	type PalletId = TreasuryPalletId;
+	type PalletId = common::other::TreasuryPalletId;
 	type Currency = Balances;
 	type ApproveOrigin = EnsureRoot<AccountId>;
 	type RejectOrigin = EnsureRoot<AccountId>;
 	type Event = Event;
 	type OnSlash = ();
-	type ProposalBond = ProposalBond;
-	type SpendPeriod = SpendPeriod;
-	type Burn = Burn;
+	type ProposalBond = common::other::ProposalBond;
+	type SpendPeriod = common::other::SpendPeriod;
+	type Burn = common::other::Burn;
 	type BurnDestination = ();
 	type SpendFunds = ();
 	type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
-	type MaxApprovals = MaxApprovals;
-	type ProposalBondMinimum = ProposalBondMinimum;
-	type ProposalBondMaximum = ProposalBondMaximum;
+	type MaxApprovals = common::other::MaxApprovals;
+	type ProposalBondMinimum = common::other::ProposalBondMinimum;
+	type ProposalBondMaximum = common::other::ProposalBondMaximum;
 }
 
 // Babe
@@ -175,7 +126,7 @@ impl pallet_babe::Config for Runtime {
 	type EpochDuration = common::authority::EpochDuration;
 	type ExpectedBlockTime = common::authority::ExpectedBlockTime;
 	// session module is the trigger
-	type EpochChangeTrigger = pallet_babe::ExternalTrigger;
+	type EpochChangeTrigger = common::authority::EpochChangeTrigger;
 	type DisabledValidators = Session;
 	type KeyOwnerProofSystem = Historical;
 	type KeyOwnerProof = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
@@ -245,13 +196,9 @@ impl pallet_session::historical::Config for Runtime {
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
 }
 
-parameter_types! {
-	pub const UncleGenerations: BlockNumber = 0;
-}
-
 impl pallet_authorship::Config for Runtime {
 	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Babe>;
-	type UncleGenerations = UncleGenerations;
+	type UncleGenerations = common::authority::UncleGenerations;
 	type FilterUncle = ();
 	type EventHandler = (Staking, ImOnline);
 }
@@ -272,8 +219,10 @@ where
 	) -> Option<(Call, <UncheckedExtrinsic as sp_runtime::traits::Extrinsic>::SignaturePayload)> {
 		let tip = 0;
 		// take the biggest period possible.
-		let period =
-			BlockHashCount::get().checked_next_power_of_two().map(|c| c / 2).unwrap_or(2) as u64;
+		let period = common::system::BlockHashCount::get()
+			.checked_next_power_of_two()
+			.map(|c| c / 2)
+			.unwrap_or(2) as u64;
 		let current_block = System::block_number()
 			.saturated_into::<u64>()
 			// The `System::block_number` is initialized with `n+1`,
@@ -410,7 +359,7 @@ impl pallet_bags_list::Config for Runtime {
 	type Event = Event;
 	type VoteWeightProvider = Staking;
 	type WeightInfo = pallet_bags_list::weights::SubstrateWeight<Runtime>;
-	type BagThresholds = common::others::BagThresholds;
+	type BagThresholds = common::other::BagThresholds;
 }
 
 impl pallet_preimage::Config for Runtime {
@@ -418,7 +367,7 @@ impl pallet_preimage::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type ManagerOrigin = EnsureRoot<AccountId>;
-	type MaxSize = common::others::PreimageMaxSize;
-	type BaseDeposit = common::others::PreimageBaseDeposit;
-	type ByteDeposit = common::others::PreimageByteDeposit;
+	type MaxSize = common::other::PreimageMaxSize;
+	type BaseDeposit = common::other::PreimageBaseDeposit;
+	type ByteDeposit = common::other::PreimageByteDeposit;
 }

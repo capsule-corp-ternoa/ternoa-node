@@ -3,7 +3,7 @@
 pub mod authority;
 pub mod constants;
 pub mod elections;
-pub mod others;
+pub mod other;
 pub mod staking;
 pub mod system;
 pub mod transactions;
