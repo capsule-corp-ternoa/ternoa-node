@@ -6,6 +6,8 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+pub use ternoa_runtime_common::constants;
+
 mod pallets;
 mod version;
 
@@ -17,7 +19,7 @@ use pallet_grandpa::{
 use pallet_session::historical as pallet_session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
 use pallets::EpochDuration;
-pub use pallets::{MaxNominations as MAX_NOMINATIONS, SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
+pub use pallets::{SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
 use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
@@ -31,7 +33,6 @@ use sp_runtime::{
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
-pub use ternoa_runtime_common::constants;
 pub use version::VERSION;
 
 #[cfg(feature = "std")]
@@ -63,7 +64,7 @@ construct_runtime!(
 		// Basic stuff; balances is uncallable initially
 		System: frame_system = 0,
 
-		 // Babe must be before session.
+		// Babe must be before session.
 		Babe: pallet_babe = 1,
 
 		Timestamp: pallet_timestamp = 2,
@@ -71,30 +72,45 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment = 4,
 
 		// Consensus support.
+		// Block producing and finalization pallets
+		//
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
-		Authorship: pallet_authorship,
-		Staking: pallet_staking,
-		Offences: pallet_offences,
-		Historical: pallet_session_historical,
-		Session: pallet_session,
-		Grandpa: pallet_grandpa,
-		ImOnline: pallet_im_online,
-		AuthorityDiscovery: pallet_authority_discovery,
+		Authorship: pallet_authorship = 5,
+		Offences: pallet_offences = 7,
+		Historical: pallet_session_historical = 8,
+		Session: pallet_session = 9,
+		Grandpa: pallet_grandpa = 10,
+		ImOnline: pallet_im_online = 11,
+		AuthorityDiscovery: pallet_authority_discovery = 12,
 
-		// Election pallet. Only works with staking
-		ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
-		// Provides a semi-sorted list of nominators for staking.
-		BagsList: pallet_bags_list,
+		// Elections pallets
+		//
+		// Staking provides the data for the election and it is the entity which calls the 'elect' function.
+		// The 'elect' function gets the precomputed election results and uses it to change the current active validator set.
+		//
+		// ElectionProviderMultiPhase uses the validator/nominator data from the Staking and computes an election result.
+		// The computation is done in two phases, signed and unsigned.
+		//
+		// 'Substrate's Staking/NPoS 2022 Update' video : https://www.youtube.com/watch?v=qVd9lAudynY
+
+		Staking: pallet_staking = 6,
+		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 13,
+		BagsList: pallet_bags_list = 14,
+		Council: pallet_collective::<Instance1> = 19,
+		TechnicalCommittee: pallet_collective::<Instance2> = 20,
 
 		// Governance stuff. uncallable initially
-		Sudo: pallet_sudo,
-		Treasury: pallet_treasury,
+		Sudo: pallet_sudo = 15,
+		Treasury: pallet_treasury = 16,
 
 		// Cunning utilities. Usable initially.
-		Utility: pallet_utility,
+		Utility: pallet_utility = 17,
 
-		Preimage: pallet_preimage,
+		Preimage: pallet_preimage = 18,
+
+		// System scheduler.
+		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 23,
 	}
 );
 

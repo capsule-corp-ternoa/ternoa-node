@@ -97,6 +97,12 @@ construct_runtime!(
 		Staking: pallet_staking = 6,
 		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 13,
 		BagsList: pallet_bags_list = 14,
+		Council: pallet_collective::<Instance1> = 19,
+		TechnicalCommittee: pallet_collective::<Instance2> = 20,
+		TechnicalMembership: pallet_membership = 21,
+		Democracy: pallet_democracy = 22,
+		Society: pallet_society = 24,
+		PhragmenElection: pallet_elections_phragmen = 25,
 
 		// Governance stuff. uncallable initially
 		Sudo: pallet_sudo = 15,
@@ -106,6 +112,9 @@ construct_runtime!(
 		Utility: pallet_utility = 17,
 
 		Preimage: pallet_preimage = 18,
+
+		// System scheduler.
+		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 23,
 	}
 );
 

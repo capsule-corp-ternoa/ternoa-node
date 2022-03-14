@@ -32,6 +32,11 @@ pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/sub
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 pallet-utility = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+pallet-collective = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+pallet-membership = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+pallet-democracy = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+pallet-scheduler = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
+pallet-society = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false }
 
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03", default-features = false, optional = true }
@@ -122,6 +127,11 @@ std = [
 	"sp-transaction-pool/std",
 	"sp-version/std",
 	"frame-try-runtime/std",
+	"pallet-collective/std",
+	"pallet-membership/std",
+	"pallet-democracy/std",
+	"pallet-scheduler/std",
+	"pallet-society/std",
 ]
 
 runtime-benchmarks = [

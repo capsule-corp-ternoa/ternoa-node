@@ -1,8 +1,9 @@
 use super::{get_account_id_from_seed, get_from_seed, MainnetChainSpec as ChainSpec};
 use mainnet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
-	BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-	StakingConfig, SudoConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG,
+	BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig,
+	SessionKeys, StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig,
+	BABE_GENESIS_EPOCH_CONFIG,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
@@ -149,8 +150,13 @@ pub fn testnet_genesis(
 			..Default::default()
 		},
 		treasury: Default::default(),
-		sudo: SudoConfig { key: Some(root_key) },
+		sudo: SudoConfig { key: Some(root_key.clone()) },
 		transaction_payment: Default::default(),
+		technical_committee: TechnicalCommitteeConfig {
+			phantom: Default::default(),
+			members: vec![],
+		},
+		council: CouncilConfig { phantom: Default::default(), members: vec![root_key.clone()] },
 	}
 }
 /* use super::{DummyChainSpec, Extensions};

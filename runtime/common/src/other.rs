@@ -29,7 +29,7 @@ parameter_types! {
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
 	pub const MaxApprovals: u32 = 100;
 	pub const ProposalBondMinimum: Balance = 1 * EUROS;
-	pub const ProposalBondMaximum: Balance = 5 * EUROS;
+	pub const ProposalBondMaximum: Balance = 1000 * EUROS;
 
 	// Balances
 	pub const ExistentialDeposit: Balance = 5 * CENTS;
