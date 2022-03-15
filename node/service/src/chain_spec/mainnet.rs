@@ -154,7 +154,7 @@ pub fn testnet_genesis(
 		transaction_payment: Default::default(),
 		technical_committee: TechnicalCommitteeConfig {
 			phantom: Default::default(),
-			members: vec![],
+			members: vec![root_key.clone()],
 		},
 		council: CouncilConfig { phantom: Default::default(), members: vec![root_key.clone()] },
 	}
