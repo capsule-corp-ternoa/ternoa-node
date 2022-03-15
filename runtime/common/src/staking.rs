@@ -5,7 +5,7 @@ use frame_support::{
 use pallet_balances::NegativeImbalance;
 use sp_runtime::Perbill;
 
-use crate::elections::NposCompactSolution24;
+//use crate::elections::NposCompactSolution24;
 
 parameter_types! {
 	pub const SessionsPerEra: sp_staking::SessionIndex = 6;

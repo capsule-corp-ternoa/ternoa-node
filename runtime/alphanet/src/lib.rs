@@ -63,20 +63,22 @@ construct_runtime!(
 	{
 		// Basic stuff; balances is uncallable initially
 		System: frame_system = 0,
+		// System scheduler.
+		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 1,
 
 		// Babe must be before session.
-		Babe: pallet_babe = 1,
+		Babe: pallet_babe = 2,
 
-		Timestamp: pallet_timestamp = 2,
-		Balances: pallet_balances = 3,
-		TransactionPayment: pallet_transaction_payment = 4,
+		Timestamp: pallet_timestamp = 3,
+		Balances: pallet_balances = 4,
+		TransactionPayment: pallet_transaction_payment = 5,
 
 		// Consensus support.
 		// Block producing and finalization pallets
 		//
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
-		Authorship: pallet_authorship = 5,
+		Authorship: pallet_authorship = 6,
 		Offences: pallet_offences = 7,
 		Historical: pallet_session_historical = 8,
 		Session: pallet_session = 9,
@@ -94,27 +96,20 @@ construct_runtime!(
 		//
 		// 'Substrate's Staking/NPoS 2022 Update' video : https://www.youtube.com/watch?v=qVd9lAudynY
 
-		Staking: pallet_staking = 6,
-		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 13,
-		BagsList: pallet_bags_list = 14,
-		Council: pallet_collective::<Instance1> = 19,
-		TechnicalCommittee: pallet_collective::<Instance2> = 20,
-		TechnicalMembership: pallet_membership = 21,
-		Democracy: pallet_democracy = 22,
-		Society: pallet_society = 24,
-		PhragmenElection: pallet_elections_phragmen = 25,
+		Staking: pallet_staking = 13,
+		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 14,
+		BagsList: pallet_bags_list = 15,
+		TechnicalCommittee: pallet_collective::<Instance1> = 17,
+		TechnicalMembership: pallet_membership = 18,
+		Mandate: ternoa_mandate = 19,
 
 		// Governance stuff. uncallable initially
-		Sudo: pallet_sudo = 15,
-		Treasury: pallet_treasury = 16,
+		Treasury: pallet_treasury = 20,
 
 		// Cunning utilities. Usable initially.
-		Utility: pallet_utility = 17,
+		Utility: pallet_utility = 21,
 
-		Preimage: pallet_preimage = 18,
-
-		// System scheduler.
-		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 23,
+		Preimage: pallet_preimage = 22,
 	}
 );
 

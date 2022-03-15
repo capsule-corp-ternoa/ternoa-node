@@ -1,9 +1,9 @@
 use super::{get_account_id_from_seed, get_from_seed, AlphanetChainSpec as ChainSpec};
 use alphanet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
-	BalancesConfig, CouncilConfig, DemocracyConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
-	PhragmenElectionConfig, SessionConfig, SessionKeys, SocietyConfig, StakingConfig, SudoConfig,
-	SystemConfig, TechnicalCommitteeConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
+	BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
+	StakingConfig, SystemConfig, TechnicalCommitteeConfig, TechnicalMembershipConfig,
+	BABE_GENESIS_EPOCH_CONFIG,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
@@ -150,23 +150,14 @@ pub fn testnet_genesis(
 			..Default::default()
 		},
 		treasury: Default::default(),
-		sudo: SudoConfig { key: Some(root_key.clone()) },
 		transaction_payment: Default::default(),
 		technical_committee: TechnicalCommitteeConfig {
 			phantom: Default::default(),
 			members: vec![],
 		},
-		council: CouncilConfig { phantom: Default::default(), members: vec![root_key.clone()] },
 		technical_membership: TechnicalMembershipConfig {
 			phantom: Default::default(),
 			members: vec![root_key.clone()],
 		},
-		democracy: Default::default(),
-		society: SocietyConfig {
-			pot: Default::default(),
-			members: vec![root_key.clone()],
-			max_members: 100,
-		},
-		phragmen_election: PhragmenElectionConfig { members: vec![] },
 	}
 }
