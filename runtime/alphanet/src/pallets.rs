@@ -17,7 +17,7 @@ use sp_runtime::{
 	generic::{self, Era},
 	impl_opaque_keys,
 	traits::{AccountIdLookup, BlakeTwo256, OpaqueKeys, StaticLookup},
-	Perbill, SaturatedConversion,
+	SaturatedConversion,
 };
 use sp_std::vec::Vec;
 use sp_version::RuntimeVersion;
