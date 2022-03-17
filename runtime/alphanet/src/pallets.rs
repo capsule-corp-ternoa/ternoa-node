@@ -2,7 +2,7 @@ use codec::Encode;
 pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
+	traits::{ConstU32, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, IdentityFee},
 };
 use frame_system::EnsureRoot;
@@ -27,8 +27,8 @@ use ternoa_runtime_common as common;
 use crate::{
 	AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase, Event, Grandpa,
 	Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Preimage, Runtime, Session,
-	Signature, SignedPayload, Staking, System, TechnicalCommittee, Timestamp, TransactionPayment,
-	Treasury, UncheckedExtrinsic, VERSION,
+	Signature, SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
+	TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
 };
 
 #[cfg(any(feature = "std", test))]
@@ -74,7 +74,7 @@ impl pallet_utility::Config for Runtime {
 }
 
 impl pallet_transaction_payment::Config for Runtime {
-	type OnChargeTransaction = CurrencyAdapter<Balances, common::staking::DealWithFees<Runtime>>;
+	type OnChargeTransaction = CurrencyAdapter<Balances, StakingRewards>;
 	type TransactionByteFee = common::transactions::TransactionByteFee;
 	type OperationalFeeMultiplier = common::transactions::OperationalFeeMultiplier;
 	type WeightToFee = IdentityFee<Balance>;
@@ -106,7 +106,7 @@ impl pallet_treasury::Config for Runtime {
 	type ApproveOrigin = EnsureRoot<AccountId>;
 	type RejectOrigin = EnsureRoot<AccountId>;
 	type Event = Event;
-	type OnSlash = ();
+	type OnSlash = Treasury;
 	type ProposalBond = common::other::ProposalBond;
 	type SpendPeriod = common::other::SpendPeriod;
 	type Burn = common::other::Burn;
@@ -295,7 +295,7 @@ impl pallet_staking::Config for Runtime {
 	/// A super-majority of the council can cancel the slash.
 	type SlashCancelOrigin = EnsureRoot<AccountId>;
 	type SessionInterface = Self;
-	type EraPayout = common::staking::EraPayout;
+	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
 	type MaxNominatorRewardedPerValidator = common::staking::MaxNominatorRewardedPerValidator;
 	type OffendingValidatorsThreshold = common::staking::OffendingValidatorsThreshold;
@@ -329,7 +329,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type SignedDepositByte = common::elections::SignedDepositByte;
 	type SignedDepositWeight = ();
 	type SignedMaxWeight = Self::MinerMaxWeight;
-	type SlashHandler = (); // burn slashes
+	type SlashHandler = Treasury; // burn slashes
 	type RewardHandler = (); // nothing to do upon rewards
 	type SolutionImprovementThreshold = common::elections::SolutionImprovementThreshold;
 	type MinerMaxWeight = common::elections::MinerMaxWeight;
@@ -400,21 +400,25 @@ impl ternoa_mandate::Config for Runtime {
 		pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, TechnicalCollective>;
 }
 
-type ScheduleOrigin = EnsureOneOf<
-	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, TechnicalCollective>,
->;
-
+// Scheduler
 impl pallet_scheduler::Config for Runtime {
 	type Event = Event;
 	type Origin = Origin;
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::other::MaximumSchedulerWeight;
-	type ScheduleOrigin = ScheduleOrigin;
+	type ScheduleOrigin = EnsureRoot<AccountId>;
 	type MaxScheduledPerBlock = common::other::MaxScheduledPerBlock;
 	type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
 	type PreimageProvider = Preimage;
 	type NoPreimagePostponement = common::other::NoPreimagePostponement;
+}
+
+// Staking rewards
+impl ternoa_staking_rewards::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type PalletId = common::staking::StakingRewardsPalletId;
+	type ExternalOrigin = EnsureRoot<AccountId>;
 }

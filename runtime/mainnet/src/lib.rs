@@ -64,21 +64,21 @@ construct_runtime!(
 		// Basic stuff; balances is uncallable initially
 		System: frame_system = 0,
 		// System scheduler.
-		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 1,
+		Scheduler: pallet_scheduler = 23,
 
 		// Babe must be before session.
-		Babe: pallet_babe = 2,
+		Babe: pallet_babe = 1,
 
-		Timestamp: pallet_timestamp = 3,
-		Balances: pallet_balances = 4,
-		TransactionPayment: pallet_transaction_payment = 5,
+		Timestamp: pallet_timestamp = 2,
+		Balances: pallet_balances = 3,
+		TransactionPayment: pallet_transaction_payment = 4,
 
 		// Consensus support.
 		// Block producing and finalization pallets
 		//
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
-		Authorship: pallet_authorship = 6,
+		Authorship: pallet_authorship = 5,
 		Offences: pallet_offences = 7,
 		Historical: pallet_session_historical = 8,
 		Session: pallet_session = 9,
@@ -96,7 +96,7 @@ construct_runtime!(
 		//
 		// 'Substrate's Staking/NPoS 2022 Update' video : https://www.youtube.com/watch?v=qVd9lAudynY
 
-		Staking: pallet_staking = 13,
+		Staking: pallet_staking = 6,
 		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 14,
 		BagsList: pallet_bags_list = 15,
 		TechnicalCommittee: pallet_collective::<Instance1> = 17,

@@ -5,7 +5,7 @@ use ternoa_core_primitives::{Balance, BlockNumber, Moment};
 use crate::{
 	constants::{
 		currency::{deposit, CENTS, EUROS},
-		time::{DAYS, SLOT_DURATION},
+		time::{DAYS, MINUTES, SLOT_DURATION},
 	},
 	system::RuntimeBlockWeights,
 	voter_bags,
@@ -25,7 +25,7 @@ parameter_types! {
 
 	// Treasury
 	pub const ProposalBond: Permill = Permill::from_percent(5);
-	pub const SpendPeriod: BlockNumber = 1 * DAYS;
+	pub const SpendPeriod: BlockNumber = 10 * MINUTES;
 	pub const Burn: Permill = Permill::from_percent(0);
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
 	pub const MaxApprovals: u32 = 100;
@@ -40,7 +40,7 @@ parameter_types! {
 	pub const MaxReserves: u32 = 50;
 
 	// Technical committee
-	pub TechnicalMotionDuration: BlockNumber = 2 * DAYS;
+	pub TechnicalMotionDuration: BlockNumber = 10 * MINUTES;
 	pub const TechnicalMaxProposals: u32 = 100;
 	pub const TechnicalMaxMembers: u32 = 100;
 

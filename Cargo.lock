@@ -141,6 +141,7 @@ dependencies = [
  "ternoa-core-primitives",
  "ternoa-mandate",
  "ternoa-runtime-common",
+ "ternoa-staking-rewards",
 ]
 
 [[package]]
@@ -7525,7 +7526,7 @@ dependencies = [
 [[package]]
 name = "ternoa-associated-accounts"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7543,7 +7544,7 @@ dependencies = [
 [[package]]
 name = "ternoa-auctions"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7560,7 +7561,7 @@ dependencies = [
 [[package]]
 name = "ternoa-capsules"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7619,7 +7620,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-support",
  "sp-runtime",
@@ -7638,7 +7639,7 @@ dependencies = [
 [[package]]
 name = "ternoa-mandate"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -7650,7 +7651,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7667,7 +7668,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nfts"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7684,7 +7685,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "0.1.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#bd92ef9d93bb2fa07765ae6e9027f65fd821bc70"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -7768,6 +7769,22 @@ dependencies = [
  "substrate-frame-rpc-system",
  "ternoa-client",
  "ternoa-core-primitives",
+]
+
+[[package]]
+name = "ternoa-staking-rewards"
+version = "0.1.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#7438f1b6a5b28d5c3f440dbe9264696881dbcb85"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-authorship",
+ "pallet-staking",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -8107,7 +8124,7 @@ version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ee73e6e4924fe940354b8d4d98cad5231175d615cd855b758adc658c0aac6a0"
 dependencies = [
- "cfg-if 1.0.0",
+ "cfg-if 0.1.10",
  "rand 0.8.5",
  "static_assertions",
 ]

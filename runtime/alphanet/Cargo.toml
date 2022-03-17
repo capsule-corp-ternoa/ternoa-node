@@ -71,6 +71,7 @@ static_assertions = { version = "1.1.0" }
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
 ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
+ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-02-03" }
@@ -128,6 +129,7 @@ std = [
 	"pallet-membership/std",
 	"pallet-scheduler/std",
 	"ternoa-mandate/std",
+	"ternoa-staking-rewards/std",
 ]
 
 runtime-benchmarks = [
