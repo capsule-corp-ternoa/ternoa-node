@@ -20,15 +20,15 @@ function generate_node_key () {
   fi
 
   subkey generate-node-key --file node_key_private.txt 2> node_key_public.txt
-  local private=`cat node_key_private.txt`
+  node_private_key=`cat node_key_private.txt`
   node_public_key=`cat node_key_public.txt`
   rm node_key_private.txt node_key_public.txt
 
   echo "Node data: " >> result.txt
-  echo -e "Public key: $node_public_key\nPrivate key: $private" >> result.txt
+  echo -e "Public key: $node_public_key\nPrivate key: $node_private_key" >> result.txt
   echo "" >> result.txt
 
-  dialog --title 'Info' --msgbox "Your node info:\nPublic key:\n$node_public_key\nPrivate key:\n$private" 10 70
+  dialog --title 'Info' --msgbox "Your node info:\nPublic key:\n$node_public_key\nPrivate key:\n$node_private_key" 10 70
 }
 
 function account_selection () {
@@ -78,6 +78,8 @@ function account_selection () {
   #controller_ed25519_secret_seed=`cat temp.txt | grep "Secret seed" | cut -c 22-`;
   #controller_ed25519_secret_phrase=`cat temp.txt | grep "Secret phrase" | cut -c 22-`;
   controller_ed25519_account_id=`cat temp.txt | grep "Account ID" | cut -c 22-`;
+
+  dialog --title 'Info' --msgbox "Account Selection Done" 5 50
 }
 
 function generate_insert_session_key_script () {
@@ -96,6 +98,71 @@ curl http://localhost:9933 -H "Content-Type:application/json;charset=utf-8" -d "
 curl http://localhost:9933 -H "Content-Type:application/json;charset=utf-8" -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"author_insertKey\",\"params\": [\"imon\",\"$seed\",\"$sr25519\"]}"
 curl http://localhost:9933 -H "Content-Type:application/json;charset=utf-8" -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"author_insertKey\",\"params\": [\"audi\",\"$seed\",\"$sr25519\"]}"
 End-of-text
+
+dialog --title 'Info' --msgbox "Script saved inside session_keys_script.sh file" 5 55
+}
+
+function generate_systemctl_script () {
+  dialog --title "Message"  --yesno "Do you need the systemctl script to be generate?" 6 40
+  if [ "$?" = "1" ]; then
+    return 1
+  fi
+
+  dialog --menu "Node Selection" 10 40 5 "1" "Script for Validator node" "2" "Script for Public node" 2>temp.txt
+  if [ "$?" = "1" ]; then
+    return 1
+  fi
+  answer=`cat temp.txt`
+
+  dialog --inputbox "Enter your chain: " 8 40 2>temp.txt
+  if [ "$?" = "1" ]; then
+    return 1
+  fi
+
+  chain=`cat temp.txt`
+  db_path="/block/chain/node-data"
+
+  if [ "$answer" = "1" ]; then
+cat > ternoa.service <<End-of-text
+[Unit]
+Description=Ternoa Public Node By Ternoa.com
+
+[Service]
+ExecStart=/usr/bin/ternoa --name $node_name --chain $chain --base-path $db_path --validator  --wasm-execution compiled --prometheus-port 9615 --ws-max-connections 1000 --node-key $node_private_key
+WorkingDirectory=/usr/bin
+KillSignal=SIGINT
+User=root
+Restart=on-failure
+LimitNOFILE=10240
+SyslogIdentifier=ternoa
+
+
+[Install]
+WantedBy=multi-user.target
+End-of-text
+  fi
+
+  if [ "$answer" = "2" ]; then
+cat > ternoa.service <<End-of-text
+[Unit]
+Description=Ternoa Valdiator Node By Ternoa.com
+
+[Service]
+ExecStart=/usr/bin/ternoa --name $node_name --chain $chain --base-path $db_path --ws-external --rpc-external --rpc-cors all
+WorkingDirectory=/usr/bin
+KillSignal=SIGINT
+User=root
+Restart=on-failure
+LimitNOFILE=10240
+SyslogIdentifier=ternoa
+
+
+[Install]
+WantedBy=multi-user.target
+End-of-text
+  fi
+
+  dialog --title 'Info' --msgbox "Script saved inside ternoa.service file" 5 50
 }
 
 function generate_bootnode_address () {
@@ -116,7 +183,7 @@ function generate_bootnode_address () {
   echo "/ip4/$ip_address/tcp/30333/p2p/$node_public_key" >> result.txt
   echo "" >> result.txt
 
-  dialog --title 'Info' --msgbox "Your node address: /ip4/$ip_address/tcp/30333/p2p/$node_public_key" 6 80
+  dialog --title 'Info' --msgbox "Your node address: /ip4/$ip_address/tcp/30333/p2p/$node_public_key" 8 80
 }
 
 rm result.txt
@@ -126,6 +193,9 @@ generate_node_key
 generate_bootnode_address
 account_selection
 generate_insert_session_key_script
+generate_systemctl_script
+
+dialog --title 'Info' --msgbox "Program is Done :)" 5 50
 
 rm temp.txt
 
