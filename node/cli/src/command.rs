@@ -57,6 +57,8 @@ impl SubstrateCli for Cli {
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
 			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
+			#[cfg(feature = "alphanet-native")]
+			"alphanet-sta" | "a-sta" => Box::new(chain_spec::alphanet::staging_config()),
 
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "mainnet-native")]

@@ -87,24 +87,19 @@ fn development_config_genesis() -> GenesisConfig {
 
 fn staging_accounts() -> Vec<(AccountId, Balance)> {
 	vec![
-		(sr25519_account_from_seed("Boss"), 100_000_000 * UNITS),
-		(sr25519_account_from_seed("Validator1"), 1 * UNITS),
-		(sr25519_account_from_seed("Validator2"), 1 * UNITS),
-		(sr25519_account_from_seed("Validator3"), 1 * UNITS),
-		(sr25519_account_from_seed("Validator1//stash"), 150_005 * UNITS),
-		(sr25519_account_from_seed("Validator2//stash"), 150_005 * UNITS),
-		(sr25519_account_from_seed("Validator3//stash"), 150_005 * UNITS),
+		(sr25519_account_from_seed("boss"), 100_000_000 * UNITS),
+		(sr25519_account_from_seed("bootnode1"), 1 * UNITS),
+		(sr25519_account_from_seed("bootnode2"), 1 * UNITS),
+		(sr25519_account_from_seed("bootnode1//stash"), 150_005 * UNITS),
+		(sr25519_account_from_seed("bootnode2//stash"), 150_005 * UNITS),
 	]
 }
 
 fn staging_config_genesis() -> GenesisConfig {
 	let endowed_accounts = staging_accounts();
-	let initial_authorities = vec![
-		authority_keys_from_seed("Validator1"),
-		authority_keys_from_seed("Validator2"),
-		authority_keys_from_seed("Validator3"),
-	];
-	let committee_members = vec![sr25519_account_from_seed("Boss")];
+	let initial_authorities =
+		vec![authority_keys_from_seed("bootnode1"), authority_keys_from_seed("bootnode2")];
+	let committee_members = vec![sr25519_account_from_seed("boss")];
 	let stake_bond_amount: Balance = 150_000 * UNITS;
 	let invulnerables = vec![];
 
@@ -147,7 +142,7 @@ pub fn staging_config() -> ChainSpec {
 
 	ChainSpec::from_genesis(
 		"Ternoa Alphanet Staging",
-		"alphanet-dev",
+		"alphanet-sta",
 		ChainType::Local,
 		staging_config_genesis,
 		vec![],
