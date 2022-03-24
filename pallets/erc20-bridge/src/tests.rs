@@ -35,6 +35,7 @@ fn transfer_native() {
     TestExternalitiesBuilder::default()
         .build()
         .execute_with(|| {
+            let origin = Origin::signed(RELAYER_A);
             let dest_chain = 0;
             let resource_id = NativeTokenId::get();
             let amount: u64 = 100;
@@ -44,12 +45,17 @@ fn transfer_native() {
                 Origin::root(),
                 dest_chain.clone()
             ));
+
+            let origin_balance_before = Balances::free_balance(RELAYER_A);
+
             assert_ok!(Example::transfer_native(
-                Origin::signed(RELAYER_A),
+                origin.clone(),
                 amount.clone(),
                 recipient.clone(),
                 dest_chain,
             ));
+
+            assert_eq!(Balances::free_balance(RELAYER_A), origin_balance_before - amount);
 
             expect_event(chainbridge::Event::FungibleTransfer(
                 dest_chain,
@@ -66,24 +72,18 @@ fn transfer() {
     TestExternalitiesBuilder::default()
         .build()
         .execute_with(|| {
-            // Check inital state
-            let bridge_id: u64 = ChainBridge::account_id();
-            let resource_id = NativeTokenId::get();
-            assert_eq!(Balances::free_balance(&bridge_id), ENDOWED_BALANCE);
             // Transfer and check result
             assert_ok!(Example::transfer(
                 Origin::signed(ChainBridge::account_id()),
                 RELAYER_A,
                 10,
             ));
-            assert_eq!(Balances::free_balance(&bridge_id), ENDOWED_BALANCE - 10);
             assert_eq!(Balances::free_balance(RELAYER_A), ENDOWED_BALANCE + 10);
 
             assert_events(vec![mock::Event::Balances(
-                pallet_balances::Event::Transfer {
-                    from: ChainBridge::account_id(),
-                    to: RELAYER_A,
-                    amount: 10,
+                pallet_balances::Event::Deposit {
+                    who: RELAYER_A,
+                    amount: 10
                 },
             )]);
         })
@@ -162,10 +162,6 @@ fn create_sucessful_transfer_proposal() {
             assert_eq!(prop, expected);
 
             assert_eq!(Balances::free_balance(RELAYER_A), ENDOWED_BALANCE + 10);
-            assert_eq!(
-                Balances::free_balance(ChainBridge::account_id()),
-                ENDOWED_BALANCE - 10
-            );
 
             assert_events(vec![
                 mock::Event::ChainBridge(chainbridge::Event::VoteFor(src_id, prop_id, RELAYER_A)),
@@ -174,9 +170,8 @@ fn create_sucessful_transfer_proposal() {
                 )),
                 mock::Event::ChainBridge(chainbridge::Event::VoteFor(src_id, prop_id, RELAYER_C)),
                 mock::Event::ChainBridge(chainbridge::Event::ProposalApproved(src_id, prop_id)),
-                mock::Event::Balances(pallet_balances::Event::Transfer {
-                    from: ChainBridge::account_id(),
-                    to: RELAYER_A,
+                mock::Event::Balances(pallet_balances::Event::Deposit {
+                    who: RELAYER_A,
                     amount: 10,
                 }),
                 mock::Event::ChainBridge(chainbridge::Event::ProposalSucceeded(src_id, prop_id)),

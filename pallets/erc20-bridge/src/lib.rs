@@ -36,7 +36,7 @@ mod weights;
 use frame_support::{
     dispatch::DispatchResultWithPostInfo,
     ensure,
-    traits::{Currency, EnsureOrigin, ExistenceRequirement::AllowDeath, Get},
+    traits::{Currency, EnsureOrigin, ExistenceRequirement::AllowDeath, Get, WithdrawReasons},
 };
 
 use frame_system::ensure_signed;
@@ -193,8 +193,8 @@ pub mod pallet {
                 std::println!("dest_id: {:?}", dest_id);
             }
 
-            let bridge_id = <chainbridge::Pallet<T>>::account_id();
-            T::Currency::transfer(&source, &bridge_id, amount.into(), AllowDeath)?;
+            let positive_imbalance = T::Currency::burn(amount);
+            T::Currency::settle(&source, positive_imbalance, WithdrawReasons::TRANSFER, AllowDeath);
 
             let resource_id = T::NativeTokenId::get();
             <chainbridge::Pallet<T>>::transfer_fungible(
@@ -218,8 +218,10 @@ pub mod pallet {
             to: <T as frame_system::Config>::AccountId,
             amount: BalanceOf<T>,
         ) -> DispatchResultWithPostInfo {
-            let source = T::BridgeOrigin::ensure_origin(origin)?;
-            <T as Config>::Currency::transfer(&source, &to, amount.into(), AllowDeath)?;
+            T::BridgeOrigin::ensure_origin(origin)?;
+            let negative_imbalance = T::Currency::issue(amount);
+            T::Currency::resolve_creating(&to, negative_imbalance);
+
             Ok(().into())
         }
     }
