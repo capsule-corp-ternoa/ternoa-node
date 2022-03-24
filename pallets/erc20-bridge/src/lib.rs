@@ -34,6 +34,7 @@ mod traits;
 mod weights;
 
 use frame_support::{
+    assert_ok,
     dispatch::DispatchResultWithPostInfo,
     ensure,
     traits::{Currency, EnsureOrigin, ExistenceRequirement::AllowDeath, Get, WithdrawReasons},
@@ -154,6 +155,7 @@ pub mod pallet {
     #[pallet::error]
     pub enum Error<T> {
         InvalidTransfer,
+        RemovalImpossible,
     }
 
     // ------------------------------------------------------------------------
@@ -193,8 +195,11 @@ pub mod pallet {
                 std::println!("dest_id: {:?}", dest_id);
             }
 
-            let positive_imbalance = T::Currency::burn(amount);
-            T::Currency::settle(&source, positive_imbalance, WithdrawReasons::TRANSFER, AllowDeath);
+            match T::Currency::withdraw(&source, amount, WithdrawReasons::TRANSFER, AllowDeath) {
+                Err(_) => return Err(Error::<T>::RemovalImpossible)?,
+                _ => {}
+            }
+            T::Currency::burn(amount);
 
             let resource_id = T::NativeTokenId::get();
             <chainbridge::Pallet<T>>::transfer_fungible(

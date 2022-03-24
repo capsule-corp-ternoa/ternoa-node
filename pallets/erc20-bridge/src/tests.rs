@@ -55,7 +55,10 @@ fn transfer_native() {
                 dest_chain,
             ));
 
-            assert_eq!(Balances::free_balance(RELAYER_A), origin_balance_before - amount);
+            assert_eq!(
+                Balances::free_balance(RELAYER_A),
+                origin_balance_before - amount
+            );
 
             expect_event(chainbridge::Event::FungibleTransfer(
                 dest_chain,
@@ -83,7 +86,7 @@ fn transfer() {
             assert_events(vec![mock::Event::Balances(
                 pallet_balances::Event::Deposit {
                     who: RELAYER_A,
-                    amount: 10
+                    amount: 10,
                 },
             )]);
         })
