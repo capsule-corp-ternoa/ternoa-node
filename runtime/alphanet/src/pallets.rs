@@ -1,4 +1,3 @@
-use codec::Encode;
 pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
 use frame_support::{
 	parameter_types,
@@ -9,10 +8,8 @@ use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
-use sp_core::{
-	crypto::KeyTypeId,
-	u32_trait::{_2, _3},
-};
+use parity_scale_codec::Encode;
+use sp_core::crypto::KeyTypeId;
 use sp_runtime::{
 	generic::{self, Era},
 	impl_opaque_keys,
@@ -34,9 +31,9 @@ use crate::{
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
 
-type MoreThanTwoThirdsOfCommittee = EnsureOneOf<
+type AtLeastThirdsOfCommittee = EnsureOneOf<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionMoreThan<_2, _3, AccountId, TechnicalCollective>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>,
 >;
 
 parameter_types! {
@@ -108,8 +105,8 @@ impl pallet_timestamp::Config for Runtime {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = common::other::TreasuryPalletId;
 	type Currency = Balances;
-	type ApproveOrigin = MoreThanTwoThirdsOfCommittee;
-	type RejectOrigin = MoreThanTwoThirdsOfCommittee;
+	type ApproveOrigin = AtLeastThirdsOfCommittee;
+	type RejectOrigin = AtLeastThirdsOfCommittee;
 	type Event = Event;
 	type OnSlash = Treasury;
 	type ProposalBond = common::other::ProposalBond;
@@ -298,7 +295,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = MoreThanTwoThirdsOfCommittee;
+	type SlashCancelOrigin = AtLeastThirdsOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -308,9 +305,10 @@ impl pallet_staking::Config for Runtime {
 	type GenesisElectionProvider = common::staking::GenesisElectionProvider<Self>;
 	// Alternatively, use pallet_staking::UseNominatorsMap<Runtime> to just use the nominators map.
 	// Note that the aforementioned does not scale to a very large number of nominators.
-	type SortedListProvider = BagsList;
+	type VoterList = BagsList;
 	type BenchmarkingConfig = common::staking::StakingBenchmarkingConfig;
 	type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
+	type MaxUnlockingChunks = frame_support::traits::ConstU32<32>;
 }
 
 impl pallet_election_provider_multi_phase::Config for Runtime {
@@ -347,17 +345,19 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type GovernanceFallback = common::elections::GovernanceFallback<Self>;
 	type Solver = common::elections::Solver<Self>;
 	type WeightInfo = pallet_election_provider_multi_phase::weights::SubstrateWeight<Runtime>;
-	type ForceOrigin = MoreThanTwoThirdsOfCommittee;
+	type ForceOrigin = AtLeastThirdsOfCommittee;
 	type BenchmarkingConfig = common::elections::BenchmarkConfig;
-	type VoterSnapshotPerBlock = common::elections::VoterSnapshotPerBlock;
+	type MaxElectingVoters = common::elections::MaxElectingVoters;
+	type MaxElectableTargets = common::elections::MaxElectableTargets;
 }
 
 // BagsList
 impl pallet_bags_list::Config for Runtime {
 	type Event = Event;
-	type VoteWeightProvider = Staking;
+	type ScoreProvider = Staking;
 	type WeightInfo = pallet_bags_list::weights::SubstrateWeight<Runtime>;
 	type BagThresholds = common::other::BagThresholds;
+	type Score = sp_npos_elections::VoteWeight;
 }
 
 impl pallet_preimage::Config for Runtime {
@@ -386,11 +386,11 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
 	type Event = Event;
-	type AddOrigin = MoreThanTwoThirdsOfCommittee;
-	type RemoveOrigin = MoreThanTwoThirdsOfCommittee;
-	type SwapOrigin = MoreThanTwoThirdsOfCommittee;
-	type ResetOrigin = MoreThanTwoThirdsOfCommittee;
-	type PrimeOrigin = MoreThanTwoThirdsOfCommittee;
+	type AddOrigin = AtLeastThirdsOfCommittee;
+	type RemoveOrigin = AtLeastThirdsOfCommittee;
+	type SwapOrigin = AtLeastThirdsOfCommittee;
+	type ResetOrigin = AtLeastThirdsOfCommittee;
+	type PrimeOrigin = AtLeastThirdsOfCommittee;
 	type MembershipInitialized = TechnicalCommittee;
 	type MembershipChanged = TechnicalCommittee;
 	type MaxMembers = common::other::TechnicalMaxMembers;
@@ -402,7 +402,7 @@ impl ternoa_mandate::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 	type ExternalOrigin =
-		pallet_collective::EnsureProportionAtLeast<_2, _3, AccountId, TechnicalCollective>;
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>;
 }
 
 // Scheduler
@@ -412,7 +412,7 @@ impl pallet_scheduler::Config for Runtime {
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::other::MaximumSchedulerWeight;
-	type ScheduleOrigin = MoreThanTwoThirdsOfCommittee;
+	type ScheduleOrigin = AtLeastThirdsOfCommittee;
 	type MaxScheduledPerBlock = common::other::MaxScheduledPerBlock;
 	type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
@@ -425,5 +425,5 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = common::staking::StakingRewardsPalletId;
-	type ExternalOrigin = MoreThanTwoThirdsOfCommittee;
+	type ExternalOrigin = AtLeastThirdsOfCommittee;
 }

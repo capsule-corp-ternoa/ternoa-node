@@ -1,4 +1,3 @@
-use codec::Encode;
 pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
 use frame_support::{
 	parameter_types,
@@ -9,10 +8,8 @@ use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
-use sp_core::{
-	crypto::KeyTypeId,
-	u32_trait::{_1, _2},
-};
+use parity_scale_codec::Encode;
+use sp_core::crypto::KeyTypeId;
 use sp_runtime::{
 	generic::{self, Era},
 	impl_opaque_keys,
@@ -303,9 +300,10 @@ impl pallet_staking::Config for Runtime {
 	type GenesisElectionProvider = common::staking::GenesisElectionProvider<Self>;
 	// Alternatively, use pallet_staking::UseNominatorsMap<Runtime> to just use the nominators map.
 	// Note that the aforementioned does not scale to a very large number of nominators.
-	type SortedListProvider = BagsList;
+	type VoterList = BagsList;
 	type BenchmarkingConfig = common::staking::StakingBenchmarkingConfig;
 	type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
+	type MaxUnlockingChunks = frame_support::traits::ConstU32<32>;
 }
 
 impl pallet_election_provider_multi_phase::Config for Runtime {
@@ -344,15 +342,17 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type WeightInfo = pallet_election_provider_multi_phase::weights::SubstrateWeight<Runtime>;
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type BenchmarkingConfig = common::elections::BenchmarkConfig;
-	type VoterSnapshotPerBlock = common::elections::VoterSnapshotPerBlock;
+	type MaxElectingVoters = common::elections::MaxElectingVoters;
+	type MaxElectableTargets = common::elections::MaxElectableTargets;
 }
 
 // BagsList
 impl pallet_bags_list::Config for Runtime {
 	type Event = Event;
-	type VoteWeightProvider = Staking;
+	type ScoreProvider = Staking;
 	type WeightInfo = pallet_bags_list::weights::SubstrateWeight<Runtime>;
 	type BagThresholds = common::other::BagThresholds;
+	type Score = sp_npos_elections::VoteWeight;
 }
 
 impl pallet_preimage::Config for Runtime {
@@ -397,12 +397,12 @@ impl ternoa_mandate::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 	type ExternalOrigin =
-		pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, TechnicalCollective>;
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>;
 }
 
 type ScheduleOrigin = EnsureOneOf<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, TechnicalCollective>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>,
 >;
 
 impl pallet_scheduler::Config for Runtime {

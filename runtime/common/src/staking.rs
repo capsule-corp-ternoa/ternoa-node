@@ -18,7 +18,7 @@ parameter_types! {
 	pub const MaxNominatorRewardedPerValidator: u32 = 256;
 	// 1 hour session, 15 minutes unsigned phase, 8 offchain executions.
 	pub const OffendingValidatorsThreshold: Perbill = Perbill::from_percent(17);
-	pub const MaxNominations: u32 = <NposCompactSolution24 as sp_npos_elections::NposSolution>::LIMIT as u32;
+	pub const MaxNominations: u32 = <NposCompactSolution24 as frame_election_provider_support::NposSolution>::LIMIT as u32;
 
 	// Staking rewards
 	pub const StakingRewardsPalletId: PalletId = PalletId(*b"terstare");
