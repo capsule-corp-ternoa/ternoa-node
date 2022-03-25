@@ -364,7 +364,7 @@ impl pallet_preimage::Config for Runtime {
 	type WeightInfo = pallet_preimage::weights::SubstrateWeight<Runtime>;
 	type Event = Event;
 	type Currency = Balances;
-	type ManagerOrigin = MoreThanTwoThirdsOfCommittee;
+	type ManagerOrigin = EnsureRoot<AccountId>;
 	type MaxSize = common::other::PreimageMaxSize;
 	type BaseDeposit = common::other::PreimageBaseDeposit;
 	type ByteDeposit = common::other::PreimageByteDeposit;
@@ -412,7 +412,7 @@ impl pallet_scheduler::Config for Runtime {
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::other::MaximumSchedulerWeight;
-	type ScheduleOrigin = EnsureRoot<AccountId>;
+	type ScheduleOrigin = MoreThanTwoThirdsOfCommittee;
 	type MaxScheduledPerBlock = common::other::MaxScheduledPerBlock;
 	type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;

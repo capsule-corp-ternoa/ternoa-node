@@ -84,7 +84,7 @@ dependencies = [
 
 [[package]]
 name = "alphanet-runtime"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -7518,7 +7518,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "ternoa-cli",
 ]
@@ -7577,7 +7577,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-cli"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "clap",
  "frame-benchmarking-cli",
@@ -7590,7 +7590,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-client"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "alphanet-runtime",
  "chaosnet-runtime",
@@ -7719,7 +7719,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-service"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "alphanet-runtime",
  "chaosnet-runtime",
