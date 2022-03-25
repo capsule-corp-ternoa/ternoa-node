@@ -2,7 +2,7 @@ use frame_support::{dispatch::TransactionPriority, parameter_types};
 use ternoa_core_primitives::{BlockNumber, Moment};
 
 use crate::{
-	constants::time::{EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, MINUTES, PRIMARY_PROBABILITY},
+	constants::time::{EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY},
 	staking::{BondingDuration, SessionsPerEra},
 };
 

@@ -66,9 +66,6 @@ construct_runtime!(
 		// System scheduler.
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 1,
 
-		//
-		StakingRewards: ternoa_staking_rewards = 23,
-
 		// Babe must be before session.
 		Babe: pallet_babe = 2,
 
@@ -99,8 +96,13 @@ construct_runtime!(
 		//
 		// 'Substrate's Staking/NPoS 2022 Update' video : https://www.youtube.com/watch?v=qVd9lAudynY
 		Staking: pallet_staking = 13,
-		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 14,
-		BagsList: pallet_bags_list = 15,
+		StakingRewards: ternoa_staking_rewards = 14,
+		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 15,
+		BagsList: pallet_bags_list = 16,
+
+		// Government pallets
+		//
+		// We start with the Technical Committee and then we will upgrade to a Council / Committee solution
 		TechnicalCommittee: pallet_collective::<Instance1> = 17,
 		TechnicalMembership: pallet_membership = 18,
 		Mandate: ternoa_mandate = 19,

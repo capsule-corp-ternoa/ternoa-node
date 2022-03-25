@@ -2,7 +2,7 @@ use codec::Encode;
 pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, KeyOwnerProofSystem, U128CurrencyToVote},
+	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, IdentityFee},
 };
 use frame_system::EnsureRoot;
@@ -11,7 +11,7 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_core::{
 	crypto::KeyTypeId,
-	u32_trait::{_1, _2},
+	u32_trait::{_2, _3},
 };
 use sp_runtime::{
 	generic::{self, Era},
@@ -33,6 +33,11 @@ use crate::{
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
+
+type MoreThanTwoThirdsOfCommittee = EnsureOneOf<
+	EnsureRoot<AccountId>,
+	pallet_collective::EnsureProportionMoreThan<_2, _3, AccountId, TechnicalCollective>,
+>;
 
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
@@ -103,8 +108,8 @@ impl pallet_timestamp::Config for Runtime {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = common::other::TreasuryPalletId;
 	type Currency = Balances;
-	type ApproveOrigin = EnsureRoot<AccountId>;
-	type RejectOrigin = EnsureRoot<AccountId>;
+	type ApproveOrigin = MoreThanTwoThirdsOfCommittee;
+	type RejectOrigin = MoreThanTwoThirdsOfCommittee;
 	type Event = Event;
 	type OnSlash = Treasury;
 	type ProposalBond = common::other::ProposalBond;
@@ -293,7 +298,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = EnsureRoot<AccountId>;
+	type SlashCancelOrigin = MoreThanTwoThirdsOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -342,7 +347,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type GovernanceFallback = common::elections::GovernanceFallback<Self>;
 	type Solver = common::elections::Solver<Self>;
 	type WeightInfo = pallet_election_provider_multi_phase::weights::SubstrateWeight<Runtime>;
-	type ForceOrigin = EnsureRoot<AccountId>;
+	type ForceOrigin = MoreThanTwoThirdsOfCommittee;
 	type BenchmarkingConfig = common::elections::BenchmarkConfig;
 	type VoterSnapshotPerBlock = common::elections::VoterSnapshotPerBlock;
 }
@@ -359,7 +364,7 @@ impl pallet_preimage::Config for Runtime {
 	type WeightInfo = pallet_preimage::weights::SubstrateWeight<Runtime>;
 	type Event = Event;
 	type Currency = Balances;
-	type ManagerOrigin = EnsureRoot<AccountId>;
+	type ManagerOrigin = MoreThanTwoThirdsOfCommittee;
 	type MaxSize = common::other::PreimageMaxSize;
 	type BaseDeposit = common::other::PreimageBaseDeposit;
 	type ByteDeposit = common::other::PreimageByteDeposit;
@@ -381,11 +386,11 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
 	type Event = Event;
-	type AddOrigin = EnsureRoot<AccountId>;
-	type RemoveOrigin = EnsureRoot<AccountId>;
-	type SwapOrigin = EnsureRoot<AccountId>;
-	type ResetOrigin = EnsureRoot<AccountId>;
-	type PrimeOrigin = EnsureRoot<AccountId>;
+	type AddOrigin = MoreThanTwoThirdsOfCommittee;
+	type RemoveOrigin = MoreThanTwoThirdsOfCommittee;
+	type SwapOrigin = MoreThanTwoThirdsOfCommittee;
+	type ResetOrigin = MoreThanTwoThirdsOfCommittee;
+	type PrimeOrigin = MoreThanTwoThirdsOfCommittee;
 	type MembershipInitialized = TechnicalCommittee;
 	type MembershipChanged = TechnicalCommittee;
 	type MaxMembers = common::other::TechnicalMaxMembers;
@@ -397,7 +402,7 @@ impl ternoa_mandate::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 	type ExternalOrigin =
-		pallet_collective::EnsureProportionAtLeast<_1, _2, AccountId, TechnicalCollective>;
+		pallet_collective::EnsureProportionAtLeast<_2, _3, AccountId, TechnicalCollective>;
 }
 
 // Scheduler
@@ -420,5 +425,5 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = common::staking::StakingRewardsPalletId;
-	type ExternalOrigin = EnsureRoot<AccountId>;
+	type ExternalOrigin = MoreThanTwoThirdsOfCommittee;
 }

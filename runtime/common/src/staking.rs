@@ -6,17 +6,19 @@ use frame_support::{
 use pallet_balances::NegativeImbalance;
 use sp_runtime::Perbill;
 
-//use crate::elections::NposCompactSolution24;
+use crate::elections::NposCompactSolution24;
 
 parameter_types! {
-	pub const SessionsPerEra: sp_staking::SessionIndex = 2;
-	pub const BondingDuration: sp_staking::EraIndex = 3;
-	pub const SlashDeferDuration: sp_staking::EraIndex = 2; // 1/4 the bonding duration.
+	// Six sessions in an era (6 * EPOCH, 6 hours).
+	pub const SessionsPerEra: sp_staking::SessionIndex = 6;
+	// 28 eras for unbonding (7 days).
+	pub const BondingDuration: sp_staking::EraIndex = 28;
+	// 27 eras in which slashes can be cancelled (slightly less than 7 days).
+	pub const SlashDeferDuration: sp_staking::EraIndex = 27;
 	pub const MaxNominatorRewardedPerValidator: u32 = 256;
 	// 1 hour session, 15 minutes unsigned phase, 8 offchain executions.
 	pub const OffendingValidatorsThreshold: Perbill = Perbill::from_percent(17);
-	// pub const MaxNominations: u32 = <NposCompactSolution24 as sp_npos_elections::NposSolution>::LIMIT as u32;
-	pub const MaxNominations: u32 = 24;
+	pub const MaxNominations: u32 = <NposCompactSolution24 as sp_npos_elections::NposSolution>::LIMIT as u32;
 
 	// Staking rewards
 	pub const StakingRewardsPalletId: PalletId = PalletId(*b"terstare");

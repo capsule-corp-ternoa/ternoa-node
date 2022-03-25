@@ -9,7 +9,7 @@ use ternoa_core_primitives::{AccountId, Balance, BlockNumber};
 
 use crate::{
 	constants::{
-		currency::{CENTS, EUROS},
+		currency::{deposit, UNITS},
 		time::EPOCH_DURATION_IN_SLOTS,
 	},
 	system::{RuntimeBlockLength, RuntimeBlockWeights},
@@ -21,10 +21,11 @@ parameter_types! {
 	pub const UnsignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
 
 	// signed config
-	pub const SignedMaxSubmissions: u32 = 10;
-	pub const SignedRewardBase: Balance = 1 * EUROS;
-	pub const SignedDepositBase: Balance = 1 * EUROS;
-	pub const SignedDepositByte: Balance = 1 * CENTS;
+	pub const SignedMaxSubmissions: u32 = 16;
+	// Each good submission will get 1/10 CAPS as reward
+	pub const SignedRewardBase: Balance = UNITS / 10;
+	pub const SignedDepositBase: Balance = deposit(2, 0);
+	pub const SignedDepositByte: Balance = deposit(0, 10) / 1024;
 
 	pub SolutionImprovementThreshold: Perbill = Perbill::from_rational(5u32, 10_000);
 

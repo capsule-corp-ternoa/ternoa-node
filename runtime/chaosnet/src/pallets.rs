@@ -40,7 +40,7 @@ use static_assertions::const_assert;
 use ternoa_core_primitives::{AccountId, AccountIndex, Balance, BlockNumber, Hash, Index, Moment};
 use ternoa_runtime_common::{
 	constants::{
-		currency::{deposit, CENTS, EUROS, MILLICENTS},
+		currency::{deposit, CENTS, MILLICENTS, UNITS},
 		time::{
 			DAYS, EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY, SLOT_DURATION,
 		},
@@ -281,11 +281,11 @@ parameter_types! {
 	pub const Burn: Permill = Permill::from_percent(0);
 	pub const TipCountdown: BlockNumber = 1 * DAYS;
 	pub const TipFindersFee: Percent = Percent::from_percent(20);
-	pub const TipReportDepositBase: Balance = 1 * EUROS;
+	pub const TipReportDepositBase: Balance = 1 * UNITS;
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
 	pub const MaxApprovals: u32 = 100;
-	pub const ProposalBondMinimum: Balance = 1 * EUROS;
-	pub const ProposalBondMaximum: Balance = 5 * EUROS;
+	pub const ProposalBondMinimum: Balance = 1 * UNITS;
+	pub const ProposalBondMaximum: Balance = 5 * UNITS;
 }
 
 impl pallet_treasury::Config for Runtime {
@@ -586,8 +586,8 @@ parameter_types! {
 
 	// signed config
 	pub const SignedMaxSubmissions: u32 = 10;
-	pub const SignedRewardBase: Balance = 1 * EUROS;
-	pub const SignedDepositBase: Balance = 1 * EUROS;
+	pub const SignedRewardBase: Balance = 1 * UNITS;
+	pub const SignedDepositBase: Balance = 1 * UNITS;
 	pub const SignedDepositByte: Balance = 1 * CENTS;
 
 	pub SolutionImprovementThreshold: Perbill = Perbill::from_rational(1u32, 10_000);
@@ -713,7 +713,7 @@ impl pallet_multisig::Config for Runtime {
 }
 
 parameter_types! {
-	pub const IndexDeposit: Balance = 1 * EUROS;
+	pub const IndexDeposit: Balance = 1 * UNITS;
 }
 
 impl pallet_indices::Config for Runtime {
@@ -725,7 +725,7 @@ impl pallet_indices::Config for Runtime {
 }
 
 parameter_types! {
-	pub const CandidacyBond: Balance = 10 * EUROS;
+	pub const CandidacyBond: Balance = 10 * UNITS;
 	// 1 storage item created, key size is 32 bytes, value size is 16+16.
 	pub const VotingBondBase: Balance = deposit(1, 64);
 	// additional data per vote is 32 bytes (account id).

@@ -4,9 +4,10 @@ use ternoa_core_primitives::{Balance, BlockNumber, Moment};
 
 use crate::{
 	constants::{
-		currency::{deposit, CENTS, EUROS},
+		currency::{deposit, EXISTENTIAL_DEPOSIT, UNITS},
 		time::{DAYS, MINUTES, SLOT_DURATION},
 	},
+	prod_or_fast,
 	system::RuntimeBlockWeights,
 	voter_bags,
 };
@@ -25,22 +26,22 @@ parameter_types! {
 
 	// Treasury
 	pub const ProposalBond: Permill = Permill::from_percent(5);
-	pub const SpendPeriod: BlockNumber = 10 * MINUTES;
+	pub const SpendPeriod: BlockNumber = 6 * DAYS;
 	pub const Burn: Permill = Permill::from_percent(0);
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
 	pub const MaxApprovals: u32 = 100;
-	pub const ProposalBondMinimum: Balance = 1 * EUROS;
-	pub const ProposalBondMaximum: Balance = 1000 * EUROS;
+	pub const ProposalBondMinimum: Balance = 1 * UNITS;
+	pub const ProposalBondMaximum: Balance = 1000 * UNITS;
 
 	// Balances
-	pub const ExistentialDeposit: Balance = 5 * CENTS;
+	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
 	// For weight estimation, we assume that the most locks on an individual account will be 50.
 	// This number may need to be adjusted in the future if this assumption no longer holds true.
 	pub const MaxLocks: u32 = 50;
 	pub const MaxReserves: u32 = 50;
 
 	// Technical committee
-	pub TechnicalMotionDuration: BlockNumber = 10 * MINUTES;
+	pub TechnicalMotionDuration: BlockNumber = prod_or_fast!(3 * DAYS, 10 * MINUTES);
 	pub const TechnicalMaxProposals: u32 = 100;
 	pub const TechnicalMaxMembers: u32 = 100;
 
