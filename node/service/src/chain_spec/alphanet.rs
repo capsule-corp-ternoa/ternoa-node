@@ -212,8 +212,8 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 		transaction_payment: Default::default(),
 		technical_committee: Default::default(),
 		technical_membership: TechnicalMembershipConfig {
-			phantom: Default::default(),
 			members: committee_members,
+			..Default::default()
 		},
 	}
 }

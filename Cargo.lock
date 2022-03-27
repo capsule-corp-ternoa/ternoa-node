@@ -102,14 +102,15 @@ dependencies = [
  "pallet-balances",
  "pallet-collective",
  "pallet-election-provider-multi-phase",
- "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-im-online",
  "pallet-membership",
  "pallet-offences",
+ "pallet-offences-benchmarking",
  "pallet-preimage",
  "pallet-scheduler",
  "pallet-session",
+ "pallet-session-benchmarking",
  "pallet-staking",
  "pallet-staking-reward-curve",
  "pallet-timestamp",
@@ -4236,6 +4237,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-offences-benchmarking"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-support",
+ "frame-system",
+ "pallet-babe",
+ "pallet-balances",
+ "pallet-grandpa",
+ "pallet-im-online",
+ "pallet-offences",
+ "pallet-session",
+ "pallet-staking",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-staking",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-preimage"
 version = "4.0.0-dev"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
@@ -4286,6 +4310,22 @@ dependencies = [
  "sp-staking",
  "sp-std",
  "sp-trie",
+]
+
+[[package]]
+name = "pallet-session-benchmarking"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-session",
+ "pallet-staking",
+ "rand 0.7.3",
+ "sp-runtime",
+ "sp-session",
+ "sp-std",
 ]
 
 [[package]]

@@ -10,6 +10,7 @@ pub use ternoa_runtime_common::constants;
 
 mod pallets;
 mod version;
+mod weights;
 
 use frame_support::{construct_runtime, traits::KeyOwnerProofSystem};
 pub use pallet_balances::Call as BalancesCall;
@@ -358,9 +359,8 @@ impl_runtime_apis! {
 			use frame_benchmarking::{Benchmarking, BenchmarkList};
 			use frame_support::traits::StorageInfoTrait;
 
-			// Trying to add benchmarks directly to the Session Pallet caused cyclic dependency
-			// issues. To get around that, we separated the Session benchmarks into its own crate,
-			// which is why we need these two lines below.
+			use pallet_session_benchmarking::Pallet as SessionBench;
+			use pallet_offences_benchmarking::Pallet as OffencesBench;
 			use frame_system_benchmarking::Pallet as SystemBench;
 			use frame_benchmarking::baseline::Pallet as Baseline;
 
@@ -376,14 +376,16 @@ impl_runtime_apis! {
 			config: frame_benchmarking::BenchmarkConfig
 		) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
 			use frame_benchmarking::{Benchmarking, BenchmarkBatch, TrackedStorageKey};
-			//use pallet_session_benchmarking::Module as SessionBench;
-			//use pallet_offences_benchmarking::Module as OffencesBench;
+
+			// Trying to add benchmarks directly to some pallets caused cyclic dependency issues.
+			// To get around that, we separated the benchmarks into its own crate.
+			use pallet_session_benchmarking::Pallet as SessionBench;
+			use pallet_offences_benchmarking::Pallet as OffencesBench;
 			use frame_system_benchmarking::Pallet as SystemBench;
 			use frame_benchmarking::baseline::Pallet as Baseline;
 
-			// those two depends on pallets we do not use and pause compile time issues
-			//impl pallet_session_benchmarking::Config for Runtime {}
-			//impl pallet_offences_benchmarking::Config for Runtime {}
+			impl pallet_session_benchmarking::Config for Runtime {}
+			impl pallet_offences_benchmarking::Config for Runtime {}
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl frame_benchmarking::baseline::Config for Runtime {}
 
@@ -422,30 +424,24 @@ extern crate frame_benchmarking;
 mod benches {
 	define_benchmarks!(
 		// Ternoa
-		// NOTE: Make sure to prefix these with `runtime_common::` so
-		// the that path resolves correctly in the generated file.
 		// Substrate
 		[pallet_babe, Babe]
-		[pallet_timestamp, Timestamp]
-		// [pallet_indices, Indices]
+		[pallet_bags_list, BagsList]
 		[pallet_balances, Balances]
-		// [pallet_transaction_payment, TransactionPayment]
-		// [pallet_authorship, Authorship]
-		[pallet_staking, Staking]
-		// [pallet_offences, Offences]
-		// [pallet_session_historical, Historical]
-		// [pallet_session, Session]
+		[frame_benchmarking::baseline, Baseline::<Runtime>]
+		[pallet_collective, TechnicalCommittee]
+		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
 		[pallet_grandpa, Grandpa]
 		[pallet_im_online, ImOnline]
-		// [pallet_authority_discovery, AuthorityDiscovery]
-		// [pallet_sudo, Sudo]
+		[pallet_membership, TechnicalMembership]
+		[pallet_offences, OffencesBench::<Runtime>]
+		[pallet_preimage, Preimage]
+		[pallet_scheduler, Scheduler]
+		[pallet_session, SessionBench::<Runtime>]
+		[pallet_staking, Staking]
+		[frame_system, SystemBench::<Runtime>]
+		[pallet_timestamp, Timestamp]
 		[pallet_treasury, Treasury]
 		[pallet_utility, Utility]
-		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
-		[pallet_bags_list, BagsList]
-		// [pallet_multisig, Multisig]
-		// [pallet_preimage, Preimage]
-		[frame_benchmarking::baseline, Baseline::<Runtime>]
-		[frame_system, SystemBench::<Runtime>]
 	);
 }
