@@ -427,4 +427,5 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Currency = Balances;
 	type PalletId = common::staking::StakingRewardsPalletId;
 	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type WeightInfo = weights::ternoa_staking_rewards::WeightInfo<Runtime>;
 }

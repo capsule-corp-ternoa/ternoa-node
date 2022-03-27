@@ -1,7 +1,7 @@
 [package]
 name = "mainnet-runtime"
 authors = [ "Ternoa" ]
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 build = "build.rs"
 
@@ -18,7 +18,6 @@ pallet-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", branch
 pallet-bags-list = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-election-provider-multi-phase = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
-pallet-elections-phragmen = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-im-online = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-offences = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
@@ -38,6 +37,8 @@ pallet-scheduler = { git = "https://github.com/capsule-corp-ternoa/substrate", b
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false, optional = true }
 frame-system-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false, optional = true }
+pallet-session-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false, optional = true }
+pallet-offences-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false, optional = true }
 
 # Try Runtime
 frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false, optional = true }
@@ -70,7 +71,8 @@ static_assertions = { version = "1.1.0" }
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
-ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "update-substrate-2022-03-24", default-features = false }
+ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
+ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
@@ -94,7 +96,6 @@ std = [
 	"pallet-bags-list/std",
 	"pallet-balances/std",
 	"pallet-election-provider-multi-phase/std",
-	"pallet-elections-phragmen/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
 	"pallet-offences/std",
@@ -128,34 +129,35 @@ std = [
 	"pallet-membership/std",
 	"pallet-scheduler/std",
 	"ternoa-mandate/std",
+	"ternoa-staking-rewards/std",
 ]
 
 runtime-benchmarks = [
 	"frame-benchmarking",
-	"frame-system/runtime-benchmarks",
-	"frame-system-benchmarking",
-	# # Ternoa
-	# # Substrate
 	"frame-election-provider-support/runtime-benchmarks",
-	# # "frame-executive/runtime-benchmarks", does not have runtime benchmarks
 	"frame-support/runtime-benchmarks",
-	# # "pallet-authority-discovery/runtime-benchmarks",  does not have this feature
-	# # "pallet-authorship/runtime-benchmarks",  does not have this feature
+	"frame-system-benchmarking",
+	"frame-system/runtime-benchmarks",
+	"hex-literal",
 	"pallet-babe/runtime-benchmarks",
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
+	"pallet-collective/runtime-benchmarks",
 	"pallet-election-provider-multi-phase/runtime-benchmarks",
-	"pallet-elections-phragmen/runtime-benchmarks",
-	"pallet-staking/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
-	"pallet-treasury/runtime-benchmarks",
+	"pallet-membership/runtime-benchmarks",
+	"pallet-offences/runtime-benchmarks",
+	"pallet-preimage/runtime-benchmarks",
+	"pallet-scheduler/runtime-benchmarks",
+	"pallet-session-benchmarking",
+	"pallet-offences-benchmarking",
+	"pallet-staking/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
+	"pallet-treasury/runtime-benchmarks",
 	"pallet-utility/runtime-benchmarks",
-	"pallet-collective/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
-	# # Rest
-	"hex-literal",
+	"ternoa-staking-rewards/runtime-benchmarks",
 ]
 
 # try-runtime = [

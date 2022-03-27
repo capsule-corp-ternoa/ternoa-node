@@ -1,11 +1,11 @@
 echo "Building the Ternoa client..."
 # cargo build --release --features runtime-benchmarks
 
-echo "Running non-ternoa pallet benchmarks"
 COMMAND="./target/release/ternoa benchmark --chain alphanet-dev --steps=50 --repeat=20 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output=./runtime/alphanet/src/weights/"
 MEDIUM_COMMAND="./target/release/ternoa benchmark --chain alphanet-dev --steps=10 --repeat=5 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output=./runtime/alphanet/src/weights/"
 SHORT_COMMAND="./target/release/ternoa benchmark --chain alphanet-dev --steps=5 --repeat=2 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output=./runtime/alphanet/src/weights/"
 
+echo "Running non-ternoa pallet benchmarks"
 # echo "PALLET BABE"
 # echo $(eval $COMMAND --pallet=pallet_babe)
 
@@ -54,3 +54,7 @@ SHORT_COMMAND="./target/release/ternoa benchmark --chain alphanet-dev --steps=5 
 # echo "PALLET COLLECTIVE"
 # echo $(eval $COMMAND --pallet=frame_system)
 
+echo "Running Ternoa pallet benchmarks"
+
+echo "TERNOA STAKING REWARDS"
+echo $(eval $COMMAND --pallet=ternoa_staking_rewards)

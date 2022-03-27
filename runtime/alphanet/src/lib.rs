@@ -424,6 +424,7 @@ extern crate frame_benchmarking;
 mod benches {
 	define_benchmarks!(
 		// Ternoa
+		[ternoa_staking_rewards, StakingRewards]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]

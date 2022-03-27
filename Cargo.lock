@@ -329,9 +329,9 @@ checksum = "30696a84d817107fc028e049980e09d5e140e8da8f1caeb17e8e950658a3cea9"
 
 [[package]]
 name = "async-trait"
-version = "0.1.52"
+version = "0.1.53"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "061a7acccaa286c011ddc30970520b98fa40e00c9d644633fb26b5fc63a265e3"
+checksum = "ed6aa3524a2dfcf9fe180c51eae2b58738348d819517ceadf95789c51fff7600"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -795,14 +795,15 @@ dependencies = [
  "pallet-balances",
  "pallet-collective",
  "pallet-election-provider-multi-phase",
- "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-im-online",
  "pallet-membership",
  "pallet-offences",
+ "pallet-offences-benchmarking",
  "pallet-preimage",
  "pallet-scheduler",
  "pallet-session",
+ "pallet-session-benchmarking",
  "pallet-staking",
  "pallet-staking-reward-curve",
  "pallet-timestamp",
@@ -3417,7 +3418,7 @@ dependencies = [
 
 [[package]]
 name = "mainnet-runtime"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -3435,14 +3436,15 @@ dependencies = [
  "pallet-balances",
  "pallet-collective",
  "pallet-election-provider-multi-phase",
- "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-im-online",
  "pallet-membership",
  "pallet-offences",
+ "pallet-offences-benchmarking",
  "pallet-preimage",
  "pallet-scheduler",
  "pallet-session",
+ "pallet-session-benchmarking",
  "pallet-staking",
  "pallet-staking-reward-curve",
  "pallet-timestamp",
@@ -3474,6 +3476,7 @@ dependencies = [
  "ternoa-core-primitives",
  "ternoa-mandate",
  "ternoa-runtime-common",
+ "ternoa-staking-rewards",
 ]
 
 [[package]]
@@ -4139,24 +4142,6 @@ dependencies = [
  "sp-std",
  "static_assertions",
  "strum",
-]
-
-[[package]]
-name = "pallet-elections-phragmen"
-version = "5.0.0-dev"
-source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-io",
- "sp-npos-elections",
- "sp-runtime",
- "sp-std",
 ]
 
 [[package]]
@@ -5010,9 +4995,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.16"
+version = "1.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4af2ec4714533fcdf07e886f17025ace8b997b9ce51204ee69b6da831c3da57"
+checksum = "632d02bff7f874a36f33ea8bb416cd484b90cc66c1194b1a1110d067a7013f58"
 dependencies = [
  "proc-macro2",
 ]
@@ -7665,8 +7650,9 @@ dependencies = [
 [[package]]
 name = "ternoa-mandate"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=update-substrate-2022-03-24#576565fd445cfe73acce9ed81d632854b871f4a9"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#f25e4a4976be36a152732a3b9f0cd5380207e241"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
@@ -7754,8 +7740,9 @@ dependencies = [
 [[package]]
 name = "ternoa-staking-rewards"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=update-substrate-2022-03-24#576565fd445cfe73acce9ed81d632854b871f4a9"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#f25e4a4976be36a152732a3b9f0cd5380207e241"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
