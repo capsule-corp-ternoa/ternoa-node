@@ -4,19 +4,23 @@
 pub mod currency {
 	use ternoa_core_primitives::Balance;
 
+	/// The existential deposit.
+	pub const EXISTENTIAL_DEPOSIT: Balance = 1 * CENTS;
+
 	pub const UNITS: Balance = 1_000_000_000_000_000_000;
-	pub const EUROS: Balance = UNITS;
 	pub const CENTS: Balance = UNITS / 100;
 	pub const MILLICENTS: Balance = CENTS / 1_000;
 
 	pub const fn deposit(items: u32, bytes: u32) -> Balance {
-		items as Balance * 15 * CENTS + (bytes as Balance) * 6 * CENTS
+		items as Balance * 100 * CENTS + (bytes as Balance) * 5 * MILLICENTS
 	}
 }
 
 /// Time.
 pub mod time {
 	use ternoa_core_primitives::{BlockNumber, Moment};
+
+	use crate::prod_or_fast;
 
 	/// Since BABE is probabilistic this is the average expected block time that
 	/// we are targetting. Blocks will be produced at a minimum duration defined
@@ -37,7 +41,7 @@ pub mod time {
 	/// <https://research.web3.foundation/en/latest/polkadot/block-production/Babe.html#-6.-practical-results>
 	pub const MILLISECS_PER_BLOCK: Moment = 6000;
 	pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
-	pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = 1 * HOURS;
+	pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = prod_or_fast!(1 * HOURS, 4 * MINUTES);
 
 	// These time units are defined in number of blocks.
 	pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);

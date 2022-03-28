@@ -6,8 +6,11 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+pub use ternoa_runtime_common::constants;
+
 mod pallets;
 mod version;
+mod weights;
 
 use frame_support::{construct_runtime, traits::KeyOwnerProofSystem};
 pub use pallet_balances::Call as BalancesCall;
@@ -17,7 +20,7 @@ use pallet_grandpa::{
 use pallet_session::historical as pallet_session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
 use pallets::EpochDuration;
-pub use pallets::{MaxNominations as MAX_NOMINATIONS, SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
+pub use pallets::{SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
 use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
@@ -31,7 +34,6 @@ use sp_runtime::{
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
-pub use ternoa_runtime_common::constants;
 pub use version::VERSION;
 
 #[cfg(feature = "std")]
@@ -62,48 +64,57 @@ construct_runtime!(
 	{
 		// Basic stuff; balances is uncallable initially
 		System: frame_system = 0,
+		// System scheduler.
+		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 1,
 
-		 // Babe must be before session.
-		Babe: pallet_babe = 1,
+		// Babe must be before session.
+		Babe: pallet_babe = 2,
 
-		Timestamp: pallet_timestamp = 2,
-		Indices: pallet_indices = 3,
+		Timestamp: pallet_timestamp = 3,
 		Balances: pallet_balances = 4,
 		TransactionPayment: pallet_transaction_payment = 5,
 
 		// Consensus support.
+		// Block producing and finalization pallets
+		//
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
-		Authorship: pallet_authorship,
-		Staking: pallet_staking,
-		Offences: pallet_offences,
-		Historical: pallet_session_historical,
-		Session: pallet_session,
-		Grandpa: pallet_grandpa,
-		ImOnline: pallet_im_online,
-		AuthorityDiscovery: pallet_authority_discovery,
+		Authorship: pallet_authorship = 6,
+		Offences: pallet_offences = 7,
+		Historical: pallet_session_historical = 8,
+		Session: pallet_session = 9,
+		Grandpa: pallet_grandpa = 10,
+		ImOnline: pallet_im_online = 11,
+		AuthorityDiscovery: pallet_authority_discovery = 12,
 
-		// Election pallet. Only works with staking
-		ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
-		// Provides a semi-sorted list of nominators for staking.
-		BagsList: pallet_bags_list,
+		// Elections pallets
+		//
+		// Staking provides the data for the election and it is the entity which calls the 'elect' function.
+		// The 'elect' function gets the precomputed election results and uses it to change the current active validator set.
+		//
+		// ElectionProviderMultiPhase uses the validator/nominator data from the Staking and computes an election result.
+		// The computation is done in two phases, signed and unsigned.
+		//
+		// 'Substrate's Staking/NPoS 2022 Update' video : https://www.youtube.com/watch?v=qVd9lAudynY
+		Staking: pallet_staking = 13,
+		StakingRewards: ternoa_staking_rewards = 14,
+		ElectionProviderMultiPhase: pallet_election_provider_multi_phase = 15,
+		BagsList: pallet_bags_list = 16,
+
+		// Government pallets
+		//
+		// We start with the Technical Committee and then we will upgrade to a Council / Committee solution
+		TechnicalCommittee: pallet_collective::<Instance1> = 17,
+		TechnicalMembership: pallet_membership = 18,
+		Mandate: ternoa_mandate = 19,
 
 		// Governance stuff. uncallable initially
-		Sudo: pallet_sudo,
-		Treasury: pallet_treasury,
+		Treasury: pallet_treasury = 20,
 
 		// Cunning utilities. Usable initially.
-		Utility: pallet_utility,
+		Utility: pallet_utility = 21,
 
-		Multisig: pallet_multisig,
-		Preimage: pallet_preimage,
-
-		// Ternoa pallets.  Start indices at 100 to leave room.
-		Nfts: ternoa_nfts = 100,
-		AssociatedAccounts: ternoa_associated_accounts = 101,
-		Capsules: ternoa_capsules = 102,
-		Marketplace: ternoa_marketplace = 103,
-		Auctions: ternoa_auctions = 104,
+		Preimage: pallet_preimage = 22,
 	}
 );
 
@@ -229,7 +240,7 @@ impl_runtime_apis! {
 			_set_id: fg_primitives::SetId,
 			authority_id: GrandpaId,
 		) -> Option<fg_primitives::OpaqueKeyOwnershipProof> {
-			use codec::Encode;
+			use parity_scale_codec::Encode;
 
 			Historical::prove((fg_primitives::KEY_TYPE, authority_id))
 				.map(|p| p.encode())
@@ -270,7 +281,7 @@ impl_runtime_apis! {
 			_slot_number: sp_consensus_babe::Slot,
 			authority_id: sp_consensus_babe::AuthorityId,
 		) -> Option<sp_consensus_babe::OpaqueKeyOwnershipProof> {
-			use codec::Encode;
+			use parity_scale_codec::Encode;
 
 			Historical::prove((sp_consensus_babe::KEY_TYPE, authority_id))
 				.map(|p| p.encode())
@@ -348,9 +359,8 @@ impl_runtime_apis! {
 			use frame_benchmarking::{Benchmarking, BenchmarkList};
 			use frame_support::traits::StorageInfoTrait;
 
-			// Trying to add benchmarks directly to the Session Pallet caused cyclic dependency
-			// issues. To get around that, we separated the Session benchmarks into its own crate,
-			// which is why we need these two lines below.
+			use pallet_session_benchmarking::Pallet as SessionBench;
+			use pallet_offences_benchmarking::Pallet as OffencesBench;
 			use frame_system_benchmarking::Pallet as SystemBench;
 			use frame_benchmarking::baseline::Pallet as Baseline;
 
@@ -366,14 +376,16 @@ impl_runtime_apis! {
 			config: frame_benchmarking::BenchmarkConfig
 		) -> Result<Vec<frame_benchmarking::BenchmarkBatch>, sp_runtime::RuntimeString> {
 			use frame_benchmarking::{Benchmarking, BenchmarkBatch, TrackedStorageKey};
-			//use pallet_session_benchmarking::Module as SessionBench;
-			//use pallet_offences_benchmarking::Module as OffencesBench;
+
+			// Trying to add benchmarks directly to some pallets caused cyclic dependency issues.
+			// To get around that, we separated the benchmarks into its own crate.
+			use pallet_session_benchmarking::Pallet as SessionBench;
+			use pallet_offences_benchmarking::Pallet as OffencesBench;
 			use frame_system_benchmarking::Pallet as SystemBench;
 			use frame_benchmarking::baseline::Pallet as Baseline;
 
-			// those two depends on pallets we do not use and pause compile time issues
-			//impl pallet_session_benchmarking::Config for Runtime {}
-			//impl pallet_offences_benchmarking::Config for Runtime {}
+			impl pallet_session_benchmarking::Config for Runtime {}
+			impl pallet_offences_benchmarking::Config for Runtime {}
 			impl frame_system_benchmarking::Config for Runtime {}
 			impl frame_benchmarking::baseline::Config for Runtime {}
 
@@ -412,32 +424,25 @@ extern crate frame_benchmarking;
 mod benches {
 	define_benchmarks!(
 		// Ternoa
-		// NOTE: Make sure to prefix these with `runtime_common::` so
-		// the that path resolves correctly in the generated file.
-		[ternoa_nfts, Nfts]
-		[ternoa_associated_accounts, AssociatedAccounts]
+		[ternoa_staking_rewards, StakingRewards]
 		// Substrate
 		[pallet_babe, Babe]
-		[pallet_timestamp, Timestamp]
-		// [pallet_indices, Indices]
+		[pallet_bags_list, BagsList]
 		[pallet_balances, Balances]
-		// [pallet_transaction_payment, TransactionPayment]
-		// [pallet_authorship, Authorship]
-		[pallet_staking, Staking]
-		// [pallet_offences, Offences]
-		// [pallet_session_historical, Historical]
-		// [pallet_session, Session]
+		[frame_benchmarking::baseline, Baseline::<Runtime>]
+		[pallet_collective, TechnicalCommittee]
+		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
 		[pallet_grandpa, Grandpa]
 		[pallet_im_online, ImOnline]
-		// [pallet_authority_discovery, AuthorityDiscovery]
-		// [pallet_sudo, Sudo]
+		[pallet_membership, TechnicalMembership]
+		[pallet_offences, OffencesBench::<Runtime>]
+		[pallet_preimage, Preimage]
+		[pallet_scheduler, Scheduler]
+		[pallet_session, SessionBench::<Runtime>]
+		[pallet_staking, Staking]
+		[frame_system, SystemBench::<Runtime>]
+		[pallet_timestamp, Timestamp]
 		[pallet_treasury, Treasury]
 		[pallet_utility, Utility]
-		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
-		[pallet_bags_list, BagsList]
-		// [pallet_multisig, Multisig]
-		// [pallet_preimage, Preimage]
-		[frame_benchmarking::baseline, Baseline::<Runtime>]
-		[frame_system, SystemBench::<Runtime>]
 	);
 }

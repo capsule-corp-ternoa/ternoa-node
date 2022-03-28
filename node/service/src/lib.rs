@@ -231,10 +231,11 @@ where
 	let create_inherent_data_providers = move |_, ()| async move {
 		let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
 
-		let slot = sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_duration(
-			*timestamp,
-			slot_duration,
-		);
+		let slot =
+			sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+				*timestamp,
+				slot_duration,
+			);
 
 		let uncles =
 			sp_authorship::InherentDataProvider::<<Block as BlockT>::Header>::check_inherents();
@@ -485,7 +486,7 @@ where
 					let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
 
 					let slot =
-					sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_duration(
+					sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
 						*timestamp,
 						slot_duration,
 					);

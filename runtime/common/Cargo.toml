@@ -5,12 +5,48 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+## Substrate Frame
+frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-election-provider-multi-phase = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+frame-election-provider-support = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+
+# Substrate Primitives
+sp-npos-elections = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+sp-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+
+# Rest
+static_assertions = { version = "1.1.0" }
+
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives", default-features = false }
 
 [features]
 default = ["std"]
-no_std = []
 std = [
     "ternoa-core-primitives/std",
+    "sp-npos-elections/std",
+    "frame-support/std",
+    "frame-system/std",
+    "pallet-election-provider-multi-phase/std",
+    "sp-runtime/std",
+    "sp-std/std",
+    "pallet-transaction-payment/std",
+    "frame-election-provider-support/std",
+    "sp-staking/std",
+    "pallet-staking/std",
+    "sp-consensus-babe/std",
+    "pallet-babe/std",
+    "pallet-balances/std",
+    "pallet-treasury/std",
+    "pallet-authorship/std",
 ]

@@ -57,6 +57,8 @@ impl SubstrateCli for Cli {
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
 			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
+			#[cfg(feature = "alphanet-native")]
+			"alphanet-sta" | "a-sta" => Box::new(chain_spec::alphanet::staging_config()),
 
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "mainnet-native")]
@@ -365,7 +367,7 @@ fn revert(cli: &Cli, cmd: &RevertCmd) -> std::result::Result<(), sc_cli::Error> 
 		return Ok(runner.async_run(|config| {
 			let PartialComponents { client, task_manager, backend, .. } =
 				new_partial::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, backend), task_manager))
+			return Ok((cmd.run(client, backend, None), task_manager))
 		})?)
 	}
 
@@ -374,7 +376,7 @@ fn revert(cli: &Cli, cmd: &RevertCmd) -> std::result::Result<(), sc_cli::Error> 
 		return Ok(runner.async_run(|config| {
 			let PartialComponents { client, task_manager, backend, .. } =
 				new_partial::<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, backend), task_manager))
+			return Ok((cmd.run(client, backend, None), task_manager))
 		})?)
 	}
 
@@ -383,7 +385,7 @@ fn revert(cli: &Cli, cmd: &RevertCmd) -> std::result::Result<(), sc_cli::Error> 
 		return Ok(runner.async_run(|config| {
 			let PartialComponents { client, task_manager, backend, .. } =
 				new_partial::<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, backend), task_manager))
+			return Ok((cmd.run(client, backend, None), task_manager))
 		})?)
 	}
 

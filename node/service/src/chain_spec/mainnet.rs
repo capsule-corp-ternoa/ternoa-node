@@ -2,7 +2,8 @@ use super::{get_account_id_from_seed, get_from_seed, MainnetChainSpec as ChainSp
 use mainnet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
 	BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-	StakingConfig, SudoConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG,
+	StakingConfig, SystemConfig, TechnicalCommitteeConfig, TechnicalMembershipConfig,
+	BABE_GENESIS_EPOCH_CONFIG,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
@@ -140,7 +141,7 @@ pub fn testnet_genesis(
 			stakers: initial_authorities
 				.iter()
 				.map(|x| {
-					(x.0.clone(), x.1.clone(), STASH, mainnet_runtime::StakerStatus::Validator)
+					(x.0.clone(), x.1.clone(), STASH, alphanet_runtime::StakerStatus::Validator)
 				})
 				.collect(),
 			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
@@ -149,19 +150,14 @@ pub fn testnet_genesis(
 			..Default::default()
 		},
 		treasury: Default::default(),
-		sudo: SudoConfig { key: Some(root_key) },
 		transaction_payment: Default::default(),
+		technical_committee: TechnicalCommitteeConfig {
+			phantom: Default::default(),
+			members: vec![],
+		},
+		technical_membership: TechnicalMembershipConfig {
+			phantom: Default::default(),
+			members: vec![root_key.clone()],
+		},
 	}
 }
-/* use super::{DummyChainSpec, Extensions};
-
-#[cfg(feature = "mainnet-native")]
-use mainnet_runtime;
-
-#[cfg(feature = "mainnet-native")]
-pub type ChainSpec = sc_chain_spec::GenericChainSpec<mainnet_runtime::GenericConfig, Extensions>;
-
-// Dummy chain spec, but that is fine when we don't have the native runtime.
-#[cfg(not(feature = "mainnet-native"))]
-pub type ChainSpec = sc_chain_spec::GenericChainSpec<DummyChainSpec, Extensions>;
- */
