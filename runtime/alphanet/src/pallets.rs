@@ -4,6 +4,7 @@ use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, IdentityFee},
+	PalletId,
 };
 use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
@@ -11,6 +12,7 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
 use parity_scale_codec::Encode;
 use sp_core::crypto::KeyTypeId;
+use sp_io::hashing::blake2_128;
 use sp_runtime::{
 	generic::{self, Era},
 	impl_opaque_keys,
@@ -432,32 +434,32 @@ impl ternoa_staking_rewards::Config for Runtime {
 
 // Parameterize chainbridge pallet
 parameter_types! {
-    pub const ChainBridgePalletId: PalletId = PalletId(*b"cb/bridg");
-    pub const ProposalLifetime: BlockNumber = 1000;
-    pub const SubstrateChainId: u8 = 1;
-    pub const RelayerVoteThreshold: u32 = chainbridge::DEFAULT_RELAYER_VOTE_THRESHOLD;
+	pub const ChainBridgePalletId: PalletId = PalletId(*b"cb/bridg");
+	pub const ProposalLifetime: BlockNumber = 1000;
+	pub const SubstrateChainId: u8 = 1;
+	pub const RelayerVoteThreshold: u32 = chainbridge::DEFAULT_RELAYER_VOTE_THRESHOLD;
 }
 
 // Chainbridge
 impl chainbridge::Config for Runtime {
-    type Event = Event;
-    type AdminOrigin = frame_system::EnsureRoot<Self::AccountId>;
-    type Proposal = Call;
-    type ChainId = SubstrateChainId;
-    type PalletId = ChainBridgePalletId;
-    type ProposalLifetime = ProposalLifetime;
-    type RelayerVoteThreshold = RelayerVoteThreshold;
-    type WeightInfo = ();
+	type Event = Event;
+	type AdminOrigin = frame_system::EnsureRoot<Self::AccountId>;
+	type Proposal = Call;
+	type ChainId = SubstrateChainId;
+	type PalletId = ChainBridgePalletId;
+	type ProposalLifetime = ProposalLifetime;
+	type RelayerVoteThreshold = RelayerVoteThreshold;
+	type WeightInfo = ();
 }
 
 parameter_types! {
-    pub NativeTokenId: chainbridge::ResourceId = chainbridge::derive_resource_id(1, &blake2_128(b"CAPS"));
+	pub NativeTokenId: chainbridge::ResourceId = chainbridge::derive_resource_id(1, &blake2_128(b"CAPS"));
 }
 
 impl ternoa_erc20_bridge::Config for Runtime {
-    type Event = Event;
-    type BridgeOrigin = chainbridge::EnsureBridge<Runtime>;
-    type Currency = Balances;
-    type NativeTokenId = NativeTokenId;
-    type WeightInfo = ();
+	type Event = Event;
+	type BridgeOrigin = chainbridge::EnsureBridge<Runtime>;
+	type Currency = Balances;
+	type NativeTokenId = NativeTokenId;
+	type WeightInfo = ();
 }
