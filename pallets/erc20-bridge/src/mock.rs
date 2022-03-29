@@ -248,7 +248,7 @@ impl TestExternalitiesBuilder {
 
 pub(crate) mod helpers {
 
-    use super::{Call, Event, MockRuntime, NativeTokenId};
+    use super::{Call, Event, MockRuntime};
 
     fn last_event() -> Event {
         frame_system::Pallet::<MockRuntime>::events()
@@ -278,7 +278,6 @@ pub(crate) mod helpers {
     }
 
     pub(crate) fn make_transfer_proposal(to: u64, amount: u64) -> Call {
-        let resource_id = NativeTokenId::get();
         Call::Example(crate::Call::transfer {
             to,
             amount: amount.into(),

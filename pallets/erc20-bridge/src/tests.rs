@@ -47,6 +47,7 @@ fn transfer_native() {
             ));
 
             let origin_balance_before = Balances::free_balance(RELAYER_A);
+            let total_issuance_before = Balances::total_issuance();
 
             assert_ok!(Example::transfer_native(
                 origin.clone(),
@@ -59,6 +60,7 @@ fn transfer_native() {
                 Balances::free_balance(RELAYER_A),
                 origin_balance_before - amount
             );
+            assert_eq!(Balances::total_issuance(), total_issuance_before - amount);
 
             expect_event(chainbridge::Event::FungibleTransfer(
                 dest_chain,
@@ -75,18 +77,26 @@ fn transfer() {
     TestExternalitiesBuilder::default()
         .build()
         .execute_with(|| {
-            // Transfer and check result
+            let amount = 10;
+            let relayer_a_balance_before = Balances::free_balance(RELAYER_A);
+            let total_issuance_before = Balances::total_issuance();
+
             assert_ok!(Example::transfer(
                 Origin::signed(ChainBridge::account_id()),
                 RELAYER_A,
-                10,
+                amount,
             ));
-            assert_eq!(Balances::free_balance(RELAYER_A), ENDOWED_BALANCE + 10);
+
+            assert_eq!(
+                Balances::free_balance(RELAYER_A),
+                relayer_a_balance_before + 10
+            );
+            assert_eq!(Balances::total_issuance(), total_issuance_before + amount);
 
             assert_events(vec![mock::Event::Balances(
                 pallet_balances::Event::Deposit {
                     who: RELAYER_A,
-                    amount: 10,
+                    amount,
                 },
             )]);
         })
@@ -147,6 +157,8 @@ fn create_sucessful_transfer_proposal() {
             };
             assert_eq!(prop, expected);
 
+            let total_issuance_before = Balances::total_issuance();
+
             // Third relayer votes in favour
             assert_ok!(ChainBridge::acknowledge_proposal(
                 Origin::signed(RELAYER_C),
@@ -165,6 +177,7 @@ fn create_sucessful_transfer_proposal() {
             assert_eq!(prop, expected);
 
             assert_eq!(Balances::free_balance(RELAYER_A), ENDOWED_BALANCE + 10);
+            assert_eq!(Balances::total_issuance(), total_issuance_before + 10);
 
             assert_events(vec![
                 mock::Event::ChainBridge(chainbridge::Event::VoteFor(src_id, prop_id, RELAYER_A)),

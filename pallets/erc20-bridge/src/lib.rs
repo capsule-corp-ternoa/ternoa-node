@@ -34,7 +34,6 @@ mod traits;
 mod weights;
 
 use frame_support::{
-    assert_ok,
     dispatch::DispatchResultWithPostInfo,
     ensure,
     traits::{Currency, EnsureOrigin, ExistenceRequirement::AllowDeath, Get, WithdrawReasons},
