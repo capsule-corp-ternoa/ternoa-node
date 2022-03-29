@@ -1,8 +1,8 @@
 use super::{get_account_id_from_seed, get_from_seed, AlphanetChainSpec as ChainSpec};
 use alphanet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
-	BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-	StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
+	BalancesConfig, ERC20BridgeConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig,
+	SessionKeys, StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
@@ -215,5 +215,6 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 			members: committee_members,
 			..Default::default()
 		},
+		erc20_bridge: ERC20BridgeConfig {},
 	}
 }
