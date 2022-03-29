@@ -5,7 +5,7 @@ pub mod currency {
 	use ternoa_core_primitives::Balance;
 
 	/// The existential deposit.
-	pub const EXISTENTIAL_DEPOSIT: Balance = 1 * CENTS;
+	pub const EXISTENTIAL_DEPOSIT: Balance = 15 * CENTS;
 
 	pub const UNITS: Balance = 1_000_000_000_000_000_000;
 	pub const CENTS: Balance = UNITS / 100;
