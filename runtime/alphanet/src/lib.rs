@@ -115,6 +115,10 @@ construct_runtime!(
 		Utility: pallet_utility = 21,
 
 		Preimage: pallet_preimage = 22,
+
+		// Chainbridge
+		ChainBridge: chainbridge = 108,
+        ERC20Bridge: ternoa_erc20_bridge = 109,
 	}
 );
 

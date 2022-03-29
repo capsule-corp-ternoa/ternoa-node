@@ -71,8 +71,10 @@ static_assertions = { version = "1.1.0" }
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
-ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
-ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
+ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "features/eth-chainbridge", default-features = false }
+ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "features/eth-chainbridge", default-features = false }
+chainbridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "features/eth-chainbridge", default-features = false }
+ternoa-erc20-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "features/eth-chainbridge", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
@@ -83,6 +85,8 @@ std = [
 	# Ternoa
 	"ternoa-core-primitives/std",
 	"ternoa-runtime-common/std",
+	"chainbridge/std",
+	"ternoa-erc20-bridge/std",
 	# Substrate
 	"parity-scale-codec/std",
 	"frame-election-provider-support/std",
