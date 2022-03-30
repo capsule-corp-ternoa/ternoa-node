@@ -7,7 +7,12 @@
     "/dns/alphanet-boot-1.ternoa.dev/tcp/30333/p2p/12D3KooWS2982w4dkGqu9ue5GuramuPKoxLP4qvXznGrnhcBC5vi",
     "/dns/alphanet-boot-2.ternoa.dev/tcp/30333/p2p/12D3KooWH6gPvgREVzbNWvrGj6mEhy4ziUCJ7rEuKDAosWsdYLmD"
   ],
-  "telemetryEndpoints": null,
+  "telemetryEndpoints": [
+    [
+      "/dns/telemetry.polkadot.io/tcp/443/x-parity-wss/%2Fsubmit%2F",
+      0
+    ]
+  ],
   "protocolId": "ternoa",
   "properties": {
     "tokenDecimals": 18,
