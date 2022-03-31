@@ -3,9 +3,9 @@
   "id": "alphanet-live",
   "chainType": "Live",
   "bootNodes": [
-    "/dns/alphanet-boot-0.ternoa.dev/tcp/30333/p2p/12D3KooWDDiuX6RTEof8gxFhDucbNZu9JP997tUT8StXXQyy3XHk",
-    "/dns/alphanet-boot-1.ternoa.dev/tcp/30333/p2p/12D3KooWS2982w4dkGqu9ue5GuramuPKoxLP4qvXznGrnhcBC5vi",
-    "/dns/alphanet-boot-2.ternoa.dev/tcp/30333/p2p/12D3KooWH6gPvgREVzbNWvrGj6mEhy4ziUCJ7rEuKDAosWsdYLmD"
+    "/dns/alphanet-boot-0.ternoa.com/tcp/30333/p2p/12D3KooWDDiuX6RTEof8gxFhDucbNZu9JP997tUT8StXXQyy3XHk",
+    "/dns/alphanet-boot-1.ternoa.com/tcp/30333/p2p/12D3KooWS2982w4dkGqu9ue5GuramuPKoxLP4qvXznGrnhcBC5vi",
+    "/dns/alphanet-boot-2.ternoa.com/tcp/30333/p2p/12D3KooWH6gPvgREVzbNWvrGj6mEhy4ziUCJ7rEuKDAosWsdYLmD"
   ],
   "telemetryEndpoints": [
     [
