@@ -19,7 +19,7 @@ jobs:
     name: Check Formatting Job
     steps:
     - uses: hecrj/setup-rust-action@v1
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup Rust toolchain
       run: rustup show
@@ -34,7 +34,7 @@ jobs:
     needs: format
     steps:
     - uses: hecrj/setup-rust-action@v1
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup Rust toolchain
       run: rustup show
@@ -46,7 +46,7 @@ jobs:
     runs-on: self-hosted
     name: Build Binary Job
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Build the Ternoa client
       run: /root/.cargo/bin/cargo build --release
