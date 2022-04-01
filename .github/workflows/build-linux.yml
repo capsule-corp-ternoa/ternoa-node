@@ -15,7 +15,7 @@ env:
 
 jobs:
   format:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Check Formatting Job
     steps:
     - uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
       run: /root/.cargo/bin/cargo fmt --all -- --check
 
   tests:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Run Tests Job
     if: ${{ always() }}
     needs: format
@@ -37,8 +37,6 @@ jobs:
   build:
     runs-on: self-hosted
     name: Build Binary Job
-    if: ${{ always() }}
-    needs: tests
     steps:
     - uses: actions/checkout@v2
 
