@@ -20,9 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install rustfmt so that we can call "cargo fmt"
-      run: rustup component add rustfmt
-
     - name: Check that the code is properly formatted
       run: /root/.cargo/bin/cargo fmt --all -- --check
 
@@ -44,7 +41,7 @@ jobs:
     needs: tests
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Build the Ternoa client
       run: /root/.cargo/bin/cargo build --release
 
