@@ -1,0 +1,55 @@
+# CI for Chain on Linux Environment
+name: Linux-Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      runtime:
+        description: 'Runtime'
+        required: true
+        type: choice
+        options:
+        - alphanet
+        - mainnet
+        - chaosnet
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    name: Build Wasm files
+    steps:
+    - uses: hecrj/setup-rust-action@v1
+    - uses: actions/checkout@v3
+
+    - name: Setup Rust toolchain
+      run: rustup show
+
+    - name: Install srtool
+      run: cargo install --git https://github.com/chevdor/srtool-cli
+
+    - name: Create downloads folder
+      run: mkdir -p downloads
+ 
+    - name: Run Srtool 
+      env:
+        RUNTIME: ${{ github.event.inputs.runtime }}
+      run: srtool build --package $RUNTIME-runtime &> downloads/output.txt
+
+    - name: Move wasm files
+      env:
+        RUNTIME: ${{ github.event.inputs.runtime }}
+      run: |
+        cp ./runtime/$RUNTIME/target/srtool/wbuild/$RUNTIME-runtime/$RUNTIME_runtime.compact.compressed.wasm /downloads/$RUNTIME_runtime.compact.compressed.wasm
+        cp ./runtime/$RUNTIME/target/srtool/wbuild/$RUNTIME-runtime/$RUNTIME_runtime.compact.wasm /downloads/$RUNTIME_runtime.compact.wasm
+        cp ./runtime/$RUNTIME/target/srtool/wbuild/$RUNTIME-runtime/$RUNTIME_runtime.wasm /downloads/$RUNTIME_runtime.wasm
+
+    - name: Upload Artifacts
+      env:
+        RUNTIME: ${{ github.event.inputs.runtime }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: assets-for-download
+        path: downloads
