@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - v1.*
   pull_request:
     branches: '*'
 
@@ -12,16 +14,39 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    runs-on: self-hosted 
+  format:
+    runs-on: self-hosted
+    name: Check Formatting Job
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build
-      run: /root/.cargo/bin/cargo build --release
+    - name: Install rustfmt so that we can call "cargo fmt"
+      run: rustup component add rustfmt
 
-    - name: Test 
+    - name: Check that the code is properly formatted
+      run: /root/.cargo/bin/cargo fmt --all -- --check
+
+  tests:
+    runs-on: self-hosted
+    name: Run Tests Job
+    if: ${{ always() }}
+    needs: format
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Check that all the tests are passing 
       run: /root/.cargo/bin/cargo test --all-targets --all-features --workspace
+
+  build:
+    runs-on: self-hosted
+    name: Build Binary Job
+    if: ${{ always() }}
+    needs: tests
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build the Ternoa client
+      run: /root/.cargo/bin/cargo build --release
 
     - name: Configure AWS credentials from Test account
       uses: s3-actions/s3cmd@v0

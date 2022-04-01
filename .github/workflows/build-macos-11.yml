@@ -28,7 +28,6 @@ jobs:
     - name: Brew install required packages
       run: brew install openssl cmake llvm
   
-
     - name: Install Rustup
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
