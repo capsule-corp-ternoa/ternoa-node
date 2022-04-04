@@ -1,3 +1,5 @@
+name: Run Benchmarks Manual
+
 on:
   workflow_dispatch:
     inputs:

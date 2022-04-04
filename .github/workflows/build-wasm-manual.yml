@@ -1,5 +1,4 @@
-# CI for Chain on Linux Environment
-name: Linux-Environment
+name: Build Wasm Manual
 
 on:
   workflow_dispatch:
@@ -15,6 +14,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  Runtime: ${{ github.event.inputs.runtime }}
 
 jobs:
   format:
@@ -34,21 +34,15 @@ jobs:
       run: mkdir -p downloads
  
     - name: Run Srtool 
-      env:
-        RUNTIME: ${{ github.event.inputs.runtime }}
-      run: srtool build --package $RUNTIME-runtime &> downloads/output.txt
+      run: srtool build --package "$Runtime"-runtime &> downloads/output.txt
 
     - name: Move wasm files
-      env:
-        RUNTIME: ${{ github.event.inputs.runtime }}
       run: |
-        cp ./runtime/$RUNTIME/target/srtool/wbuild/$RUNTIME-runtime/$RUNTIME_runtime.compact.compressed.wasm /downloads/$RUNTIME_runtime.compact.compressed.wasm
-        cp ./runtime/$RUNTIME/target/srtool/wbuild/$RUNTIME-runtime/$RUNTIME_runtime.compact.wasm /downloads/$RUNTIME_runtime.compact.wasm
-        cp ./runtime/$RUNTIME/target/srtool/wbuild/$RUNTIME-runtime/$RUNTIME_runtime.wasm /downloads/$RUNTIME_runtime.wasm
+        cp ./runtime/"$Runtime"/target/srtool/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.compressed.wasm /downloads/"$Runtime"_runtime.compact.compressed.wasm
+        cp ./runtime/"$Runtime"/target/srtool/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.wasm /downloads/"$Runtime"_runtime.compact.wasm
+        cp ./runtime/"$Runtime"/target/srtool/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.wasm /downloads/"$Runtime"_runtime.wasm
 
     - name: Upload Artifacts
-      env:
-        RUNTIME: ${{ github.event.inputs.runtime }}
       uses: actions/upload-artifact@v3
       with:
         name: assets-for-download
