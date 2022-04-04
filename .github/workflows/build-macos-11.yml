@@ -1,5 +1,5 @@
 # CI for Chain on macOS-11 Environment
-name: Macos-Environment
+name: Build Ternoa Client MacOS
 
 on:
   workflow_run:
@@ -9,6 +9,15 @@ on:
       - completed
     tags:
       - v1.*
+  workflow_dispatch:
+    inputs:
+      ignoreLevel:
+        description: 'Ignore'
+        default: 'ignore'
+        type: choice
+        options:
+        - ignore
+
 
 env:
   CARGO_TERM_COLOR: always

@@ -12,6 +12,11 @@ on:
         - mainnet
         - chaosnet
 
+env:
+  CARGO_TERM_COLOR: always
+  Runtime: ${{ github.event.inputs.runtime }}
+
+
 jobs:
   run-benchmarks:
     runs-on: self-hosted
@@ -23,13 +28,12 @@ jobs:
       run: /root/.cargo/bin/cargo build --release --features runtime-benchmarks
 
     - name: Run benchmarks
-      run: ./scripts/alphanet/run_benchmarks.sh
+      run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
 
-    - name: Switch to a new branch
-      run: git checkout -b github/benchmarks
-
-    - uses: EndBug/add-and-commit@v9
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
       with:
-        default_author: github_actions
+        name: assets-for-download
+        path: weights
 
     

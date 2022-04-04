@@ -1,47 +1,23 @@
 # CI for Chain on Linux Environment
-name: Linux-Environment
+name: Build Ternoa Client Linux
 
 on:
   push:
-    branches:
-      - main
     tags:
       - v1.*
-  pull_request:
-    branches: '*'
+  workflow_dispatch:
+    inputs:
+      ignoreLevel:
+        description: 'Ignore'
+        default: 'ignore'
+        type: choice
+        options:
+        - ignore
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    name: Check Formatting Job
-    steps:
-    - uses: hecrj/setup-rust-action@v1
-    - uses: actions/checkout@v3
-
-    - name: Setup Rust toolchain
-      run: rustup show
-
-    - name: Check that the code is properly formatted
-      run: cargo fmt --all -- --check
-
-  tests:
-    runs-on: ubuntu-latest
-    name: Run Tests Job
-    if: ${{ always() }}
-    needs: format
-    steps:
-    - uses: hecrj/setup-rust-action@v1
-    - uses: actions/checkout@v3
-
-    - name: Setup Rust toolchain
-      run: rustup show
-
-    - name: Check that all the tests are passing 
-      run: cargo test --all-targets --all-features --workspace
-
   build:
     runs-on: self-hosted
     name: Build Binary Job

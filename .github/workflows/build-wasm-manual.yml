@@ -38,9 +38,9 @@ jobs:
 
     - name: Move wasm files
       run: |
-        cp ./runtime/"$Runtime"/target/srtool/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.compressed.wasm /downloads/"$Runtime"_runtime.compact.compressed.wasm
-        cp ./runtime/"$Runtime"/target/srtool/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.wasm /downloads/"$Runtime"_runtime.compact.wasm
-        cp ./runtime/"$Runtime"/target/srtool/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.wasm /downloads/"$Runtime"_runtime.wasm
+        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.compressed.wasm ./downloads/
+        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.wasm ./downloads/
+        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.wasm ./downloads/
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3

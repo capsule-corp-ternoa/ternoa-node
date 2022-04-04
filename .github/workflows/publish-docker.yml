@@ -1,6 +1,17 @@
-name: Publish Docker Image Manual
+name: Publish Docker Image
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - v1.*
+  workflow_dispatch:
+    inputs:
+      ignoreLevel:
+        description: 'Ignore'
+        default: 'ignore'
+        type: choice
+        options:
+        - ignore
 
 jobs:
   docker-build:
