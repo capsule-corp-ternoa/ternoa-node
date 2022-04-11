@@ -24,8 +24,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Setup Rust toolchain
+      run: rustup show
+
     - name: Build the Ternoa client
-      run: /root/.cargo/bin/cargo build --release --features runtime-benchmarks
+      run: cargo build --release --features runtime-benchmarks
 
     - name: Run benchmarks
       run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
