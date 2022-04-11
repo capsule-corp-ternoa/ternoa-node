@@ -19,7 +19,7 @@ env:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: build-machine
     name: Build Binary Job
     steps:
     - uses: actions/checkout@v3

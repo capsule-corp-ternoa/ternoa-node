@@ -18,25 +18,47 @@ env:
 
 
 jobs:
+  build-client:
+    runs-on: build-machine
+    name: Build Ternoa Client
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Rust toolchain
+        run: rustup show
+
+      - name: Build the Ternoa client
+        run: cargo build --release --features runtime-benchmarks
+
+      - name: Share The Ternoa Client with the next job.
+        uses: actions/upload-artifact@v3
+        with:
+          name: ternoa-client
+          path: ./target/release/ternoa
+
   run-benchmarks:
     runs-on: min-spec
     name: Run Benchmarks
     steps:
-    - uses: actions/checkout@v3
+      - name: Create client folder.
+        run: mkdir -p target/release/
 
-    - name: Setup Rust toolchain
-      run: rustup show
+      - name: Download Ternoa Client from previous job.
+        uses: actions/download-artifact@v3
+        with:
+          name: ternoa-client
+          path: target/release/
 
-    - name: Build the Ternoa client
-      run: cargo build --release --features runtime-benchmarks
+      - name: Setup Rust toolchain
+        run: rustup show
 
-    - name: Run benchmarks
-      run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
+      - name: Run benchmarks
+        run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: assets-for-download
-        path: weights
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: generated-weights
+          path: weights
 
     
