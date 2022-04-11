@@ -32,7 +32,7 @@ use crate::{
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
 
-type AtLeastThirdsOfCommittee = EnsureOneOf<
+type AtLeastTwoThirdsOfCommittee = EnsureOneOf<
 	EnsureRoot<AccountId>,
 	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>,
 >;
@@ -106,8 +106,8 @@ impl pallet_timestamp::Config for Runtime {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = common::other::TreasuryPalletId;
 	type Currency = Balances;
-	type ApproveOrigin = AtLeastThirdsOfCommittee;
-	type RejectOrigin = AtLeastThirdsOfCommittee;
+	type ApproveOrigin = AtLeastTwoThirdsOfCommittee;
+	type RejectOrigin = AtLeastTwoThirdsOfCommittee;
 	type Event = Event;
 	type OnSlash = Treasury;
 	type ProposalBond = common::other::ProposalBond;
@@ -296,7 +296,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = AtLeastThirdsOfCommittee;
+	type SlashCancelOrigin = AtLeastTwoThirdsOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -346,7 +346,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type GovernanceFallback = common::elections::GovernanceFallback<Self>;
 	type Solver = common::elections::Solver<Self>;
 	type WeightInfo = weights::pallet_election_provider_multi_phase::WeightInfo<Runtime>;
-	type ForceOrigin = AtLeastThirdsOfCommittee;
+	type ForceOrigin = AtLeastTwoThirdsOfCommittee;
 	type BenchmarkingConfig = common::elections::BenchmarkConfig;
 	type MaxElectingVoters = common::elections::MaxElectingVoters;
 	type MaxElectableTargets = common::elections::MaxElectableTargets;
@@ -387,11 +387,11 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
 	type Event = Event;
-	type AddOrigin = AtLeastThirdsOfCommittee;
-	type RemoveOrigin = AtLeastThirdsOfCommittee;
-	type SwapOrigin = AtLeastThirdsOfCommittee;
-	type ResetOrigin = AtLeastThirdsOfCommittee;
-	type PrimeOrigin = AtLeastThirdsOfCommittee;
+	type AddOrigin = AtLeastTwoThirdsOfCommittee;
+	type RemoveOrigin = AtLeastTwoThirdsOfCommittee;
+	type SwapOrigin = AtLeastTwoThirdsOfCommittee;
+	type ResetOrigin = AtLeastTwoThirdsOfCommittee;
+	type PrimeOrigin = AtLeastTwoThirdsOfCommittee;
 	type MembershipInitialized = TechnicalCommittee;
 	type MembershipChanged = TechnicalCommittee;
 	type MaxMembers = common::other::TechnicalMaxMembers;
@@ -413,7 +413,7 @@ impl pallet_scheduler::Config for Runtime {
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::other::MaximumSchedulerWeight;
-	type ScheduleOrigin = AtLeastThirdsOfCommittee;
+	type ScheduleOrigin = AtLeastTwoThirdsOfCommittee;
 	type MaxScheduledPerBlock = common::other::MaxScheduledPerBlock;
 	type WeightInfo = weights::pallet_scheduler::WeightInfo<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
@@ -426,6 +426,6 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = common::staking::StakingRewardsPalletId;
-	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ExternalOrigin = AtLeastTwoThirdsOfCommittee;
 	type WeightInfo = weights::ternoa_staking_rewards::WeightInfo<Runtime>;
 }
