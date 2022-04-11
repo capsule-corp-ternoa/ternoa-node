@@ -39,6 +39,7 @@ jobs:
   run-benchmarks:
     runs-on: min-spec
     name: Run Benchmarks
+    needs: build-client
     steps:
       - name: Create client folder.
         run: mkdir -p target/release/
