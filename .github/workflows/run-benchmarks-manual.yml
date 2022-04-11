@@ -19,7 +19,7 @@ env:
 
 jobs:
   run-benchmarks:
-    runs-on: self-hosted
+    runs-on: min-spec
     name: Run Benchmarks
     steps:
     - uses: actions/checkout@v3
