@@ -15,7 +15,7 @@
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::weights;
-pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
+use common::staking::{BondingDuration, SessionsPerEra};
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
@@ -39,11 +39,14 @@ use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Momen
 use ternoa_runtime_common as common;
 
 use crate::{
-	AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase, Event, Grandpa,
-	Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Preimage, Runtime, Session,
-	Signature, SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
-	TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
+	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
+	ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
+	OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking,
+	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+	UncheckedExtrinsic, VERSION,
 };
+
+pub use common::authority::BABE_GENESIS_EPOCH_CONFIG;
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
@@ -137,9 +140,15 @@ impl pallet_treasury::Config for Runtime {
 	type ProposalBondMaximum = common::other::ProposalBondMaximum;
 }
 
+parameter_types! {
+	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS as u64;
+	pub const ReportLongevity: u64 =
+		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
+}
+
 // Babe
 impl pallet_babe::Config for Runtime {
-	type EpochDuration = common::authority::EpochDuration;
+	type EpochDuration = EpochDuration;
 	type ExpectedBlockTime = common::authority::ExpectedBlockTime;
 	// session module is the trigger
 	type EpochChangeTrigger = common::authority::EpochChangeTrigger;
@@ -153,11 +162,8 @@ impl pallet_babe::Config for Runtime {
 		KeyTypeId,
 		pallet_babe::AuthorityId,
 	)>>::IdentificationTuple;
-	type HandleEquivocation = pallet_babe::EquivocationHandler<
-		Self::KeyOwnerIdentification,
-		Offences,
-		common::authority::ReportLongevity,
-	>;
+	type HandleEquivocation =
+		pallet_babe::EquivocationHandler<Self::KeyOwnerIdentification, Offences, ReportLongevity>;
 	type WeightInfo = ();
 	type MaxAuthorities = common::authority::MaxAuthorities;
 }
@@ -176,7 +182,7 @@ impl pallet_grandpa::Config for Runtime {
 	type HandleEquivocation = pallet_grandpa::EquivocationHandler<
 		Self::KeyOwnerIdentification,
 		Offences,
-		common::authority::ReportLongevity,
+		ReportLongevity,
 	>;
 	type WeightInfo = ();
 	type MaxAuthorities = common::authority::MaxAuthorities;
@@ -328,6 +334,13 @@ impl pallet_staking::Config for Runtime {
 	type MaxUnlockingChunks = frame_support::traits::ConstU32<32>;
 }
 
+parameter_types! {
+	// phase durations. 1/4 of the last session for each.
+	pub const SignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
+	pub const UnsignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
+	pub OffchainRepeat: BlockNumber = UnsignedPhase::get() / 8;
+}
+
 impl pallet_election_provider_multi_phase::Config for Runtime {
 	type Event = Event;
 	/// What Currency to use to reward or slash miners.
@@ -338,11 +351,11 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	/// (solution) result of the election. If they did it correctly they will be rewarded. If they
 	/// wanted to cheat the system they will be slashed. This Signed phase happens before then
 	/// Unsigned one.
-	type SignedPhase = common::elections::SignedPhase;
+	type SignedPhase = SignedPhase;
 	/// Duration of the unsigned phase. After the signed phase the unsigned phase comes where the
 	/// OCWs from validators compute the election result (solution). The best score from the
 	/// unsigned and signed phase is used.
-	type UnsignedPhase = common::elections::UnsignedPhase;
+	type UnsignedPhase = UnsignedPhase;
 	type SignedMaxSubmissions = common::elections::SignedMaxSubmissions;
 	type SignedRewardBase = common::elections::SignedRewardBase;
 	type SignedDepositBase = common::elections::SignedDepositBase;
@@ -354,7 +367,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type SolutionImprovementThreshold = common::elections::SolutionImprovementThreshold;
 	type MinerMaxWeight = common::elections::MinerMaxWeight;
 	type MinerMaxLength = common::elections::MinerMaxLength;
-	type OffchainRepeat = common::elections::OffchainRepeat;
+	type OffchainRepeat = OffchainRepeat;
 	type MinerTxPriority = common::elections::NposSolutionPriority;
 	type DataProvider = Staking;
 	type Solution = common::elections::NposCompactSolution24;

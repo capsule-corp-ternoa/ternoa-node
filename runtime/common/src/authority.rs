@@ -17,17 +17,11 @@
 use frame_support::{dispatch::TransactionPriority, parameter_types};
 use ternoa_core_primitives::{BlockNumber, Moment};
 
-use crate::{
-	constants::time::{EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY},
-	staking::{BondingDuration, SessionsPerEra},
-};
+use crate::constants::time::{MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY};
 
 parameter_types! {
 	// Babe
-	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS as u64;
 	pub const ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
-	pub const ReportLongevity: u64 =
-		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
 
 	// I am Online
 	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();

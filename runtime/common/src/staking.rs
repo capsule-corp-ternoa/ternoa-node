@@ -25,11 +25,11 @@ use sp_runtime::Perbill;
 use crate::elections::NposCompactSolution24;
 
 parameter_types! {
-	// Six sessions in an era (6 * EPOCH, 6 hours).
+	// Six sessions in an era (6 * EPOCH, 6 hours Alphanet, 24 hours Mainnet).
 	pub const SessionsPerEra: sp_staking::SessionIndex = 6;
-	// 28 eras for unbonding (7 days).
+	// 28 eras for unbonding (7 days Alphanet, 28 days Mainnet).
 	pub const BondingDuration: sp_staking::EraIndex = 28;
-	// 27 eras in which slashes can be cancelled (slightly less than 7 days).
+	// 27 eras in which slashes can be cancelled (slightly less than 7 days Alphanet, less than 28 days Mainnet).
 	pub const SlashDeferDuration: sp_staking::EraIndex = 27;
 	pub const MaxNominatorRewardedPerValidator: u32 = 256;
 	// 1 hour session, 15 minutes unsigned phase, 8 offchain executions.

@@ -21,21 +21,14 @@ use frame_support::{
 	weights::{constants::BlockExecutionWeight, DispatchClass},
 };
 use sp_std::vec;
-use ternoa_core_primitives::{AccountId, Balance, BlockNumber};
+use ternoa_core_primitives::{AccountId, Balance};
 
 use crate::{
-	constants::{
-		currency::{deposit, UNITS},
-		time::EPOCH_DURATION_IN_SLOTS,
-	},
+	constants::currency::{deposit, UNITS},
 	system::{RuntimeBlockLength, RuntimeBlockWeights},
 };
 
 parameter_types! {
-	// phase durations. 1/4 of the last session for each.
-	pub const SignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
-	pub const UnsignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
-
 	// signed config
 	pub const SignedMaxSubmissions: u32 = 16;
 	// Each good submission will get 1/10 CAPS as reward
@@ -44,8 +37,6 @@ parameter_types! {
 	pub const SignedDepositByte: Balance = deposit(0, 10) / 1024;
 
 	pub SolutionImprovementThreshold: Perbill = Perbill::from_rational(5u32, 10_000);
-
-	pub OffchainRepeat: BlockNumber = UnsignedPhase::get() / 8;
 
 	// miner configs
 	pub const MinerMaxIterations: u32 = 10;
