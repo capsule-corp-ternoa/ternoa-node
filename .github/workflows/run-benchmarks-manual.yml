@@ -52,6 +52,15 @@ jobs:
           name: ternoa-client
           path: target/release/
 
+      - name: Make the Client executable
+        run: chmod u+x ./target/release/ternoa
+
+      - name: Make
+        uses: actions/download-artifact@v3
+        with:
+          name: ternoa-client
+          path: target/release/
+
       - name: Setup Rust toolchain
         run: rustup show
 
