@@ -1,3 +1,19 @@
+// Copyright 2022 Capsule Corp (France) SAS.
+// This file is part of Ternoa.
+
+// Ternoa is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Ternoa is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
+
 use frame_support::{
 	dispatch::{TransactionPriority, Weight},
 	parameter_types,
@@ -5,21 +21,14 @@ use frame_support::{
 	weights::{constants::BlockExecutionWeight, DispatchClass},
 };
 use sp_std::vec;
-use ternoa_core_primitives::{AccountId, Balance, BlockNumber};
+use ternoa_core_primitives::{AccountId, Balance};
 
 use crate::{
-	constants::{
-		currency::{deposit, UNITS},
-		time::EPOCH_DURATION_IN_SLOTS,
-	},
+	constants::currency::{deposit, UNITS},
 	system::{RuntimeBlockLength, RuntimeBlockWeights},
 };
 
 parameter_types! {
-	// phase durations. 1/4 of the last session for each.
-	pub const SignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
-	pub const UnsignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
-
 	// signed config
 	pub const SignedMaxSubmissions: u32 = 16;
 	// Each good submission will get 1/10 CAPS as reward
@@ -28,8 +37,6 @@ parameter_types! {
 	pub const SignedDepositByte: Balance = deposit(0, 10) / 1024;
 
 	pub SolutionImprovementThreshold: Perbill = Perbill::from_rational(5u32, 10_000);
-
-	pub OffchainRepeat: BlockNumber = UnsignedPhase::get() / 8;
 
 	// miner configs
 	pub const MinerMaxIterations: u32 = 10;

@@ -1,3 +1,19 @@
+// Copyright 2022 Capsule Corp (France) SAS.
+// This file is part of Ternoa.
+
+// Ternoa is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Ternoa is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
+
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, Currency, Imbalance, OnUnbalanced},
@@ -9,11 +25,11 @@ use sp_runtime::Perbill;
 use crate::elections::NposCompactSolution24;
 
 parameter_types! {
-	// Six sessions in an era (6 * EPOCH, 6 hours).
+	// Six sessions in an era (6 * EPOCH, 6 hours Alphanet, 24 hours Mainnet).
 	pub const SessionsPerEra: sp_staking::SessionIndex = 6;
-	// 28 eras for unbonding (7 days).
+	// 28 eras for unbonding (7 days Alphanet, 28 days Mainnet).
 	pub const BondingDuration: sp_staking::EraIndex = 28;
-	// 27 eras in which slashes can be cancelled (slightly less than 7 days).
+	// 27 eras in which slashes can be cancelled (slightly less than 7 days Alphanet, less than 28 days Mainnet).
 	pub const SlashDeferDuration: sp_staking::EraIndex = 27;
 	pub const MaxNominatorRewardedPerValidator: u32 = 256;
 	// 1 hour session, 15 minutes unsigned phase, 8 offchain executions.

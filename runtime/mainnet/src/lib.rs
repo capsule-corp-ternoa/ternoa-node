@@ -1,3 +1,19 @@
+// Copyright 2022 Capsule Corp (France) SAS.
+// This file is part of Ternoa.
+
+// Ternoa is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Ternoa is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
+
 //! Ternoa Chain runtime. This puts all the pallets together and gets compiled
 //! to WASM.
 
@@ -6,8 +22,9 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
-pub use ternoa_runtime_common::constants;
+pub use ternoa_runtime_common::constants as common_constants;
 
+pub mod constants;
 mod pallets;
 mod version;
 mod weights;

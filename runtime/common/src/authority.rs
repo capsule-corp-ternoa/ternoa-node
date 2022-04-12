@@ -1,17 +1,27 @@
+// Copyright 2022 Capsule Corp (France) SAS.
+// This file is part of Ternoa.
+
+// Ternoa is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Ternoa is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
+
 use frame_support::{dispatch::TransactionPriority, parameter_types};
 use ternoa_core_primitives::{BlockNumber, Moment};
 
-use crate::{
-	constants::time::{EPOCH_DURATION_IN_SLOTS, MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY},
-	staking::{BondingDuration, SessionsPerEra},
-};
+use crate::constants::time::{MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY};
 
 parameter_types! {
 	// Babe
-	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS as u64;
 	pub const ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
-	pub const ReportLongevity: u64 =
-		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
 
 	// I am Online
 	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();

@@ -1,5 +1,21 @@
+// Copyright 2022 Capsule Corp (France) SAS.
+// This file is part of Ternoa.
+
+// Ternoa is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Ternoa is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
+
 use super::weights;
-pub use common::authority::{EpochDuration, BABE_GENESIS_EPOCH_CONFIG};
+use common::staking::{BondingDuration, SessionsPerEra};
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
@@ -23,16 +39,19 @@ use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Momen
 use ternoa_runtime_common as common;
 
 use crate::{
-	AuthorityDiscovery, Babe, BagsList, Balances, Call, ElectionProviderMultiPhase, Event, Grandpa,
-	Historical, ImOnline, Offences, Origin, OriginCaller, PalletInfo, Preimage, Runtime, Session,
-	Signature, SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
-	TransactionPayment, Treasury, UncheckedExtrinsic, VERSION,
+	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
+	ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
+	OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking,
+	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+	UncheckedExtrinsic, VERSION,
 };
+
+pub use common::authority::BABE_GENESIS_EPOCH_CONFIG;
 
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
 
-type AtLeastThirdsOfCommittee = EnsureOneOf<
+type AtLeastTwoThirdsOfCommittee = EnsureOneOf<
 	EnsureRoot<AccountId>,
 	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>,
 >;
@@ -106,8 +125,8 @@ impl pallet_timestamp::Config for Runtime {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = common::other::TreasuryPalletId;
 	type Currency = Balances;
-	type ApproveOrigin = AtLeastThirdsOfCommittee;
-	type RejectOrigin = AtLeastThirdsOfCommittee;
+	type ApproveOrigin = AtLeastTwoThirdsOfCommittee;
+	type RejectOrigin = AtLeastTwoThirdsOfCommittee;
 	type Event = Event;
 	type OnSlash = Treasury;
 	type ProposalBond = common::other::ProposalBond;
@@ -121,9 +140,15 @@ impl pallet_treasury::Config for Runtime {
 	type ProposalBondMaximum = common::other::ProposalBondMaximum;
 }
 
+parameter_types! {
+	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS as u64;
+	pub const ReportLongevity: u64 =
+		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
+}
+
 // Babe
 impl pallet_babe::Config for Runtime {
-	type EpochDuration = common::authority::EpochDuration;
+	type EpochDuration = EpochDuration;
 	type ExpectedBlockTime = common::authority::ExpectedBlockTime;
 	// session module is the trigger
 	type EpochChangeTrigger = common::authority::EpochChangeTrigger;
@@ -137,11 +162,8 @@ impl pallet_babe::Config for Runtime {
 		KeyTypeId,
 		pallet_babe::AuthorityId,
 	)>>::IdentificationTuple;
-	type HandleEquivocation = pallet_babe::EquivocationHandler<
-		Self::KeyOwnerIdentification,
-		Offences,
-		common::authority::ReportLongevity,
-	>;
+	type HandleEquivocation =
+		pallet_babe::EquivocationHandler<Self::KeyOwnerIdentification, Offences, ReportLongevity>;
 	type WeightInfo = ();
 	type MaxAuthorities = common::authority::MaxAuthorities;
 }
@@ -160,7 +182,7 @@ impl pallet_grandpa::Config for Runtime {
 	type HandleEquivocation = pallet_grandpa::EquivocationHandler<
 		Self::KeyOwnerIdentification,
 		Offences,
-		common::authority::ReportLongevity,
+		ReportLongevity,
 	>;
 	type WeightInfo = ();
 	type MaxAuthorities = common::authority::MaxAuthorities;
@@ -296,7 +318,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = AtLeastThirdsOfCommittee;
+	type SlashCancelOrigin = AtLeastTwoThirdsOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -312,6 +334,13 @@ impl pallet_staking::Config for Runtime {
 	type MaxUnlockingChunks = frame_support::traits::ConstU32<32>;
 }
 
+parameter_types! {
+	// phase durations. 1/4 of the last session for each.
+	pub const SignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
+	pub const UnsignedPhase: u32 = EPOCH_DURATION_IN_SLOTS / 4;
+	pub OffchainRepeat: BlockNumber = UnsignedPhase::get() / 8;
+}
+
 impl pallet_election_provider_multi_phase::Config for Runtime {
 	type Event = Event;
 	/// What Currency to use to reward or slash miners.
@@ -322,11 +351,11 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	/// (solution) result of the election. If they did it correctly they will be rewarded. If they
 	/// wanted to cheat the system they will be slashed. This Signed phase happens before then
 	/// Unsigned one.
-	type SignedPhase = common::elections::SignedPhase;
+	type SignedPhase = SignedPhase;
 	/// Duration of the unsigned phase. After the signed phase the unsigned phase comes where the
 	/// OCWs from validators compute the election result (solution). The best score from the
 	/// unsigned and signed phase is used.
-	type UnsignedPhase = common::elections::UnsignedPhase;
+	type UnsignedPhase = UnsignedPhase;
 	type SignedMaxSubmissions = common::elections::SignedMaxSubmissions;
 	type SignedRewardBase = common::elections::SignedRewardBase;
 	type SignedDepositBase = common::elections::SignedDepositBase;
@@ -338,7 +367,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type SolutionImprovementThreshold = common::elections::SolutionImprovementThreshold;
 	type MinerMaxWeight = common::elections::MinerMaxWeight;
 	type MinerMaxLength = common::elections::MinerMaxLength;
-	type OffchainRepeat = common::elections::OffchainRepeat;
+	type OffchainRepeat = OffchainRepeat;
 	type MinerTxPriority = common::elections::NposSolutionPriority;
 	type DataProvider = Staking;
 	type Solution = common::elections::NposCompactSolution24;
@@ -346,7 +375,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type GovernanceFallback = common::elections::GovernanceFallback<Self>;
 	type Solver = common::elections::Solver<Self>;
 	type WeightInfo = weights::pallet_election_provider_multi_phase::WeightInfo<Runtime>;
-	type ForceOrigin = AtLeastThirdsOfCommittee;
+	type ForceOrigin = AtLeastTwoThirdsOfCommittee;
 	type BenchmarkingConfig = common::elections::BenchmarkConfig;
 	type MaxElectingVoters = common::elections::MaxElectingVoters;
 	type MaxElectableTargets = common::elections::MaxElectableTargets;
@@ -387,11 +416,11 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
 	type Event = Event;
-	type AddOrigin = AtLeastThirdsOfCommittee;
-	type RemoveOrigin = AtLeastThirdsOfCommittee;
-	type SwapOrigin = AtLeastThirdsOfCommittee;
-	type ResetOrigin = AtLeastThirdsOfCommittee;
-	type PrimeOrigin = AtLeastThirdsOfCommittee;
+	type AddOrigin = AtLeastTwoThirdsOfCommittee;
+	type RemoveOrigin = AtLeastTwoThirdsOfCommittee;
+	type SwapOrigin = AtLeastTwoThirdsOfCommittee;
+	type ResetOrigin = AtLeastTwoThirdsOfCommittee;
+	type PrimeOrigin = AtLeastTwoThirdsOfCommittee;
 	type MembershipInitialized = TechnicalCommittee;
 	type MembershipChanged = TechnicalCommittee;
 	type MaxMembers = common::other::TechnicalMaxMembers;
@@ -413,7 +442,7 @@ impl pallet_scheduler::Config for Runtime {
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::other::MaximumSchedulerWeight;
-	type ScheduleOrigin = AtLeastThirdsOfCommittee;
+	type ScheduleOrigin = AtLeastTwoThirdsOfCommittee;
 	type MaxScheduledPerBlock = common::other::MaxScheduledPerBlock;
 	type WeightInfo = weights::pallet_scheduler::WeightInfo<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
@@ -426,6 +455,6 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = common::staking::StakingRewardsPalletId;
-	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ExternalOrigin = AtLeastTwoThirdsOfCommittee;
 	type WeightInfo = weights::ternoa_staking_rewards::WeightInfo<Runtime>;
 }

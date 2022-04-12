@@ -19,7 +19,7 @@ env:
 
 jobs:
   build-client:
-    runs-on: build-machine
+    runs-on: reference-machine
     name: Build Ternoa Client
     steps:
       - uses: actions/checkout@v3
@@ -30,29 +30,6 @@ jobs:
       - name: Build the Ternoa client
         run: cargo build --release --features runtime-benchmarks
 
-      - name: Share The Ternoa Client with the next job.
-        uses: actions/upload-artifact@v3
-        with:
-          name: ternoa-client
-          path: ./target/release/ternoa
-
-  run-benchmarks:
-    runs-on: min-spec
-    name: Run Benchmarks
-    needs: build-client
-    steps:
-      - name: Create client folder.
-        run: mkdir -p target/release/
-
-      - name: Download Ternoa Client from previous job.
-        uses: actions/download-artifact@v3
-        with:
-          name: ternoa-client
-          path: target/release/
-
-      - name: Setup Rust toolchain
-        run: rustup show
-
       - name: Run benchmarks
         run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
 
@@ -61,5 +38,49 @@ jobs:
         with:
           name: generated-weights
           path: weights
+
+
+      # - name: Share The Ternoa Client with the next job.
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ternoa-client
+      #     path: ./target/release/ternoa
+
+  # run-benchmarks:
+  #   runs-on: min-spec
+  #   name: Run Benchmarks
+  #   needs: build-client
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Create client folder.
+  #       run: mkdir -p target/release/
+
+  #     - name: Download Ternoa Client from previous job.
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ternoa-client
+  #         path: target/release/
+
+  #     - name: Make the Client executable
+  #       run: chmod u+x ./target/release/ternoa
+
+  #     - name: Make
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ternoa-client
+  #         path: target/release/
+
+  #     - name: Setup Rust toolchain
+  #       run: rustup show
+
+  #     - name: Run benchmarks
+  #       run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
+
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: generated-weights
+  #         path: weights
 
     
