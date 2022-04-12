@@ -19,7 +19,7 @@ env:
 
 jobs:
   build:
-    runs-on: build-machine
+    runs-on: github-runner
     name: Build Binary Job
     steps:
     - uses: actions/checkout@v3
