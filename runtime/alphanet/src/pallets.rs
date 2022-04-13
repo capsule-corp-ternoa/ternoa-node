@@ -462,4 +462,5 @@ impl ternoa_erc20_bridge::Config for Runtime {
 	type Currency = Balances;
 	type NativeTokenId = NativeTokenId;
 	type WeightInfo = ();
+	type FeesCollector = Treasury;
 }
