@@ -139,8 +139,8 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
+ "ternoa-bridge",
  "ternoa-core-primitives",
- "ternoa-eth-ter-bridge",
  "ternoa-mandate",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
@@ -7605,6 +7605,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-bridge"
+version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1#c7fc4f03829d40e967081b93e11993eeb9952064"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "substrate-wasm-builder-runner",
+]
+
+[[package]]
 name = "ternoa-cli"
 version = "1.0.0"
 dependencies = [
@@ -7652,24 +7670,6 @@ version = "0.1.0"
 dependencies = [
  "sp-core",
  "sp-runtime",
-]
-
-[[package]]
-name = "ternoa-eth-ter-bridge"
-version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=marko/bridge#edce61863d844a86758a501822cc53f8d79d982f"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "substrate-wasm-builder-runner",
 ]
 
 [[package]]

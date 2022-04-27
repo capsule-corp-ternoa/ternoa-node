@@ -61,3 +61,6 @@ echo "Running Ternoa pallet benchmarks"
 
 echo "TERNOA STAKING REWARDS"
 echo $(eval $COMMAND --pallet=ternoa_staking_rewards)
+
+echo "TERNOA BRIDGE"
+echo $(eval $COMMAND --pallet=ternoa_bridge)

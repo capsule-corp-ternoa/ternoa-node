@@ -462,14 +462,14 @@ impl ternoa_staking_rewards::Config for Runtime {
 
 parameter_types! {
 	pub const ChainId: u8 = 0;
-	pub const BridgePalletId: PalletId = PalletId(*b"py/bbbbb");
+	pub const BridgePalletId: PalletId = PalletId(*b"terbirdg");
 	pub const ProposalLifetime: BlockNumber = 100;
 	pub const InitialBridgeFee: Balance = 10_000_000_000_000_000_000;
 }
 
-impl ternoa_eth_ter_bridge::Config for Runtime {
+impl ternoa_bridge::Config for Runtime {
 	type Event = Event;
-	type WeightInfo = ();
+	type WeightInfo = ternoa_bridge::weights::TernoaWeight<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
 	type ExternalOrigin = AtLeastThirdsOfCommittee;
