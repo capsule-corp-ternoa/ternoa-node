@@ -463,7 +463,7 @@ impl ternoa_staking_rewards::Config for Runtime {
 parameter_types! {
 	pub const ChainId: u8 = 0;
 	pub const BridgePalletId: PalletId = PalletId(*b"terbirdg");
-	pub const ProposalLifetime: BlockNumber = 100;
+	pub const ProposalLifetime: BlockNumber = 1000;
 	pub const InitialBridgeFee: Balance = 10_000_000_000_000_000_000;
 }
 
@@ -476,7 +476,7 @@ impl ternoa_bridge::Config for Runtime {
 	type ChainId = ChainId;
 	type PalletId = BridgePalletId;
 	type ProposalLifetime = ProposalLifetime;
-	type RelayerVoteThreshold = ConstU32<1>;
+	type RelayerVoteThreshold = ConstU32<2>;
 	type RelayerCountLimit = ConstU32<10>;
 	type InitialBridgeFee = InitialBridgeFee;
 }
