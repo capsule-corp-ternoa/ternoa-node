@@ -14,4 +14,5 @@ pub mod pallet_collective;
 pub mod pallet_timestamp;
 pub mod pallet_treasury;
 pub mod pallet_utility;
+pub mod ternoa_bridge;
 pub mod ternoa_staking_rewards;

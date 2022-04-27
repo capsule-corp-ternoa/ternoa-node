@@ -7607,7 +7607,7 @@ dependencies = [
 [[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1#6577872521fecaafadba3ece4df64ed93eb44c6b"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1#f2569020c1f06f8b3b8a8f4c346989dd9692baea"
 dependencies = [
  "frame-benchmarking",
  "frame-support",

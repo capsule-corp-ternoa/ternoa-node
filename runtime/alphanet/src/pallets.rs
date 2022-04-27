@@ -469,7 +469,7 @@ parameter_types! {
 
 impl ternoa_bridge::Config for Runtime {
 	type Event = Event;
-	type WeightInfo = ternoa_bridge::weights::TernoaWeight<Runtime>;
+	type WeightInfo = weights::ternoa_bridge::WeightInfo<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
 	type ExternalOrigin = AtLeastThirdsOfCommittee;
