@@ -20,6 +20,7 @@ use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, IdentityFee},
+	PalletId,
 };
 use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
@@ -457,4 +458,25 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type PalletId = common::staking::StakingRewardsPalletId;
 	type ExternalOrigin = AtLeastThirdsOfCommittee;
 	type WeightInfo = weights::ternoa_staking_rewards::WeightInfo<Runtime>;
+}
+
+parameter_types! {
+	pub const ChainId: u8 = 0;
+	pub const BridgePalletId: PalletId = PalletId(*b"py/bbbbb");
+	pub const ProposalLifetime: BlockNumber = 100;
+	pub const InitialBridgeFee: Balance = 10_000_000_000_000_000_000;
+}
+
+impl ternoa_eth_ter_bridge::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = ();
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ChainId = ChainId;
+	type PalletId = BridgePalletId;
+	type ProposalLifetime = ProposalLifetime;
+	type RelayerVoteThreshold = ConstU32<1>;
+	type RelayerCountLimit = ConstU32<10>;
+	type InitialBridgeFee = InitialBridgeFee;
 }

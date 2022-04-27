@@ -132,6 +132,7 @@ construct_runtime!(
 		Utility: pallet_utility = 21,
 
 		Preimage: pallet_preimage = 22,
+		EthTerBridge: ternoa_eth_ter_bridge = 23,
 	}
 );
 
