@@ -139,6 +139,7 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
+ "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
  "ternoa-runtime-common",
@@ -7527,6 +7528,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "substrate-wasm-builder-runner"
+version = "3.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "316626afcac0219c95116e6a2518e622484c2814182bd225fbf4da4f67e27e8f"
+
+[[package]]
 name = "subtle"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7595,6 +7602,24 @@ name = "ternoa"
 version = "1.0.0"
 dependencies = [
  "ternoa-cli",
+]
+
+[[package]]
+name = "ternoa-bridge"
+version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1#6577872521fecaafadba3ece4df64ed93eb44c6b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "substrate-wasm-builder-runner",
 ]
 
 [[package]]

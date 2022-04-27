@@ -73,6 +73,7 @@ ternoa-core-primitives = { path = "../../core-primitives",  default-features = f
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
 ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
 ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "main", default-features = false }
+ternoa-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "v1.0.1-rc1", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
@@ -83,6 +84,9 @@ std = [
 	# Ternoa
 	"ternoa-core-primitives/std",
 	"ternoa-runtime-common/std",
+	"ternoa-mandate/std",
+	"ternoa-staking-rewards/std",
+	"ternoa-bridge/std",
 	# Substrate
 	"parity-scale-codec/std",
 	"frame-election-provider-support/std",
@@ -128,8 +132,6 @@ std = [
 	"pallet-collective/std",
 	"pallet-membership/std",
 	"pallet-scheduler/std",
-	"ternoa-mandate/std",
-	"ternoa-staking-rewards/std",
 ]
 
 runtime-benchmarks = [
@@ -158,6 +160,7 @@ runtime-benchmarks = [
 	"pallet-utility/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"ternoa-staking-rewards/runtime-benchmarks",
+	"ternoa-bridge/runtime-benchmarks",
 ]
 
 # try-runtime = [
