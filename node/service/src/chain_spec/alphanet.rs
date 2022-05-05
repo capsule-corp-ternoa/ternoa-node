@@ -18,7 +18,7 @@ use super::{get_account_id_from_seed, get_from_seed, AlphanetChainSpec as ChainS
 use alphanet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
 	BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-	StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
+	StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG, PhragmenElectionConfig, CouncilConfig
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
@@ -180,6 +180,8 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 		invulnerables,
 	} = input;
 
+	let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
+
 	GenesisConfig {
 		// Core
 		system: SystemConfig { code: wasm_binary_unwrap().to_vec() },
@@ -231,5 +233,7 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 			members: committee_members,
 			..Default::default()
 		},
+		council: CouncilConfig { phantom: Default::default(), members: vec![root_key.clone()] },
+		phragmen_election: PhragmenElectionConfig { members: vec![] },
 	}
 }

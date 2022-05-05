@@ -120,19 +120,21 @@ construct_runtime!(
 
 		// Government pallets
 		//
-		// We start with the Technical Committee and then we will upgrade to a Council / Committee solution
-		TechnicalCommittee: pallet_collective::<Instance1> = 17,
-		TechnicalMembership: pallet_membership = 18,
-		Mandate: ternoa_mandate = 19,
+		// Council
+		Council: pallet_collective::<Instance1> = 17,
+		PhragmenElection: pallet_elections_phragmen = 18,
+		TechnicalCommittee: pallet_collective::<Instance2> = 19,
+		TechnicalMembership: pallet_membership = 20,
+		Mandate: ternoa_mandate = 21,
 
 		// Governance stuff. uncallable initially
-		Treasury: pallet_treasury = 20,
+		Treasury: pallet_treasury = 22,
 
 		// Cunning utilities. Usable initially.
-		Utility: pallet_utility = 21,
+		Utility: pallet_utility = 23,
 
-		Preimage: pallet_preimage = 22,
-		Bridge: ternoa_bridge = 23,
+		Preimage: pallet_preimage = 24,
+		Bridge: ternoa_bridge = 25,
 	}
 );
 

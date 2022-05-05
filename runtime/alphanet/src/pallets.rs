@@ -15,7 +15,10 @@
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::weights;
-use common::staking::{BondingDuration, SessionsPerEra};
+use common::{
+	staking::{BondingDuration, SessionsPerEra},
+};
+use static_assertions::const_assert;
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
@@ -44,7 +47,7 @@ use crate::{
 	ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
 	OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking,
 	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, VERSION,
+	UncheckedExtrinsic, VERSION, Council
 };
 
 pub use common::authority::BABE_GENESIS_EPOCH_CONFIG;
@@ -402,7 +405,7 @@ impl pallet_preimage::Config for Runtime {
 }
 
 // Technical collective
-type TechnicalCollective = pallet_collective::Instance1;
+type TechnicalCollective = pallet_collective::Instance2;
 impl pallet_collective::Config<TechnicalCollective> for Runtime {
 	type Origin = Origin;
 	type Proposal = Call;
@@ -479,4 +482,38 @@ impl ternoa_bridge::Config for Runtime {
 	type RelayerVoteThreshold = ConstU32<2>;
 	type RelayerCountLimit = ConstU32<10>;
 	type InitialBridgeFee = InitialBridgeFee;
+}
+
+// Council collective
+type CouncilCollective = pallet_collective::Instance1;
+impl pallet_collective::Config<CouncilCollective> for Runtime {
+	type Origin = Origin;
+	type Proposal = Call;
+	type Event = Event;
+	type MotionDuration = common::other::CouncilMotionDuration;
+	type MaxProposals = common::other::CouncilMaxProposals;
+	type MaxMembers = common::other::CouncilMaxMembers;
+	type DefaultVote = pallet_collective::PrimeDefaultVote;
+	type WeightInfo = pallet_collective::weights::SubstrateWeight<Runtime>;
+}
+
+// Make sure that there are no more than MaxMembers members elected via phragmen.
+const_assert!(common::other::DesiredMembers::get() <= common::other::CouncilMaxMembers::get());
+
+impl pallet_elections_phragmen::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type ChangeMembers = Council;
+	type InitializeMembers = Council;
+	type CurrencyToVote = frame_support::traits::U128CurrencyToVote;
+	type CandidacyBond = common::other::CandidacyBond;
+	type VotingBondBase = common::other::VotingBondBase;
+	type VotingBondFactor = common::other::VotingBondFactor;
+	type LoserCandidate = Treasury;
+	type KickedMember = Treasury;
+	type DesiredMembers = common::other::DesiredMembers;
+	type DesiredRunnersUp = common::other::DesiredRunnersUp;
+	type TermDuration = common::other::TermDuration;
+	type PalletId = common::other::PhragmenElectionPalletId;
+	type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
 }

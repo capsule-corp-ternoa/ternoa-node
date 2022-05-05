@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
-use frame_support::{dispatch::Weight, parameter_types, PalletId};
+use frame_support::{dispatch::Weight, parameter_types, PalletId, traits::LockIdentifier};
 use sp_runtime::{Perbill, Permill};
 use ternoa_core_primitives::{Balance, BlockNumber, Moment};
 
 use crate::{
 	constants::{
-		currency::{deposit, EXISTENTIAL_DEPOSIT, UNITS},
+		currency::{deposit, EXISTENTIAL_DEPOSIT, UNITS, CENTS},
 		time::{DAYS, MINUTES, SLOT_DURATION},
 	},
 	prod_or_fast,
@@ -66,4 +66,21 @@ parameter_types! {
 	RuntimeBlockWeights::get().max_block;
 	pub const MaxScheduledPerBlock: u32 = 50;
 	pub const NoPreimagePostponement: Option<u32> = Some(10);
+
+	// Council
+	pub CouncilMotionDuration: BlockNumber = 3 * DAYS;
+	pub const CouncilMaxProposals: u32 = 100;
+	pub const CouncilMaxMembers: u32 = 100;
+
+	// PhragmenElection
+	pub const CandidacyBond: Balance = 100 * CENTS;
+	// 1 storage item created, key size is 32 bytes, value size is 16+16.
+	pub const VotingBondBase: Balance = deposit(1, 64);
+	// additional data per vote is 32 bytes (account id).
+	pub const VotingBondFactor: Balance = deposit(0, 32);
+	/// Daily council elections
+	pub TermDuration: BlockNumber = 2 * MINUTES;
+	pub const DesiredMembers: u32 = 19;
+	pub const DesiredRunnersUp: u32 = 19;
+	pub const PhragmenElectionPalletId: LockIdentifier = *b"phrelect";
 }
