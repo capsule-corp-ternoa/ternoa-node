@@ -13,13 +13,7 @@ Table of Contents:
   - [Chat](#chat)
 - [Code Contributions](#code-contributions)
   - [Branch names](#branch-names)
-  - [Documentation](#documentation)
-  - [Formatting](#formatting)
-  - [Benchmarks](#benchmarks)
-  - [Tests](#tests)
-  - [Runtime storage | Migration](#runtime-storage--migration)
-  - [Types and Metadata](#types-and-metadata)
-- [Workflow](#workflow)
+  - [Workflow](#workflow)
 
 </br>
 
@@ -42,59 +36,24 @@ The quickest and most open way to communicate with the Ternoa Blockchain team is
 # Code Contributions
 
 ## Branch names
-Branch names should use the following convention: `features/jira-number-issue-name`
+Branch names should use the following convention: `release/version-number`
 
-Example: `features/67-add-minting-fee-to-capsules`
+Example:  `release/1.0.1-rc1` or `release/1.1.0`
 
-## Documentation
-Any piece of code that will be used by a third party needs to be well documented and this includes but is not limited to the following:
-- Dispatchable functions
-- Trait methods
-- Events
-- Errors
-- Storage data
+## Workflow
+Copy this workflow into your pull request.
 
-## Formatting
-Before creating a Pull Request, the code needs to be formatted using the command `cargo fmt --all`. 
-
-## Benchmarks
-Benchmarks needs to be written for every new dispatchable function that is added. They are used to calculate weights which are being used to calculate fees for those extrinsics. 
-
-Inside every pallet there is a `default_weights.rs` file which contains the weights and the command which was executed in order to get those weights.
-
-## Tests
-Tests are used to prove that the code is correct and to convey system usage and constraints. Every dispatchable function, trait method or migration function should have at least one test associated with it.
-
-## Runtime storage | Migration
-In case of changing how the runtime storage is ordered for existing objects, either by adding new properties or changing existing properties, it needs to be handled by writing a functions which will allow nodes with older versions of storage to safely and gracefully upgrade to a newer version.
-
-Example code: [marketplace pallet](pallets/marketplace/src/migrations/v6.rs).
-
-## Types and Metadata
-User defined structures are not by default recognized by the PolkadotJs UI. In order to be recognized a JSON file, which contains the description of all types, needs to be supplied to the webapp.
-
-This means that if user defined structures are changed or a new structure is added, it needs to be also reflected in the [types.json](types.json) file. 
-
-# Workflow
-
-- [ ] Create a branch
-- [ ] Implement feature/bugfix
-- [ ] If a new dispatchable function was added:
-  - [ ] Write tests
-  - [ ] Write benchmarks
-  - [ ] Generate weights
-- [ ] If existing dispatchable code was changed:
-  - [ ] Update tests
-  - [ ] Generate new weights
-- [ ] If runtime storage has changed:
-  - [ ] Bump storage version
-  - [ ] Write migration code
-  - [ ] Write tests for the migration code
-  - [ ] Manually Test migration
-- [ ] If a user defined structure is added/changed:
-  - [ ] Update `types.json`
-- [ ] If trait code was changed/added
-  - [ ] Update/Write tests
-- [ ] Run `cargo fmt`
-- [ ] Manual testing
-- [ ] Bump spec or impl version
+- [ ] Create a release branch
+- [ ] Verify spec_version has been increase since the last release
+- [ ] Verify previous completed migrations are removed
+- [ ] Verify pallet and extrinsic ordering have stayed the same. Bump transaction_version if not
+- [ ] Verify benchmarks/weights have been updated/added for any modified or new runtime logic.
+- [ ] Verify that the upgrade won't brick the chain
+- [ ] Verify that the storage migration has been done correctly using test data
+- [ ] Verify that Product QA has been done
+- [ ] Check that the build artifacts have been built
+  - [ ] Linux Client binary
+  - [ ] WASM binary file
+- [ ] Check that a github draft release has been created with relevant release notes
+- [ ] Check that all items listed in the milestone are included in the release
+- [ ] Check that the github draft has been convert to a full release
