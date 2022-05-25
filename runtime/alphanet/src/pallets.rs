@@ -480,3 +480,21 @@ impl ternoa_bridge::Config for Runtime {
 	type RelayerCountLimit = ConstU32<10>;
 	type InitialBridgeFee = InitialBridgeFee;
 }
+
+parameter_types! {
+	pub const InitialMintFee: Balance = 10_000_000_000_000_000_000;
+	pub const NFTOffchainDataLimit: u32 = 10;
+	pub const CollectionOffchainDataLimit: u32 = 10;
+	pub const CollectionSizeLimit: u32 = 10;
+}
+
+impl ternoa_nft::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_nft::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type InitialMintFee = InitialMintFee;
+	type NFTOffchainDataLimit = NFTOffchainDataLimit;
+	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
+	type CollectionSizeLimit = CollectionSizeLimit;
+}

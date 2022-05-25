@@ -133,6 +133,7 @@ construct_runtime!(
 
 		Preimage: pallet_preimage = 22,
 		Bridge: ternoa_bridge = 23,
+		NFT: ternoa_nft = 24,
 	}
 );
 
@@ -444,6 +445,7 @@ mod benches {
 		// Ternoa
 		[ternoa_staking_rewards, StakingRewards]
 		[ternoa_bridge, Bridge]
+		[ternoa_nft, NFT]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]
