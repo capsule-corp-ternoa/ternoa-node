@@ -7656,7 +7656,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-basic-nft#7b69984f56abf21c09e69503c225c5fdd6e2e492"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-basic-nft#6a5b339b1e2cf043b9e4428ba4993cffa0807d73"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7689,7 +7689,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nft"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-basic-nft#7b69984f56abf21c09e69503c225c5fdd6e2e492"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-basic-nft#6a5b339b1e2cf043b9e4428ba4993cffa0807d73"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7707,7 +7707,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-basic-nft#7b69984f56abf21c09e69503c225c5fdd6e2e492"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-basic-nft#6a5b339b1e2cf043b9e4428ba4993cffa0807d73"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
