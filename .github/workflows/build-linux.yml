@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - v1.*
+    branches:
+      - '*'
   workflow_dispatch:
     inputs:
       ignoreLevel:
