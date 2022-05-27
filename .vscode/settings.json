@@ -6,5 +6,5 @@
         "ternoa"
     ],
     "rust-analyzer.cargo.allFeatures": true,
-    "rust-analyzer.assist.importGranularity": "module"
+    "rust-analyzer.imports.granularity.group": "module"
 }
