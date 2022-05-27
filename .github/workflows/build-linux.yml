@@ -6,7 +6,7 @@ on:
     tags:
       - v1.*
     branches:
-      - '*'
+      - '*' #all branches
   workflow_dispatch:
     inputs:
       ignoreLevel:
