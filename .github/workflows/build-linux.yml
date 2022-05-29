@@ -29,7 +29,7 @@ jobs:
       run: sudo chmod +x /usr/local/bin/scw
 
     - name: Init SCW
-      run: cw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Start Machine
       run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6
