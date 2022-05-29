@@ -1,4 +1,4 @@
-name: Build Wasm Manual
+name: Build Ternoa Wasm Manual
 
 on:
   workflow_dispatch:
@@ -31,10 +31,7 @@ jobs:
       run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Start Machine
-      run: scw instance server reboot 829c4423-0baa-4849-b081-da68a66cdff6
-
-    - name: Wait for stable state
-      run: scw instance server wait 829c4423-0baa-4849-b081-da68a66cdff6
+      run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6 --wait
 
   build:
     runs-on: ternoa-build-machine-0
@@ -83,7 +80,4 @@ jobs:
       run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Stop Machine
-      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6
-
-    - name: Wait for stable state
-      run: scw instance server wait 829c4423-0baa-4849-b081-da68a66cdff6
+      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6 --wait
