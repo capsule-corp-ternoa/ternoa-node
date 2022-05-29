@@ -18,33 +18,18 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    runs-on: github-runner
-    name: Build Binary Job
+  run:
+    runs-on: ubuntu-latest
+    name: Start Build Machine
     steps:
-    - uses: actions/checkout@v3
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
 
-    - name: Build the Ternoa client
-      run: /root/.cargo/bin/cargo build --release
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
 
-    - name: Configure AWS credentials from Test account
-      uses: s3-actions/s3cmd@v0
-      with:
-        provider: "aws"
-        access_key: ${{ secrets.SW_ACCESS_KEY_ID }}
-        secret_key: ${{ secrets.SW_SECRET_ACCESS_KEY }}
-        region: fr-par
-        
-    - name: Copy Binary to Scaleway Bucket /chain/${GITHUB_REF##*/}/latest
-      run: |
-        s3cmd sync ./target/release/ternoa s3://ternoa/chain/${GITHUB_REF##*/}/linux/ternoa --host https://s3.fr-par.scw.cloud --host-bucket https://s3.fr-par.scw.cloud --acl-public
+    - name: Init SCW
+      run: cw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
-    - name: Copy Binary to Scaleway Bucket  ${{ github.sha }}.zip
-      run: |
-        s3cmd sync ./target/release/ternoa s3://ternoa/chain/${GITHUB_REF##*/}/linux/${{ github.sha }} --host https://s3.fr-par.scw.cloud --host-bucket https://s3.fr-par.scw.cloud --acl-public
-        
-    - name: Notify Ops
-      uses: craftech-io/slack-action@v1
-      with:
-        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      if: always()
+    - name: Start Machine
+      run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6
