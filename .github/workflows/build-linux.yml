@@ -85,4 +85,4 @@ jobs:
       run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Stop Machine
-      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6 --wait
+      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6
