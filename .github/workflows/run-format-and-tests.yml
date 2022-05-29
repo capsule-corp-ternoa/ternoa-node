@@ -8,6 +8,14 @@ on:
       - v1.*
   pull_request:
     branches: '*'
+  workflow_dispatch:
+    inputs:
+      ignoreLevel:
+        description: 'Ignore'
+        default: 'ignore'
+        type: choice
+        options:
+        - ignore
 
 env:
   CARGO_TERM_COLOR: always
