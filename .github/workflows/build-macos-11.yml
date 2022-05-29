@@ -2,13 +2,6 @@
 name: Build Ternoa Client MacOS
 
 on:
-  workflow_run:
-    workflows: 
-      - Linux-Environment
-    types:
-      - completed
-    tags:
-      - v1.*
   workflow_dispatch:
     inputs:
       ignoreLevel:

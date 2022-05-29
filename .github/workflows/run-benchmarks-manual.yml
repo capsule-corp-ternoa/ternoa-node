@@ -1,4 +1,4 @@
-name: Run Benchmarks Manual
+name: Run Ternoa Benchmarks Manual
 
 on:
   workflow_dispatch:
@@ -16,19 +16,70 @@ env:
   CARGO_TERM_COLOR: always
   Runtime: ${{ github.event.inputs.runtime }}
 
-
 jobs:
-  build-client:
+  start:
+    runs-on: ubuntu-latest
+    name: Start Build Machine
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Start Machine
+      run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6 --wait
+
+  build:
+    runs-on: ternoa-build-machine-0
+    name: Build Wasm files
+    needs: start
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Rust toolchain
+      run: rustup show
+
+    - name: Build the Ternoa client
+      run: cargo build --release --features runtime-benchmarks
+
+    - name: Create downloads folder
+      run: mkdir -p destination
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ternoa-binary
+        path: ./target/release/ternoa
+
+  generate-weights:
     runs-on: reference-machine
     name: Build Ternoa Client
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup Rust toolchain
         run: rustup show
 
-      - name: Build the Ternoa client
-        run: cargo build --release --features runtime-benchmarks
+      - name: Download Binary
+        uses: actions/download-artifact@v3
+        with:
+          name: ternoa-binary
+
+      - name: Delete Binary Artifact
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: ternoa-binary
+
+      - name: Create Folder for binary
+        run: mkdir /target/release
+
+      - name: Move Binary
+        run: cp ./ternoa  /target/release/ternoa
 
       - name: Run benchmarks
         run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
@@ -38,49 +89,21 @@ jobs:
         with:
           name: generated-weights
           path: weights
+        
+  stop:
+    runs-on: ubuntu-latest
+    name: Stop Build Machine
+    needs: build
+    if: always()
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
 
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
 
-      # - name: Share The Ternoa Client with the next job.
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ternoa-client
-      #     path: ./target/release/ternoa
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
-  # run-benchmarks:
-  #   runs-on: min-spec
-  #   name: Run Benchmarks
-  #   needs: build-client
-  #   steps:
-  #     - uses: actions/checkout@v3
-
-  #     - name: Create client folder.
-  #       run: mkdir -p target/release/
-
-  #     - name: Download Ternoa Client from previous job.
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: ternoa-client
-  #         path: target/release/
-
-  #     - name: Make the Client executable
-  #       run: chmod u+x ./target/release/ternoa
-
-  #     - name: Make
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: ternoa-client
-  #         path: target/release/
-
-  #     - name: Setup Rust toolchain
-  #       run: rustup show
-
-  #     - name: Run benchmarks
-  #       run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
-
-  #     - name: Upload Artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: generated-weights
-  #         path: weights
-
-    
+    - name: Stop Machine
+      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6

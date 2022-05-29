@@ -4,20 +4,39 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v1.*
-  pull_request:
-    branches: '*'
+  workflow_dispatch:
+    inputs:
+      ignoreLevel:
+        description: 'Ignore'
+        default: 'ignore'
+        type: choice
+        options:
+        - ignore
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  start:
+    runs-on: ubuntu-latest
+    name: Start Build Machine
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Start Machine
+      run: scw instance server start a3ab8cb9-cf33-4172-9ab0-fa802e6d38c9 --wait
+
   format:
     runs-on: ubuntu-latest
     name: Check Formatting Job
     steps:
-      - uses: hecrj/setup-rust-action@v1
       - uses: actions/checkout@v3
 
       - name: Setup Rust toolchain
@@ -27,12 +46,10 @@ jobs:
         run: cargo fmt --all -- --check
 
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ternoa-build-machine-1
     name: Run Tests Job
-    if: ${{ always() }}
-    needs: format
+    needs: start
     steps:
-      - uses: hecrj/setup-rust-action@v1
       - uses: actions/checkout@v3
 
       - name: Setup Rust toolchain
@@ -40,3 +57,21 @@ jobs:
 
       - name: Check that all the tests are passing 
         run: cargo test --all-targets --all-features --workspace
+
+  stop:
+    runs-on: ubuntu-latest
+    name: Stop Build Machine
+    needs: tests
+    if: always()
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Stop Machine
+      run: scw instance server stop a3ab8cb9-cf33-4172-9ab0-fa802e6d38c9

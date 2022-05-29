@@ -2,9 +2,6 @@
 name: Build Ternoa Client Linux
 
 on:
-  push:
-    tags:
-      - v1.*
   workflow_dispatch:
     inputs:
       ignoreLevel:
@@ -18,14 +15,34 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  start:
+    runs-on: ubuntu-latest
+    name: Start Build Machine
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Start Machine
+      run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6 --wait
+
   build:
-    runs-on: github-runner
+    runs-on: ternoa-build-machine-0
     name: Build Binary Job
+    needs: start
     steps:
     - uses: actions/checkout@v3
 
+    - name: Setup Rust toolchain
+      run: rustup show
+
     - name: Build the Ternoa client
-      run: /root/.cargo/bin/cargo build --release
+      run: cargo build --release
 
     - name: Configure AWS credentials from Test account
       uses: s3-actions/s3cmd@v0
@@ -48,3 +65,21 @@ jobs:
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
       if: always()
+
+  stop:
+    runs-on: ubuntu-latest
+    name: Stop Build Machine
+    needs: build
+    if: always()
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Stop Machine
+      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6

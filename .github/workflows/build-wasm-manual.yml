@@ -1,4 +1,4 @@
-name: Build Wasm Manual
+name: Build Ternoa Wasm Manual
 
 on:
   workflow_dispatch:
@@ -17,11 +17,27 @@ env:
   Runtime: ${{ github.event.inputs.runtime }}
 
 jobs:
-  format:
+  start:
     runs-on: ubuntu-latest
-    name: Build Wasm files
+    name: Start Build Machine
     steps:
-    - uses: hecrj/setup-rust-action@v1
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Start Machine
+      run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6 --wait
+
+  build:
+    runs-on: ternoa-build-machine-0
+    name: Build Wasm files
+    needs: start
+    steps:
     - uses: actions/checkout@v3
 
     - name: Setup Rust toolchain
@@ -47,3 +63,21 @@ jobs:
       with:
         name: assets-for-download
         path: downloads
+        
+  stop:
+    runs-on: ubuntu-latest
+    name: Stop Build Machine
+    needs: build
+    if: always()
+    steps:
+    - name: Get SCW
+      run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
+
+    - name: Allow executing file as program
+      run: sudo chmod +x /usr/local/bin/scw
+
+    - name: Init SCW
+      run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
+
+    - name: Stop Machine
+      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6
