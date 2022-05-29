@@ -40,7 +40,7 @@ jobs:
   build:
     runs-on: ternoa-build-machine-0
     name: Build Binary Job
-    needs: Start Build Machine
+    needs: start
     steps:
     - uses: actions/checkout@v3
 
@@ -72,6 +72,7 @@ jobs:
   stop:
     runs-on: ubuntu-latest
     name: Stop Build Machine
+    needs: build
     steps:
     - name: Get SCW
       run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
