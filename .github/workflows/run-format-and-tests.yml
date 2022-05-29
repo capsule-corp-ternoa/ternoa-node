@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v1.*
-  pull_request:
-    branches: '*'
   workflow_dispatch:
     inputs:
       ignoreLevel:
@@ -61,6 +57,7 @@ jobs:
 
       - name: Check that all the tests are passing 
         run: cargo test --all-targets --all-features --workspace
+
   stop:
     runs-on: ubuntu-latest
     name: Stop Build Machine
@@ -77,4 +74,4 @@ jobs:
       run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Stop Machine
-      run: scw instance server stop a3ab8cb9-cf33-4172-9ab0-fa802e6d38c9 --wait
+      run: scw instance server stop a3ab8cb9-cf33-4172-9ab0-fa802e6d38c9
