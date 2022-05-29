@@ -44,8 +44,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Setup Rust toolchain
+      run: rustup show
+
     - name: Build the Ternoa client
-      run: /root/.cargo/bin/cargo build --release
+      run: cargo build --release
 
     - name: Configure AWS credentials from Test account
       uses: s3-actions/s3cmd@v0
@@ -73,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Stop Build Machine
     needs: build
+    if: always()
     steps:
     - name: Get SCW
       run: sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v2.5.1/scaleway-cli_2.5.1_linux_amd64"
