@@ -46,7 +46,7 @@ jobs:
         run: cargo fmt --all -- --check
 
   tests:
-    runs-on: ternoa-build-machine-1
+    runs-on: ternoa-build-machine-2
     name: Run Tests Job
     needs: start
     steps:
