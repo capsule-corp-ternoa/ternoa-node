@@ -31,11 +31,11 @@ jobs:
       run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Start Machine
-      run: scw instance server start 829c4423-0baa-4849-b081-da68a66cdff6 --wait
+      run: scw instance server start 704d19ea-2648-4594-8ef4-28bdd1321e65 --wait
 
   build:
     runs-on: ternoa-build-machine-0
-    name: Build Wasm files
+    name: Build Ternoa Client
     needs: start
     steps:
     - uses: actions/checkout@v3
@@ -46,9 +46,6 @@ jobs:
     - name: Build the Ternoa client
       run: cargo build --release --features runtime-benchmarks
 
-    - name: Create downloads folder
-      run: mkdir -p destination
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -57,18 +54,18 @@ jobs:
 
   generate-weights:
     runs-on: reference-machine
-    name: Build Ternoa Client
+    name: Run benchmarks
     needs: build
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup Rust toolchain
-        run: rustup show
 
       - name: Download Binary
         uses: actions/download-artifact@v3
         with:
           name: ternoa-binary
+
+      - name: Change permission
+        run: chmod u+x ternoa
 
       - name: Delete Binary Artifact
         uses: geekyeggo/delete-artifact@v1
@@ -76,10 +73,10 @@ jobs:
           name: ternoa-binary
 
       - name: Create Folder for binary
-        run: mkdir /target/release
+        run: mkdir -p ./target/release
 
       - name: Move Binary
-        run: cp ./ternoa  /target/release/ternoa
+        run: cp ./ternoa ./target/release/ternoa
 
       - name: Run benchmarks
         run: ./scripts/benchmarks/"$Runtime"/run_benchmarks.sh
@@ -106,4 +103,4 @@ jobs:
       run: scw init secret-key=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }} install-autocomplete=false send-telemetry=true
 
     - name: Stop Machine
-      run: scw instance server stop 829c4423-0baa-4849-b081-da68a66cdff6
+      run: scw instance server stop 704d19ea-2648-4594-8ef4-28bdd1321e65
