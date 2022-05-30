@@ -132,6 +132,7 @@ construct_runtime!(
 		Utility: pallet_utility = 21,
 
 		Preimage: pallet_preimage = 22,
+		Bridge: ternoa_bridge = 23,
 	}
 );
 
@@ -442,6 +443,7 @@ mod benches {
 	define_benchmarks!(
 		// Ternoa
 		[ternoa_staking_rewards, StakingRewards]
+		[ternoa_bridge, Bridge]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]
