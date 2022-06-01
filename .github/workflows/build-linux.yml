@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - v1.*
+    branches:
+      - 'ghali/implement-basic-nft' #all branches
   workflow_dispatch:
     inputs:
       ignoreLevel:
