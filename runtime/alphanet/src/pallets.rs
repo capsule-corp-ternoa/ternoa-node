@@ -483,8 +483,8 @@ impl ternoa_bridge::Config for Runtime {
 
 parameter_types! {
 	pub const InitialMintFee: Balance = 10_000_000_000_000_000_000;
-	pub const NFTOffchainDataLimit: u32 = 50;
-	pub const CollectionOffchainDataLimit: u32 = 50;
+	pub const NFTOffchainDataLimit: u32 = 150;
+	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
 }
 
