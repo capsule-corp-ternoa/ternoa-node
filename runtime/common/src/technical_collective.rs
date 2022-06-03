@@ -23,7 +23,6 @@ use crate::{
 };
 
 parameter_types! {
-	// Technical committee
 	pub TechnicalMotionDuration: BlockNumber = prod_or_fast!(3 * DAYS, 10 * MINUTES);
 	pub const TechnicalMaxProposals: u32 = 100;
 	pub const TechnicalMaxMembers: u32 = 100;

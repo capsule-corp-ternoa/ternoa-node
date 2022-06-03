@@ -19,6 +19,5 @@ use frame_support::parameter_types;
 use crate::voter_bags;
 
 parameter_types! {
-	// Bags
 	pub const BagThresholds: &'static [u64] = &voter_bags::THRESHOLDS;
 }

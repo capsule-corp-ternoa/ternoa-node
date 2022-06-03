@@ -20,6 +20,5 @@ use ternoa_core_primitives::Moment;
 use crate::constants::time::SLOT_DURATION;
 
 parameter_types! {
-	// Timestamp
 	pub const TimestampMinimumPeriod: Moment = SLOT_DURATION / 2;
 }

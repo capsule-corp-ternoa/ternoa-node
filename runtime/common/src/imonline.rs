@@ -17,7 +17,6 @@
 use frame_support::{dispatch::TransactionPriority, parameter_types};
 
 parameter_types! {
-	// I am Online
 	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
 	/// We prioritize im-online heartbeats over election solution submission.
 	pub const MaxKeys: u32 = 10_000;

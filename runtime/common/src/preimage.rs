@@ -20,7 +20,6 @@ use ternoa_core_primitives::Balance;
 use crate::constants::currency::deposit;
 
 parameter_types! {
-	// Preimage
 	pub const PreimageMaxSize: u32 = 4096 * 1024;
 	pub const PreimageBaseDeposit: Balance = deposit(2, 64);
 	pub const PreimageByteDeposit: Balance = deposit(0, 1);
