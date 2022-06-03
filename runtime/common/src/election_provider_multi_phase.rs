@@ -25,7 +25,7 @@ use ternoa_core_primitives::{AccountId, Balance};
 
 use crate::{
 	constants::currency::{deposit, UNITS},
-	system::{RuntimeBlockLength, RuntimeBlockWeights},
+	frame_system::{RuntimeBlockLength, RuntimeBlockWeights},
 };
 
 parameter_types! {
@@ -95,5 +95,3 @@ pub type Solver<R> = frame_election_provider_support::SequentialPhragmen<
 	pallet_election_provider_multi_phase::SolutionAccuracyOf<R>,
 	(),
 >;
-
-pub type OnChainAccuracy = Perbill;

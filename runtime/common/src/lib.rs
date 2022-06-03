@@ -16,13 +16,25 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub mod authority;
+pub mod authorship;
+pub mod babe;
+pub mod bags_list;
+pub mod balances;
+pub mod bridge;
 pub mod constants;
-pub mod elections;
-pub mod other;
+pub mod election_provider_multi_phase;
+pub mod election_provider_support;
+pub mod frame_system;
+pub mod imonline;
+pub mod preimage;
+pub mod scheduler;
+pub mod shared;
 pub mod staking;
-pub mod system;
-pub mod transactions;
+pub mod staking_rewards;
+pub mod technical_collective;
+pub mod timestamp;
+pub mod transaction_payment;
+pub mod treasury;
 pub mod voter_bags;
 
 #[macro_export]

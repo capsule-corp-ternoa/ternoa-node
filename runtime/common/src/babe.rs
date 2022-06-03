@@ -14,27 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
-use frame_support::{dispatch::TransactionPriority, parameter_types};
-use ternoa_core_primitives::{BlockNumber, Moment};
+use frame_support::parameter_types;
+use ternoa_core_primitives::Moment;
 
 use crate::constants::time::{MILLISECS_PER_BLOCK, PRIMARY_PROBABILITY};
 
 parameter_types! {
 	// Babe
 	pub const ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
-
-	// I am Online
-	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
-	/// We prioritize im-online heartbeats over election solution submission.
-	pub const MaxKeys: u32 = 10_000;
-	pub const MaxPeerInHeartbeats: u32 = 10_000;
-	pub const MaxPeerDataEncodingSize: u32 = 1_000;
-
-	// Authorship
-	pub const UncleGenerations: BlockNumber = 0;
-
-	// All
-	pub const MaxAuthorities: u32 = 100_000;
 }
 
 // Babe

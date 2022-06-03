@@ -17,12 +17,11 @@
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, Currency, Imbalance, OnUnbalanced},
-	PalletId,
 };
 use pallet_balances::NegativeImbalance;
 use sp_runtime::Perbill;
 
-use crate::elections::NposCompactSolution24;
+use crate::election_provider_multi_phase::NposCompactSolution24;
 
 parameter_types! {
 	// Six sessions in an era (6 * EPOCH, 6 hours Alphanet, 24 hours Mainnet).
@@ -36,8 +35,7 @@ parameter_types! {
 	pub const OffendingValidatorsThreshold: Perbill = Perbill::from_percent(17);
 	pub const MaxNominations: u32 = <NposCompactSolution24 as frame_election_provider_support::NposSolution>::LIMIT as u32;
 
-	// Staking rewards
-	pub const StakingRewardsPalletId: PalletId = PalletId(*b"terstare");
+	pub const MaxUnlockingChunks: u32 = 32;
 }
 
 /// A reasonable benchmarking config for staking pallet.
