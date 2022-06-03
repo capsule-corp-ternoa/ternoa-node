@@ -107,6 +107,7 @@ dependencies = [
  "pallet-grandpa",
  "pallet-im-online",
  "pallet-membership",
+ "pallet-multisig",
  "pallet-offences",
  "pallet-offences-benchmarking",
  "pallet-preimage",
@@ -4237,6 +4238,21 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-multisig"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
  "sp-io",
  "sp-runtime",
  "sp-std",

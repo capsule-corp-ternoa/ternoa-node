@@ -578,3 +578,13 @@ impl pallet_democracy::Config for Runtime {
 	type WeightInfo = pallet_democracy::weights::SubstrateWeight<Runtime>;
 	type MaxProposals = DemocracyMaxProposals;
 }
+
+impl pallet_multisig::Config for Runtime {
+	type Event = Event;
+	type Call = Call;
+	type Currency = Balances;
+	type DepositBase = common::multisig::DepositBase;
+	type DepositFactor = common::multisig::DepositFactor;
+	type MaxSignatories = common::multisig::MaxSignatories;
+	type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
+}

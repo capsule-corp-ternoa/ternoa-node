@@ -136,6 +136,7 @@ construct_runtime!(
 
 		Preimage: pallet_preimage = 22,
 		Bridge: ternoa_bridge = 23,
+		Multisig: pallet_multisig = 27,
 	}
 );
 

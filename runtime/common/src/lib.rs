@@ -27,6 +27,7 @@ pub mod election_provider_multi_phase;
 pub mod election_provider_support;
 pub mod frame_system;
 pub mod imonline;
+pub mod multisig;
 pub mod phragmen_election;
 pub mod preimage;
 pub mod scheduler;
