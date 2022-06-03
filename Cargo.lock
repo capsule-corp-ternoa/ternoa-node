@@ -101,7 +101,9 @@ dependencies = [
  "pallet-bags-list",
  "pallet-balances",
  "pallet-collective",
+ "pallet-democracy",
  "pallet-election-provider-multi-phase",
+ "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-im-online",
  "pallet-membership",
@@ -141,9 +143,9 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-bridge 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1)",
  "ternoa-core-primitives",
- "ternoa-mandate 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main)",
+ "ternoa-mandate 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.0)",
  "ternoa-runtime-common",
- "ternoa-staking-rewards 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main)",
+ "ternoa-staking-rewards 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.0)",
 ]
 
 [[package]]
@@ -4124,6 +4126,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-democracy"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-election-provider-multi-phase"
 version = "4.0.0-dev"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
@@ -4144,6 +4162,24 @@ dependencies = [
  "sp-std",
  "static_assertions",
  "strum",
+]
+
+[[package]]
+name = "pallet-elections-phragmen"
+version = "5.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-npos-elections",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

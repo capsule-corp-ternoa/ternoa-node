@@ -103,6 +103,9 @@ construct_runtime!(
 		Grandpa: pallet_grandpa = 10,
 		ImOnline: pallet_im_online = 11,
 		AuthorityDiscovery: pallet_authority_discovery = 12,
+		Council: pallet_collective::<Instance2> = 24,
+		PhragmenElection: pallet_elections_phragmen = 25,
+		Democracy: pallet_democracy = 26,
 
 		// Elections pallets
 		//
@@ -463,5 +466,7 @@ mod benches {
 		[pallet_timestamp, Timestamp]
 		[pallet_treasury, Treasury]
 		[pallet_utility, Utility]
+		[pallet_democracy, Democracy]
+		[pallet_elections_phragmen, PhragmenElection]
 	);
 }

@@ -15,7 +15,14 @@
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::weights;
-use common::staking::{BondingDuration, SessionsPerEra};
+use common::{
+	constants::{
+		currency::CENTS,
+		time::{DAYS, MINUTES},
+	},
+	prod_or_fast,
+	staking::{BondingDuration, SessionsPerEra},
+};
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
@@ -35,14 +42,15 @@ use sp_runtime::{
 };
 use sp_std::vec::Vec;
 use sp_version::RuntimeVersion;
+use static_assertions::const_assert;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
 use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
-	ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
-	OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking,
-	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
+	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
+	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
 	UncheckedExtrinsic, VERSION,
 };
 
@@ -477,4 +485,96 @@ impl ternoa_bridge::Config for Runtime {
 	type RelayerVoteThreshold = common::bridge::RelayerVoteThreshold;
 	type RelayerCountLimit = common::bridge::RelayerCountLimit;
 	type InitialBridgeFee = InitialBridgeFee;
+}
+
+// Council
+type CouncilCollective = pallet_collective::Instance2;
+impl pallet_collective::Config<CouncilCollective> for Runtime {
+	type Origin = Origin;
+	type Proposal = Call;
+	type Event = Event;
+	type MotionDuration = common::council::CouncilMotionDuration;
+	type MaxProposals = common::council::CouncilMaxProposals;
+	type MaxMembers = common::council::CouncilMaxMembers;
+	type DefaultVote = pallet_collective::PrimeDefaultVote;
+	type WeightInfo = pallet_collective::weights::SubstrateWeight<Runtime>;
+}
+// Make sure that there are no more than MaxMembers members elected via phragmen.
+const_assert!(
+	common::phragmen_election::PhragmenDesiredMembers::get() <=
+		common::council::CouncilMaxMembers::get()
+);
+
+// Elections Phragmen
+impl pallet_elections_phragmen::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type ChangeMembers = Council;
+	type InitializeMembers = Council;
+	type CurrencyToVote = frame_support::traits::U128CurrencyToVote;
+	type CandidacyBond = common::phragmen_election::PhragmenCandidacyBond;
+	type VotingBondBase = common::phragmen_election::PhragmenVotingBondBase;
+	type VotingBondFactor = common::phragmen_election::PhragmenVotingBondFactor;
+	type LoserCandidate = Treasury;
+	type KickedMember = Treasury;
+	type DesiredMembers = common::phragmen_election::PhragmenDesiredMembers;
+	type DesiredRunnersUp = common::phragmen_election::PhragmenDesiredRunnersUp;
+	type TermDuration = common::phragmen_election::PhragmenTermDuration;
+	type PalletId = common::phragmen_election::PhragmenElectionPalletId;
+	type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
+	pub DemocracyLaunchPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1);
+	pub DemocracyVotingPeriod: BlockNumber = prod_or_fast!(3 * MINUTES, 1 * MINUTES);
+	pub DemocracyFastTrackVotingPeriod: BlockNumber = prod_or_fast!(1 * MINUTES, 1 * MINUTES);
+	pub const DemocracyMinimumDeposit: Balance = 100 * CENTS;
+	pub DemocracyEnactmentPeriod: BlockNumber = prod_or_fast!(10 * MINUTES, 1 * MINUTES);
+	pub DemocracyCooloffPeriod: BlockNumber = prod_or_fast!(3 * DAYS, 1 * MINUTES);
+	pub const DemocracyInstantAllowed: bool = true;
+	pub const DemocracyMaxVotes: u32 = 100;
+	pub const DemocracyMaxProposals: u32 = 100;
+}
+
+// Democracy
+impl pallet_democracy::Config for Runtime {
+	type Proposal = Call;
+	type Event = Event;
+	type Currency = Balances;
+	type EnactmentPeriod = DemocracyEnactmentPeriod;
+	type VoteLockingPeriod = DemocracyEnactmentPeriod;
+	type LaunchPeriod = DemocracyLaunchPeriod;
+	type VotingPeriod = DemocracyVotingPeriod;
+	type MinimumDeposit = DemocracyMinimumDeposit;
+	/// A straight majority of the council can decide what their next motion is.
+	type ExternalOrigin = EnsureRoot<AccountId>;
+	/// A majority can have the next scheduled referendum be a straight majority-carries vote.
+	type ExternalMajorityOrigin = EnsureRoot<AccountId>;
+	/// A unanimous council can have the next scheduled referendum be a straight default-carries
+	/// (NTB) vote.
+	type ExternalDefaultOrigin = EnsureRoot<AccountId>;
+	/// Two thirds of the technical committee can have an `ExternalMajority/ExternalDefault` vote
+	/// be tabled immediately and with a shorter voting/enactment period.
+	type FastTrackOrigin = EnsureRoot<AccountId>;
+	type InstantOrigin = EnsureRoot<AccountId>;
+	type InstantAllowed = DemocracyInstantAllowed;
+	type FastTrackVotingPeriod = DemocracyFastTrackVotingPeriod;
+	// To cancel a proposal which has been passed, 2/3 of the council must agree to it.
+	type CancellationOrigin = EnsureRoot<AccountId>;
+	type BlacklistOrigin = EnsureRoot<AccountId>;
+	// To cancel a proposal before it has been passed, the technical committee must be unanimous or
+	// Root must agree.
+	type CancelProposalOrigin = EnsureRoot<AccountId>;
+	// Any single technical committee member may veto a coming council proposal, however they can
+	// only do it once and it lasts only for the cooloff period.
+	type VetoOrigin = pallet_collective::EnsureMember<AccountId, TechnicalCollective>;
+	type CooloffPeriod = DemocracyCooloffPeriod;
+	type PreimageByteDeposit = common::preimage::PreimageByteDeposit;
+	type OperationalPreimageOrigin = pallet_collective::EnsureMember<AccountId, CouncilCollective>;
+	type Slash = Treasury;
+	type Scheduler = Scheduler;
+	type PalletsOrigin = OriginCaller;
+	type MaxVotes = DemocracyVotingPeriod;
+	type WeightInfo = pallet_democracy::weights::SubstrateWeight<Runtime>;
+	type MaxProposals = DemocracyMaxProposals;
 }
