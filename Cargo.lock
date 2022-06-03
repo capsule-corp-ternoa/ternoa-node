@@ -105,6 +105,7 @@ dependencies = [
  "pallet-election-provider-multi-phase",
  "pallet-elections-phragmen",
  "pallet-grandpa",
+ "pallet-identity",
  "pallet-im-online",
  "pallet-membership",
  "pallet-multisig",
@@ -1418,6 +1419,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "570d109b813e904becc80d8d5da38376818a143348413f7149f1340fe04754d4"
 dependencies = [
  "heck 0.4.0",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "enumflags2"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83c8d82922337cd23a15f88b70d8e4ef5f11da38dd7cdb55e84dd5de99695da0"
+dependencies = [
+ "enumflags2_derive",
+]
+
+[[package]]
+name = "enumflags2_derive"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "946ee94e3dbf58fdd324f9ce245c7b238d46a66f00e86a020b71996349e46cce"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn",
@@ -4203,6 +4224,22 @@ dependencies = [
  "sp-runtime",
  "sp-session",
  "sp-staking",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-identity"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "enumflags2",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-io",
+ "sp-runtime",
  "sp-std",
 ]
 
