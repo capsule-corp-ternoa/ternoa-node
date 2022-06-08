@@ -32,7 +32,7 @@ parameter_types! {
 	// additional data per vote is 32 bytes (account id).
 	pub const PhragmenVotingBondFactor: Balance = deposit(0, 32);
 	/// Daily council elections
-	pub PhragmenTermDuration: BlockNumber = prod_or_fast!(24 * DAYS, 2 * MINUTES);
+	pub PhragmenTermDuration: BlockNumber = prod_or_fast!(5 * MINUTES, 2 * MINUTES);
 	pub const PhragmenDesiredMembers: u32 = 7;
 	pub const PhragmenDesiredRunnersUp: u32 = 7;
 	pub const PhragmenElectionPalletId: LockIdentifier = *b"phrelect";
