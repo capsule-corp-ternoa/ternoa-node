@@ -59,9 +59,9 @@ pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
 
-type AtLeastThirdsOfCommittee = EnsureOneOf<
+type RootOrAtLeastHalfOfCommittee = EnsureOneOf<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>,
 >;
 
 parameter_types! {
@@ -133,8 +133,8 @@ impl pallet_timestamp::Config for Runtime {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = common::treasury::PalletId;
 	type Currency = Balances;
-	type ApproveOrigin = AtLeastThirdsOfCommittee;
-	type RejectOrigin = AtLeastThirdsOfCommittee;
+	type ApproveOrigin = RootOrAtLeastHalfOfCommittee;
+	type RejectOrigin = RootOrAtLeastHalfOfCommittee;
 	type Event = Event;
 	type OnSlash = Treasury;
 	type ProposalBond = common::treasury::ProposalBond;
@@ -326,7 +326,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = AtLeastThirdsOfCommittee;
+	type SlashCancelOrigin = RootOrAtLeastHalfOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -384,7 +384,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type GovernanceFallback = common::election_provider_multi_phase::GovernanceFallback<Self>;
 	type Solver = common::election_provider_multi_phase::Solver<Self>;
 	type WeightInfo = weights::pallet_election_provider_multi_phase::WeightInfo<Runtime>;
-	type ForceOrigin = AtLeastThirdsOfCommittee;
+	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
 	type BenchmarkingConfig = common::election_provider_multi_phase::BenchmarkConfig;
 	type MaxElectingVoters = common::election_provider_multi_phase::MaxElectingVoters;
 	type MaxElectableTargets = common::election_provider_multi_phase::MaxElectableTargets;
@@ -403,7 +403,7 @@ impl pallet_preimage::Config for Runtime {
 	type WeightInfo = weights::pallet_preimage::WeightInfo<Runtime>;
 	type Event = Event;
 	type Currency = Balances;
-	type ManagerOrigin = EnsureRoot<AccountId>;
+	type ManagerOrigin = RootOrAtLeastHalfOfCommittee;
 	type MaxSize = common::preimage::PreimageMaxSize;
 	type BaseDeposit = common::preimage::PreimageBaseDeposit;
 	type ByteDeposit = common::preimage::PreimageByteDeposit;
@@ -425,11 +425,11 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
 	type Event = Event;
-	type AddOrigin = AtLeastThirdsOfCommittee;
-	type RemoveOrigin = AtLeastThirdsOfCommittee;
-	type SwapOrigin = AtLeastThirdsOfCommittee;
-	type ResetOrigin = AtLeastThirdsOfCommittee;
-	type PrimeOrigin = AtLeastThirdsOfCommittee;
+	type AddOrigin = RootOrAtLeastHalfOfCommittee;
+	type RemoveOrigin = RootOrAtLeastHalfOfCommittee;
+	type SwapOrigin = RootOrAtLeastHalfOfCommittee;
+	type ResetOrigin = RootOrAtLeastHalfOfCommittee;
+	type PrimeOrigin = RootOrAtLeastHalfOfCommittee;
 	type MembershipInitialized = TechnicalCommittee;
 	type MembershipChanged = TechnicalCommittee;
 	type MaxMembers = common::technical_collective::TechnicalMaxMembers;
@@ -451,7 +451,7 @@ impl pallet_scheduler::Config for Runtime {
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::scheduler::MaximumSchedulerWeight;
-	type ScheduleOrigin = AtLeastThirdsOfCommittee;
+	type ScheduleOrigin = RootOrAtLeastHalfOfCommittee;
 	type MaxScheduledPerBlock = common::scheduler::MaxScheduledPerBlock;
 	type WeightInfo = weights::pallet_scheduler::WeightInfo<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
@@ -464,7 +464,7 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = common::staking_rewards::PalletId;
-	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ExternalOrigin = RootOrAtLeastHalfOfCommittee;
 	type WeightInfo = weights::ternoa_staking_rewards::WeightInfo<Runtime>;
 }
 
@@ -478,7 +478,7 @@ impl ternoa_bridge::Config for Runtime {
 	type WeightInfo = weights::ternoa_bridge::WeightInfo<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
-	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ExternalOrigin = RootOrAtLeastHalfOfCommittee;
 	type ChainId = common::bridge::ChainId;
 	type PalletId = common::bridge::PalletId;
 	type ProposalLifetime = ProposalLifetime;
@@ -526,11 +526,11 @@ impl pallet_elections_phragmen::Config for Runtime {
 
 parameter_types! {
 	pub DemocracyLaunchPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1);
-	pub DemocracyVotingPeriod: BlockNumber = prod_or_fast!(3 * MINUTES, 1 * MINUTES);
-	pub DemocracyFastTrackVotingPeriod: BlockNumber = prod_or_fast!(1 * MINUTES, 1 * MINUTES);
+	pub DemocracyVotingPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1 * MINUTES);
+	pub DemocracyFastTrackVotingPeriod: BlockNumber = prod_or_fast!(2 * MINUTES, 1 * MINUTES);
 	pub const DemocracyMinimumDeposit: Balance = 100 * CENTS;
-	pub DemocracyEnactmentPeriod: BlockNumber = prod_or_fast!(10 * MINUTES, 1 * MINUTES);
-	pub DemocracyCooloffPeriod: BlockNumber = prod_or_fast!(3 * DAYS, 1 * MINUTES);
+	pub DemocracyEnactmentPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1 * MINUTES);
+	pub DemocracyCooloffPeriod: BlockNumber = prod_or_fast!(10 * MINUTES, 1 * MINUTES);
 	pub const DemocracyInstantAllowed: bool = true;
 	pub const DemocracyMaxVotes: u32 = 100;
 	pub const DemocracyMaxProposals: u32 = 100;
@@ -547,24 +547,35 @@ impl pallet_democracy::Config for Runtime {
 	type VotingPeriod = DemocracyVotingPeriod;
 	type MinimumDeposit = DemocracyMinimumDeposit;
 	/// A straight majority of the council can decide what their next motion is.
-	type ExternalOrigin = EnsureRoot<AccountId>;
+	type ExternalOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>;
 	/// A majority can have the next scheduled referendum be a straight majority-carries vote.
-	type ExternalMajorityOrigin = EnsureRoot<AccountId>;
+	type ExternalMajorityOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>;
 	/// A unanimous council can have the next scheduled referendum be a straight default-carries
 	/// (NTB) vote.
-	type ExternalDefaultOrigin = EnsureRoot<AccountId>;
+	type ExternalDefaultOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 1>;
 	/// Two thirds of the technical committee can have an `ExternalMajority/ExternalDefault` vote
 	/// be tabled immediately and with a shorter voting/enactment period.
-	type FastTrackOrigin = EnsureRoot<AccountId>;
-	type InstantOrigin = EnsureRoot<AccountId>;
+	type FastTrackOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
+	type InstantOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
 	type InstantAllowed = DemocracyInstantAllowed;
 	type FastTrackVotingPeriod = DemocracyFastTrackVotingPeriod;
 	// To cancel a proposal which has been passed, 2/3 of the council must agree to it.
-	type CancellationOrigin = EnsureRoot<AccountId>;
+	type CancellationOrigin = EnsureOneOf<
+		EnsureRoot<AccountId>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 2, 3>,
+	>;
 	type BlacklistOrigin = EnsureRoot<AccountId>;
-	// To cancel a proposal before it has been passed, the technical committee must be unanimous or
+	// To cancel a proposal before it has been passed, the technical committee must be 1/2 or
 	// Root must agree.
-	type CancelProposalOrigin = EnsureRoot<AccountId>;
+	type CancelProposalOrigin = EnsureOneOf<
+		EnsureRoot<AccountId>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>,
+	>;
 	// Any single technical committee member may veto a coming council proposal, however they can
 	// only do it once and it lasts only for the cooloff period.
 	type VetoOrigin = pallet_collective::EnsureMember<AccountId, TechnicalCollective>;
@@ -599,7 +610,7 @@ impl pallet_identity::Config for Runtime {
 	type MaxAdditionalFields = common::identity::MaxAdditionalFields;
 	type MaxRegistrars = common::identity::MaxRegistrars;
 	type Slashed = Treasury;
-	type ForceOrigin = EnsureRoot<AccountId>;
-	type RegistrarOrigin = EnsureRoot<AccountId>;
+	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
+	type RegistrarOrigin = RootOrAtLeastHalfOfCommittee;
 	type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
 }
