@@ -15,9 +15,7 @@
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::weights;
-use common::{
-	staking::{BondingDuration, SessionsPerEra},
-};
+use common::staking::{BondingDuration, SessionsPerEra};
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EnsureOneOf, KeyOwnerProofSystem, U128CurrencyToVote},
