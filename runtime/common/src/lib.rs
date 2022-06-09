@@ -23,6 +23,7 @@ pub mod balances;
 pub mod bridge;
 pub mod constants;
 pub mod council;
+pub mod democracy;
 pub mod election_provider_multi_phase;
 pub mod election_provider_support;
 pub mod frame_system;

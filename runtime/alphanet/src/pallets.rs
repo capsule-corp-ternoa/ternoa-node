@@ -524,28 +524,16 @@ impl pallet_elections_phragmen::Config for Runtime {
 	type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
 }
 
-parameter_types! {
-	pub DemocracyLaunchPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1);
-	pub DemocracyVotingPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1 * MINUTES);
-	pub DemocracyFastTrackVotingPeriod: BlockNumber = prod_or_fast!(2 * MINUTES, 1 * MINUTES);
-	pub const DemocracyMinimumDeposit: Balance = 100 * CENTS;
-	pub DemocracyEnactmentPeriod: BlockNumber = prod_or_fast!(5 * MINUTES, 1 * MINUTES);
-	pub DemocracyCooloffPeriod: BlockNumber = prod_or_fast!(10 * MINUTES, 1 * MINUTES);
-	pub const DemocracyInstantAllowed: bool = true;
-	pub const DemocracyMaxVotes: u32 = 100;
-	pub const DemocracyMaxProposals: u32 = 100;
-}
-
 // Democracy
 impl pallet_democracy::Config for Runtime {
 	type Proposal = Call;
 	type Event = Event;
 	type Currency = Balances;
-	type EnactmentPeriod = DemocracyEnactmentPeriod;
-	type VoteLockingPeriod = DemocracyEnactmentPeriod;
-	type LaunchPeriod = DemocracyLaunchPeriod;
-	type VotingPeriod = DemocracyVotingPeriod;
-	type MinimumDeposit = DemocracyMinimumDeposit;
+	type EnactmentPeriod = common::democracy::EnactmentPeriod;
+	type VoteLockingPeriod = common::democracy::VoteLockingPeriod;
+	type LaunchPeriod = common::democracy::LaunchPeriod;
+	type VotingPeriod = common::democracy::VotingPeriod;
+	type MinimumDeposit = common::democracy::MinimumDeposit;
 	/// A straight majority of the council can decide what their next motion is.
 	type ExternalOrigin =
 		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>;
@@ -562,8 +550,8 @@ impl pallet_democracy::Config for Runtime {
 		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
 	type InstantOrigin =
 		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
-	type InstantAllowed = DemocracyInstantAllowed;
-	type FastTrackVotingPeriod = DemocracyFastTrackVotingPeriod;
+	type InstantAllowed = common::democracy::InstantAllowed;
+	type FastTrackVotingPeriod = common::democracy::FastTrackVotingPeriod;
 	// To cancel a proposal which has been passed, 2/3 of the council must agree to it.
 	type CancellationOrigin = EnsureOneOf<
 		EnsureRoot<AccountId>,
@@ -579,15 +567,15 @@ impl pallet_democracy::Config for Runtime {
 	// Any single technical committee member may veto a coming council proposal, however they can
 	// only do it once and it lasts only for the cooloff period.
 	type VetoOrigin = pallet_collective::EnsureMember<AccountId, TechnicalCollective>;
-	type CooloffPeriod = DemocracyCooloffPeriod;
+	type CooloffPeriod = common::democracy::CooloffPeriod;
 	type PreimageByteDeposit = common::preimage::PreimageByteDeposit;
 	type OperationalPreimageOrigin = pallet_collective::EnsureMember<AccountId, CouncilCollective>;
 	type Slash = Treasury;
 	type Scheduler = Scheduler;
 	type PalletsOrigin = OriginCaller;
-	type MaxVotes = DemocracyVotingPeriod;
+	type MaxVotes = common::democracy::MaxVotes;
 	type WeightInfo = pallet_democracy::weights::SubstrateWeight<Runtime>;
-	type MaxProposals = DemocracyMaxProposals;
+	type MaxProposals = common::democracy::MaxProposals;
 }
 
 impl pallet_multisig::Config for Runtime {

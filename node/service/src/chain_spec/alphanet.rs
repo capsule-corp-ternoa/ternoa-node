@@ -231,7 +231,7 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 			members: committee_members.clone(),
 			..Default::default()
 		},
-		council: CouncilConfig { members: committee_members, ..Default::default() },
+		council: CouncilConfig { members: vec![], ..Default::default() },
 		democracy: Default::default(),
 		phragmen_election: Default::default(),
 	}

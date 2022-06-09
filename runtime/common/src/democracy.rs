@@ -14,26 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
-use frame_support::{parameter_types, traits::LockIdentifier};
+use frame_support::parameter_types;
 use ternoa_core_primitives::{Balance, BlockNumber};
 
 use crate::{
 	constants::{
-		currency::{deposit, CENTS},
-		time::{DAYS, MINUTES},
+		currency::UNITS,
+		time::{DAYS, HOURS, MINUTES},
 	},
 	prod_or_fast,
 };
 
 parameter_types! {
-	pub const PhragmenCandidacyBond: Balance = 100 * CENTS;
-	// 1 storage item created, key size is 32 bytes, value size is 16+16.
-	pub const PhragmenVotingBondBase: Balance = deposit(1, 64);
-	// additional data per vote is 32 bytes (account id).
-	pub const PhragmenVotingBondFactor: Balance = deposit(0, 32);
-	/// Daily council elections
-	pub PhragmenTermDuration: BlockNumber = prod_or_fast!(7 * DAYS, 2 * MINUTES);
-	pub const PhragmenDesiredMembers: u32 = 7;
-	pub const PhragmenDesiredRunnersUp: u32 = 7;
-	pub const PhragmenElectionPalletId: LockIdentifier = *b"phrelect";
+	pub const LaunchPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES);
+	pub const VotingPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES);
+	pub const FastTrackVotingPeriod: BlockNumber = prod_or_fast!(3 * HOURS, 1 * MINUTES);
+	pub const MinimumDeposit: Balance = 100 * UNITS;
+	pub const EnactmentPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES);
+	pub const VoteLockingPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES); // Should be same as EnactmentPeriod
+	pub const CooloffPeriod: BlockNumber = prod_or_fast!(7 * DAYS, 1 * MINUTES);
+	pub const InstantAllowed: bool = true;
+	pub const MaxVotes: u32 = 100;
+	pub const MaxProposals: u32 = 100;
 }
