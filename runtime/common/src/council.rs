@@ -24,7 +24,7 @@ use crate::{
 
 parameter_types! {
 	// Council
-	pub CouncilMotionDuration: BlockNumber = prod_or_fast!(3 * DAYS, 10 * MINUTES);
+	pub CouncilMotionDuration: BlockNumber = prod_or_fast!(7 * DAYS, 10 * MINUTES);
 	pub const CouncilMaxProposals: u32 = 100;
 	pub const CouncilMaxMembers: u32 = 100;
 }
