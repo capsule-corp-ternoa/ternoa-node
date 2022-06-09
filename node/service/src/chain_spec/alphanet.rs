@@ -17,8 +17,8 @@
 use super::{get_account_id_from_seed, get_from_seed, AlphanetChainSpec as ChainSpec};
 use alphanet_runtime::{
 	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
-	BalancesConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig, SessionKeys,
-	StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
+	BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig,
+	SessionKeys, StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
@@ -228,8 +228,11 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 		transaction_payment: Default::default(),
 		technical_committee: Default::default(),
 		technical_membership: TechnicalMembershipConfig {
-			members: committee_members,
+			members: committee_members.clone(),
 			..Default::default()
 		},
+		council: CouncilConfig { members: vec![], ..Default::default() },
+		democracy: Default::default(),
+		phragmen_election: Default::default(),
 	}
 }

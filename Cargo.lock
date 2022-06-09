@@ -84,7 +84,7 @@ dependencies = [
 
 [[package]]
 name = "alphanet-runtime"
-version = "1.0.0"
+version = "1.0.2"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -101,10 +101,14 @@ dependencies = [
  "pallet-bags-list",
  "pallet-balances",
  "pallet-collective",
+ "pallet-democracy",
  "pallet-election-provider-multi-phase",
+ "pallet-elections-phragmen",
  "pallet-grandpa",
+ "pallet-identity",
  "pallet-im-online",
  "pallet-membership",
+ "pallet-multisig",
  "pallet-offences",
  "pallet-offences-benchmarking",
  "pallet-preimage",
@@ -141,9 +145,9 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-bridge 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1)",
  "ternoa-core-primitives",
- "ternoa-mandate 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main)",
+ "ternoa-mandate",
  "ternoa-runtime-common",
- "ternoa-staking-rewards 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main)",
+ "ternoa-staking-rewards",
 ]
 
 [[package]]
@@ -834,9 +838,9 @@ dependencies = [
  "static_assertions",
  "substrate-wasm-builder",
  "ternoa-core-primitives",
- "ternoa-mandate 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main)",
+ "ternoa-mandate",
  "ternoa-runtime-common",
- "ternoa-staking-rewards 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main)",
+ "ternoa-staking-rewards",
 ]
 
 [[package]]
@@ -1415,6 +1419,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "570d109b813e904becc80d8d5da38376818a143348413f7149f1340fe04754d4"
 dependencies = [
  "heck 0.4.0",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "enumflags2"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83c8d82922337cd23a15f88b70d8e4ef5f11da38dd7cdb55e84dd5de99695da0"
+dependencies = [
+ "enumflags2_derive",
+]
+
+[[package]]
+name = "enumflags2_derive"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "946ee94e3dbf58fdd324f9ce245c7b238d46a66f00e86a020b71996349e46cce"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn",
@@ -3476,9 +3500,9 @@ dependencies = [
  "substrate-wasm-builder",
  "ternoa-bridge 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.1)",
  "ternoa-core-primitives",
- "ternoa-mandate 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.0)",
+ "ternoa-mandate",
  "ternoa-runtime-common",
- "ternoa-staking-rewards 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.0)",
+ "ternoa-staking-rewards",
 ]
 
 [[package]]
@@ -4124,6 +4148,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-democracy"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-election-provider-multi-phase"
 version = "4.0.0-dev"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
@@ -4147,6 +4187,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-elections-phragmen"
+version = "5.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-npos-elections",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-grandpa"
 version = "4.0.0-dev"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
@@ -4166,6 +4224,22 @@ dependencies = [
  "sp-runtime",
  "sp-session",
  "sp-staking",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-identity"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "enumflags2",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-io",
+ "sp-runtime",
  "sp-std",
 ]
 
@@ -4201,6 +4275,21 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-multisig"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?branch=ternoa-substrate-2022-03-24#676932fb5543d5b316b4e494631d8e48f98b760d"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -7694,19 +7783,6 @@ dependencies = [
 [[package]]
 name = "ternoa-mandate"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#f25e4a4976be36a152732a3b9f0cd5380207e241"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-std",
-]
-
-[[package]]
-name = "ternoa-mandate"
-version = "1.0.0"
 source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.0#f25e4a4976be36a152732a3b9f0cd5380207e241"
 dependencies = [
  "frame-benchmarking",
@@ -7792,23 +7868,6 @@ dependencies = [
  "substrate-frame-rpc-system",
  "ternoa-client",
  "ternoa-core-primitives",
-]
-
-[[package]]
-name = "ternoa-staking-rewards"
-version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=main#f25e4a4976be36a152732a3b9f0cd5380207e241"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-authorship",
- "pallet-staking",
- "parity-scale-codec",
- "scale-info",
- "sp-runtime",
- "sp-std",
 ]
 
 [[package]]

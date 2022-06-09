@@ -103,6 +103,9 @@ construct_runtime!(
 		Grandpa: pallet_grandpa = 10,
 		ImOnline: pallet_im_online = 11,
 		AuthorityDiscovery: pallet_authority_discovery = 12,
+		Council: pallet_collective::<Instance2> = 24,
+		PhragmenElection: pallet_elections_phragmen = 25,
+		Democracy: pallet_democracy = 26,
 
 		// Elections pallets
 		//
@@ -133,6 +136,8 @@ construct_runtime!(
 
 		Preimage: pallet_preimage = 22,
 		Bridge: ternoa_bridge = 23,
+		Multisig: pallet_multisig = 27,
+		Identity: pallet_identity = 28,
 	}
 );
 
@@ -463,5 +468,7 @@ mod benches {
 		[pallet_timestamp, Timestamp]
 		[pallet_treasury, Treasury]
 		[pallet_utility, Utility]
+		[pallet_democracy, Democracy]
+		[pallet_elections_phragmen, PhragmenElection]
 	);
 }

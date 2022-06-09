@@ -35,14 +35,15 @@ use sp_runtime::{
 };
 use sp_std::vec::Vec;
 use sp_version::RuntimeVersion;
+use static_assertions::const_assert;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
 use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
-	ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
-	OriginCaller, PalletInfo, Preimage, Runtime, Session, Signature, SignedPayload, Staking,
-	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
+	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
+	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
 	UncheckedExtrinsic, VERSION,
 };
 
@@ -51,9 +52,9 @@ pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
 #[cfg(any(feature = "std", test))]
 pub use pallet_staking::StakerStatus;
 
-type AtLeastThirdsOfCommittee = EnsureOneOf<
+type RootOrAtLeastHalfOfCommittee = EnsureOneOf<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>,
 >;
 
 parameter_types! {
@@ -125,8 +126,8 @@ impl pallet_timestamp::Config for Runtime {
 impl pallet_treasury::Config for Runtime {
 	type PalletId = common::treasury::PalletId;
 	type Currency = Balances;
-	type ApproveOrigin = AtLeastThirdsOfCommittee;
-	type RejectOrigin = AtLeastThirdsOfCommittee;
+	type ApproveOrigin = RootOrAtLeastHalfOfCommittee;
+	type RejectOrigin = RootOrAtLeastHalfOfCommittee;
 	type Event = Event;
 	type OnSlash = Treasury;
 	type ProposalBond = common::treasury::ProposalBond;
@@ -318,7 +319,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = AtLeastThirdsOfCommittee;
+	type SlashCancelOrigin = RootOrAtLeastHalfOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -376,7 +377,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type GovernanceFallback = common::election_provider_multi_phase::GovernanceFallback<Self>;
 	type Solver = common::election_provider_multi_phase::Solver<Self>;
 	type WeightInfo = weights::pallet_election_provider_multi_phase::WeightInfo<Runtime>;
-	type ForceOrigin = AtLeastThirdsOfCommittee;
+	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
 	type BenchmarkingConfig = common::election_provider_multi_phase::BenchmarkConfig;
 	type MaxElectingVoters = common::election_provider_multi_phase::MaxElectingVoters;
 	type MaxElectableTargets = common::election_provider_multi_phase::MaxElectableTargets;
@@ -395,7 +396,7 @@ impl pallet_preimage::Config for Runtime {
 	type WeightInfo = weights::pallet_preimage::WeightInfo<Runtime>;
 	type Event = Event;
 	type Currency = Balances;
-	type ManagerOrigin = EnsureRoot<AccountId>;
+	type ManagerOrigin = RootOrAtLeastHalfOfCommittee;
 	type MaxSize = common::preimage::PreimageMaxSize;
 	type BaseDeposit = common::preimage::PreimageBaseDeposit;
 	type ByteDeposit = common::preimage::PreimageByteDeposit;
@@ -417,11 +418,11 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
 	type Event = Event;
-	type AddOrigin = AtLeastThirdsOfCommittee;
-	type RemoveOrigin = AtLeastThirdsOfCommittee;
-	type SwapOrigin = AtLeastThirdsOfCommittee;
-	type ResetOrigin = AtLeastThirdsOfCommittee;
-	type PrimeOrigin = AtLeastThirdsOfCommittee;
+	type AddOrigin = RootOrAtLeastHalfOfCommittee;
+	type RemoveOrigin = RootOrAtLeastHalfOfCommittee;
+	type SwapOrigin = RootOrAtLeastHalfOfCommittee;
+	type ResetOrigin = RootOrAtLeastHalfOfCommittee;
+	type PrimeOrigin = RootOrAtLeastHalfOfCommittee;
 	type MembershipInitialized = TechnicalCommittee;
 	type MembershipChanged = TechnicalCommittee;
 	type MaxMembers = common::technical_collective::TechnicalMaxMembers;
@@ -443,7 +444,7 @@ impl pallet_scheduler::Config for Runtime {
 	type PalletsOrigin = OriginCaller;
 	type Call = Call;
 	type MaximumWeight = common::scheduler::MaximumSchedulerWeight;
-	type ScheduleOrigin = AtLeastThirdsOfCommittee;
+	type ScheduleOrigin = RootOrAtLeastHalfOfCommittee;
 	type MaxScheduledPerBlock = common::scheduler::MaxScheduledPerBlock;
 	type WeightInfo = weights::pallet_scheduler::WeightInfo<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
@@ -456,7 +457,7 @@ impl ternoa_staking_rewards::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
 	type PalletId = common::staking_rewards::PalletId;
-	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ExternalOrigin = RootOrAtLeastHalfOfCommittee;
 	type WeightInfo = weights::ternoa_staking_rewards::WeightInfo<Runtime>;
 }
 
@@ -470,11 +471,127 @@ impl ternoa_bridge::Config for Runtime {
 	type WeightInfo = weights::ternoa_bridge::WeightInfo<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
-	type ExternalOrigin = AtLeastThirdsOfCommittee;
+	type ExternalOrigin = RootOrAtLeastHalfOfCommittee;
 	type ChainId = common::bridge::ChainId;
 	type PalletId = common::bridge::PalletId;
 	type ProposalLifetime = ProposalLifetime;
 	type RelayerVoteThreshold = common::bridge::RelayerVoteThreshold;
 	type RelayerCountLimit = common::bridge::RelayerCountLimit;
 	type InitialBridgeFee = InitialBridgeFee;
+}
+
+// Council
+type CouncilCollective = pallet_collective::Instance2;
+impl pallet_collective::Config<CouncilCollective> for Runtime {
+	type Origin = Origin;
+	type Proposal = Call;
+	type Event = Event;
+	type MotionDuration = common::council::CouncilMotionDuration;
+	type MaxProposals = common::council::CouncilMaxProposals;
+	type MaxMembers = common::council::CouncilMaxMembers;
+	type DefaultVote = pallet_collective::PrimeDefaultVote;
+	type WeightInfo = pallet_collective::weights::SubstrateWeight<Runtime>;
+}
+// Make sure that there are no more than MaxMembers members elected via phragmen.
+const_assert!(
+	common::phragmen_election::PhragmenDesiredMembers::get() <=
+		common::council::CouncilMaxMembers::get()
+);
+
+// Elections Phragmen
+impl pallet_elections_phragmen::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type ChangeMembers = Council;
+	type InitializeMembers = Council;
+	type CurrencyToVote = frame_support::traits::U128CurrencyToVote;
+	type CandidacyBond = common::phragmen_election::PhragmenCandidacyBond;
+	type VotingBondBase = common::phragmen_election::PhragmenVotingBondBase;
+	type VotingBondFactor = common::phragmen_election::PhragmenVotingBondFactor;
+	type LoserCandidate = Treasury;
+	type KickedMember = Treasury;
+	type DesiredMembers = common::phragmen_election::PhragmenDesiredMembers;
+	type DesiredRunnersUp = common::phragmen_election::PhragmenDesiredRunnersUp;
+	type TermDuration = common::phragmen_election::PhragmenTermDuration;
+	type PalletId = common::phragmen_election::PhragmenElectionPalletId;
+	type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
+}
+
+// Democracy
+impl pallet_democracy::Config for Runtime {
+	type Proposal = Call;
+	type Event = Event;
+	type Currency = Balances;
+	type EnactmentPeriod = common::democracy::EnactmentPeriod;
+	type VoteLockingPeriod = common::democracy::VoteLockingPeriod;
+	type LaunchPeriod = common::democracy::LaunchPeriod;
+	type VotingPeriod = common::democracy::VotingPeriod;
+	type MinimumDeposit = common::democracy::MinimumDeposit;
+	/// A straight majority of the council can decide what their next motion is.
+	type ExternalOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>;
+	/// A majority can have the next scheduled referendum be a straight majority-carries vote.
+	type ExternalMajorityOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>;
+	/// A unanimous council can have the next scheduled referendum be a straight default-carries
+	/// (NTB) vote.
+	type ExternalDefaultOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 1>;
+	/// Two thirds of the technical committee can have an `ExternalMajority/ExternalDefault` vote
+	/// be tabled immediately and with a shorter voting/enactment period.
+	type FastTrackOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
+	type InstantOrigin =
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
+	type InstantAllowed = common::democracy::InstantAllowed;
+	type FastTrackVotingPeriod = common::democracy::FastTrackVotingPeriod;
+	// To cancel a proposal which has been passed, 2/3 of the council must agree to it.
+	type CancellationOrigin = EnsureOneOf<
+		EnsureRoot<AccountId>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 2, 3>,
+	>;
+	type BlacklistOrigin = EnsureRoot<AccountId>;
+	// To cancel a proposal before it has been passed, the technical committee must be 1/2 or
+	// Root must agree.
+	type CancelProposalOrigin = EnsureOneOf<
+		EnsureRoot<AccountId>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>,
+	>;
+	// Any single technical committee member may veto a coming council proposal, however they can
+	// only do it once and it lasts only for the cooloff period.
+	type VetoOrigin = pallet_collective::EnsureMember<AccountId, TechnicalCollective>;
+	type CooloffPeriod = common::democracy::CooloffPeriod;
+	type PreimageByteDeposit = common::preimage::PreimageByteDeposit;
+	type OperationalPreimageOrigin = pallet_collective::EnsureMember<AccountId, CouncilCollective>;
+	type Slash = Treasury;
+	type Scheduler = Scheduler;
+	type PalletsOrigin = OriginCaller;
+	type MaxVotes = common::democracy::MaxVotes;
+	type WeightInfo = pallet_democracy::weights::SubstrateWeight<Runtime>;
+	type MaxProposals = common::democracy::MaxProposals;
+}
+
+impl pallet_multisig::Config for Runtime {
+	type Event = Event;
+	type Call = Call;
+	type Currency = Balances;
+	type DepositBase = common::multisig::DepositBase;
+	type DepositFactor = common::multisig::DepositFactor;
+	type MaxSignatories = common::multisig::MaxSignatories;
+	type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
+}
+
+impl pallet_identity::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type BasicDeposit = common::identity::BasicDeposit;
+	type FieldDeposit = common::identity::FieldDeposit;
+	type SubAccountDeposit = common::identity::SubAccountDeposit;
+	type MaxSubAccounts = common::identity::MaxSubAccounts;
+	type MaxAdditionalFields = common::identity::MaxAdditionalFields;
+	type MaxRegistrars = common::identity::MaxRegistrars;
+	type Slashed = Treasury;
+	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
+	type RegistrarOrigin = RootOrAtLeastHalfOfCommittee;
+	type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
 }
