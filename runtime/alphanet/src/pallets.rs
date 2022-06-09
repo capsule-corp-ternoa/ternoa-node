@@ -16,11 +16,6 @@
 
 use super::weights;
 use common::{
-	constants::{
-		currency::CENTS,
-		time::{DAYS, MINUTES},
-	},
-	prod_or_fast,
 	staking::{BondingDuration, SessionsPerEra},
 };
 use frame_support::{
