@@ -3443,7 +3443,7 @@ dependencies = [
 
 [[package]]
 name = "mainnet-runtime"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -3460,10 +3460,14 @@ dependencies = [
  "pallet-bags-list",
  "pallet-balances",
  "pallet-collective",
+ "pallet-democracy",
  "pallet-election-provider-multi-phase",
+ "pallet-elections-phragmen",
  "pallet-grandpa",
+ "pallet-identity",
  "pallet-im-online",
  "pallet-membership",
+ "pallet-multisig",
  "pallet-offences",
  "pallet-offences-benchmarking",
  "pallet-preimage",

@@ -1,7 +1,7 @@
 [package]
 name = "mainnet-runtime"
 authors = [ "Ternoa" ]
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 build = "build.rs"
 
@@ -33,6 +33,10 @@ pallet-utility = { git = "https://github.com/capsule-corp-ternoa/substrate", bra
 pallet-collective = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-membership = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 pallet-scheduler = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-democracy = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-elections-phragmen = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-multisig = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+pallet-identity = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
 
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false, optional = true }
@@ -132,6 +136,10 @@ std = [
 	"pallet-collective/std",
 	"pallet-membership/std",
 	"pallet-scheduler/std",
+	"pallet-democracy/std",
+	"pallet-elections-phragmen/std",
+	"pallet-multisig/std",
+	"pallet-identity/std",
 ]
 
 runtime-benchmarks = [
@@ -161,6 +169,10 @@ runtime-benchmarks = [
 	"sp-runtime/runtime-benchmarks",
 	"ternoa-staking-rewards/runtime-benchmarks",
 	"ternoa-bridge/runtime-benchmarks",
+	"pallet-democracy/runtime-benchmarks",
+	"pallet-elections-phragmen/runtime-benchmarks",
+	"pallet-multisig/runtime-benchmarks",
+	"pallet-identity/runtime-benchmarks",
 ]
 
 # try-runtime = [

@@ -57,6 +57,12 @@ echo $(eval $MEDIUM_COMMAND --pallet=pallet_collective)
 echo "PALLET COLLECTIVE"
 echo $(eval $COMMAND --pallet=frame_system)
 
+echo "PALLET DEMOCRACY"
+echo $(eval $COMMAND --pallet=pallet_democracy)
+
+echo "PALLET ELECTIONS PHRAGMEN"
+echo $(eval $MEDIUM_COMMAND --pallet=pallet_elections_phragmen)
+
 echo "Running Ternoa pallet benchmarks"
 
 echo "TERNOA STAKING REWARDS"
