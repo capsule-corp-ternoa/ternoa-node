@@ -6,7 +6,7 @@ on:
     tags:
       - v1.*
     branches:
-      - 'ghali/implement-basic-nft' #all branches
+      - 'main' #all branches
   workflow_dispatch:
     inputs:
       ignoreLevel:
