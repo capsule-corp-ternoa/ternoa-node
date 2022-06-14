@@ -138,6 +138,7 @@ construct_runtime!(
 		Bridge: ternoa_bridge = 23,
 		Multisig: pallet_multisig = 27,
 		Identity: pallet_identity = 28,
+		NFT: ternoa_nft = 29,
 	}
 );
 
@@ -449,6 +450,7 @@ mod benches {
 		// Ternoa
 		[ternoa_staking_rewards, StakingRewards]
 		[ternoa_bridge, Bridge]
+		[ternoa_nft, NFT]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]

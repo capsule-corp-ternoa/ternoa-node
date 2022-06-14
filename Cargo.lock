@@ -84,7 +84,7 @@ dependencies = [
 
 [[package]]
 name = "alphanet-runtime"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -143,9 +143,10 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-bridge 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1)",
+ "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
+ "ternoa-nft",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
 ]
@@ -3502,7 +3503,7 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-bridge 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.1)",
+ "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
  "ternoa-runtime-common",
@@ -7701,24 +7702,6 @@ dependencies = [
 [[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=v1.0.1-rc1#f2569020c1f06f8b3b8a8f4c346989dd9692baea"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "substrate-wasm-builder-runner",
-]
-
-[[package]]
-name = "ternoa-bridge"
-version = "1.0.0"
 source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.0.1#f2569020c1f06f8b3b8a8f4c346989dd9692baea"
 dependencies = [
  "frame-benchmarking",
@@ -7777,6 +7760,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-common"
+version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.1.0-rc1#31dc44c6ec47256f31afc7d47e0c5950475740fa"
+dependencies = [
+ "frame-support",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-pallets-primitives",
+]
+
+[[package]]
 name = "ternoa-core-primitives"
 version = "0.1.0"
 dependencies = [
@@ -7794,6 +7789,37 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "scale-info",
+ "sp-std",
+]
+
+[[package]]
+name = "ternoa-nft"
+version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.1.0-rc1#31dc44c6ec47256f31afc7d47e0c5950475740fa"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-pallets-primitives",
+]
+
+[[package]]
+name = "ternoa-pallets-primitives"
+version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.1.0-rc1#31dc44c6ec47256f31afc7d47e0c5950475740fa"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-runtime",
  "sp-std",
 ]
 
