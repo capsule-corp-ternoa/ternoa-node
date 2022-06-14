@@ -595,3 +595,21 @@ impl pallet_identity::Config for Runtime {
 	type RegistrarOrigin = RootOrAtLeastHalfOfCommittee;
 	type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
 }
+
+parameter_types! {
+	pub const InitialMintFee: Balance = 10_000_000_000_000_000_000;
+	pub const NFTOffchainDataLimit: u32 = 150;
+	pub const CollectionOffchainDataLimit: u32 = 150;
+	pub const CollectionSizeLimit: u32 = 1_000_000;
+}
+
+impl ternoa_nft::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_nft::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type InitialMintFee = InitialMintFee;
+	type NFTOffchainDataLimit = NFTOffchainDataLimit;
+	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
+	type CollectionSizeLimit = CollectionSizeLimit;
+}
