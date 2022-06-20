@@ -41,7 +41,7 @@ use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
-	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
+	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, NFT, Offences, Origin,
 	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
 	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
 	UncheckedExtrinsic, VERSION,
@@ -612,4 +612,21 @@ impl ternoa_nft::Config for Runtime {
 	type NFTOffchainDataLimit = NFTOffchainDataLimit;
 	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
 	type CollectionSizeLimit = CollectionSizeLimit;
+}
+
+parameter_types! {
+	pub const MarketplaceInitialMintFee: Balance = 1_000_000_000_000_000_000_000;
+	pub const OffchainDataLimit: u32 = 150;
+	pub const AccountSizeLimit: u32 = 100_000;
+}
+
+impl ternoa_marketplace::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_marketplace::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type NFTExt = NFT;
+	type InitialMintFee = MarketplaceInitialMintFee;
+	type OffchainDataLimit = OffchainDataLimit;
+	type AccountSizeLimit = AccountSizeLimit;
 }

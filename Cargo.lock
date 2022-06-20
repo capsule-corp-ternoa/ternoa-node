@@ -84,7 +84,7 @@ dependencies = [
 
 [[package]]
 name = "alphanet-runtime"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -146,6 +146,7 @@ dependencies = [
  "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
+ "ternoa-marketplace",
  "ternoa-nft",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
@@ -7762,7 +7763,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.1.0-rc1#31dc44c6ec47256f31afc7d47e0c5950475740fa"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7793,9 +7794,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-marketplace"
+version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-pallets-primitives",
+]
+
+[[package]]
 name = "ternoa-nft"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.1.0-rc1#31dc44c6ec47256f31afc7d47e0c5950475740fa"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7813,7 +7832,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?rev=v1.1.0-rc1#31dc44c6ec47256f31afc7d47e0c5950475740fa"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
