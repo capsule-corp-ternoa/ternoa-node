@@ -7762,8 +7762,8 @@ dependencies = [
 
 [[package]]
 name = "ternoa-common"
-version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
+version = "1.0.1"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#a6d273ebb5c7de58bfafa8f8925ea1a556905b2d"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7796,7 +7796,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#a6d273ebb5c7de58bfafa8f8925ea1a556905b2d"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7813,8 +7813,8 @@ dependencies = [
 
 [[package]]
 name = "ternoa-nft"
-version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
+version = "1.0.1"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#a6d273ebb5c7de58bfafa8f8925ea1a556905b2d"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7831,8 +7831,8 @@ dependencies = [
 
 [[package]]
 name = "ternoa-pallets-primitives"
-version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#782c6fb806e6e32cff7dabcfa8408845ab2ad9e1"
+version = "1.0.1"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-marketplace#a6d273ebb5c7de58bfafa8f8925ea1a556905b2d"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
