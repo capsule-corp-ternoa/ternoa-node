@@ -73,3 +73,6 @@ echo $(eval $COMMAND --pallet=ternoa_bridge)
 
 echo "TERNOA NFT"
 echo $(eval $SHORT_COMMAND --pallet=ternoa_nft)
+
+echo "TERNOA MARKETPLACE"
+echo $(eval $COMMAND --pallet=ternoa_marketplace)
