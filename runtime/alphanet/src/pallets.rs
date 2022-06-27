@@ -41,10 +41,10 @@ use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
-	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, NFT, Offences, Origin,
+	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
 	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
 	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, VERSION,
+	UncheckedExtrinsic, NFT, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
