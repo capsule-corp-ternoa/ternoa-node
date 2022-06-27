@@ -434,7 +434,7 @@ impl ternoa_mandate::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 	type ExternalOrigin =
-		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>;
+		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
 }
 
 // Scheduler
