@@ -138,6 +138,7 @@ construct_runtime!(
 		Bridge: ternoa_bridge = 23,
 		Multisig: pallet_multisig = 27,
 		Identity: pallet_identity = 28,
+		NFT: ternoa_nft = 29,
 	}
 );
 
