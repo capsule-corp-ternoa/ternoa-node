@@ -78,8 +78,8 @@ ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common",
 ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.0.0", default-features = false }
 ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.0.0", default-features = false }
 ternoa-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.0.1", default-features = false }
-ternoa-nft = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.1.1-rc1", default-features = false }
-ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.1.1-rc1", default-features = false }
+ternoa-nft = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.1.1-rc2", default-features = false }
+ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", rev = "v1.1.1-rc2", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
