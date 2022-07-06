@@ -21,7 +21,7 @@ use crate::constants::currency::CENTS;
 
 parameter_types! {
 	// Minimum 100 bytes/CAPS deposited (1 CENT/byte)
-	pub const BasicDeposit: Balance = 1000 * CENTS;       // 258 bytes on-chain
+	pub const BasicDeposit: Balance = 10_000 * CENTS;       // 258 bytes on-chain
 	pub const FieldDeposit: Balance = 250 * CENTS;        // 66 bytes on-chain
 	pub const SubAccountDeposit: Balance = 200 * CENTS;   // 53 bytes on-chain
 	pub const MaxSubAccounts: u32 = 100;

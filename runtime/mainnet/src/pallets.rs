@@ -44,7 +44,7 @@ use crate::{
 	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
 	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
 	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, VERSION,
+	UncheckedExtrinsic, NFT, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -612,4 +612,21 @@ impl ternoa_nft::Config for Runtime {
 	type NFTOffchainDataLimit = NFTOffchainDataLimit;
 	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
 	type CollectionSizeLimit = CollectionSizeLimit;
+}
+
+parameter_types! {
+	pub const MarketplaceInitialMintFee: Balance = 10_000_000_000_000_000_000_000;
+	pub const OffchainDataLimit: u32 = 150;
+	pub const AccountSizeLimit: u32 = 100_000;
+}
+
+impl ternoa_marketplace::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_marketplace::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type NFTExt = NFT;
+	type InitialMintFee = MarketplaceInitialMintFee;
+	type OffchainDataLimit = OffchainDataLimit;
+	type AccountSizeLimit = AccountSizeLimit;
 }
