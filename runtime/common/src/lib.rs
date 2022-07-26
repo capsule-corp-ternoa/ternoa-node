@@ -32,6 +32,7 @@ pub mod imonline;
 pub mod multisig;
 pub mod phragmen_election;
 pub mod preimage;
+pub mod rent;
 pub mod scheduler;
 pub mod shared;
 pub mod staking;

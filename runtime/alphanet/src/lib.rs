@@ -140,6 +140,7 @@ construct_runtime!(
 		Identity: pallet_identity = 28,
 		NFT: ternoa_nft = 29,
 		Marketplace: ternoa_marketplace = 30,
+		Rent: ternoa_rent = 31,
 	}
 );
 
@@ -453,6 +454,7 @@ mod benches {
 		[ternoa_bridge, Bridge]
 		[ternoa_nft, NFT]
 		[ternoa_marketplace, Marketplace]
+		[ternoa_rent, Rent]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]

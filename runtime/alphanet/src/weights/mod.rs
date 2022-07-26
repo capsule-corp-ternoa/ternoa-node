@@ -18,3 +18,4 @@ pub mod ternoa_bridge;
 pub mod ternoa_marketplace;
 pub mod ternoa_nft;
 pub mod ternoa_staking_rewards;
+pub mod ternoa_rent;

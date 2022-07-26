@@ -617,7 +617,7 @@ impl ternoa_nft::Config for Runtime {
 parameter_types! {
 	pub const MarketplaceInitialMintFee: Balance = 1_000_000_000_000_000_000_000;
 	pub const OffchainDataLimit: u32 = 150;
-	pub const AccountSizeLimit: u32 = 100_000;
+	pub const MarketplaceAccountSizeLimit: u32 = 100_000;
 }
 
 impl ternoa_marketplace::Config for Runtime {
@@ -628,5 +628,24 @@ impl ternoa_marketplace::Config for Runtime {
 	type NFTExt = NFT;
 	type InitialMintFee = MarketplaceInitialMintFee;
 	type OffchainDataLimit = OffchainDataLimit;
-	type AccountSizeLimit = AccountSizeLimit;
+	type AccountSizeLimit = MarketplaceAccountSizeLimit;
+}
+
+parameter_types! {
+	pub const RentAccountSizeLimit: u32 = 3; //10_000;
+	pub const SimultaneousContractLimit: u32 = 10;//1_000_000;
+	pub const ActionsInBlockLimit: u32 = 10;//1_000;
+	pub const ContractExpirationDuration: u32 = 300;//864_000;
+}
+
+impl ternoa_rent::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_rent::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type NFTExt = NFT;
+	type PalletId = common::rent::PalletId;
+	type AccountSizeLimit = RentAccountSizeLimit;
+	type SimultaneousContractLimit = SimultaneousContractLimit;
+	type ActionsInBlockLimit = ActionsInBlockLimit;
+	type ContractExpirationDuration = ContractExpirationDuration;
 }
