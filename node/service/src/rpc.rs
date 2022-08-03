@@ -16,21 +16,21 @@
 
 use std::sync::Arc;
 
+use jsonrpsee::RpcModule;
 use sc_client_api::AuxStore;
 use sc_consensus_babe::{Config, Epoch};
-use sc_consensus_babe_rpc::BabeRpcHandler;
 use sc_consensus_epochs::SharedEpochChanges;
 use sc_finality_grandpa::{
 	FinalityProofProvider, GrandpaJustificationStream, SharedAuthoritySet, SharedVoterState,
 };
-use sc_finality_grandpa_rpc::{GrandpaApi, GrandpaRpcHandler};
-use sc_rpc::SubscriptionTaskExecutor;
-pub use sc_rpc_api::DenyUnsafe;
-use sc_sync_state_rpc::{SyncStateRpcApi, SyncStateRpcHandler};
+pub use sc_rpc::{DenyUnsafe, SubscriptionTaskExecutor};
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_keystore::SyncCryptoStorePtr;
 use ternoa_core_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Index};
+
+/// A type representing all RPC extensions.
+pub type RpcExtension = RpcModule<()>;
 
 /// Extra dependencies for BABE.
 pub struct BabeDeps {
@@ -74,13 +74,11 @@ pub struct FullDeps<C, P, SC, B> {
 	pub grandpa: GrandpaDeps<B>,
 }
 
-/// A IO handler that uses all Full RPC extensions.
-pub type IoHandler = jsonrpc_core::IoHandler<sc_rpc::Metadata>;
-
 /// Instantiate all Full RPC extensions.
 pub fn create_full<C, P, SC, B>(
 	deps: FullDeps<C, P, SC, B>,
-) -> Result<jsonrpc_core::IoHandler<sc_rpc_api::Metadata>, Box<dyn std::error::Error + Send + Sync>>
+	backend: Arc<B>,
+) -> Result<RpcExtension, Box<dyn std::error::Error + Send + Sync>>
 where
 	C: ProvideRuntimeApi<Block>
 		+ HeaderBackend<Block>
@@ -93,15 +91,19 @@ where
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
 	C::Api: sp_consensus_babe::BabeApi<Block>,
 	C::Api: sp_block_builder::BlockBuilder<Block>,
-	P: sc_transaction_pool_api::TransactionPool + 'static,
+	P: sc_transaction_pool_api::TransactionPool + Sync + Send + 'static,
 	SC: sp_consensus::SelectChain<Block> + 'static,
 	B: sc_client_api::Backend<Block> + Send + Sync + 'static,
 	B::State: sc_client_api::backend::StateBackend<sp_runtime::traits::HashFor<Block>>,
 {
-	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApi};
-	use substrate_frame_rpc_system::{FullSystem, SystemApi};
+	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
+	use sc_consensus_babe_rpc::{Babe, BabeApiServer};
+	use sc_finality_grandpa_rpc::{Grandpa, GrandpaApiServer};
+	use sc_sync_state_rpc::{SyncState, SyncStateApiServer};
+	use substrate_frame_rpc_system::{System, SystemApiServer};
+	use substrate_state_trie_migration_rpc::{StateMigration, StateMigrationApiServer};
 
-	let mut io = jsonrpc_core::IoHandler::default();
+	let mut io = RpcModule::new(());
 	let FullDeps { client, pool, select_chain, chain_spec, deny_unsafe, babe, grandpa } = deps;
 
 	let BabeDeps { keystore, babe_config, shared_epoch_changes } = babe;
@@ -113,33 +115,33 @@ where
 		finality_provider,
 	} = grandpa;
 
-	io.extend_with(SystemApi::to_delegate(FullSystem::new(client.clone(), pool, deny_unsafe)));
-	// Making synchronous calls in light client freezes the browser currently,
-	// more context: https://github.com/paritytech/substrate/pull/3480
-	// These RPCs should use an asynchronous caller instead.
-	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client.clone())));
-	io.extend_with(sc_consensus_babe_rpc::BabeApi::to_delegate(BabeRpcHandler::new(
-		client.clone(),
-		shared_epoch_changes.clone(),
-		keystore,
-		babe_config,
-		select_chain,
-		deny_unsafe,
-	)));
-	io.extend_with(GrandpaApi::to_delegate(GrandpaRpcHandler::new(
-		shared_authority_set.clone(),
-		shared_voter_state,
-		justification_stream,
-		subscription_executor,
-		finality_provider,
-	)));
-
-	io.extend_with(SyncStateRpcApi::to_delegate(SyncStateRpcHandler::new(
-		chain_spec,
-		client,
-		shared_authority_set,
-		shared_epoch_changes,
-	)?));
+	io.merge(StateMigration::new(client.clone(), backend, deny_unsafe).into_rpc())?;
+	io.merge(System::new(client.clone(), pool.clone(), deny_unsafe).into_rpc())?;
+	io.merge(TransactionPayment::new(client.clone()).into_rpc())?;
+	io.merge(
+		Babe::new(
+			client.clone(),
+			shared_epoch_changes.clone(),
+			keystore,
+			babe_config,
+			select_chain,
+			deny_unsafe,
+		)
+		.into_rpc(),
+	)?;
+	io.merge(
+		Grandpa::new(
+			subscription_executor,
+			shared_authority_set.clone(),
+			shared_voter_state,
+			justification_stream,
+			finality_provider,
+		)
+		.into_rpc(),
+	)?;
+	io.merge(
+		SyncState::new(chain_spec, client, shared_authority_set, shared_epoch_changes)?.into_rpc(),
+	)?;
 
 	Ok(io)
 }

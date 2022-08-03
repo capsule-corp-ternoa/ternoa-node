@@ -33,6 +33,8 @@ use std::sync::Arc;
 use ternoa_client::RuntimeApiCollection;
 use ternoa_core_primitives::Block;
 
+use rpc::RpcExtension;
+
 #[cfg(feature = "chaosnet-native")]
 pub use ternoa_client::ChaosnetExecutorDispatch;
 
@@ -113,8 +115,8 @@ pub fn new_partial<RuntimeApi, ExecutorDispatch>(
 		(
 			impl Fn(
 				rpc::DenyUnsafe,
-				sc_rpc::SubscriptionTaskExecutor,
-			) -> Result<rpc::IoHandler, sc_service::Error>,
+				rpc::SubscriptionTaskExecutor,
+			) -> Result<RpcExtension, sc_service::Error>,
 			(
 				sc_consensus_babe::BabeBlockImport<
 					Block,
@@ -308,10 +310,11 @@ where
 
 		// Rest
 		let rpc_setup = shared_voter_state.clone();
+		let rpc_backend = backend.clone();
 
 		// Calling this function will extend the IO interface with additional RPC Pallet specific
 		// calls.
-		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| {
+		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| -> Result<RpcExtension, sc_service::Error> {
 			let deps = rpc::FullDeps {
 				client: client.clone(),
 				pool: pool.clone(),
@@ -332,7 +335,7 @@ where
 				},
 			};
 
-			rpc::create_full(deps).map_err(Into::into)
+			rpc::create_full(deps, rpc_backend.clone()).map_err(Into::into)
 		};
 
 		(rpc_extensions_builder, rpc_setup)
@@ -458,7 +461,7 @@ where
 		client: client.clone(),
 		keystore: keystore_container.sync_keystore(),
 		network: network.clone(),
-		rpc_extensions_builder: Box::new(rpc_extensions_builder),
+		rpc_builder: Box::new(rpc_extensions_builder),
 		transaction_pool: transaction_pool.clone(),
 		task_manager: &mut task_manager,
 		system_rpc_tx,

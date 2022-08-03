@@ -6,33 +6,33 @@ version = "1.0.0"
 
 [dependencies]
 # Frame
-pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Substrate
-substrate-frame-rpc-system = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+substrate-frame-rpc-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Substrate Primitives
-sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-blockchain = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-consensus = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-offchain = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-session = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-storage = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-blockchain = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-consensus = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-offchain = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-session = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-storage = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Substrate Client
-sc-client-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-executor = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
+sc-client-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-executor = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
 
 # Benchmarking
-frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives" }

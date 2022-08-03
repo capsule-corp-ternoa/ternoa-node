@@ -29,6 +29,7 @@ use sp_core::sr25519;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::Perbill;
 use ternoa_core_primitives::{AccountId, Balance};
+use sp_runtime::BoundedVec;
 
 fn session_keys(
 	grandpa: GrandpaId,
@@ -168,7 +169,7 @@ pub fn testnet_genesis(
 		transaction_payment: Default::default(),
 		technical_committee: Default::default(),
 		technical_membership: TechnicalMembershipConfig {
-			members: vec![root_key],
+			members: BoundedVec::try_from(vec![root_key]).unwrap(),
 			..Default::default()
 		},
 		council: CouncilConfig { members: vec![], ..Default::default() },

@@ -46,8 +46,6 @@ impl pallet_staking::BenchmarkingConfig for StakingBenchmarkingConfig {
 }
 
 pub type EraPayout = ();
-pub type GenesisElectionProvider<R> =
-	frame_election_provider_support::onchain::OnChainSequentialPhragmen<R>;
 
 pub struct DealWithFees<R>(sp_std::marker::PhantomData<R>);
 impl<R> OnUnbalanced<NegativeImbalance<R>> for DealWithFees<R>

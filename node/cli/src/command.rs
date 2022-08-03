@@ -73,8 +73,6 @@ impl SubstrateCli for Cli {
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
 			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
-			#[cfg(feature = "alphanet-native")]
-			"alphanet-sta" | "a-sta" => Box::new(chain_spec::alphanet::staging_config()),
 
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "mainnet-native")]
@@ -242,31 +240,9 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> std::result::Result<(), sc_cli::E
 	}
 
 	let runner = cli.create_runner(cmd)?;
-	let chain_spec = &runner.config().chain_spec;
+	let _chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.sync_run(|config| {
-			cmd.run::<chaosnet_runtime::Block, ChaosnetExecutorDispatch>(config)
-		})?)
-	}
-
-	#[cfg(feature = "alphanet-native")]
-	if chain_spec.is_alphanet() {
-		return Ok(runner.sync_run(|config| {
-			cmd.run::<alphanet_runtime::Block, AlphanetExecutorDispatch>(config)
-		})?)
-	}
-
-	#[cfg(feature = "mainnet-native")]
-	{
-		return Ok(runner.sync_run(|config| {
-			cmd.run::<mainnet_runtime::Block, MainnetExecutorDispatch>(config)
-		})?)
-	}
-
-	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled")
+	panic!("TODO")
 }
 
 fn check_block(cli: &Cli, cmd: &CheckBlockCmd) -> std::result::Result<(), sc_cli::Error> {
