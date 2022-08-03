@@ -1,0 +1,19 @@
+[package]
+name = "mainnet-runtime-constants"
+version = "1.0.0"
+authors = ["Parity Technologies <admin@parity.io>"]
+edition = "2021"
+
+[dependencies]
+smallvec = "1.8.0"
+
+frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
+ternoa-core-primitives = { path = "../../../core-primitives",  default-features = false }
+ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../../common", default-features = false }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
+
+[features]
+default = ["std"]
+std = [
+	"sp-runtime/std"
+]

@@ -86,6 +86,7 @@ dependencies = [
 name = "alphanet-runtime"
 version = "1.1.1"
 dependencies = [
+ "alphanet-runtime-constants",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
@@ -150,6 +151,17 @@ dependencies = [
  "ternoa-nft",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
+]
+
+[[package]]
+name = "alphanet-runtime-constants"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "smallvec",
+ "sp-runtime",
+ "ternoa-core-primitives",
+ "ternoa-runtime-common",
 ]
 
 [[package]]
@@ -759,6 +771,7 @@ dependencies = [
 name = "chaosnet-runtime"
 version = "1.0.0"
 dependencies = [
+ "chaosnet-runtime-constants",
  "frame-benchmarking",
  "frame-election-provider-support",
  "frame-executive",
@@ -816,6 +829,17 @@ dependencies = [
  "ternoa-mandate",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
+]
+
+[[package]]
+name = "chaosnet-runtime-constants"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "smallvec",
+ "sp-runtime",
+ "ternoa-core-primitives",
+ "ternoa-runtime-common",
 ]
 
 [[package]]
@@ -2621,21 +2645,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jsonrpc-core"
-version = "18.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14f7f76aef2d054868398427f6c54943cf3d1caa9a7ec7d0c38d69df97a965eb"
-dependencies = [
- "futures 0.3.21",
- "futures-executor",
- "futures-util",
- "log",
- "serde",
- "serde_derive",
- "serde_json",
-]
-
-[[package]]
 name = "jsonrpsee"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3554,6 +3563,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "hex-literal",
+ "mainnet-runtime-constants",
  "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-babe",
@@ -3609,6 +3619,17 @@ dependencies = [
  "ternoa-nft",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
+]
+
+[[package]]
+name = "mainnet-runtime-constants"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "smallvec",
+ "sp-runtime",
+ "ternoa-core-primitives",
+ "ternoa-runtime-common",
 ]
 
 [[package]]
@@ -7778,6 +7799,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "substrate-state-trie-migration-rpc"
+version = "4.0.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?tag=ternoa-substrate-2022-07-30#7d8e5a1e3979cb0fc61123d5cfeec974dfa25334"
+dependencies = [
+ "jsonrpsee",
+ "log",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sc-rpc-api",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-state-machine",
+ "sp-std",
+ "sp-trie",
+ "trie-db",
+]
+
+[[package]]
 name = "substrate-wasm-builder"
 version = "5.0.0-dev"
 source = "git+https://github.com/capsule-corp-ternoa/substrate?tag=ternoa-substrate-2022-07-30#7d8e5a1e3979cb0fc61123d5cfeec974dfa25334"
@@ -7889,7 +7931,7 @@ dependencies = [
 [[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7948,7 +7990,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7968,7 +8010,7 @@ dependencies = [
 [[package]]
 name = "ternoa-mandate"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7981,7 +8023,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7999,7 +8041,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nft"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8017,7 +8059,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -8055,12 +8097,15 @@ name = "ternoa-service"
 version = "1.0.0"
 dependencies = [
  "alphanet-runtime",
+ "alphanet-runtime-constants",
  "chaosnet-runtime",
+ "chaosnet-runtime-constants",
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "futures 0.3.21",
- "jsonrpc-core",
+ "jsonrpsee",
  "mainnet-runtime",
+ "mainnet-runtime-constants",
  "pallet-im-online",
  "pallet-staking",
  "pallet-transaction-payment-rpc",
@@ -8100,6 +8145,7 @@ dependencies = [
  "sp-timestamp",
  "sp-transaction-storage-proof",
  "substrate-frame-rpc-system",
+ "substrate-state-trie-migration-rpc",
  "ternoa-client",
  "ternoa-core-primitives",
 ]
@@ -8107,7 +8153,7 @@ dependencies = [
 [[package]]
 name = "ternoa-staking-rewards"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=2022-07-30-substrate-upgrade#bfeacd048e987b0f0b121983a7217737bf741991"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
 dependencies = [
  "frame-benchmarking",
  "frame-support",

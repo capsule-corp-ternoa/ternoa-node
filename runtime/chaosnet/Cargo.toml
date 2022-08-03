@@ -69,10 +69,11 @@ serde = { version = "1.0.137", optional = true }
 static_assertions = { version = "1.1.0" }
 
 # Ternoa
+chaosnet-runtime-constants = { package = "chaosnet-runtime-constants", path = "./constants", default-features = false }
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
-ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "2022-07-30-substrate-upgrade", default-features = false }
-ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", branch = "2022-07-30-substrate-upgrade", default-features = false }
+ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
+ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
