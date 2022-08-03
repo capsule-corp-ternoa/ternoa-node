@@ -88,8 +88,6 @@ impl pallet_election_provider_multi_phase::BenchmarkingConfig for BenchmarkConfi
 }
 
 pub type Fallback<R> = pallet_election_provider_multi_phase::NoFallback<R>;
-pub type GovernanceFallback<R> =
-	frame_election_provider_support::onchain::OnChainSequentialPhragmen<R>;
 pub type Solver<R> = frame_election_provider_support::SequentialPhragmen<
 	AccountId,
 	pallet_election_provider_multi_phase::SolutionAccuracyOf<R>,

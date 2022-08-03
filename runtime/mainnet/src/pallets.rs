@@ -301,9 +301,12 @@ impl pallet_offences::Config for Runtime {
 	type OnOffenceHandler = Staking;
 }
 
-impl frame_election_provider_support::onchain::Config for Runtime {
-	type Accuracy = common::election_provider_support::OnChainAccuracy;
+pub struct OnChainSeqPhragmen;
+impl frame_election_provider_support::onchain::Config for OnChainSeqPhragmen {
+	type System = Runtime;
+	type Solver = SequentialPhragmen<AccountId, common::election_provider_support::OnChainAccuracy>;
 	type DataProvider = Staking;
+	type WeightInfo = weights::frame_election_provider_support::WeightInfo<Runtime>;
 }
 
 impl pallet_staking::Config for Runtime {
@@ -326,7 +329,8 @@ impl pallet_staking::Config for Runtime {
 	type MaxNominatorRewardedPerValidator = common::staking::MaxNominatorRewardedPerValidator;
 	type OffendingValidatorsThreshold = common::staking::OffendingValidatorsThreshold;
 	type ElectionProvider = ElectionProviderMultiPhase;
-	type GenesisElectionProvider = common::staking::GenesisElectionProvider<Self>;
+	type GenesisElectionProvider =
+		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	// Alternatively, use pallet_staking::UseNominatorsMap<Runtime> to just use the nominators map.
 	// Note that the aforementioned does not scale to a very large number of nominators.
 	type VoterList = BagsList;

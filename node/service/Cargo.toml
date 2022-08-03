@@ -57,9 +57,9 @@ frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate",
 frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Rest
-futures = { version = "0.3.1", features = [ "compat" ] }
+futures = { version = "0.3.21", features = [ "compat" ] }
 jsonrpc-core = "18.0.0"
-serde = { version = "1.0.101", features = [ "derive" ] }
+serde = { version = "1.0.137", features = [ "derive" ] }
 
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives" }
@@ -74,7 +74,7 @@ mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 default = [ "db", "full-node", "mainnet-native"]
 full-node = [ "ternoa-client" ]
 db = [
-	"sc-service/db"
+	"sc-service/rocksdb"
 ]
 
 chaosnet-native = [ "chaosnet-runtime", "ternoa-client/chaosnet" ]
