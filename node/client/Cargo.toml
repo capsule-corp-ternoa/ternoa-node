@@ -39,11 +39,9 @@ ternoa-core-primitives = { path = "../../core-primitives" }
 
 # Ternoa runtimes
 alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
-chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
 mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 
 [features]
 default = ["mainnet"]
-chaosnet = ["chaosnet-runtime"]
 alphanet = ["alphanet-runtime"]
 mainnet = ["mainnet-runtime"]

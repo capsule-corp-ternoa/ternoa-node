@@ -768,81 +768,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chaosnet-runtime"
-version = "1.0.0"
-dependencies = [
- "chaosnet-runtime-constants",
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-executive",
- "frame-support",
- "frame-system",
- "frame-system-benchmarking",
- "frame-system-rpc-runtime-api",
- "frame-try-runtime",
- "hex-literal",
- "pallet-authority-discovery",
- "pallet-authorship",
- "pallet-babe",
- "pallet-bags-list",
- "pallet-balances",
- "pallet-collective",
- "pallet-election-provider-multi-phase",
- "pallet-grandpa",
- "pallet-im-online",
- "pallet-membership",
- "pallet-offences",
- "pallet-offences-benchmarking",
- "pallet-preimage",
- "pallet-scheduler",
- "pallet-session",
- "pallet-session-benchmarking",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-timestamp",
- "pallet-transaction-payment",
- "pallet-transaction-payment-rpc-runtime-api",
- "pallet-treasury",
- "pallet-utility",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-api",
- "sp-authority-discovery",
- "sp-block-builder",
- "sp-consensus-babe",
- "sp-core",
- "sp-inherents",
- "sp-io",
- "sp-npos-elections",
- "sp-offchain",
- "sp-runtime",
- "sp-session",
- "sp-staking",
- "sp-std",
- "sp-tracing",
- "sp-transaction-pool",
- "sp-version",
- "static_assertions",
- "substrate-wasm-builder",
- "ternoa-core-primitives",
- "ternoa-mandate",
- "ternoa-runtime-common",
- "ternoa-staking-rewards",
-]
-
-[[package]]
-name = "chaosnet-runtime-constants"
-version = "1.0.0"
-dependencies = [
- "frame-support",
- "smallvec",
- "sp-runtime",
- "ternoa-core-primitives",
- "ternoa-runtime-common",
-]
-
-[[package]]
 name = "chrono"
 version = "0.4.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2827,9 +2752,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.126"
+version = "0.2.127"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
+checksum = "505e71a4706fa491e9b1b55f51b95d4037d0821ee40131190475f692b35b009b"
 
 [[package]]
 name = "libloading"
@@ -7963,7 +7888,6 @@ name = "ternoa-client"
 version = "1.0.0"
 dependencies = [
  "alphanet-runtime",
- "chaosnet-runtime",
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "mainnet-runtime",
@@ -8098,8 +8022,6 @@ version = "1.0.0"
 dependencies = [
  "alphanet-runtime",
  "alphanet-runtime-constants",
- "chaosnet-runtime",
- "chaosnet-runtime-constants",
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "futures 0.3.21",

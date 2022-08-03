@@ -10,14 +10,13 @@ readme = "README.md"
 
 [dependencies]
 # Mainnet is enabled by default
-ternoa-cli = { path = "node/cli", features = [ "chaosnet-native", "alphanet-native" ] }
+ternoa-cli = { path = "node/cli", features = [ "alphanet-native" ] }
 
 [workspace]
 members = [
     'node/cli',
     'node/client',
     "node/service",
-    'runtime/chaosnet',
     'runtime/alphanet',
     'runtime/mainnet',
     "core-primitives"
