@@ -7,54 +7,54 @@ version = "1.0.0"
 [dependencies]
 
 # Frame
-pallet-transaction-payment-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-pallet-im-online = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+pallet-transaction-payment-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+pallet-im-online = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Substrate
-substrate-frame-rpc-system = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+substrate-frame-rpc-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Sp
-sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-blockchain = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-consensus = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-keystore = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-timestamp = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-transaction-storage-proof = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sp-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-blockchain = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-consensus = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-keystore = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-timestamp = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-transaction-storage-proof = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sp-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Sc
-sc-basic-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-chain-spec = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-client-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-consensus = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-executor = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-network = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-rpc-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", default-features = false }
-sc-telemetry = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-transaction-pool-api = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-finality-grandpa-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-consensus-babe-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-consensus-epochs = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-sync-state-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-consensus-slots = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-sc-consensus-uncles = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+sc-basic-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-chain-spec = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-client-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-consensus = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-executor = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-network = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-rpc-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
+sc-telemetry = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-transaction-pool-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-finality-grandpa-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-consensus-babe-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-consensus-epochs = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-sync-state-rpc = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-consensus-slots = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+sc-consensus-uncles = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Benchmarking
-frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
-frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 # Rest
 futures = { version = "0.3.1", features = [ "compat" ] }

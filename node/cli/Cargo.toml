@@ -14,12 +14,12 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 # Substrate Frame
-node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
-frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
+node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
 
 # Substrate Client
-sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
-sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
+sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
 
 # Rest
 clap = { version = "3.1", features = ["derive"], optional = true }
@@ -28,7 +28,7 @@ clap = { version = "3.1", features = ["derive"], optional = true }
 ternoa-service = { path = "../service", default-features = false, optional = true }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
 
 [features]
 default = [ "wasmtime", "cli", "full-node", "mainnet-native" ]
