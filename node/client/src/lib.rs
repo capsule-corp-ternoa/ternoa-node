@@ -34,24 +34,8 @@ pub type FullBackend = sc_service::TFullBackend<Block>;
 pub type FullClient<RuntimeApi, ExecutorDispatch> =
 	sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
 
-#[cfg(not(any(feature = "chaosnet", feature = "alphanet", feature = "mainnet")))]
+#[cfg(not(any(feature = "alphanet", feature = "mainnet")))]
 compile_error!("at least one runtime feature must be enabled");
-
-#[cfg(feature = "chaosnet")]
-pub struct ChaosnetExecutorDispatch;
-
-#[cfg(feature = "chaosnet")]
-impl sc_executor::NativeExecutionDispatch for ChaosnetExecutorDispatch {
-	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
-
-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		chaosnet_runtime::api::dispatch(method, data)
-	}
-
-	fn native_version() -> sc_executor::NativeVersion {
-		chaosnet_runtime::native_version()
-	}
-}
 
 #[cfg(feature = "alphanet")]
 pub struct AlphanetExecutorDispatch;
@@ -209,8 +193,6 @@ macro_rules! with_client {
 		}
 	} => {
 		match $self {
-			#[cfg(feature = "chaosnet")]
-			Self::Chaosnet($client) => { $( $code )* },
 			#[cfg(feature = "alphanet")]
 			Self::Alphanet($client) => { $( $code )* },
 			#[cfg(feature = "mainnet")]
@@ -224,8 +206,6 @@ macro_rules! with_client {
 /// See [`ExecuteWithClient`] for more information.
 #[derive(Clone)]
 pub enum Client {
-	#[cfg(feature = "chaosnet")]
-	Chaosnet(Arc<FullClient<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>>),
 	#[cfg(feature = "alphanet")]
 	Alphanet(Arc<FullClient<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>>),
 	#[cfg(feature = "mainnet")]

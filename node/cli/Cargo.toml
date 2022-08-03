@@ -47,6 +47,5 @@ full-node = ["ternoa-service/full-node"]
 # Configure the native runtimes to use. Mainnet is enabled by default.
 #
 # Validators require the native runtime currently
-chaosnet-native = [ "ternoa-service/chaosnet-native" ]
 alphanet-native = [ "ternoa-service/alphanet-native" ]
 mainnet-native = [ "ternoa-service/mainnet-native" ]

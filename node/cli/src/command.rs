@@ -24,11 +24,6 @@ use sc_cli::{
 use sc_service::PartialComponents;
 use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
 
-#[cfg(feature = "chaosnet-native")]
-use ternoa_service::chaosnet_runtime;
-#[cfg(feature = "chaosnet-native")]
-use ternoa_service::ChaosnetExecutorDispatch;
-
 #[cfg(feature = "alphanet-native")]
 use ternoa_service::alphanet_runtime;
 #[cfg(feature = "alphanet-native")]
@@ -66,10 +61,6 @@ impl SubstrateCli for Cli {
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
 		Ok(match id {
-			"chaosnet" => Box::new(chain_spec::chaosnet_config()?),
-			#[cfg(feature = "chaosnet-native")]
-			"chaosnet-dev" | "c-dev" => Box::new(chain_spec::chaosnet::development_config()),
-
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
 			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
@@ -86,9 +77,7 @@ impl SubstrateCli for Cli {
 					Box::new(chain_spec::MainnetChainSpec::from_json_file(path.clone())?)
 						as Box<dyn sc_service::ChainSpec>;
 
-				if chain_spec.is_chaosnet() {
-					Box::new(chain_spec::ChaosnetChainSpec::from_json_file(path)?)
-				} else if chain_spec.is_alphanet() {
+				if chain_spec.is_alphanet() {
 					Box::new(chain_spec::AlphanetChainSpec::from_json_file(path)?)
 				} else {
 					chain_spec
@@ -98,11 +87,6 @@ impl SubstrateCli for Cli {
 	}
 
 	fn native_runtime_version(spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		#[cfg(feature = "chaosnet-native")]
-		if spec.is_chaosnet() {
-			return &chaosnet_runtime::VERSION
-		}
-
 		#[cfg(feature = "alphanet-native")]
 		if spec.is_alphanet() {
 			return &alphanet_runtime::VERSION
@@ -114,7 +98,7 @@ impl SubstrateCli for Cli {
 		}
 
 		#[cfg(not(feature = "mainnet-native"))]
-		panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+		panic!("No runtime feature (alphanet, mainnet) is enabled");
 	}
 }
 
@@ -173,14 +157,6 @@ fn run_wo_args(cli: &Cli) -> std::result::Result<(), sc_cli::Error> {
 	let runner = cli.create_runner(&cli.run)?;
 	let chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.run_node_until_exit(|config| async move {
-			new_full::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(config)
-				.map_err(sc_cli::Error::Service)
-		})?)
-	}
-
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
 		return Ok(runner.run_node_until_exit(|config| async move {
@@ -198,19 +174,12 @@ fn run_wo_args(cli: &Cli) -> std::result::Result<(), sc_cli::Error> {
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
 }
 
 fn inspect(cli: &Cli, cmd: &InspectCmd) -> std::result::Result<(), sc_cli::Error> {
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec;
-
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.sync_run(|config| {
-			cmd.run::<chaosnet_runtime::Block, chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(config)
-		})?)
-	}
 
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
@@ -229,7 +198,7 @@ fn inspect(cli: &Cli, cmd: &InspectCmd) -> std::result::Result<(), sc_cli::Error
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled")
+	panic!("No runtime feature (alphanet, mainnet) is enabled")
 }
 
 fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> std::result::Result<(), sc_cli::Error> {
@@ -249,15 +218,6 @@ fn check_block(cli: &Cli, cmd: &CheckBlockCmd) -> std::result::Result<(), sc_cli
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.async_run(|config| {
-			let PartialComponents { client, task_manager, import_queue, .. } =
-				new_partial::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, import_queue), task_manager))
-		})?)
-	}
-
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
 		return Ok(runner.async_run(|config| {
@@ -277,22 +237,13 @@ fn check_block(cli: &Cli, cmd: &CheckBlockCmd) -> std::result::Result<(), sc_cli
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
 }
 
 fn export_blocks(cli: &Cli, cmd: &ExportBlocksCmd) -> std::result::Result<(), sc_cli::Error> {
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.async_run(|config| {
-			let PartialComponents { client, task_manager, .. } =
-				new_partial::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, config.database), task_manager))
-		})?)
-	}
-
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
 		return Ok(runner.async_run(|config| {
@@ -312,22 +263,13 @@ fn export_blocks(cli: &Cli, cmd: &ExportBlocksCmd) -> std::result::Result<(), sc
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
 }
 
 fn import_blocks(cli: &Cli, cmd: &ImportBlocksCmd) -> std::result::Result<(), sc_cli::Error> {
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.async_run(|config| {
-			let PartialComponents { client, task_manager, import_queue, .. } =
-				new_partial::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, import_queue), task_manager))
-		})?)
-	}
-
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
 		return Ok(runner.async_run(|config| {
@@ -347,22 +289,13 @@ fn import_blocks(cli: &Cli, cmd: &ImportBlocksCmd) -> std::result::Result<(), sc
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
 }
 
 fn revert(cli: &Cli, cmd: &RevertCmd) -> std::result::Result<(), sc_cli::Error> {
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.async_run(|config| {
-			let PartialComponents { client, task_manager, backend, .. } =
-				new_partial::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, backend, None), task_manager))
-		})?)
-	}
-
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
 		return Ok(runner.async_run(|config| {
@@ -382,22 +315,13 @@ fn revert(cli: &Cli, cmd: &RevertCmd) -> std::result::Result<(), sc_cli::Error> 
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
 }
 
 fn export_state(cli: &Cli, cmd: &ExportStateCmd) -> std::result::Result<(), sc_cli::Error> {
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec;
 
-	#[cfg(feature = "chaosnet-native")]
-	if chain_spec.is_chaosnet() {
-		return Ok(runner.async_run(|config| {
-			let PartialComponents { client, task_manager, .. } =
-				new_partial::<chaosnet_runtime::RuntimeApi, ChaosnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, config.chain_spec), task_manager))
-		})?)
-	}
-
 	#[cfg(feature = "alphanet-native")]
 	if chain_spec.is_alphanet() {
 		return Ok(runner.async_run(|config| {
@@ -417,5 +341,5 @@ fn export_state(cli: &Cli, cmd: &ExportStateCmd) -> std::result::Result<(), sc_c
 	}
 
 	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (chaosnet, alphanet, mainnet) is enabled");
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
 }

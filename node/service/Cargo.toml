@@ -68,12 +68,10 @@ ternoa-client = { path = "../client", default-features = false, optional = true 
 
 # Ternoa Runtime Constants
 alphanet-runtime-constants = { path = "../../runtime/alphanet/constants", optional = true }
-chaosnet-runtime-constants = { path = "../../runtime/chaosnet/constants", optional = true }
 mainnet-runtime-constants = { path = "../../runtime/mainnet/constants", optional = true }
 
 # Ternoa Runtimes
 alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
-chaosnet-runtime = { path = "../../runtime/chaosnet", optional = true }
 mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 
 [features]
@@ -83,17 +81,14 @@ db = [
 	"sc-service/rocksdb"
 ]
 
-chaosnet-native = [ "chaosnet-runtime", "chaosnet-runtime-constants", "ternoa-client/chaosnet" ]
 alphanet-native = [ "alphanet-runtime", "alphanet-runtime-constants", "ternoa-client/alphanet" ]
 mainnet-native = [ "mainnet-runtime", "mainnet-runtime-constants", "ternoa-client/mainnet" ]
 runtime-benchmarks = [
-	"chaosnet-runtime/runtime-benchmarks",
 	"alphanet-runtime/runtime-benchmarks",
 	"mainnet-runtime/runtime-benchmarks",
 ]
 
 # try-runtime = [
-# 	"chaosnet-runtime/try-runtime",
 # 	"alphanet-runtime/try-runtime",
 # 	"mainnet-runtime/try-runtime",
 # ]

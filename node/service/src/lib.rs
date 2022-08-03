@@ -35,17 +35,11 @@ use ternoa_core_primitives::Block;
 
 use rpc::RpcExtension;
 
-#[cfg(feature = "chaosnet-native")]
-pub use ternoa_client::ChaosnetExecutorDispatch;
-
 #[cfg(feature = "alphanet-native")]
 pub use ternoa_client::AlphanetExecutorDispatch;
 
 #[cfg(feature = "mainnet-native")]
 pub use ternoa_client::MainnetExecutorDispatch;
-
-#[cfg(feature = "chaosnet-native")]
-pub use chaosnet_runtime;
 
 #[cfg(feature = "alphanet-native")]
 pub use alphanet_runtime;
@@ -72,9 +66,6 @@ pub type TransactionPool<RuntimeApi, Executor> =
 
 /// Can be called for a `Configuration` to identify which network the configuration targets.
 pub trait IdentifyVariant {
-	/// Returns `true` if this is a configuration for the `Chaosnet` network.
-	fn is_chaosnet(&self) -> bool;
-
 	/// Returns `true` if this is a configuration for the `Alphanet` network.
 	fn is_alphanet(&self) -> bool;
 
@@ -86,10 +77,6 @@ pub trait IdentifyVariant {
 }
 
 impl IdentifyVariant for Box<dyn ChainSpec> {
-	fn is_chaosnet(&self) -> bool {
-		self.id().starts_with("chaosnet") || self.id().starts_with("chaos")
-	}
-
 	fn is_alphanet(&self) -> bool {
 		self.id().starts_with("alphanet") || self.id().starts_with("alpha")
 	}

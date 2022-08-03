@@ -22,8 +22,6 @@ use ternoa_core_primitives::{AccountId, Block, Signature};
 
 #[cfg(feature = "alphanet-native")]
 pub mod alphanet;
-#[cfg(feature = "chaosnet-native")]
-pub mod chaosnet;
 #[cfg(feature = "mainnet-native")]
 pub mod mainnet;
 
@@ -49,12 +47,6 @@ pub struct Extensions {
 // Dummy chain spec, in case when we don't have the native runtime.
 pub type DummyChainSpec = GenericChainSpec<(), Extensions>;
 
-#[cfg(feature = "chaosnet-native")]
-pub type ChaosnetChainSpec = GenericChainSpec<chaosnet_runtime::GenesisConfig, Extensions>;
-
-#[cfg(not(feature = "chaosnet-native"))]
-pub type ChaosnetChainSpec = GenericChainSpec<DummyChainSpec, Extensions>;
-
 #[cfg(feature = "alphanet-native")]
 pub type AlphanetChainSpec = GenericChainSpec<alphanet_runtime::GenesisConfig, Extensions>;
 
@@ -66,12 +58,6 @@ pub type MainnetChainSpec = GenericChainSpec<mainnet_runtime::GenesisConfig, Ext
 
 #[cfg(not(feature = "mainnet-native"))]
 pub type MainnetChainSpec = GenericChainSpec<DummyChainSpec, Extensions>;
-
-pub fn chaosnet_config() -> Result<ChaosnetChainSpec, String> {
-	ChaosnetChainSpec::from_json_bytes(
-		&include_bytes!("../../../../specs/chaosnet/chaosnet_raw.json")[..],
-	)
-}
 
 pub fn alphanet_config() -> Result<AlphanetChainSpec, String> {
 	AlphanetChainSpec::from_json_bytes(
