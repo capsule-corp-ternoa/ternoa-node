@@ -7906,11 +7906,13 @@ dependencies = [
 name = "ternoa-rent"
 version = "1.0.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
  "parity-scale-codec",
  "scale-info",
+ "sp-arithmetic",
  "sp-runtime",
  "sp-std",
  "ternoa-common 1.0.1",

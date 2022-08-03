@@ -76,3 +76,6 @@ echo $(eval $SHORT_COMMAND --pallet=ternoa_nft)
 
 echo "TERNOA MARKETPLACE"
 echo $(eval $COMMAND --pallet=ternoa_marketplace)
+
+echo "TERNOA RENT"
+echo $(eval $COMMAND --pallet=ternoa_rent)

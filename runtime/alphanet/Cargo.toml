@@ -98,6 +98,7 @@ std = [
 	"ternoa-bridge/std",
 	"ternoa-nft/std",
 	"ternoa-marketplace/std",
+	"ternoa-rent/std",
 	# Substrate
 	"parity-scale-codec/std",
 	"frame-election-provider-support/std",
@@ -182,6 +183,7 @@ runtime-benchmarks = [
 	"pallet-identity/runtime-benchmarks",
 	"ternoa-nft/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
+	"ternoa-rent/runtime-benchmarks",
 ]
 
 # try-runtime = [
