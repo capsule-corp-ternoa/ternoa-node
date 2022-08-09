@@ -377,7 +377,7 @@ impl_runtime_apis! {
 				log::info!("try-runtime::on_runtime_upgrade failed with: {:?}", err);
 				err
 			}).unwrap();
-			(weight, RuntimeBlockWeights::get().max_block)
+			(weight, BlockWeights::get().max_block)
 		}
 
 		fn execute_block_no_check(block: Block) -> Weight {

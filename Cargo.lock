@@ -96,6 +96,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "hex-literal",
+ "log",
  "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-babe",
@@ -3523,6 +3524,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "hex-literal",
+ "log",
  "mainnet-runtime-constants",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -7929,6 +7931,7 @@ version = "1.0.0"
 dependencies = [
  "clap",
  "frame-benchmarking-cli",
+ "frame-try-runtime",
  "node-inspect",
  "sc-cli",
  "sc-service",
