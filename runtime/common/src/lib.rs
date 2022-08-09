@@ -16,6 +16,7 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub mod auction;
 pub mod authorship;
 pub mod babe;
 pub mod bags_list;

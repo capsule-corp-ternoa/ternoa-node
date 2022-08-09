@@ -83,6 +83,7 @@ ternoa-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets",
 ternoa-nft = { path="../../../ternoa-pallets/nft", default-features = false }
 ternoa-marketplace = { path="../../../ternoa-pallets/marketplace", default-features = false }
 ternoa-rent = { path="../../../ternoa-pallets/rent", default-features = false }
+ternoa-auction = { path="../../../ternoa-pallets/auction", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
@@ -99,6 +100,7 @@ std = [
 	"ternoa-nft/std",
 	"ternoa-marketplace/std",
 	"ternoa-rent/std",
+	"ternoa-auction/std",
 	# Substrate
 	"parity-scale-codec/std",
 	"frame-election-provider-support/std",
@@ -184,6 +186,7 @@ runtime-benchmarks = [
 	"ternoa-nft/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
 	"ternoa-rent/runtime-benchmarks",
+	"ternoa-auction/runtime-benchmarks",
 ]
 
 # try-runtime = [

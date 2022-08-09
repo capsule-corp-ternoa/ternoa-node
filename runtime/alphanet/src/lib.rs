@@ -141,6 +141,7 @@ construct_runtime!(
 		NFT: ternoa_nft = 29,
 		Marketplace: ternoa_marketplace = 30,
 		Rent: ternoa_rent = 31,
+		Auction: ternoa_auction = 32,
 	}
 );
 
@@ -455,6 +456,7 @@ mod benches {
 		[ternoa_nft, NFT]
 		[ternoa_marketplace, Marketplace]
 		[ternoa_rent, Rent]
+		[ternoa_auction, Auction]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]

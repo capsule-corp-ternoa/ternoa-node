@@ -44,7 +44,7 @@ use crate::{
 	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
 	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
 	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, NFT, VERSION,
+	UncheckedExtrinsic, NFT, Marketplace, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -632,10 +632,10 @@ impl ternoa_marketplace::Config for Runtime {
 }
 
 parameter_types! {
-	pub const RentAccountSizeLimit: u32 = 3; //10_000;
-	pub const SimultaneousContractLimit: u32 = 10;//1_000_000;
-	pub const ActionsInBlockLimit: u32 = 10;//1_000;
-	pub const ContractExpirationDuration: u32 = 300;//864_000;
+	pub const RentAccountSizeLimit: u32 = 3; // TODO 10_000;
+	pub const SimultaneousContractLimit: u32 = 10;// TODO 1_000_000;
+	pub const ActionsInBlockLimit: u32 = 10;// TODO 1_000;
+	pub const ContractExpirationDuration: u32 = 2000;// TODO 864_000;
 }
 
 impl ternoa_rent::Config for Runtime {
@@ -648,4 +648,30 @@ impl ternoa_rent::Config for Runtime {
 	type SimultaneousContractLimit = SimultaneousContractLimit;
 	type ActionsInBlockLimit = ActionsInBlockLimit;
 	type ContractExpirationDuration = ContractExpirationDuration;
+}
+
+parameter_types! {
+	pub const MinAuctionDuration: u32 = 100; // TODO;
+	pub const MaxAuctionDuration: u32 = 1000; // TODO;
+	pub const MaxAuctionDelay: u32 = 1000;// TODO;
+	pub const AuctionGracePeriod: u32 = 100;// TODO;
+	pub const AuctionEndingPeriod: u32 = 100;// TODO;
+	pub const BidderListLengthLimit: u32 = 10;// TODO;
+	pub const ParallelAuctionLimit: u32 = 100;// TODO;
+}
+
+impl ternoa_auction::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_auction::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type NFTExt = NFT;
+	type MarketplaceExt = Marketplace;
+	type PalletId = common::auction::PalletId;
+	type MinAuctionDuration = MinAuctionDuration;
+	type MaxAuctionDuration = MaxAuctionDuration;
+	type MaxAuctionDelay = MaxAuctionDelay;
+	type AuctionGracePeriod = AuctionGracePeriod;
+	type AuctionEndingPeriod = AuctionEndingPeriod;
+	type BidderListLengthLimit = BidderListLengthLimit;
+	type ParallelAuctionLimit = ParallelAuctionLimit;
 }

@@ -143,6 +143,7 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
+ "ternoa-auction",
  "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
@@ -7701,6 +7702,23 @@ name = "ternoa"
 version = "1.0.0"
 dependencies = [
  "ternoa-cli",
+]
+
+[[package]]
+name = "ternoa-auction"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common 1.0.1",
+ "ternoa-pallets-primitives 1.0.1",
 ]
 
 [[package]]
