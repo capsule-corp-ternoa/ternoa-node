@@ -182,6 +182,33 @@ runtime-benchmarks = [
 	"ternoa-marketplace/runtime-benchmarks",
 ]
 
-# try-runtime = [
-# 	"frame-try-runtime"
-# ]
+try-runtime = [
+	"frame-try-runtime",
+	"frame-executive/try-runtime",
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+	"pallet-authority-discovery/try-runtime",
+	"pallet-authorship/try-runtime",
+	"pallet-babe/try-runtime",
+	"pallet-bags-list/try-runtime",
+	"pallet-balances/try-runtime",
+	"pallet-election-provider-multi-phase/try-runtime",
+	"pallet-grandpa/try-runtime",
+	"pallet-im-online/try-runtime",
+	"pallet-offences/try-runtime",
+	"pallet-preimage/try-runtime",
+	"pallet-session/try-runtime",
+	"pallet-staking/try-runtime",
+	# "pallet-staking-reward-curve/try-runtime",
+	"pallet-timestamp/try-runtime",
+	"pallet-transaction-payment/try-runtime",
+	"pallet-treasury/try-runtime",
+	"pallet-utility/try-runtime",
+	"pallet-collective/try-runtime",
+	"pallet-membership/try-runtime",
+	"pallet-scheduler/try-runtime",
+	"pallet-democracy/try-runtime",
+	"pallet-elections-phragmen/try-runtime",
+	"pallet-multisig/try-runtime",
+	"pallet-identity/try-runtime",
+]

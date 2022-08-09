@@ -23,6 +23,7 @@ sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "
 
 # Rest
 clap = { version = "3.1", features = ["derive"], optional = true }
+try-runtime-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
 
 # Ternoa
 ternoa-service = { path = "../service", default-features = false, optional = true }
@@ -38,11 +39,12 @@ cli = [
     "sc-cli",
     "sc-service",
     "frame-benchmarking-cli",
-    "node-inspect"
+    "node-inspect",
+    "try-runtime-cli",
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]
-# try-runtime = ["ternoa-service/try-runtime"]
+try-runtime = ["ternoa-service/try-runtime", "try-runtime-cli"]
 
 # Configure the native runtimes to use. Mainnet is enabled by default.
 #
