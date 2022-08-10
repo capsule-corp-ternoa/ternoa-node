@@ -77,8 +77,8 @@ echo "Running non-ternoa pallet benchmarks"
 # echo "TERNOA MARKETPLACE"
 # echo $(eval $COMMAND --pallet=ternoa_marketplace)
 
-echo "TERNOA AUCTION"
-echo $(eval $COMMAND --pallet=ternoa_auction)
+# echo "TERNOA AUCTION"
+# echo $(eval $COMMAND --pallet=ternoa_auction)
 
 echo "TERNOA RENT"
 echo $(eval $COMMAND --pallet=ternoa_rent)

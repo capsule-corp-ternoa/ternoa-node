@@ -41,10 +41,10 @@ use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances, Call,
-	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Offences, Origin,
-	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
-	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, NFT, Marketplace, VERSION,
+	Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline, Marketplace,
+	Offences, Origin, OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature,
+	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
+	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -654,8 +654,8 @@ parameter_types! {
 	pub const MinAuctionDuration: u32 = 100; // TODO;
 	pub const MaxAuctionDuration: u32 = 1000; // TODO;
 	pub const MaxAuctionDelay: u32 = 1000;// TODO;
-	pub const AuctionGracePeriod: u32 = 100;// TODO;
-	pub const AuctionEndingPeriod: u32 = 100;// TODO;
+	pub const AuctionGracePeriod: u32 = 10;// TODO;
+	pub const AuctionEndingPeriod: u32 = 5;// TODO;
 	pub const BidderListLengthLimit: u32 = 10;// TODO;
 	pub const ParallelAuctionLimit: u32 = 100;// TODO;
 }
