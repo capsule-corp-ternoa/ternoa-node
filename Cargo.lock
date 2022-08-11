@@ -7707,6 +7707,7 @@ dependencies = [
 [[package]]
 name = "ternoa-auction"
 version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7717,8 +7718,8 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common 1.0.1",
- "ternoa-pallets-primitives 1.0.1",
+ "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
 ]
 
 [[package]]
@@ -7784,12 +7785,13 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.1"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-pallets-primitives 1.0.1",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
 ]
 
 [[package]]
@@ -7846,6 +7848,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.2"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7856,8 +7859,8 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common 1.0.1",
- "ternoa-pallets-primitives 1.0.1",
+ "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
 ]
 
 [[package]]
@@ -7881,6 +7884,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nft"
 version = "1.0.2"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7891,13 +7895,14 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common 1.0.1",
- "ternoa-pallets-primitives 1.0.1",
+ "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
 ]
 
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.1"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -7923,6 +7928,7 @@ dependencies = [
 [[package]]
 name = "ternoa-rent"
 version = "1.0.0"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7933,8 +7939,8 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common 1.0.1",
- "ternoa-pallets-primitives 1.0.1",
+ "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
 ]
 
 [[package]]
