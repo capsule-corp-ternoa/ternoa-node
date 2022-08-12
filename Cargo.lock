@@ -7911,7 +7911,7 @@ dependencies = [
 [[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7971,7 +7971,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7991,7 +7991,7 @@ dependencies = [
 [[package]]
 name = "ternoa-mandate"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8004,7 +8004,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8022,7 +8022,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nft"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8040,7 +8040,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -8132,7 +8132,7 @@ dependencies = [
 [[package]]
 name = "ternoa-staking-rewards"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
