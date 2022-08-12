@@ -7707,7 +7707,7 @@ dependencies = [
 [[package]]
 name = "ternoa-auction"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7785,7 +7785,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7848,7 +7848,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.2"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7884,7 +7884,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nft"
 version = "1.0.2"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7902,7 +7902,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -7928,7 +7928,7 @@ dependencies = [
 [[package]]
 name = "ternoa-rent"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#ca67a3a0bb128bc47bdf75f8b81b3081dcba16a6"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8377,7 +8377,7 @@ version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ee73e6e4924fe940354b8d4d98cad5231175d615cd855b758adc658c0aac6a0"
 dependencies = [
- "cfg-if 0.1.10",
+ "cfg-if 1.0.0",
  "digest 0.10.3",
  "rand 0.8.5",
  "static_assertions",
