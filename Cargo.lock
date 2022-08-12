@@ -96,6 +96,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "hex-literal",
+ "log",
  "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-babe",
@@ -2579,8 +2580,30 @@ dependencies = [
  "jsonrpsee-http-server",
  "jsonrpsee-proc-macros",
  "jsonrpsee-types",
+ "jsonrpsee-ws-client",
  "jsonrpsee-ws-server",
  "tracing",
+]
+
+[[package]]
+name = "jsonrpsee-client-transport"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce395539a14d3ad4ec1256fde105abd36a2da25d578a291cabe98f45adfdb111"
+dependencies = [
+ "futures-util",
+ "http",
+ "jsonrpsee-core",
+ "jsonrpsee-types",
+ "pin-project",
+ "rustls-native-certs",
+ "soketto",
+ "thiserror",
+ "tokio",
+ "tokio-rustls",
+ "tokio-util",
+ "tracing",
+ "webpki-roots",
 ]
 
 [[package]]
@@ -2591,9 +2614,11 @@ checksum = "16efcd4477de857d4a2195a45769b2fe9ebb54f3ef5a4221d3b014a4fe33ec0b"
 dependencies = [
  "anyhow",
  "arrayvec 0.7.2",
+ "async-lock",
  "async-trait",
  "beef",
  "futures-channel",
+ "futures-timer",
  "futures-util",
  "globset",
  "hyper",
@@ -2652,6 +2677,17 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tracing",
+]
+
+[[package]]
+name = "jsonrpsee-ws-client"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee043cb5dd0d51d3eb93432e998d5bae797691a7b10ec4a325e036bcdb48c48a"
+dependencies = [
+ "jsonrpsee-client-transport",
+ "jsonrpsee-core",
+ "jsonrpsee-types",
 ]
 
 [[package]]
@@ -3488,6 +3524,7 @@ dependencies = [
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "hex-literal",
+ "log",
  "mainnet-runtime-constants",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -3544,6 +3581,7 @@ dependencies = [
  "ternoa-nft",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
+ "try-runtime-cli",
 ]
 
 [[package]]
@@ -5310,6 +5348,23 @@ dependencies = [
  "libc",
  "mach",
  "winapi",
+]
+
+[[package]]
+name = "remote-externalities"
+version = "0.10.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?tag=ternoa-substrate-2022-07-30#7d8e5a1e3979cb0fc61123d5cfeec974dfa25334"
+dependencies = [
+ "env_logger",
+ "jsonrpsee",
+ "log",
+ "parity-scale-codec",
+ "serde",
+ "serde_json",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-version",
 ]
 
 [[package]]
@@ -7856,7 +7911,7 @@ dependencies = [
 [[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7876,11 +7931,13 @@ version = "1.0.0"
 dependencies = [
  "clap",
  "frame-benchmarking-cli",
+ "frame-try-runtime",
  "node-inspect",
  "sc-cli",
  "sc-service",
  "substrate-build-script-utils",
  "ternoa-service",
+ "try-runtime-cli",
 ]
 
 [[package]]
@@ -7914,7 +7971,7 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
@@ -7934,7 +7991,7 @@ dependencies = [
 [[package]]
 name = "ternoa-mandate"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7947,7 +8004,7 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7965,7 +8022,7 @@ dependencies = [
 [[package]]
 name = "ternoa-nft"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -7983,7 +8040,7 @@ dependencies = [
 [[package]]
 name = "ternoa-pallets-primitives"
 version = "1.0.1"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -8075,7 +8132,7 @@ dependencies = [
 [[package]]
 name = "ternoa-staking-rewards"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?tag=v1.2.0-rc1#06e276e6442f155d89841efb44730c5c51d6ab2c"
+source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8436,6 +8493,31 @@ name = "try-lock"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
+
+[[package]]
+name = "try-runtime-cli"
+version = "0.10.0-dev"
+source = "git+https://github.com/capsule-corp-ternoa/substrate?tag=ternoa-substrate-2022-07-30#7d8e5a1e3979cb0fc61123d5cfeec974dfa25334"
+dependencies = [
+ "clap",
+ "jsonrpsee",
+ "log",
+ "parity-scale-codec",
+ "remote-externalities",
+ "sc-chain-spec",
+ "sc-cli",
+ "sc-executor",
+ "sc-service",
+ "serde",
+ "sp-core",
+ "sp-externalities",
+ "sp-io",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-state-machine",
+ "sp-version",
+ "zstd",
+]
 
 [[package]]
 name = "tt-call"

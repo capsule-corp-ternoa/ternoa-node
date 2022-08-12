@@ -71,16 +71,17 @@ hex-literal = { version = "0.3.4", optional = true }
 scale-info = { version = "2.1.2", default-features = false, features = ["derive"] }
 serde = { version = "1.0.137", optional = true }
 static_assertions = { version = "1.1.0" }
+log = { default-features = false, version = "0.4.14"}
 
 # Ternoa
 alphanet-runtime-constants = { package = "alphanet-runtime-constants", path = "./constants", default-features = false }
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
-ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
-ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
-ternoa-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
-ternoa-nft = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
-ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", tag = "v1.2.0-rc1", default-features = false }
+ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
+ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
+ternoa-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
+ternoa-nft = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
+ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
@@ -172,16 +173,50 @@ runtime-benchmarks = [
 	"pallet-treasury/runtime-benchmarks",
 	"pallet-utility/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
-	"ternoa-staking-rewards/runtime-benchmarks",
-	"ternoa-bridge/runtime-benchmarks",
 	"pallet-democracy/runtime-benchmarks",
 	"pallet-elections-phragmen/runtime-benchmarks",
 	"pallet-multisig/runtime-benchmarks",
 	"pallet-identity/runtime-benchmarks",
+	# Ternoa
+	"ternoa-staking-rewards/runtime-benchmarks",
+	"ternoa-bridge/runtime-benchmarks",
 	"ternoa-nft/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
 ]
 
-# try-runtime = [
-# 	"frame-try-runtime"
-# ]
+try-runtime = [
+	"frame-try-runtime",
+	"frame-executive/try-runtime",
+	"frame-support/try-runtime",
+	"frame-system/try-runtime",
+	"pallet-authority-discovery/try-runtime",
+	"pallet-authorship/try-runtime",
+	"pallet-babe/try-runtime",
+	"pallet-bags-list/try-runtime",
+	"pallet-balances/try-runtime",
+	"pallet-election-provider-multi-phase/try-runtime",
+	"pallet-grandpa/try-runtime",
+	"pallet-im-online/try-runtime",
+	"pallet-offences/try-runtime",
+	"pallet-preimage/try-runtime",
+	"pallet-session/try-runtime",
+	"pallet-staking/try-runtime",
+	# "pallet-staking-reward-curve/try-runtime",
+	"pallet-timestamp/try-runtime",
+	"pallet-transaction-payment/try-runtime",
+	"pallet-treasury/try-runtime",
+	"pallet-utility/try-runtime",
+	"pallet-collective/try-runtime",
+	"pallet-membership/try-runtime",
+	"pallet-scheduler/try-runtime",
+	"pallet-democracy/try-runtime",
+	"pallet-elections-phragmen/try-runtime",
+	"pallet-multisig/try-runtime",
+	"pallet-identity/try-runtime",
+	# Ternoa
+	"ternoa-mandate/try-runtime",
+	"ternoa-staking-rewards/try-runtime",
+	"ternoa-bridge/try-runtime",
+	"ternoa-nft/try-runtime",
+	"ternoa-marketplace/try-runtime",
+]

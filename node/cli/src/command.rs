@@ -33,6 +33,7 @@ use ternoa_service::AlphanetExecutorDispatch;
 use ternoa_service::mainnet_runtime;
 #[cfg(feature = "mainnet-native")]
 use ternoa_service::MainnetExecutorDispatch;
+use try_runtime_cli::TryRuntimeCmd;
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
@@ -131,19 +132,7 @@ pub fn run() -> Result<()> {
 		},
 		Some(Subcommand::Revert(cmd)) => revert(&cli, cmd),
 		#[cfg(feature = "try-runtime")]
-		Some(Subcommand::TryRuntime(cmd)) => {
-			let runner = cli.create_runner(cmd)?;
-			runner.async_run(|config| {
-				// we don't need any of the components of new_partial, just a runtime, or a task
-				// manager to do `async_run`.
-				let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
-				let task_manager =
-					sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
-						.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
-
-				Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
-			})
-		},
+		Some(Subcommand::TryRuntime(cmd)) => try_runtime(&cli, cmd),
 		#[cfg(not(feature = "try-runtime"))]
 		Some(Subcommand::TryRuntime) => Err("TryRuntime wasn't enabled when building the node. \
 							 You can enable it with `--features try-runtime`."
@@ -337,6 +326,44 @@ fn export_state(cli: &Cli, cmd: &ExportStateCmd) -> std::result::Result<(), sc_c
 			let PartialComponents { client, task_manager, .. } =
 				new_partial::<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(&config)?;
 			return Ok((cmd.run(client, config.chain_spec), task_manager))
+		})?)
+	}
+
+	#[cfg(not(feature = "mainnet-native"))]
+	panic!("No runtime feature (alphanet, mainnet) is enabled");
+}
+
+fn try_runtime(cli: &Cli, cmd: &TryRuntimeCmd) -> std::result::Result<(), sc_cli::Error> {
+	let runner = cli.create_runner(cmd)?;
+	let chain_spec = &runner.config().chain_spec;
+
+	#[cfg(feature = "alphanet-native")]
+	if chain_spec.is_alphanet() {
+		return Ok(runner.async_run(|config| {
+			// only need a runtime or a task manager to do `async_run`.
+			let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
+			let task_manager = sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
+				.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
+
+			return Ok((
+				cmd.run::<alphanet_runtime::Block, AlphanetExecutorDispatch>(config),
+				task_manager,
+			))
+		})?)
+	}
+
+	#[cfg(feature = "mainnet-native")]
+	{
+		return Ok(runner.async_run(|config| {
+			// only need a runtime or a task manager to do `async_run`.
+			let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
+			let task_manager = sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
+				.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
+
+			return Ok((
+				cmd.run::<mainnet_runtime::Block, MainnetExecutorDispatch>(config),
+				task_manager,
+			))
 		})?)
 	}
 
