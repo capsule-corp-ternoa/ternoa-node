@@ -301,29 +301,30 @@ where
 
 		// Calling this function will extend the IO interface with additional RPC Pallet specific
 		// calls.
-		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| -> Result<RpcExtension, sc_service::Error> {
-			let deps = rpc::FullDeps {
-				client: client.clone(),
-				pool: pool.clone(),
-				select_chain: select_chain.clone(),
-				chain_spec: chain_spec.cloned_box(),
-				deny_unsafe,
-				babe: rpc::BabeDeps {
-					babe_config: babe_config.clone(),
-					shared_epoch_changes: shared_epoch_changes.clone(),
-					keystore: keystore.clone(),
-				},
-				grandpa: rpc::GrandpaDeps {
-					shared_voter_state: shared_voter_state.clone(),
-					shared_authority_set: shared_authority_set.clone(),
-					justification_stream: justification_stream.clone(),
-					subscription_executor,
-					finality_provider: finality_proof_provider.clone(),
-				},
-			};
+		let rpc_extensions_builder =
+			move |deny_unsafe, subscription_executor| -> Result<RpcExtension, sc_service::Error> {
+				let deps = rpc::FullDeps {
+					client: client.clone(),
+					pool: pool.clone(),
+					select_chain: select_chain.clone(),
+					chain_spec: chain_spec.cloned_box(),
+					deny_unsafe,
+					babe: rpc::BabeDeps {
+						babe_config: babe_config.clone(),
+						shared_epoch_changes: shared_epoch_changes.clone(),
+						keystore: keystore.clone(),
+					},
+					grandpa: rpc::GrandpaDeps {
+						shared_voter_state: shared_voter_state.clone(),
+						shared_authority_set: shared_authority_set.clone(),
+						justification_stream: justification_stream.clone(),
+						subscription_executor,
+						finality_provider: finality_proof_provider.clone(),
+					},
+				};
 
-			rpc::create_full(deps, rpc_backend.clone()).map_err(Into::into)
-		};
+				rpc::create_full(deps, rpc_backend.clone()).map_err(Into::into)
+			};
 
 		(rpc_extensions_builder, rpc_setup)
 	};

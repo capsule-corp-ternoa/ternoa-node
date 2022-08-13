@@ -142,52 +142,51 @@ pub fn run() -> Result<()> {
 	Ok(())
 }
 
-fn run_wo_args(cli: &Cli) -> std::result::Result<(), sc_cli::Error> {
-	let runner = cli.create_runner(&cli.run)?;
-	let chain_spec = &runner.config().chain_spec;
+macro_rules! with_runtime {
+	($chain_spec:expr, $code:expr) => {
+		#[cfg(feature = "alphanet-native")]
+		if $chain_spec.is_alphanet() {
+			#[allow(unused_imports)]
+			use alphanet_runtime::Block;
+			use alphanet_runtime::RuntimeApi;
+			use AlphanetExecutorDispatch as ExecutorDispatch;
 
-	#[cfg(feature = "alphanet-native")]
-	if chain_spec.is_alphanet() {
-		return Ok(runner.run_node_until_exit(|config| async move {
-			new_full::<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(config)
-				.map_err(sc_cli::Error::Service)
-		})?)
-	}
+			return $code
+		}
 
-	#[cfg(feature = "mainnet-native")]
-	{
-		return Ok(runner.run_node_until_exit(|config| async move {
-			new_full::<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(config)
-				.map_err(sc_cli::Error::Service)
-		})?)
-	}
+		#[cfg(feature = "mainnet-native")]
+		{
+			#[allow(unused_imports)]
+			use mainnet_runtime::Block;
+			use mainnet_runtime::RuntimeApi;
+			use MainnetExecutorDispatch as ExecutorDispatch;
 
-	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (alphanet, mainnet) is enabled");
+			return $code
+		}
+
+		#[cfg(not(feature = "mainnet-native"))]
+		panic!("No runtime feature (alphanet, mainnet) is enabled");
+	};
 }
 
-fn inspect(cli: &Cli, cmd: &InspectCmd) -> std::result::Result<(), sc_cli::Error> {
+fn run_wo_args(cli: &Cli) -> Result<()> {
+	let runner = cli.create_runner(&cli.run)?;
+	let chain_spec = &runner.config().chain_spec.cloned_box();
+
+	with_runtime!(chain_spec, {
+		runner.run_node_until_exit(|config| async move {
+			new_full::<RuntimeApi, ExecutorDispatch>(config).map_err(sc_cli::Error::Service)
+		})
+	});
+}
+
+fn inspect(cli: &Cli, cmd: &InspectCmd) -> Result<()> {
 	let runner = cli.create_runner(cmd)?;
-	let chain_spec = &runner.config().chain_spec;
+	let chain_spec = &runner.config().chain_spec.cloned_box();
 
-	#[cfg(feature = "alphanet-native")]
-	if chain_spec.is_alphanet() {
-		return Ok(runner.sync_run(|config| {
-			cmd.run::<alphanet_runtime::Block, alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(config)
-		})?)
-	}
-
-	#[cfg(feature = "mainnet-native")]
-	{
-		return Ok(runner.sync_run(|config| {
-			cmd.run::<mainnet_runtime::Block, mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(
-				config,
-			)
-		})?)
-	}
-
-	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (alphanet, mainnet) is enabled")
+	with_runtime!(chain_spec, {
+		runner.sync_run(|config| cmd.run::<Block, RuntimeApi, ExecutorDispatch>(config))
+	});
 }
 
 fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> std::result::Result<(), sc_cli::Error> {
@@ -198,35 +197,24 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> std::result::Result<(), sc_cli::E
 	}
 
 	let runner = cli.create_runner(cmd)?;
-	let _chain_spec = &runner.config().chain_spec;
+	let _chain_spec = &runner.config().chain_spec.cloned_box();
 
 	panic!("TODO")
 }
 
-fn check_block(cli: &Cli, cmd: &CheckBlockCmd) -> std::result::Result<(), sc_cli::Error> {
-	let runner = cli.create_runner(cmd)?;
-	let chain_spec = &runner.config().chain_spec;
+fn check_block(cli: &Cli, cmd: &CheckBlockCmd) -> Result<()> {
+	/* 	let runner = cli.create_runner(cmd)?;
+	let chain_spec = &runner.config().chain_spec.cloned_box();
 
-	#[cfg(feature = "alphanet-native")]
-	if chain_spec.is_alphanet() {
-		return Ok(runner.async_run(|config| {
+	with_runtime!(chain_spec, {
+		runner.async_run(|config| {
 			let PartialComponents { client, task_manager, import_queue, .. } =
-				new_partial::<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, import_queue), task_manager))
-		})?)
-	}
+				new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+			Ok((cmd.run(client, import_queue), task_manager))
+		})
+	}); */
 
-	#[cfg(feature = "mainnet-native")]
-	{
-		return Ok(runner.async_run(|config| {
-			let PartialComponents { client, task_manager, import_queue, .. } =
-				new_partial::<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>(&config)?;
-			return Ok((cmd.run(client, import_queue), task_manager))
-		})?)
-	}
-
-	#[cfg(not(feature = "mainnet-native"))]
-	panic!("No runtime feature (alphanet, mainnet) is enabled");
+	panic!("TODO")
 }
 
 fn export_blocks(cli: &Cli, cmd: &ExportBlocksCmd) -> std::result::Result<(), sc_cli::Error> {
