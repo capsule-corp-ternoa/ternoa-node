@@ -137,6 +137,14 @@ pub fn run() -> Result<()> {
 	Ok(())
 }
 
+fn ensure_dev(spec: &Box<dyn sc_service::ChainSpec>) -> Result<()> {
+	if spec.is_dev() {
+		Ok(())
+	} else {
+		panic!("Only Dev Specification Allowed!")
+	}
+}
+
 macro_rules! with_runtime {
 	($chain_spec:expr, $code:expr) => {
 		#[cfg(feature = "alphanet-native")]
@@ -267,9 +275,42 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 	}
 
 	let runner = cli.create_runner(cmd)?;
-	let _chain_spec = &runner.config().chain_spec.cloned_box();
+	let chain_spec = &runner.config().chain_spec.cloned_box();
 
-	panic!("TODO")
+	match cmd {
+		BenchmarkCmd::Pallet(cmd) => {
+			ensure_dev(chain_spec)?;
+			with_runtime!(chain_spec, {
+				runner.sync_run(|config| cmd.run::<Block, ExecutorDispatch>(config))
+			});
+		},
+		BenchmarkCmd::Storage(cmd) => {
+			with_runtime!(chain_spec, {
+				runner.sync_run(|config| {
+					let PartialComponents { client, backend, .. } =
+						new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+
+					let db = backend.expose_db();
+					let storage = backend.expose_storage();
+
+					cmd.run(config, client.clone(), db, storage)
+				})
+			});
+		},
+		BenchmarkCmd::Overhead(_) => todo!(),
+		BenchmarkCmd::Block(cmd) => {
+			with_runtime!(chain_spec, {
+				runner.sync_run(|config| {
+					let PartialComponents { client, .. } =
+						new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+
+					cmd.run(client.clone())
+				})
+			});
+		},
+		BenchmarkCmd::Extrinsic(_) => todo!(),
+		_ => panic!("Benchmark Command not implement."),
+	}
 }
 
 fn inspect(cli: &Cli, cmd: &InspectCmd) -> Result<()> {
@@ -285,6 +326,7 @@ fn inspect(cli: &Cli, cmd: &InspectCmd) -> Result<()> {
 fn try_runtime(cli: &Cli, cmd: &TryRuntimeCmd) -> Result<()> {
 	let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec.cloned_box();
+	ensure_dev(chain_spec)?;
 
 	with_runtime!(chain_spec, {
 		runner.async_run(|config| {
