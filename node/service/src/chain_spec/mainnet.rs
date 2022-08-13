@@ -27,9 +27,8 @@ use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::sr25519;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::Perbill;
+use sp_runtime::{BoundedVec, Perbill};
 use ternoa_core_primitives::{AccountId, Balance};
-use sp_runtime::BoundedVec;
 
 fn session_keys(
 	grandpa: GrandpaId,
