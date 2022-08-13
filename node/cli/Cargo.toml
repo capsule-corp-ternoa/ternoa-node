@@ -19,6 +19,7 @@ node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", tag =
 # Substrate Client
 sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
 sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
+sc-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", optional = true }
 
 # Rest
 clap = { version = "3.1", features = ["derive"], optional = true }
@@ -46,6 +47,7 @@ cli = [
     "frame-benchmarking-cli",
     "node-inspect",
     "try-runtime-cli",
+    "sc-finality-grandpa",
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]

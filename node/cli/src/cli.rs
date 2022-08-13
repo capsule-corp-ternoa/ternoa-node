@@ -81,4 +81,7 @@ pub enum Subcommand {
 
 	/// Sign a message, with a given (secret) key.
 	Sign(sc_cli::SignCmd),
+
+	/// Db meta columns information.
+	ChainInfo(sc_cli::ChainInfoCmd),
 }

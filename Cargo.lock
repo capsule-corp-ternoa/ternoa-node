@@ -7934,6 +7934,7 @@ dependencies = [
  "frame-try-runtime",
  "node-inspect",
  "sc-cli",
+ "sc-finality-grandpa",
  "sc-service",
  "substrate-build-script-utils",
  "ternoa-service",
