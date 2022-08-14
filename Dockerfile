@@ -8,7 +8,7 @@ WORKDIR "/chain"
 RUN apt update -y && apt upgrade -y  && \
     apt install build-essential git clang curl libssl-dev llvm libudev-dev make protobuf-compiler -y
 
-# This installs Rust and updates Rust the to right version.
+# This installs Rust and updates Rust to the right version.
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh && chmod u+x rust_install.sh && ./rust_install.sh -y && \
     . $HOME/.cargo/env && rustup update && rustup show
 
@@ -20,6 +20,7 @@ FROM ubuntu:22.10 as runner
 
 COPY --from=builder /chain/target/release/ternoa /usr/local/bin
 
+# Taken from Parity. TODO Checkout what it does.
 RUN useradd -m -u 1000 -U -s /bin/sh -d /ternoa ternoa && \
     mkdir -p /data /ternoa/.local/share && \
     chown -R ternoa:ternoa /data && \
