@@ -1,1 +1,0 @@
-podman run -p 127.0.0.1:9944:9944/tcp -p 127.0.0.1:9944:9944/udp -p 127.0.0.1:9933:9933/tcp -p 127.0.0.1:9933:9933/udp -p 127.0.0.1:30333:30333 -p 127.0.0.1:9615:9615 -v /mydata 2558cdaaf0e --chain alphanet-dev --alice --tmp --name MyDockerNode --unsafe-rpc-external --unsafe-ws-external --rpc-cors all --prometheus-external --telemetry-url "wss://telemetry.polkadot.io/submit/ 0"

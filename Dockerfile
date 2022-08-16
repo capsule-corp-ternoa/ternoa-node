@@ -20,7 +20,7 @@ FROM ubuntu:22.04 as runner
 
 COPY --from=builder /chain/target/release/ternoa /usr/local/bin
 
-# Taken from Parity. TODO Checkout what it does.
+# Taken from Parity. TODO Check out what it does.
 RUN useradd -m -u 1000 -U -s /bin/sh -d /ternoa ternoa && \
     mkdir -p /data /ternoa/.local/share && \
     chown -R ternoa:ternoa /data && \
@@ -36,4 +36,4 @@ EXPOSE 30333 9933 9944 9615
 VOLUME ["/data"]
 
 ENTRYPOINT ["/usr/local/bin/ternoa"]
-CMD ["--chain", "alphanet-dev", "--alice", "--tmp", "--name", "MyDockerNode", "--unsafe-rpc-external", "--unsafe-ws-external", "--rpc-cors", "all", "--telemetry-url", "wss://telemetry.polkadot.io/submit/ 0"]
+CMD ["--chain", "alphanet-dev", "--alice", "--tmp", "--name", "MyContainerNode", "--rpc-external", "--ws-external", "--rpc-cors", "all", "--telemetry-url", "wss://telemetry.polkadot.io/submit/ 0"]
