@@ -36,4 +36,4 @@ EXPOSE 30333 9933 9944 9615
 VOLUME ["/data"]
 
 ENTRYPOINT ["/usr/local/bin/ternoa"]
-CMD ["--chain", "alphanet-dev", "--alice", "--tmp", "--name", "MyDockerNode"]
+CMD ["--chain", "alphanet-dev", "--alice", "--tmp", "--name", "MyDockerNode", "--unsafe-rpc-external", "--unsafe-ws-external", "--rpc-cors", "all", "--prometheus-external", "--telemetry-url", "wss://telemetry.polkadot.io/submit/ 0"]
