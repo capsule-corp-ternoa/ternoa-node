@@ -66,9 +66,9 @@ All the examples in this document assume that you use a Ubuntu like system. If t
   # Installing podman.
   sudo apt install podman
   # Building the image using podman and the already available Dockerfile.
-  podman build -t ternoaimage .
+  podman build -t tchain .
   # Checking if everything is OK.
-  podman images | grep ternoaimage
+  podman images | grep tchain
 ```
 
 # Run
@@ -96,7 +96,7 @@ Podman flag explanation:
 ## Run With Podman
 ```bash
   # Make sure that you have built a image from the "Build With Podman" step.
-  podman run -p 127.0.0.1:9944:9944 -p 127.0.0.1:9933:9933 -p 127.0.0.1:30333:30333 ternoaimage
+  podman run -p 127.0.0.1:9944:9944 -p 127.0.0.1:9933:9933 -p 127.0.0.1:30333:30333 tchain
 ```
 
 ## Run With Provided Binary
@@ -138,7 +138,7 @@ In the next examples some useful Podman commands will be shown. It's important t
   # This folder will be used to stored ternoa node and chain data.
   mkdir ternoa-data 
   # Flag -v tells the host machine to map the physical "./ternoa-data" path with the virtual container one "/data".
-  podman run -v ./ternoa-data:/data ternoaimage
+  podman run -v ./ternoa-data:/data tchain
 ```
 
 ## Run The Container And Access Its Shell
