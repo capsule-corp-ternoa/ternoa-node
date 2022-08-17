@@ -32,14 +32,19 @@ Table of Contents:
 - [Running Benchmarks](#running-benchmarks)
 - [Running Unit Tests](#running-unit-tests)
 - [Generating Reference Documentation](#generating-reference-documentation)
+- [Running With Podman Tips](#running-with-podman-tips)
+  - [Permanent Storage](#permanent-storage)
+  - [Run The Container And Access Its Shell](#run-the-container-and-access-its-shell)
+  - [Create A Detached Instance And Access Its Shell](#create-a-detached-instance-and-access-its-shell)
 - [Useful tools](#useful-tools)
+
 
 
 # Build
 
 ## Build Locally
 ```bash
-  # Download the package lists and "updates" them.
+  # Downloads the package lists and "updates" them.
   sudo apt update -y
   # Installing all dependencies (but not Rust).
   sudo apt install build-essential git clang curl libssl-dev llvm libudev-dev make protobuf-compiler -y
@@ -57,6 +62,8 @@ Table of Contents:
 
 ## Build With Podman
 ```bash
+  # Downloads the package lists and "updates" them.
+  sudo apt update -y
   # Installing podman.
   sudo apt install podman
   # Building the image using podman and the already available Dockerfile.
@@ -94,6 +101,7 @@ Podman flag explanation:
 ```
 
 ## Run With Provided Binary
+Depending on what binary
 ```bash
   # Getting the binary from github.
   wget https://github.com/capsule-corp-ternoa/chain/releases/download/v1.0.0/ternoa
@@ -122,6 +130,32 @@ Podman flag explanation:
   # While compiling it might display some warning that can be safely ignored.
   cargo doc --open
 ```
+
+# Running With Podman Tips
+In the next examples some useful Podman commands will be shown. It's important to note that most flags have been omitted in order to make the examples more concise. Before running anything make sure that the image was built from the the "Build With Podman" step.
+
+## Permanent Storage
+```bash
+  # This folder will be used to stored ternoa node and chain data.
+  mkdir ternoa-data 
+  # Flag -v tells the host machine to map the physical "./ternoa-data" path with the virtual container one "/data".
+  podman run -v ./ternoa-data:/data ternoaimage
+```
+
+## Run The Container And Access Its Shell
+```bash
+  # The default entry point is running the Ternoa binary. Here we manually force a new entry point which will allow use to directly land into a bash shell. 
+  podman run -it --entrypoint=bash tchain
+```
+
+## Create A Detached Instance And Access Its Shell
+```bash
+  # Flag "-d" runs the container in detached mode. 
+  podman run -d tchain
+  # Access its shell.
+  podman exec -itl bash
+```
+
 
 # Useful tools
 [Substrate JS utilities](https://www.shawntabrizi.com/substrate-js-utilities/)
