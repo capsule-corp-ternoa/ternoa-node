@@ -38,9 +38,8 @@ Table of Contents:
   - [Create A Detached Instance And Access Its Shell](#create-a-detached-instance-and-access-its-shell)
 - [Useful tools](#useful-tools)
 
-
-
 # Build
+All the examples in this document assume that you use a Ubuntu like system. If that's not the case, you need to modify the code so that it works for your system.
 
 ## Build Locally
 ```bash
@@ -101,7 +100,7 @@ Podman flag explanation:
 ```
 
 ## Run With Provided Binary
-Depending on what binary
+Depending on what binary you downloaded certain features might not be available in to use. To get the latest features get the latest binary. In this example the oldest binary is being used.
 ```bash
   # Getting the binary from github.
   wget https://github.com/capsule-corp-ternoa/chain/releases/download/v1.0.0/ternoa
