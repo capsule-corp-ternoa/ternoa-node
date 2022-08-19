@@ -12,6 +12,9 @@ RUN apt update -y && \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh && chmod u+x rust_install.sh && ./rust_install.sh -y && \
     . $HOME/.cargo/env && rustup update && rustup show
 
+# Get all submodules
+RUN git submodule update --init --recursive
+
 # This builds the binary.
 RUN $HOME/.cargo/bin/cargo build --locked --release
 
