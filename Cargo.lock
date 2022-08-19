@@ -145,13 +145,13 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-bridge",
+ "ternoa-bridge 1.0.0",
  "ternoa-core-primitives",
- "ternoa-mandate",
- "ternoa-marketplace",
- "ternoa-nft",
+ "ternoa-mandate 1.0.0",
+ "ternoa-marketplace 1.0.1",
+ "ternoa-nft 1.0.1",
  "ternoa-runtime-common",
- "ternoa-staking-rewards",
+ "ternoa-staking-rewards 1.0.0",
 ]
 
 [[package]]
@@ -3574,13 +3574,13 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
- "ternoa-bridge",
+ "ternoa-bridge 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
  "ternoa-core-primitives",
- "ternoa-mandate",
- "ternoa-marketplace",
- "ternoa-nft",
+ "ternoa-mandate 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
+ "ternoa-marketplace 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
+ "ternoa-nft 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
  "ternoa-runtime-common",
- "ternoa-staking-rewards",
+ "ternoa-staking-rewards 1.0.0 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
  "try-runtime-cli",
 ]
 
@@ -7911,6 +7911,23 @@ dependencies = [
 [[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "ternoa-bridge"
+version = "1.0.0"
 source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
@@ -7972,13 +7989,24 @@ dependencies = [
 [[package]]
 name = "ternoa-common"
 version = "1.0.1"
+dependencies = [
+ "frame-support",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-pallets-primitives 1.0.1",
+]
+
+[[package]]
+name = "ternoa-common"
+version = "1.0.1"
 source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-support",
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-pallets-primitives",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
 ]
 
 [[package]]
@@ -7987,6 +8015,18 @@ version = "0.1.0"
 dependencies = [
  "sp-core",
  "sp-runtime",
+]
+
+[[package]]
+name = "ternoa-mandate"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
 ]
 
 [[package]]
@@ -8005,6 +8045,27 @@ dependencies = [
 [[package]]
 name = "ternoa-marketplace"
 version = "1.0.1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common 1.0.1",
+ "ternoa-nft 1.0.1",
+ "ternoa-pallets-primitives 1.0.1",
+]
+
+[[package]]
+name = "ternoa-marketplace"
+version = "1.0.1"
 source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets#84ab09f2f7a15da0df53e8968226a1932a5e6121"
 dependencies = [
  "frame-benchmarking",
@@ -8016,8 +8077,28 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common",
- "ternoa-pallets-primitives",
+ "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
+]
+
+[[package]]
+name = "ternoa-nft"
+version = "1.0.1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common 1.0.1",
+ "ternoa-pallets-primitives 1.0.1",
 ]
 
 [[package]]
@@ -8034,8 +8115,20 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common",
- "ternoa-pallets-primitives",
+ "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
+ "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets)",
+]
+
+[[package]]
+name = "ternoa-pallets-primitives"
+version = "1.0.1"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -8128,6 +8221,25 @@ dependencies = [
  "substrate-state-trie-migration-rpc",
  "ternoa-client",
  "ternoa-core-primitives",
+]
+
+[[package]]
+name = "ternoa-staking-rewards"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-authorship",
+ "pallet-balances",
+ "pallet-staking",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

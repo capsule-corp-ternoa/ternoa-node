@@ -77,11 +77,11 @@ log = { default-features = false, version = "0.4.14"}
 alphanet-runtime-constants = { package = "alphanet-runtime-constants", path = "./constants", default-features = false }
 ternoa-core-primitives = { path = "../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../common", default-features = false }
-ternoa-mandate = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
-ternoa-staking-rewards = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
-ternoa-bridge = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
-ternoa-nft = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
-ternoa-marketplace = { git = "https://github.com/capsule-corp-ternoa/ternoa-pallets", default-features = false }
+ternoa-mandate = { path = "../../ternoa-pallets/mandate", default-features = false }
+ternoa-staking-rewards = { path = "../../ternoa-pallets/staking-rewards", default-features = false }
+ternoa-bridge = { path = "../../ternoa-pallets/bridge", default-features = false }
+ternoa-nft = { path = "../../ternoa-pallets/nft", default-features = false }
+ternoa-marketplace = { path = "../../ternoa-pallets/marketplace", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30" }
