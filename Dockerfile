@@ -1,8 +1,8 @@
 # This is the first stage. Here we install all the dependencies that we need in order to build the Ternoa binary.
 FROM ubuntu:22.04 as builder
 
-ADD . ./chain
-WORKDIR "/chain"
+ADD . ./workdir
+WORKDIR "/workdir"
 
 # This installs all dependencies that we need (besides Rust).
 RUN apt update -y && \
@@ -20,6 +20,6 @@ RUN cp ./target/release/ternoa /usr/local/bin
 
 EXPOSE 30333 9933 9944 9615
 VOLUME ["/data"]
+VOLUME ["/workdir"]
 
-ENTRYPOINT ["ternoa"]
-CMD ["--chain", "alphanet-dev", "--alice", "-d" , "/data", "--name", "MyContainerNode", "--rpc-external", "--ws-external", "--rpc-cors", "all", "--telemetry-url", "wss://telemetry.polkadot.io/submit/ 0"]
+CMD ternoa --chain alphanet-dev --alice -d /data --name MyContainerNode --rpc-external --ws-external --rpc-cors all --telemetry-url "wss://telemetry.polkadot.io/submit/ 0"
