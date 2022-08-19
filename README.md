@@ -39,7 +39,7 @@ Table of Contents:
 - [Useful tools](#useful-tools)
 
 # Build
-All the examples in this document assume that you use a Ubuntu like system. If that's not the case, you need to modify the code so that it works for your system.
+All the examples in this document assume that you use a Ubuntu like system. If that's not the case, you need to change the commands so that it works for your system.
 
 ## Build Locally
 ```bash
@@ -133,7 +133,27 @@ Depending on what binary you downloaded certain features might not be available 
 # Running With Podman Tips
 In the next examples some useful Podman commands will be shown. It's important to note that most flags have been omitted in order to make the examples more concise. Before running anything make sure that the image was built from the the "Build With Podman" step.
 
-## Permanent Storage
+If no command arguments are given by default it will try run the Ternoa Node with default parameters. To cancel this add `bash` at the end of the command. Example: `podman run tsdk bash`;
+
+### Remove Container After Exit
+A container that was run and it's job has been finished or the user has exited will not automatically be removed instead it will enter the Exit state.
+To make sure that the container is deleted and removed after it's being used the flag `--rm` should be used.
+
+```bash
+  # The --rm flag removes the container after usage.
+  podman run --rm tchain
+  # Stop the container
+  [ctrl+c]
+  # Check if any container is running or stopped. 
+  podman ps -a
+```
+
+## Persistent Storage
+There are two virtual endpoints that can be mapped to real ones.
+
+### /data
+Container uses a local folder to store the chain data. This means that every time a new container is created the chain will start from block 0. To avoid this the container volume `/data` needs to mapped to a directory on the host machine. With this mapping done all the chain data will be stored on the host and it can be used with multiple containers.
+
 ```bash
   # This folder will be used to stored ternoa node and chain data.
   mkdir ternoa-data 
@@ -141,10 +161,25 @@ In the next examples some useful Podman commands will be shown. It's important t
   podman run -v ./ternoa-data:/data tchain
 ```
 
-## Run The Container And Access Its Shell
+### /workdir
+Container uses a local copy of the repo in order to compile and run the Ternoa Binary. This means that if code changes are made inside the container that they will not propagate and they will be lost. To change this the virtual container volume `/workdir` needs to be mapped to a directory on the host machine that contains the chain repo. With the mapping done any change in the mapped directory will be visible to the container.
+
+This can be useful if you want to develop your own chain without installing all the dependencies for it. For the workflow check the [Create A Development Environment](#create-a-development-environment) segment.
 ```bash
-  # The default entry point is running the Ternoa binary. Here we manually force a new entry point which will allow use to directly land into a bash shell. 
-  podman run -it --entrypoint=bash tchain
+  # This folder will be used to stored ternoa node and chain data.
+  mkdir ternoa-data 
+  # Flag -v tells the host machine to map the physical "./ternoa-data" path with the virtual container one "/data".
+  podman run -v ./.:/workdir tchain
+```
+
+
+## Run The Container And Access Its Shell
+The predefined operation/command of the container when run is to run the Ternoa Node with the alphanet-dev configuration. To execute a different operation additional commands can be passed at the end of the run command. Example: passing `bash` will run the bash shell session instead the default operation.
+
+```bash
+  # If no command arguments are given this will try to run the Ternoa Node with default parameters.
+  # By passing "bash" we make sure that we run a bash shell session once the container starts.
+  podman run -it tchain bash
 ```
 
 ## Create A Detached Instance And Access Its Shell
@@ -153,6 +188,29 @@ In the next examples some useful Podman commands will be shown. It's important t
   podman run -d tchain
   # Access its shell.
   podman exec -itl bash
+```
+
+### Create A Development Environment
+The dockerfile is made in a way that it can be used to develope new applications with it.
+Example of a typical workflows:
+- The host installs git, clones the repo and install a code editor like VS Code.
+- The host runs the container in a interactive mode with /workdir pointing to a workdir on host machine (can be your own project or chain repo).
+- The host writes code via a code editor and uses the terminal (which is connected to the container) to run the `cargo build` and `cargo check` commands.
+- With that setup all the changes are done locally on the host machine while the container is only used to compile and run the chain.
+
+```bash
+  mkdir ternoa-data 
+  # Flag "--name" is used to name the container.
+  podman run -it --name my_chain_env -v ./ternoa-data:/data -v ./.:/workdir tchain bash
+  # Do some activity and the exit the container
+  [root@d4ad8ec11655:/workdir] nano -V
+  [root@d4ad8ec11655:/workdir] apt install nano
+  [root@d4ad8ec11655:/workdir] exit
+
+  # Return to the same container
+  podman start my_chain_env
+  podman exec -it my_chain_env /bin/bash
+  [root@d4ad8ec11655:/workdir] nano -V
 ```
 
 
