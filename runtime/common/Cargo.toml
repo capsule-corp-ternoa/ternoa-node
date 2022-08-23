@@ -6,23 +6,23 @@ edition = "2021"
 
 [dependencies]
 ## Substrate Frame
-frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-election-provider-multi-phase = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-frame-election-provider-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-pallet-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
+frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-election-provider-multi-phase = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+frame-election-provider-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+pallet-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
 
 # Substrate Primitives
-sp-npos-elections = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-sp-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
-sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-07-30", default-features = false }
+sp-npos-elections = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+sp-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
+sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", default-features = false }
 
 # Rest
 static_assertions = { version = "1.1.0" }
