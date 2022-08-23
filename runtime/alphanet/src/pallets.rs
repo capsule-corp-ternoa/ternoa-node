@@ -558,6 +558,8 @@ impl pallet_elections_phragmen::Config for Runtime {
 	type TermDuration = common::phragmen_election::PhragmenTermDuration;
 	type PalletId = common::phragmen_election::PhragmenElectionPalletId;
 	type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
+	type MaxCandidates = common::phragmen_election::MaxCandidates;
+	type MaxVoters = common::phragmen_election::MaxVoters;
 }
 
 // Democracy
