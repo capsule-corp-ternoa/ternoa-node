@@ -8160,6 +8160,7 @@ dependencies = [
  "sc-finality-grandpa",
  "sc-finality-grandpa-rpc",
  "sc-network",
+ "sc-network-common",
  "sc-rpc",
  "sc-rpc-api",
  "sc-service",
