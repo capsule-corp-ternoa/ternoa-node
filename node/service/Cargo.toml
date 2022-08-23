@@ -59,7 +59,7 @@ frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substra
 
 # Rest
 futures = { version = "0.3.21", features = [ "compat" ] }
-jsonrpsee = { version = "0.14.0", features = ["server"] }
+jsonrpsee = { version = "0.15.1", features = ["server"] }
 serde = { version = "1.0.137", features = [ "derive" ] }
 
 # Ternoa
