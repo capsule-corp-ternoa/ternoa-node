@@ -29,7 +29,7 @@ mod pallets;
 mod version;
 mod weights;
 
-use frame_support::{construct_runtime, traits::KeyOwnerProofSystem};
+use frame_support::{construct_runtime, parameter_types, traits::KeyOwnerProofSystem};
 pub use pallet_balances::Call as BalancesCall;
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
@@ -46,11 +46,12 @@ use sp_runtime::{
 	generic,
 	traits::{BlakeTwo256, Block as BlockT, NumberFor},
 	transaction_validity::{TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult,
+	ApplyExtrinsicResult, Perbill,
 };
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
+use ternoa_runtime_common::{impl_runtime_weights, BlockLength};
 pub use version::VERSION;
 
 #[cfg(feature = "std")]
@@ -72,6 +73,8 @@ pub fn wasm_binary_unwrap() -> &'static [u8] {
         the flag disabled.",
 	)
 }
+
+impl_runtime_weights!(alphanet_runtime_constants);
 
 construct_runtime!(
 	pub enum Runtime where
@@ -368,8 +371,15 @@ impl_runtime_apis! {
 	#[cfg(feature = "try-runtime")]
 	impl frame_try_runtime::TryRuntime<Block> for Runtime {
 		fn on_runtime_upgrade() -> (Weight, Weight) {
-			let weight = Executive::try_runtime_upgrade().unwrap();
-			(weight, RuntimeBlockWeights::get().max_block)
+			log::info!("try-runtime::on_runtime_upgrade.");
+			// NOTE: intentional unwrap: we don't want to propagate the error backwards, and want to
+			// have a backtrace here. If any of the pre/post migration checks fail, we shall stop
+			// right here and right now.
+			let weight = Executive::try_runtime_upgrade().map_err(|err|{
+				log::info!("try-runtime::on_runtime_upgrade failed with: {:?}", err);
+				err
+			}).unwrap();
+			(weight, BlockWeights::get().max_block)
 		}
 
 		fn execute_block_no_check(block: Block) -> Weight {

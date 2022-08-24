@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
-use frame_support::{dispatch::Weight, parameter_types};
-use sp_runtime::Perbill;
+//! Expose the auto generated weight files.
 
-use crate::frame_system::RuntimeBlockWeights;
+pub mod block_weights;
+pub mod extrinsic_weights;
+pub mod paritydb_weights;
+pub mod rocksdb_weights;
 
-parameter_types! {
-	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
-	RuntimeBlockWeights::get().max_block;
-	pub const MaxScheduledPerBlock: u32 = 50;
-	pub const NoPreimagePostponement: Option<u32> = Some(10);
-}
+pub use block_weights::BlockExecutionWeight;
+pub use extrinsic_weights::ExtrinsicBaseWeight;
+pub use paritydb_weights::constants::ParityDbWeight;
+pub use rocksdb_weights::constants::RocksDbWeight;

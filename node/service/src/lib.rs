@@ -23,6 +23,7 @@ use sc_client_api::{BlockBackend, ExecutorProvider};
 use sc_consensus_babe::{self, SlotProportion};
 use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
 use sc_network::{Event, NetworkService};
+use sc_network_common::service::NetworkEventStream;
 use sc_service::{
 	config::Configuration, error::Error as ServiceError, RpcHandlers, TFullClient, TaskManager,
 };
@@ -33,17 +34,13 @@ use std::sync::Arc;
 use ternoa_client::RuntimeApiCollection;
 use ternoa_core_primitives::Block;
 
-#[cfg(feature = "chaosnet-native")]
-pub use ternoa_client::ChaosnetExecutorDispatch;
+use rpc::RpcExtension;
 
 #[cfg(feature = "alphanet-native")]
 pub use ternoa_client::AlphanetExecutorDispatch;
 
 #[cfg(feature = "mainnet-native")]
 pub use ternoa_client::MainnetExecutorDispatch;
-
-#[cfg(feature = "chaosnet-native")]
-pub use chaosnet_runtime;
 
 #[cfg(feature = "alphanet-native")]
 pub use alphanet_runtime;
@@ -70,9 +67,6 @@ pub type TransactionPool<RuntimeApi, Executor> =
 
 /// Can be called for a `Configuration` to identify which network the configuration targets.
 pub trait IdentifyVariant {
-	/// Returns `true` if this is a configuration for the `Chaosnet` network.
-	fn is_chaosnet(&self) -> bool;
-
 	/// Returns `true` if this is a configuration for the `Alphanet` network.
 	fn is_alphanet(&self) -> bool;
 
@@ -84,10 +78,6 @@ pub trait IdentifyVariant {
 }
 
 impl IdentifyVariant for Box<dyn ChainSpec> {
-	fn is_chaosnet(&self) -> bool {
-		self.id().starts_with("chaosnet") || self.id().starts_with("chaos")
-	}
-
 	fn is_alphanet(&self) -> bool {
 		self.id().starts_with("alphanet") || self.id().starts_with("alpha")
 	}
@@ -113,8 +103,8 @@ pub fn new_partial<RuntimeApi, ExecutorDispatch>(
 		(
 			impl Fn(
 				rpc::DenyUnsafe,
-				sc_rpc::SubscriptionTaskExecutor,
-			) -> Result<rpc::IoHandler, sc_service::Error>,
+				rpc::SubscriptionTaskExecutor,
+			) -> Result<RpcExtension, sc_service::Error>,
 			(
 				sc_consensus_babe::BabeBlockImport<
 					Block,
@@ -308,32 +298,34 @@ where
 
 		// Rest
 		let rpc_setup = shared_voter_state.clone();
+		let rpc_backend = backend.clone();
 
 		// Calling this function will extend the IO interface with additional RPC Pallet specific
 		// calls.
-		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| {
-			let deps = rpc::FullDeps {
-				client: client.clone(),
-				pool: pool.clone(),
-				select_chain: select_chain.clone(),
-				chain_spec: chain_spec.cloned_box(),
-				deny_unsafe,
-				babe: rpc::BabeDeps {
-					babe_config: babe_config.clone(),
-					shared_epoch_changes: shared_epoch_changes.clone(),
-					keystore: keystore.clone(),
-				},
-				grandpa: rpc::GrandpaDeps {
-					shared_voter_state: shared_voter_state.clone(),
-					shared_authority_set: shared_authority_set.clone(),
-					justification_stream: justification_stream.clone(),
-					subscription_executor,
-					finality_provider: finality_proof_provider.clone(),
-				},
-			};
+		let rpc_extensions_builder =
+			move |deny_unsafe, subscription_executor| -> Result<RpcExtension, sc_service::Error> {
+				let deps = rpc::FullDeps {
+					client: client.clone(),
+					pool: pool.clone(),
+					select_chain: select_chain.clone(),
+					chain_spec: chain_spec.cloned_box(),
+					deny_unsafe,
+					babe: rpc::BabeDeps {
+						babe_config: babe_config.clone(),
+						shared_epoch_changes: shared_epoch_changes.clone(),
+						keystore: keystore.clone(),
+					},
+					grandpa: rpc::GrandpaDeps {
+						shared_voter_state: shared_voter_state.clone(),
+						shared_authority_set: shared_authority_set.clone(),
+						justification_stream: justification_stream.clone(),
+						subscription_executor,
+						finality_provider: finality_proof_provider.clone(),
+					},
+				};
 
-			rpc::create_full(deps).map_err(Into::into)
-		};
+				rpc::create_full(deps, rpc_backend.clone()).map_err(Into::into)
+			};
 
 		(rpc_extensions_builder, rpc_setup)
 	};
@@ -458,7 +450,7 @@ where
 		client: client.clone(),
 		keystore: keystore_container.sync_keystore(),
 		network: network.clone(),
-		rpc_extensions_builder: Box::new(rpc_extensions_builder),
+		rpc_builder: Box::new(rpc_extensions_builder),
 		transaction_pool: transaction_pool.clone(),
 		task_manager: &mut task_manager,
 		system_rpc_tx,

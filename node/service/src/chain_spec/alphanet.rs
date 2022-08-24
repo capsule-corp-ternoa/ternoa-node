@@ -27,7 +27,7 @@ use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::sr25519;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::Perbill;
+use sp_runtime::{BoundedVec, Perbill};
 use ternoa_core_primitives::{AccountId, Balance};
 
 fn session_keys(
@@ -101,35 +101,6 @@ fn development_config_genesis() -> GenesisConfig {
 	genesis(input)
 }
 
-fn staging_accounts() -> Vec<(AccountId, Balance)> {
-	vec![
-		(sr25519_account_from_seed("boss"), 100_000_000 * UNITS),
-		(sr25519_account_from_seed("bootnode1"), 1 * UNITS),
-		(sr25519_account_from_seed("bootnode2"), 1 * UNITS),
-		(sr25519_account_from_seed("bootnode1//stash"), 150_005 * UNITS),
-		(sr25519_account_from_seed("bootnode2//stash"), 150_005 * UNITS),
-	]
-}
-
-fn staging_config_genesis() -> GenesisConfig {
-	let endowed_accounts = staging_accounts();
-	let initial_authorities =
-		vec![authority_keys_from_seed("bootnode1"), authority_keys_from_seed("bootnode2")];
-	let committee_members = vec![sr25519_account_from_seed("boss")];
-	let stake_bond_amount: Balance = 150_000 * UNITS;
-	let invulnerables = vec![];
-
-	let input = GenesisInput {
-		initial_authorities,
-		endowed_accounts,
-		stake_bond_amount,
-		committee_members,
-		invulnerables,
-	};
-
-	genesis(input)
-}
-
 /// Development config (single validator Alice)
 pub fn development_config() -> ChainSpec {
 	let mut properties = sc_chain_spec::Properties::new();
@@ -141,26 +112,6 @@ pub fn development_config() -> ChainSpec {
 		"alphanet-dev",
 		ChainType::Development,
 		development_config_genesis,
-		vec![],
-		None,
-		Some("ternoa"),
-		None,
-		Some(properties),
-		Default::default(),
-	)
-}
-
-/// Development config (single validator Alice)
-pub fn staging_config() -> ChainSpec {
-	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "CAPS".into());
-	properties.insert("tokenDecimals".into(), 18.into());
-
-	ChainSpec::from_genesis(
-		"Ternoa Alphanet Staging",
-		"alphanet-sta",
-		ChainType::Local,
-		staging_config_genesis,
 		vec![],
 		None,
 		Some("ternoa"),
@@ -228,7 +179,7 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 		transaction_payment: Default::default(),
 		technical_committee: Default::default(),
 		technical_membership: TechnicalMembershipConfig {
-			members: committee_members.clone(),
+			members: BoundedVec::try_from(committee_members).unwrap(),
 			..Default::default()
 		},
 		council: CouncilConfig { members: vec![], ..Default::default() },

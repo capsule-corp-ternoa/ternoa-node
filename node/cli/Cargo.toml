@@ -2,7 +2,7 @@
 name = "ternoa-cli"
 authors = [ "Ternoa" ]
 edition = "2021"
-version = "1.0.0"
+version = "1.1.0"
 
 [package.metadata.wasm-pack.profile.release]
 # `wasm-opt` has some problems on Linux, see
@@ -14,21 +14,28 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 # Substrate Frame
-node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
-frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
+node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
 
 # Substrate Client
-sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
-sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24", optional = true }
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
+sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
+sc-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
 
 # Rest
 clap = { version = "3.1", features = ["derive"], optional = true }
+
+# Benchmark
+frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
+
+# Try Runtime
+try-runtime-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
+frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22", optional = true }
 
 # Ternoa
 ternoa-service = { path = "../service", default-features = false, optional = true }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", branch = "ternoa-substrate-2022-03-24" }
+substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-08-22" }
 
 [features]
 default = [ "wasmtime", "cli", "full-node", "mainnet-native" ]
@@ -38,15 +45,16 @@ cli = [
     "sc-cli",
     "sc-service",
     "frame-benchmarking-cli",
-    "node-inspect"
+    "node-inspect",
+    "try-runtime-cli",
+    "sc-finality-grandpa",
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]
-# try-runtime = ["ternoa-service/try-runtime"]
+try-runtime = ["ternoa-service/try-runtime", "try-runtime-cli"]
 
 # Configure the native runtimes to use. Mainnet is enabled by default.
 #
 # Validators require the native runtime currently
-chaosnet-native = [ "ternoa-service/chaosnet-native" ]
 alphanet-native = [ "ternoa-service/alphanet-native" ]
 mainnet-native = [ "ternoa-service/mainnet-native" ]

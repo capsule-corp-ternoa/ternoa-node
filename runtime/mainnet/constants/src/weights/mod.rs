@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
-use substrate_wasm_builder::WasmBuilder;
+//! Expose the auto generated weight files.
 
-fn main() {
-	WasmBuilder::new()
-		.with_current_project()
-		.export_heap_base()
-		.import_memory()
-		.build()
-}
+pub mod block_weights;
+pub mod extrinsic_weights;
+pub mod paritydb_weights;
+pub mod rocksdb_weights;
+
+pub use block_weights::BlockExecutionWeight;
+pub use extrinsic_weights::ExtrinsicBaseWeight;
+pub use paritydb_weights::constants::ParityDbWeight;
+pub use rocksdb_weights::constants::RocksDbWeight;
