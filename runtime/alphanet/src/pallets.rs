@@ -51,7 +51,7 @@ use crate::{
 	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, Origin, OriginCaller,
 	PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload, Staking,
 	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, NFT, VERSION,
+	UncheckedExtrinsic, Marketplace, NFT, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
