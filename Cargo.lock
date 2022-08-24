@@ -151,6 +151,7 @@ dependencies = [
  "ternoa-mandate",
  "ternoa-marketplace",
  "ternoa-nft",
+ "ternoa-rent",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
 ]
@@ -7967,19 +7968,23 @@ dependencies = [
 [[package]]
 name = "ternoa-auction"
 version = "1.0.0"
-source = "git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting#a500065033bfbf41838407f056367fe3710d4058"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
+ "pallet-balances",
  "parity-scale-codec",
  "scale-info",
  "sp-arithmetic",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
- "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
- "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
+ "ternoa-common",
+ "ternoa-marketplace",
+ "ternoa-nft",
+ "ternoa-pallets-primitives",
 ]
 
 [[package]]
@@ -8076,7 +8081,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-marketplace"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -8097,8 +8102,9 @@ dependencies = [
 
 [[package]]
 name = "ternoa-nft"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
@@ -8124,8 +8130,27 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
- "ternoa-common 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
- "ternoa-pallets-primitives 1.0.1 (git+https://github.com/capsule-corp-ternoa/ternoa-pallets?branch=ghali/implement-renting)",
+]
+
+[[package]]
+name = "ternoa-rent"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-nft",
+ "ternoa-pallets-primitives",
 ]
 
 [[package]]
