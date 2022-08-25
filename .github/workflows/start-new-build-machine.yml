@@ -1,0 +1,8 @@
+name: Start New Build Machine
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Run Script"
+        run: ./.github/scripts/start-new-machine.sh

@@ -2,7 +2,7 @@ name: Turn off all running non-busy build machines
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/15 * * * *"
 
 jobs:
   cron:
