@@ -1,0 +1,1 @@
+$HOME/.cargo/bin/cargo fmt --all --check
