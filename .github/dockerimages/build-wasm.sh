@@ -1,7 +1,7 @@
-# Bind the binary
-./build-binary.sh
-
 # Build the binary in release mode
+$HOME/.cargo/bin/cargo build --locked --release
+
+# Install srtool-cli
 $HOME/.cargo/bin/cargo install --git https://github.com/chevdor/srtool-cli
 
 # Move the wasm to a new folder called output
