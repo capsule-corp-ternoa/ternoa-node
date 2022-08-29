@@ -1,0 +1,28 @@
+name: Run Tests
+
+on:
+  workflow_dispatch:
+
+
+env:
+  CARGO_TERM_COLOR: always
+  Runtime: ${{ github.event.inputs.runtime }}
+
+jobs:
+  call-start-new-build-machine:
+    uses: ./.github/workflows/start-new-build-machine.yml
+    secrets: inherit
+
+  build:
+    runs-on: GP1-M
+    name: Build Binary Job
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: "Build DockerImage"
+      run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
+
+    - name: "Run Build Wasm Script"
+      run: podman run --rm -t tchain /bin/bash .github/dockerimages/run-tests.sh
+
+    

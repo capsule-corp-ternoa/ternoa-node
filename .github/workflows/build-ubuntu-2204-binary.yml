@@ -1,5 +1,4 @@
-# CI for Chain on Linux Environment
-name: Build Ubuntu Binary
+name: Build Ubuntu 22.04 Binary
 
 on:
   workflow_dispatch:
