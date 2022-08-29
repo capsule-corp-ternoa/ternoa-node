@@ -12,6 +12,6 @@ jobs:
       - name: "Run Script"
         run: |
           cd ./.github/scripts
-          SCW_SECRET_KEY=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }}
-          GITHUB_BUILD_MACHINE_TOKEN=${{ secrets.MARKO_PERSONA_TOKEN }}
+          export SCW_SECRET_KEY=${{ secrets.SW_SECRET_ACCESS_KEY }}
+          export GITHUB_BUILD_MACHINE_TOKEN=${{ secrets.MARKO_PERSONA_TOKEN }}
           ./start-new-machine.sh
