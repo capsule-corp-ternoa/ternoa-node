@@ -11,6 +11,7 @@ jobs:
       - name: "Run Script"
         run: |
           echo "Running STop One Machine Script"
-          SCW_SECRET_KEY=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }}
-          GITHUB_BUILD_MACHINE_TOKEN=${{ secrets.MARKO_PERSONA_TOKEN }}
-          ./.github/scripts/stop-one-machine.sh
+          export SCW_SECRET_KEY=${{ secrets.SW_SECRET_ACCESS_KEY }}
+          export GITHUB_BUILD_MACHINE_TOKEN=${{ secrets.MARKO_PERSONA_TOKEN }}
+          cd ./.github/scripts
+          ./stop-one-machine.sh

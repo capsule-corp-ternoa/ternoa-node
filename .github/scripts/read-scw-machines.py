@@ -18,13 +18,15 @@ def is_ok(config, runner):
 
 
 scw_machines = [{"name": "Ternoa-Build-Machine-0",
-                 "id": "704d19ea-2648-4594-8ef4-28bdd1321e65"},
+                 "id": "14930b12-a780-4dd0-a131-069f5d6024bd"},
                 {"name": "Ternoa-Build-Machine-1",
-                 "id": "a3ab8cb9-cf33-4172-9ab0-fa802e6d38c9"}]
+                 "id": "bd7c96b0-bbb6-4796-977a-703256554787"},
+                {"name": "Ternoa-Build-Machine-2",
+                 "id": "a1a60d32-19ce-47ee-8f40-635a925ba11d"}]
 
 config = sys.argv[1]
 data = json.load(sys.stdin)
-to_turn_off: list[str] = []
+to_turn_off = []
 for runner in data["runners"]:
     if (not is_ok(config, runner)):
         continue

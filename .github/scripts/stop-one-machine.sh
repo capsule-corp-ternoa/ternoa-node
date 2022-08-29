@@ -1,11 +1,17 @@
-GITHUB_BUILD_MACHINE_TOKEN=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
+#!/bin/bash 
 
-NOT_BUSY_MACHINES=$(curl -H "Accept: application/vnd.github+json" -H "Authorization: token $GITHUB_BUILD_MACHINE_TOKEN" https://api.github.com/repos/capsule-corp-ternoa/chain/actions/runners \
-| python3 read-scw-machines.py ONLINE_NBUSY)
+while true; do
+    NOT_BUSY_MACHINES=$(curl -H "Accept: application/vnd.github+json" -H "Authorization: token $GITHUB_BUILD_MACHINE_TOKEN" https://api.github.com/repos/capsule-corp-ternoa/chain/actions/runners \
+    | python3 read-scw-machines.py ONLINE_NBUSY)
 
-echo "$NOT_BUSY_MACHINES" | while read line; do
-    if [ "$line" ]; then
-        ./toggle-build-machine.sh stop $line "--wait"
-        exit 0
-    fi
+    echo "$NOT_BUSY_MACHINES" | while read line; do
+        if [ "$line" ]; then
+            ./toggle-build-machine.sh stop $line "--wait"
+            continue
+        fi
+    done
+    
+    break
+
 done
+

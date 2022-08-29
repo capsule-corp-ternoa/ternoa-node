@@ -1,5 +1,4 @@
-# CI for Chain on Linux Environment
-name: Build Ubuntu Binary
+name: Build Ubuntu 22.04 Binary
 
 on:
   workflow_dispatch:
@@ -9,23 +8,23 @@ env:
 
 jobs:
   call-start-new-build-machine:
-    uses: ./.github/start-new-build-machine.yml
+    uses: ./.github/workflows/start-new-build-machine.yml
+    secrets: inherit
 
   build:
     runs-on: GP1-M
     name: Build Binary Job
-    needs: start
     steps:
     - uses: actions/checkout@v3
 
     - name: "Build DockerImage"
-    - uses: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
+      run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
 
     - name: "Create output folder."
-    - uses: "mkdir output"
+      run: mkdir output
 
     - name: "Run Build Binary Script"
-    - uses: podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-binary.sh
+      run: podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-binary.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3

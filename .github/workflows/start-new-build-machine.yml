@@ -1,8 +1,17 @@
 name: Start New Build Machine
 
+on:
+  workflow_call:
+
 jobs:
-  cron:
+  start_machine:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+
       - name: "Run Script"
-        run: ./.github/scripts/start-new-machine.sh
+        run: |
+          cd ./.github/scripts
+          export SCW_SECRET_KEY=${{ secrets.SW_SECRET_ACCESS_KEY }}
+          export GITHUB_BUILD_MACHINE_TOKEN=${{ secrets.MARKO_PERSONA_TOKEN }}
+          ./start-new-machine.sh
