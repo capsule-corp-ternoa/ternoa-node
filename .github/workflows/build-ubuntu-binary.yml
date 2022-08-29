@@ -9,7 +9,7 @@ env:
 
 jobs:
   call-start-new-build-machine:
-    uses: ./.github/workflows/start-new-build-machine.yml@main
+    uses: ./.github/workflows/start-new-build-machine.yml
     secrets: inherit
 
   build:
