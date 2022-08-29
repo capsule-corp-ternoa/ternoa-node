@@ -15,14 +15,14 @@ jobs:
 
   build:
     runs-on: GP1-M
-    name: Build Binary Job
+    name: Run Tests
     steps:
     - uses: actions/checkout@v3
 
     - name: "Build DockerImage"
       run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
 
-    - name: "Run Build Wasm Script"
+    - name: "Run Tests"
       run: podman run --rm -t tchain /bin/bash .github/dockerimages/run-tests.sh
 
     

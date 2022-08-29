@@ -22,7 +22,7 @@ jobs:
 
   build:
     runs-on: GP1-M
-    name: Build Binary Job
+    name: Build WASM
     steps:
     - uses: actions/checkout@v3
 
@@ -33,7 +33,9 @@ jobs:
       run: mkdir output
 
     - name: "Run Build Wasm Script"
-      run: podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-wasm.sh
+      run: |
+        export runtime=${{ github.event.inputs.runtime }}
+        podman run --rm -e runtime=$runtime -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-wasm.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3

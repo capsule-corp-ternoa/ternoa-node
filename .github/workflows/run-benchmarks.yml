@@ -22,7 +22,7 @@ jobs:
 
   build:
     runs-on: GP1-M
-    name: Build Binary Job
+    name: Run Benchmarks
     steps:
     - uses: actions/checkout@v3
 
@@ -32,8 +32,10 @@ jobs:
     - name: "Create output folder."
       run: mkdir output
 
-    - name: "Run Build Wasm Script"
-      run: podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-benchmarks-combined.sh
+    - name: "Run Benchmarks"
+      run: |
+        export runtime=${{ github.event.inputs.runtime }}
+        podman run --rm -e runtime=$runtime -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/run-benchmarks-combined.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
