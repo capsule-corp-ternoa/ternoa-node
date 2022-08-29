@@ -31,7 +31,8 @@ jobs:
         export runtime=${{ github.event.inputs.runtime }}
         echo BBB
         echo $runtime
-        echo $${{ github.event.inputs.runtime }}
+        echo CCC
+        echo ${{ github.event.inputs.runtime }}
         echo AAA
 
     - name: "Build DockerImage"
