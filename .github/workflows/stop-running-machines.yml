@@ -1,0 +1,16 @@
+name: Turn off all running non-busy build machines
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Run Script"
+        run: |
+          echo "Running STop One Machine Script"
+          SCW_SECRET_KEY=${{ secrets.SW_CHAIN_REFERENCE_PROJ_SECRET_KEY }}
+          GITHUB_BUILD_MACHINE_TOKEN=${{ secrets.MARKO_PERSONA_TOKEN }}
+          ./.github/scripts/stop-one-machine.sh
