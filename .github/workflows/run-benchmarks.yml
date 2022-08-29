@@ -32,7 +32,7 @@ jobs:
     - name: "Create output folder."
       run: mkdir output
 
-    - name: "Run Build Wasm Script"
+    - name: "Run Benchmarks"
       run: podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-benchmarks-combined.sh
 
     - name: Upload Artifacts

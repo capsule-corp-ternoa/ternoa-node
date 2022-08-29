@@ -22,7 +22,7 @@ jobs:
     - name: "Build DockerImage"
       run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
 
-    - name: "Run Build Wasm Script"
+    - name: "Run Tests"
       run: podman run --rm -t tchain /bin/bash .github/dockerimages/run-tests.sh
 
     
