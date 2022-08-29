@@ -15,7 +15,7 @@ jobs:
 
   build:
     runs-on: GP1-M
-    name: Build Binary Job
+    name: Run Tests
     steps:
     - uses: actions/checkout@v3
 

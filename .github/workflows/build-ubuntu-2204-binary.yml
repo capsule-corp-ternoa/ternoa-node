@@ -13,7 +13,7 @@ jobs:
 
   build:
     runs-on: GP1-M
-    name: Build Binary Job
+    name: Build Ubuntu 2204 Binary
     steps:
     - uses: actions/checkout@v3
 
