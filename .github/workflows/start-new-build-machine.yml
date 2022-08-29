@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: "Run Script"
-        run: ./.github/scripts/start-new-machine.sh
+        run: |
+        cd ./.github/scripts
+        ./start-new-machine.sh
