@@ -11,5 +11,5 @@ jobs:
 
       - name: "Run Script"
         run: |
-        cd ./.github/scripts
-        ./start-new-machine.sh
+          cd ./.github/scripts
+          ./start-new-machine.sh
