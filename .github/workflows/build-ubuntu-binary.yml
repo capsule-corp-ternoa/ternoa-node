@@ -9,7 +9,8 @@ env:
 
 jobs:
   call-start-new-build-machine:
-    uses: ./.github/start-new-build-machine.yml
+    uses: ./.github/start-new-build-machine.yml@main
+    secrets: inherit
 
   build:
     runs-on: GP1-M
