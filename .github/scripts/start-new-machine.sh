@@ -1,9 +1,5 @@
 #!/bin/bash
 
-echo $GITHUB_BUILD_MACHINE_TOKEN
-echo $GITHUB_BUILD_MACHINE_TOKEN
-echo $GITHUB_BUILD_MACHINE_TOKEN
-
 NOT_BUSY_MACHINES=$(curl -H "Accept: application/vnd.github+json" -H "Authorization: token $GITHUB_BUILD_MACHINE_TOKEN" https://api.github.com/repos/capsule-corp-ternoa/chain/actions/runners \
 | python3 read-scw-machines.py ONLINE_NBUSY)
 
