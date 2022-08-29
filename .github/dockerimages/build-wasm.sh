@@ -1,7 +1,7 @@
 # Build the binary in release mode
 $HOME/.cargo/bin/cargo install --git https://github.com/chevdor/srtool-cli
 
-# Move the binary to a new folder called output
+# Move the wasm to a new folder called output
 mkdir -p output
 srtool build --package "$Runtime"-runtime &> output/output.txt
 
