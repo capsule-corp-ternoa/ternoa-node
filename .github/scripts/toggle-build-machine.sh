@@ -1,3 +1,4 @@
+#!/bin/bash 
 
 OP=$1
 ID=$2
