@@ -10,7 +10,7 @@ OFFLINE_MACHINES=$(curl -H "Accept: application/vnd.github+json" -H "Authorizati
 if [ -z "$NOT_BUSY_MACHINES" ] && [ "$OFFLINE_MACHINES" ]; then
     echo "$OFFLINE_MACHINES" | while read line; do
         if [ "$line" ]; then
-            ./toggle-bulld-machine.sh start $line
+            ./toggle-build-machine.sh start $line
             exit 0
         fi
     done
