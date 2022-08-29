@@ -15,4 +15,8 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh 
 # Get all submodules
 RUN git submodule update --init --recursive
 
+# Create Output folder
+RUN mkdir -p output
+
 VOLUME ["/workdir"]
+VOLUME ["/workdir/output"]
