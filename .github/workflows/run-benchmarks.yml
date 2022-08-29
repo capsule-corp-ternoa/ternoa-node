@@ -26,6 +26,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: "Test"
+      run: |
+        export runtime=${{ github.event.inputs.runtime }}
+        echo BBB
+        echo $runtime
+        echo $${{ github.event.inputs.runtime }}
+        echo AAA
+
     - name: "Build DockerImage"
       run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
 
@@ -35,6 +43,10 @@ jobs:
     - name: "Run Benchmarks"
       run: |
         export runtime=${{ github.event.inputs.runtime }}
+        echo BBB
+        echo $runtime
+        echo $${{ github.event.inputs.runtime }}
+        echo AAA
         podman run --rm -e runtime=$runtime -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/run-benchmarks-combined.sh
 
     - name: Upload Artifacts
