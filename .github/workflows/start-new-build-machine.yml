@@ -1,7 +1,10 @@
 name: Start New Build Machine
 
+on:
+  workflow_call:
+
 jobs:
-  cron:
+  start_machine:
     runs-on: ubuntu-latest
     steps:
       - name: "Run Script"
