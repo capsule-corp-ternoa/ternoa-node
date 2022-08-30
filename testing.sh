@@ -5,4 +5,4 @@ export Runtime="alphanet"
 # podman run --rm -v ./.:/workdir -t tchain /bin/bash .github/dockerimages/build-binary.sh
 # podman run -e Runtime --rm -v ./.:/workdir -t tchain /bin/bash .github/dockerimages/run-benchmarks.sh
 # podman run -e Runtime --rm -v ./.:/workdir -t tchain /bin/bash .github/dockerimages/run-format.sh
-podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-binary.sh
+podman run --rm -v ./output:/output -t tchain /bin/bash .github/dockerimages/build-binary.sh

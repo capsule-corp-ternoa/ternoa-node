@@ -24,7 +24,7 @@ jobs:
       run: mkdir output
 
     - name: "Run Build Binary Script"
-      run: podman run --rm -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-binary.sh
+      run: podman run --rm -v ./output:/output -t tchain /bin/bash .github/dockerimages/build-binary.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3

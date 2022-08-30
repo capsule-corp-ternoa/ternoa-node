@@ -1,7 +1,7 @@
 # This is the first stage. Here we install all the dependencies that we need in order to build the Ternoa binary.
 FROM ubuntu:22.04 as builder
 
-ADD ./ ./workdir
+ADD . ./workdir
 WORKDIR "/workdir"
 
 # This installs all dependencies that we need (besides Rust).
@@ -14,9 +14,6 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh 
 
 # Get all submodules
 RUN git submodule update --init --recursive
-
-# Create Output folder
-RUN mkdir -p output
 
 VOLUME ["/workdir"]
 VOLUME ["/output"]
