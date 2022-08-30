@@ -40,7 +40,7 @@ jobs:
         . $HOME/.cargo/env && rustup update && rustup show
 
     - name: Install srtool
-      run: cargo install --git https://github.com/chevdor/srtool-cli
+      run: . $HOME/.cargo/env && cargo install --git https://github.com/chevdor/srtool-cli
 
     - name: Create downloads folder
       run: mkdir -p output
