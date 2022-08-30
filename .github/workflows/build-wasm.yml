@@ -47,6 +47,9 @@ jobs:
 
     - name: Create downloads folder
       run: mkdir -p output
+
+    - name: Move Pallets Workspace file
+      run: mv ./ternoa-pallets/Cargo.toml ./ternoa-pallets/Cargo-copy.toml
  
     - name: Run Srtool 
       run: |
