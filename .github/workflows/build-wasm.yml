@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install Docker
-      run: apt install docker.io -y
+      run: apt update -y && apt install docker.io -y && apt install -f
 
     - name: Init Submodules
       run: git submodule update --init --recursive
