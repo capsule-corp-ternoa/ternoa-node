@@ -25,6 +25,7 @@ jobs:
     name: Build WASM
     steps:
     - uses: actions/checkout@v3
+    - uses: docker-practice/actions-setup-docker@master
 
     - name: Init Submodules
       run: git submodule update --init --recursive
