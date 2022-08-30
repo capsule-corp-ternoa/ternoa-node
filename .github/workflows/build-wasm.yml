@@ -26,21 +26,36 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: "Build DockerImage"
-      run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
+    - name: Init Submodules
+      run: submodule update --init --recursive
 
-    - name: "Create output folder."
-      run: mkdir output
-
-    - name: "Run Build Wasm Script"
+    - name: Install Dependencies
       run: |
-        export runtime=${{ github.event.inputs.runtime }}
-        podman run --rm -e runtime=$runtime -v ./output:/output -t tchain /bin/bash .github/dockerimages/build-wasm.sh
+        apt update -y
+        apt install build-essential git clang curl libssl-dev llvm libudev-dev make protobuf-compiler -y
+
+    - name: Install Rust
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh && chmod u+x rust_install.sh && ./rust_install.sh -y
+        . $HOME/.cargo/env && rustup update && rustup show
+
+    - name: Install srtool
+      run: cargo install --git https://github.com/chevdor/srtool-cli
+
+    - name: Create downloads folder
+      run: mkdir -p output
+ 
+    - name: Run Srtool 
+      run: srtool build --package "$Runtime"-runtime &> output/output.txt
+
+    - name: Move wasm files
+      run: |
+        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.compressed.wasm ./output/
+        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.wasm ./output/
+        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.wasm ./output/
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: assets-for-download
         path: output
-
-    
