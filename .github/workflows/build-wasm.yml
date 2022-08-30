@@ -49,7 +49,7 @@ jobs:
       run: mkdir -p output
 
     - name: Move Pallets Workspace file
-      run: mv ./ternoa-pallets/Cargo.toml ./ternoa-pallets/Cargo-copy.toml
+      run: rm -f ./ternoa-pallets/Cargo.toml
  
     - name: Run Srtool 
       run: |
