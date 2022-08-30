@@ -46,7 +46,7 @@ jobs:
       run: mkdir -p output
  
     - name: Run Srtool 
-      run: srtool build --package "$Runtime"-runtime &> output/output.txt
+      run: . $HOME/.cargo/env && srtool build --package "$Runtime"-runtime &> output/output.txt
 
     - name: Move wasm files
       run: |

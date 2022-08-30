@@ -5,7 +5,7 @@ ADD . ./workdir
 WORKDIR "/workdir"
 
 # This installs all dependencies that we need (besides Rust).
-RUN pacman -Syu --noconfirm git clang curl make -y
+RUN pacman -Syu --noconfirm git clang curl cmake make -y
 
 # This installs Rust and updates Rust to the right version.
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh && chmod u+x rust_install.sh && ./rust_install.sh -y && \
