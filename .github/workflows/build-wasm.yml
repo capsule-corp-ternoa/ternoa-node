@@ -46,13 +46,16 @@ jobs:
       run: mkdir -p output
  
     - name: Run Srtool 
-      run: . $HOME/.cargo/env && srtool build --package "$Runtime"-runtime &> output/output.txt
+      run: |
+        export runtime=${{ github.event.inputs.runtime }}
+        . $HOME/.cargo/env && srtool build --package "$runtime"-runtime &> output/output.txt
 
     - name: Move wasm files
       run: |
-        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.compressed.wasm ./output/
-        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.compact.wasm ./output/
-        cp ./runtime/"$Runtime"/target/srtool/release/wbuild/"$Runtime"-runtime/"$Runtime"_runtime.wasm ./output/
+        export runtime=${{ github.event.inputs.runtime }}
+        cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.compact.compressed.wasm ./output/
+        cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.compact.wasm ./output/
+        cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.wasm ./output/
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
