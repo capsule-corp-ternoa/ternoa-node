@@ -55,7 +55,7 @@ jobs:
       run: |
         export runtime=${{ github.event.inputs.runtime }}
         . $HOME/.cargo/env
-        srtool build --package "$runtime"-runtime
+        srtool build -p "$runtime"-runtime -r runtime/$runtime 
 
     - name: Move wasm files
       run: |
