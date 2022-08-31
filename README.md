@@ -36,6 +36,7 @@ Table of Contents:
   - [Permanent Storage](#permanent-storage)
   - [Run The Container And Access Its Shell](#run-the-container-and-access-its-shell)
   - [Create A Detached Instance And Access Its Shell](#create-a-detached-instance-and-access-its-shell)
+- [Useful Dockerimages](#useful-dockerimages)
 - [Useful tools](#useful-tools)
 
 # Build
@@ -213,6 +214,20 @@ Example of a typical workflows:
   podman start my_chain_env
   podman exec -it my_chain_env /bin/bash
   [root@d4ad8ec11655:/workdir] nano -V
+```
+
+# Useful Dockerimages
+We have provided 3 different linux flavors which when built and executed generate the Ternoa Binary in that flavor.
+The following flavours are supported:
+- Ubuntu [20.04](./dockerimages/ubuntu-2004.Dockerfile) & [22.04](./dockerimages/ubuntu-2204.Dockerfile)
+- Fedora [35](./dockerimages/fedora-35.Dockerfile) & [36](./dockerimages/fedora-36.Dockerfile)
+- Arch [latest](./dockerimages/arch.Dockerfile)
+
+Besides those images we also have one dockerfile which uses [Ubuntu 22.04](./dockerimages/ubuntu-2204-dev.Dockerfile) and contains all the necessary tools to compile and build the project.
+
+Example on how to build one of those images:
+```bash
+podman build -t tchainarch -f ./dockerimages/arch.Dockerfile .
 ```
 
 
