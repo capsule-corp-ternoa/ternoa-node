@@ -36,6 +36,7 @@ Table of Contents:
   - [Permanent Storage](#permanent-storage)
   - [Run The Container And Access Its Shell](#run-the-container-and-access-its-shell)
   - [Create A Detached Instance And Access Its Shell](#create-a-detached-instance-and-access-its-shell)
+- [Wiki](#wiki)
 - [Useful Dockerimages](#useful-dockerimages)
 - [Useful tools](#useful-tools)
 
@@ -215,6 +216,13 @@ Example of a typical workflows:
   podman exec -it my_chain_env /bin/bash
   [root@d4ad8ec11655:/workdir] nano -V
 ```
+
+# Wiki
+Check out our [Wiki](https://github.com/capsule-corp-ternoa/chain/wiki) page. We are constantly adding new pages and guides there.
+Current Wiki content:
+- [Running a Validator Node and Bonding CAPS](https://github.com/capsule-corp-ternoa/chain/wiki/Running-a-Validator-Node-and-Bonding-CAPS)
+- [Minimal Machine Specification](https://github.com/capsule-corp-ternoa/chain/wiki/Minimal-Machine-Specification)
+- [Storage Runtime Migration](https://github.com/capsule-corp-ternoa/chain/wiki/Storage-Runtime-Migration-(Writing-&-Testing))
 
 # Useful Dockerimages
 We have provided 3 different linux flavors which when built and executed generate the Ternoa Binary in that flavor.
