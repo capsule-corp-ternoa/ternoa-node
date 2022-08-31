@@ -11,7 +11,7 @@ mkdir -p output
 mv ./ternoa-pallets/Cargo.toml ./ternoa-pallets/Cargo-copy.toml
 
 # Execute srtool
-sudo $HOME/.cargo/bin/srtool build --root --package "$runtime"-runtime &> output/output.txt
+sudo $HOME/.cargo/bin/srtool build --root --package "$runtime"-runtime
 
 cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.compact.compressed.wasm ./output/
 cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.compact.wasm ./output/

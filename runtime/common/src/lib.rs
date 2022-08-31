@@ -112,7 +112,8 @@ macro_rules! impl_runtime_weights {
 		use pallet_transaction_payment::{Multiplier, TargetedFeeAdjustment};
 		use sp_runtime::{FixedPointNumber, Perquintill};
 		pub use ternoa_runtime_common::{
-			impl_elections_weights, impl_multiplier_tests, AVERAGE_ON_INITIALIZE_RATIO,
+			impl_elections_weights, impl_multiplier_tests, MinimumMultiplier,
+			SlowAdjustingFeeUpdate, TargetBlockFullness, AVERAGE_ON_INITIALIZE_RATIO,
 			MAXIMUM_BLOCK_WEIGHT, NORMAL_DISPATCH_RATIO,
 		};
 

@@ -26,21 +26,46 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: "Build DockerImage"
-      run: podman build -t tchain -f ./.github/dockerimages/dev-ubuntu-22.Dockerfile .
+    - name: Install Docker
+      run: apt update -y && snap install docker
 
-    - name: "Create output folder."
-      run: mkdir output
+    - name: Init Submodules
+      run: git submodule update --init --recursive
 
-    - name: "Run Build Wasm Script"
+    - name: Install Dependencies
+      run: |
+        apt update -y
+        apt install build-essential git clang curl libssl-dev llvm libudev-dev make protobuf-compiler -y
+
+    - name: Install Rust
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rust_install.sh && chmod u+x rust_install.sh && ./rust_install.sh -y
+        . $HOME/.cargo/env && rustup update && rustup show
+
+    - name: Install srtool
+      run: . $HOME/.cargo/env && cargo install --git https://github.com/chevdor/srtool-cli
+
+    - name: Create downloads folder
+      run: mkdir -p output
+
+    - name: Move Pallets Workspace file
+      run: rm -f ./ternoa-pallets/Cargo.toml
+ 
+    - name: Run Srtool 
       run: |
         export runtime=${{ github.event.inputs.runtime }}
-        podman run --rm -e runtime=$runtime -v ./output:/workdir/output -t tchain /bin/bash .github/dockerimages/build-wasm.sh
+        . $HOME/.cargo/env
+        srtool build -p "$runtime"-runtime -r runtime/$runtime 
+
+    - name: Move wasm files
+      run: |
+        export runtime=${{ github.event.inputs.runtime }}
+        cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.compact.compressed.wasm ./output/
+        cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.compact.wasm ./output/
+        cp ./runtime/"$runtime"/target/srtool/release/wbuild/"$runtime"-runtime/"$runtime"_runtime.wasm ./output/
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: assets-for-download
         path: output
-
-    
