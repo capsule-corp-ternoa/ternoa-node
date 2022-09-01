@@ -1,4 +1,4 @@
-name: Build Ubuntu 22.04 Binary
+name: Build Debian 11 Binary
 
 on:
   workflow_dispatch:
@@ -13,12 +13,12 @@ jobs:
 
   build:
     runs-on: GP1-M
-    name: Build Ubuntu 2204 Binary
+    name: Build Debian 11 Binary
     steps:
     - uses: actions/checkout@v3
 
     - name: "Build DockerImage"
-      run: podman build -t tchain -f ./dockerimages/ubuntu-2204.Dockerfile .
+      run: podman build -t tchain -f ./dockerimages/debian-11.Dockerfile .
 
     - name: "Create output folder."
       run: mkdir output
