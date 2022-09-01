@@ -7,8 +7,6 @@ COMMAND="./target/release/ternoa benchmark pallet --chain alphanet-dev --steps=5
 MEDIUM_COMMAND="./target/release/ternoa benchmark pallet --chain alphanet-dev --steps=10 --repeat=5 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output=./weights/"
 SHORT_COMMAND="./target/release/ternoa benchmark pallet --chain alphanet-dev --steps=5 --repeat=2 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output=./weights/"
 
-echo "Running non-ternoa pallet benchmarks"
-
 echo "PALLET BABE"
 echo $(eval $COMMAND --pallet=pallet_babe)
 
@@ -36,12 +34,6 @@ echo $(eval $COMMAND --pallet=pallet_preimage)
 echo "PALLET SCHEDULER"
 echo $(eval $COMMAND --pallet=pallet_scheduler)
 
-# echo "TODO PALLET SESSION"
-# echo $(eval $COMMAND --pallet=pallet_session)
-
-# echo "TODO PALLET STAKING"
-# echo $(eval $COMMAND --pallet=pallet_staking)
-
 echo "PALLET TIMESTAMP"
 echo $(eval $COMMAND --pallet=pallet_timestamp)
 
@@ -63,8 +55,6 @@ echo $(eval $COMMAND --pallet=pallet_democracy)
 echo "PALLET ELECTIONS PHRAGMEN"
 echo $(eval $MEDIUM_COMMAND --pallet=pallet_elections_phragmen)
 
-echo "Running Ternoa pallet benchmarks"
-
 echo "TERNOA STAKING REWARDS"
 echo $(eval $COMMAND --pallet=ternoa_staking_rewards)
 
@@ -76,3 +66,15 @@ echo $(eval $SHORT_COMMAND --pallet=ternoa_nft)
 
 echo "TERNOA MARKETPLACE"
 echo $(eval $COMMAND --pallet=ternoa_marketplace)
+
+# echo "PALLET SESSION"
+# echo $(eval $COMMAND --pallet=pallet_session)
+
+# echo "PALLET STAKING"
+# echo $(eval $COMMAND --pallet=pallet_staking)
+
+echo "PALLET IDENTITY"
+echo $(eval $MEDIUM_COMMAND --pallet=pallet_identity)
+
+echo "PALLET MULTISIG"
+echo $(eval $MEDIUM_COMMAND --pallet=pallet_multisig)
