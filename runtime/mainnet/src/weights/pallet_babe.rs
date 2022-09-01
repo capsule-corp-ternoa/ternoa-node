@@ -30,8 +30,6 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_babe::WeightInfo for WeightInfo<T> {
 	fn check_equivocation_proof(x: u32, ) -> Weight {
-		(265_872_000 as Weight)
-			// Standard Error: 17_498_000
-			.saturating_add((57_045_000 as Weight).saturating_mul(x as Weight))
+		Weight::one()
 	}
 }

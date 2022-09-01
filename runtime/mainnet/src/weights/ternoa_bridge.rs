@@ -31,46 +31,35 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> ternoa_bridge::WeightInfo for WeightInfo<T> {
 	// Storage: Bridge RelayerVoteThreshold (r:0 w:1)
 	fn set_threshold() -> Weight {
-		(41_728_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 	// Storage: Bridge ChainNonces (r:1 w:1)
 	fn add_chain() -> Weight {
-		(46_558_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 	// Storage: Bridge Relayers (r:0 w:1)
 	fn set_relayers() -> Weight {
-		(35_016_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 	// Storage: Bridge Relayers (r:1 w:0)
 	// Storage: Bridge ChainNonces (r:1 w:0)
 	// Storage: Bridge RelayerVoteThreshold (r:1 w:0)
 	// Storage: Bridge Votes (r:1 w:1)
 	fn vote_for_proposal() -> Weight {
-		(71_576_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 	// Storage: Bridge BridgeFee (r:1 w:0)
 	// Storage: Bridge ChainNonces (r:1 w:1)
 	// Storage: System Account (r:1 w:1)
 	fn deposit() -> Weight {
-		(160_683_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
+		Weight::one()
 	}
 	// Storage: Bridge BridgeFee (r:0 w:1)
 	fn set_bridge_fee() -> Weight {
-		(31_098_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 	// Storage: Bridge ChainNonces (r:1 w:1)
 	fn set_deposit_nonce() -> Weight {
-		(36_509_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 }

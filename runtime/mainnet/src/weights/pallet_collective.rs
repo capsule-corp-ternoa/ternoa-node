@@ -34,34 +34,16 @@ impl<T: frame_system::Config> pallet_collective::WeightInfo for WeightInfo<T> {
 	// Storage: TechnicalCommittee Voting (r:100 w:100)
 	// Storage: TechnicalCommittee Prime (r:0 w:1)
 	fn set_members(m: u32, n: u32, p: u32, ) -> Weight {
-		(0 as Weight)
-			// Standard Error: 1_453_000
-			.saturating_add((26_502_000 as Weight).saturating_mul(m as Weight))
-			// Standard Error: 1_453_000
-			.saturating_add((905_000 as Weight).saturating_mul(n as Weight))
-			// Standard Error: 1_453_000
-			.saturating_add((41_440_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
-			.saturating_add(T::DbWeight::get().reads((1 as Weight).saturating_mul(p as Weight)))
-			.saturating_add(T::DbWeight::get().writes(2 as Weight))
-			.saturating_add(T::DbWeight::get().writes((1 as Weight).saturating_mul(p as Weight)))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Members (r:1 w:0)
 	fn execute(b: u32, m: u32, ) -> Weight {
-		(64_719_000 as Weight)
-			// Standard Error: 2_000
-			.saturating_add((4_000 as Weight).saturating_mul(b as Weight))
-			// Standard Error: 21_000
-			.saturating_add((28_000 as Weight).saturating_mul(m as Weight))
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Members (r:1 w:0)
 	// Storage: TechnicalCommittee ProposalOf (r:1 w:0)
 	fn propose_execute(_b: u32, m: u32, ) -> Weight {
-		(79_140_000 as Weight)
-			// Standard Error: 58_000
-			.saturating_add((182_000 as Weight).saturating_mul(m as Weight))
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Members (r:1 w:0)
 	// Storage: TechnicalCommittee ProposalOf (r:1 w:1)
@@ -69,52 +51,26 @@ impl<T: frame_system::Config> pallet_collective::WeightInfo for WeightInfo<T> {
 	// Storage: TechnicalCommittee ProposalCount (r:1 w:1)
 	// Storage: TechnicalCommittee Voting (r:0 w:1)
 	fn propose_proposed(b: u32, m: u32, p: u32, ) -> Weight {
-		(46_363_000 as Weight)
-			// Standard Error: 14_000
-			.saturating_add((35_000 as Weight).saturating_mul(b as Weight))
-			// Standard Error: 150_000
-			.saturating_add((174_000 as Weight).saturating_mul(m as Weight))
-			// Standard Error: 148_000
-			.saturating_add((1_293_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(4 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Members (r:1 w:0)
 	// Storage: TechnicalCommittee Voting (r:1 w:1)
 	fn vote(m: u32, ) -> Weight {
-		(130_953_000 as Weight)
-			// Standard Error: 122_000
-			.saturating_add((192_000 as Weight).saturating_mul(m as Weight))
-			.saturating_add(T::DbWeight::get().reads(2 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Voting (r:1 w:1)
 	// Storage: TechnicalCommittee Members (r:1 w:0)
 	// Storage: TechnicalCommittee Proposals (r:1 w:1)
 	// Storage: TechnicalCommittee ProposalOf (r:0 w:1)
 	fn close_early_disapproved(m: u32, p: u32, ) -> Weight {
-		(105_586_000 as Weight)
-			// Standard Error: 149_000
-			.saturating_add((350_000 as Weight).saturating_mul(m as Weight))
-			// Standard Error: 144_000
-			.saturating_add((721_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(3 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Voting (r:1 w:1)
 	// Storage: TechnicalCommittee Members (r:1 w:0)
 	// Storage: TechnicalCommittee ProposalOf (r:1 w:1)
 	// Storage: TechnicalCommittee Proposals (r:1 w:1)
 	fn close_early_approved(b: u32, m: u32, p: u32, ) -> Weight {
-		(93_201_000 as Weight)
-			// Standard Error: 17_000
-			.saturating_add((20_000 as Weight).saturating_mul(b as Weight))
-			// Standard Error: 181_000
-			.saturating_add((439_000 as Weight).saturating_mul(m as Weight))
-			// Standard Error: 175_000
-			.saturating_add((964_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Voting (r:1 w:1)
 	// Storage: TechnicalCommittee Members (r:1 w:0)
@@ -122,13 +78,7 @@ impl<T: frame_system::Config> pallet_collective::WeightInfo for WeightInfo<T> {
 	// Storage: TechnicalCommittee Proposals (r:1 w:1)
 	// Storage: TechnicalCommittee ProposalOf (r:0 w:1)
 	fn close_disapproved(m: u32, p: u32, ) -> Weight {
-		(83_653_000 as Weight)
-			// Standard Error: 186_000
-			.saturating_add((486_000 as Weight).saturating_mul(m as Weight))
-			// Standard Error: 179_000
-			.saturating_add((1_060_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(4 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Voting (r:1 w:1)
 	// Storage: TechnicalCommittee Members (r:1 w:0)
@@ -136,24 +86,12 @@ impl<T: frame_system::Config> pallet_collective::WeightInfo for WeightInfo<T> {
 	// Storage: TechnicalCommittee ProposalOf (r:1 w:1)
 	// Storage: TechnicalCommittee Proposals (r:1 w:1)
 	fn close_approved(b: u32, m: u32, p: u32, ) -> Weight {
-		(121_194_000 as Weight)
-			// Standard Error: 15_000
-			.saturating_add((11_000 as Weight).saturating_mul(b as Weight))
-			// Standard Error: 167_000
-			.saturating_add((577_000 as Weight).saturating_mul(m as Weight))
-			// Standard Error: 160_000
-			.saturating_add((909_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(5 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+		Weight::one()
 	}
 	// Storage: TechnicalCommittee Proposals (r:1 w:1)
 	// Storage: TechnicalCommittee Voting (r:0 w:1)
 	// Storage: TechnicalCommittee ProposalOf (r:0 w:1)
 	fn disapprove_proposal(p: u32, ) -> Weight {
-		(83_087_000 as Weight)
-			// Standard Error: 127_000
-			.saturating_add((828_000 as Weight).saturating_mul(p as Weight))
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(3 as Weight))
+		Weight::one()
 	}
 }

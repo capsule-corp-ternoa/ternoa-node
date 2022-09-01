@@ -30,13 +30,10 @@ use sp_std::marker::PhantomData;
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_grandpa::WeightInfo for WeightInfo<T> {
 	fn check_equivocation_proof(x: u32, ) -> Weight {
-		(314_795_000 as Weight)
-			// Standard Error: 12_390_000
-			.saturating_add((32_697_000 as Weight).saturating_mul(x as Weight))
+		Weight::one()
 	}
 	// Storage: Grandpa Stalled (r:0 w:1)
 	fn note_stalled() -> Weight {
-		(3_366_000 as Weight)
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 }

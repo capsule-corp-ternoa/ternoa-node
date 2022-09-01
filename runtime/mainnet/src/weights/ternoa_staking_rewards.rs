@@ -31,8 +31,6 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> ternoa_staking_rewards::WeightInfo for WeightInfo<T> {
 	// Storage: StakingRewards Data (r:1 w:1)
 	fn set_session_extra_reward_payout() -> Weight {
-		(42_992_000 as Weight)
-			.saturating_add(T::DbWeight::get().reads(1 as Weight))
-			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+		Weight::one()
 	}
 }
