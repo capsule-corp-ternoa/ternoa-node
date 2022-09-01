@@ -484,5 +484,7 @@ mod benches {
 		[pallet_utility, Utility]
 		[pallet_democracy, Democracy]
 		[pallet_elections_phragmen, PhragmenElection]
+		[pallet_identity, Identity]
+		[pallet_multisig, Multisig]
 	);
 }

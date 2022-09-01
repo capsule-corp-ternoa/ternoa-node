@@ -100,7 +100,7 @@ impl pallet_utility::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
 	type PalletsOrigin = OriginCaller;
-	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>; // TODO Weights
+	type WeightInfo = weights::pallet_utility::WeightInfo<Runtime>; // TODO Weights
 }
 
 impl pallet_transaction_payment::Config for Runtime {
@@ -145,7 +145,7 @@ impl pallet_treasury::Config for Runtime {
 	type Burn = common::treasury::Burn;
 	type BurnDestination = ();
 	type MaxApprovals = common::treasury::MaxApprovals;
-	type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>; //TODO Weights
+	type WeightInfo = weights::pallet_treasury::WeightInfo<Runtime>;
 	type SpendFunds = ();
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<Balance>;
 }
@@ -533,7 +533,7 @@ impl pallet_collective::Config<CouncilCollective> for Runtime {
 	type MaxProposals = common::council::CouncilMaxProposals;
 	type MaxMembers = common::council::CouncilMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
-	type WeightInfo = pallet_collective::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_collective::WeightInfo<Runtime>;
 }
 // Make sure that there are no more than MaxMembers members elected via phragmen.
 const_assert!(
@@ -557,7 +557,7 @@ impl pallet_elections_phragmen::Config for Runtime {
 	type DesiredRunnersUp = common::phragmen_election::PhragmenDesiredRunnersUp;
 	type TermDuration = common::phragmen_election::PhragmenTermDuration;
 	type PalletId = common::phragmen_election::PhragmenElectionPalletId;
-	type WeightInfo = pallet_elections_phragmen::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_elections_phragmen::WeightInfo<Runtime>;
 	type MaxCandidates = common::phragmen_election::MaxCandidates;
 	type MaxVoters = common::phragmen_election::MaxVoters;
 }
@@ -612,7 +612,7 @@ impl pallet_democracy::Config for Runtime {
 	type Scheduler = Scheduler;
 	type PalletsOrigin = OriginCaller;
 	type MaxVotes = common::democracy::MaxVotes;
-	type WeightInfo = pallet_democracy::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_democracy::WeightInfo<Runtime>;
 	type MaxProposals = common::democracy::MaxProposals;
 }
 
@@ -623,7 +623,7 @@ impl pallet_multisig::Config for Runtime {
 	type DepositBase = common::multisig::DepositBase;
 	type DepositFactor = common::multisig::DepositFactor;
 	type MaxSignatories = common::multisig::MaxSignatories;
-	type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_multisig::WeightInfo<Runtime>;
 }
 
 impl pallet_identity::Config for Runtime {
@@ -638,7 +638,7 @@ impl pallet_identity::Config for Runtime {
 	type Slashed = Treasury;
 	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
 	type RegistrarOrigin = RootOrAtLeastHalfOfCommittee;
-	type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_identity::WeightInfo<Runtime>;
 }
 
 parameter_types! {
