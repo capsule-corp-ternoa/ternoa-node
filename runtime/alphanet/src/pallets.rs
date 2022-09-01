@@ -677,10 +677,10 @@ impl ternoa_marketplace::Config for Runtime {
 }
 
 parameter_types! {
-	pub const RentAccountSizeLimit: u32 = 3; // TODO 10_000;
-	pub const SimultaneousContractLimit: u32 = 10;// TODO 1_000_000;
-	pub const ActionsInBlockLimit: u32 = 10;// TODO 1_000;
-	pub const ContractExpirationDuration: u32 = 2000;// TODO 864_000;
+	pub const RentAccountSizeLimit: u32 = 10_000;
+	pub const SimultaneousContractLimit: u32 = 1_000_000;
+	pub const RentActionsInBlockLimit: u32 = 1_000;
+	pub const ContractExpirationDuration: u32 = 864_000;
 }
 
 impl ternoa_rent::Config for Runtime {
@@ -691,18 +691,19 @@ impl ternoa_rent::Config for Runtime {
 	type PalletId = common::rent::PalletId;
 	type AccountSizeLimit = RentAccountSizeLimit;
 	type SimultaneousContractLimit = SimultaneousContractLimit;
-	type ActionsInBlockLimit = ActionsInBlockLimit;
+	type ActionsInBlockLimit = RentActionsInBlockLimit;
 	type ContractExpirationDuration = ContractExpirationDuration;
 }
 
 parameter_types! {
-	pub const MinAuctionDuration: u32 = 100; // TODO;
-	pub const MaxAuctionDuration: u32 = 1000; // TODO;
-	pub const MaxAuctionDelay: u32 = 1000;// TODO;
-	pub const AuctionGracePeriod: u32 = 10;// TODO;
-	pub const AuctionEndingPeriod: u32 = 5;// TODO;
-	pub const BidderListLengthLimit: u32 = 10;// TODO;
-	pub const ParallelAuctionLimit: u32 = 100;// TODO;
+	pub const MinAuctionDuration: u32 = 600;
+	pub const MaxAuctionDuration: u32 = 2_592_000;
+	pub const MaxAuctionDelay: u32 = 432_000;
+	pub const AuctionGracePeriod: u32 = 50;
+	pub const AuctionEndingPeriod: u32 = 100;
+	pub const BidderListLengthLimit: u32 = 25;
+	pub const ParallelAuctionLimit: u32 = 1_000_000;
+	pub const AuctionActionsInBlockLimit: u32 = 1_000;
 }
 
 impl ternoa_auction::Config for Runtime {
@@ -719,4 +720,5 @@ impl ternoa_auction::Config for Runtime {
 	type AuctionEndingPeriod = AuctionEndingPeriod;
 	type BidderListLengthLimit = BidderListLengthLimit;
 	type ParallelAuctionLimit = ParallelAuctionLimit;
+	type ActionsInBlockLimit = AuctionActionsInBlockLimit;
 }
