@@ -49,9 +49,9 @@ use ternoa_runtime_common as common;
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances,
 	BlockWeights, Call, Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline,
-	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, Origin, OriginCaller,
-	PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload, Staking,
-	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
+	Marketplace, OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, Origin,
+	OriginCaller, PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload,
+	Staking, StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
 	UncheckedExtrinsic, NFT, VERSION,
 };
 
@@ -701,4 +701,53 @@ impl pallet_assets::Config for Runtime {
 	type Freezer = ();
 	type Extra = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
+}
+
+parameter_types! {
+	pub const RentAccountSizeLimit: u32 = 10_000;
+	pub const SimultaneousContractLimit: u32 = 1_000_000;
+	pub const RentActionsInBlockLimit: u32 = 1_000;
+	pub const ContractExpirationDuration: u32 = 864_000;
+	pub const RentPalletId: frame_support::PalletId = frame_support::PalletId (*b"ter/rent");
+}
+
+impl ternoa_rent::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_rent::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type NFTExt = NFT;
+	type PalletId = RentPalletId;
+	type AccountSizeLimit = RentAccountSizeLimit;
+	type SimultaneousContractLimit = SimultaneousContractLimit;
+	type ActionsInBlockLimit = RentActionsInBlockLimit;
+	type ContractExpirationDuration = ContractExpirationDuration;
+}
+
+parameter_types! {
+	pub const MinAuctionDuration: u32 = 600;
+	pub const MaxAuctionDuration: u32 = 2_592_000;
+	pub const MaxAuctionDelay: u32 = 432_000;
+	pub const AuctionGracePeriod: u32 = 50;
+	pub const AuctionEndingPeriod: u32 = 100;
+	pub const BidderListLengthLimit: u32 = 25;
+	pub const ParallelAuctionLimit: u32 = 1_000_000;
+	pub const AuctionActionsInBlockLimit: u32 = 1_000;
+	pub const AucPalletId: frame_support::PalletId = frame_support::PalletId (*b"ter/auct");
+}
+
+impl ternoa_auction::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = weights::ternoa_auction::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type NFTExt = NFT;
+	type MarketplaceExt = Marketplace;
+	type PalletId = AucPalletId;
+	type MinAuctionDuration = MinAuctionDuration;
+	type MaxAuctionDuration = MaxAuctionDuration;
+	type MaxAuctionDelay = MaxAuctionDelay;
+	type AuctionGracePeriod = AuctionGracePeriod;
+	type AuctionEndingPeriod = AuctionEndingPeriod;
+	type BidderListLengthLimit = BidderListLengthLimit;
+	type ParallelAuctionLimit = ParallelAuctionLimit;
+	type ActionsInBlockLimit = AuctionActionsInBlockLimit;
 }

@@ -146,11 +146,13 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
+ "ternoa-auction",
  "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
  "ternoa-marketplace",
  "ternoa-nft",
+ "ternoa-rent",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
 ]
@@ -7993,6 +7995,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "ternoa-auction"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-marketplace",
+ "ternoa-nft",
+ "ternoa-pallets-primitives",
+]
+
+[[package]]
 name = "ternoa-bridge"
 version = "1.0.0"
 dependencies = [
@@ -8135,6 +8159,27 @@ dependencies = [
  "sp-arithmetic",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "ternoa-rent"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-nft",
+ "ternoa-pallets-primitives",
 ]
 
 [[package]]
