@@ -230,6 +230,7 @@ The following flavours are supported:
 - Ubuntu [20.04](./dockerimages/ubuntu-2004.Dockerfile) & [22.04](./dockerimages/ubuntu-2204.Dockerfile)
 - Fedora [35](./dockerimages/fedora-35.Dockerfile) & [36](./dockerimages/fedora-36.Dockerfile)
 - Arch [latest](./dockerimages/arch.Dockerfile)
+- Debian [11](./dockerimages/debian-11.Dockerfile)
 
 Besides those images we also have one dockerfile which uses [Ubuntu 22.04](./dockerimages/ubuntu-2204-dev.Dockerfile) and contains all the necessary tools to compile and build the project.
 

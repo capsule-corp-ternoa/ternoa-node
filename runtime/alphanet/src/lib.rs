@@ -143,6 +143,7 @@ construct_runtime!(
 		Identity: pallet_identity = 28,
 		NFT: ternoa_nft = 29,
 		Marketplace: ternoa_marketplace = 30,
+		Assets: pallet_assets = 31,
 	}
 );
 
@@ -486,5 +487,6 @@ mod benches {
 		[pallet_elections_phragmen, PhragmenElection]
 		[pallet_identity, Identity]
 		[pallet_multisig, Multisig]
+		[pallet_assets, Assets]
 	);
 }
