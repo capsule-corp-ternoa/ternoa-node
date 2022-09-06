@@ -25,7 +25,7 @@ use common::{
 use frame_election_provider_support::{SequentialPhragmen, Weight};
 use frame_support::{
 	parameter_types,
-	traits::{ConstU128, ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
+	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
 };
 use frame_system::EnsureRoot;
@@ -679,11 +679,11 @@ impl ternoa_marketplace::Config for Runtime {
 
 parameter_types! {
 	pub const AssetDeposit: u128 = 10_000 * CAPS;
-	pub const AssetAccountDeposit: u32 = 10 * CAPS;
+	pub const AssetAccountDeposit: u128 = 10 * CAPS;
 	pub const ApprovalDeposit: u128 = 100 * CAPS;
 	pub const StringLimit: u32 = 50;
-	pub const MetadataDepositBase: u32 = 100 * CAPS;
-	pub const MetadataDepositPerByte: u32 = 10 * CAPS;
+	pub const MetadataDepositBase: u128 = 100 * CAPS;
+	pub const MetadataDepositPerByte: u128 = 10 * CAPS;
 }
 
 impl pallet_assets::Config for Runtime {
@@ -700,5 +700,5 @@ impl pallet_assets::Config for Runtime {
 	type StringLimit = StringLimit;
 	type Freezer = ();
 	type Extra = ();
-	type WeightInfo = ();
+	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
 }

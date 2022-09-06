@@ -67,14 +67,17 @@ echo $(eval $SHORT_COMMAND --pallet=ternoa_nft)
 echo "TERNOA MARKETPLACE"
 echo $(eval $COMMAND --pallet=ternoa_marketplace)
 
-# echo "PALLET SESSION"
-# echo $(eval $COMMAND --pallet=pallet_session)
-
-# echo "PALLET STAKING"
-# echo $(eval $COMMAND --pallet=pallet_staking)
-
 echo "PALLET IDENTITY"
 echo $(eval $MEDIUM_COMMAND --pallet=pallet_identity)
 
 echo "PALLET MULTISIG"
 echo $(eval $MEDIUM_COMMAND --pallet=pallet_multisig)
+
+echo "PALLET ASSETS"
+echo $(eval $MEDIUM_COMMAND --pallet=pallet_assets)
+
+# echo "PALLET SESSION"
+# echo $(eval $COMMAND --pallet=pallet_session)
+
+# echo "PALLET STAKING"
+# echo $(eval $COMMAND --pallet=pallet_staking)
