@@ -16,6 +16,7 @@
 
 use super::weights;
 use common::{
+	constants::currency::CAPS,
 	election_provider_multi_phase::BetterUnsignedThreshold,
 	staking::{BondingDuration, SessionsPerEra},
 	transaction_payment::TransactionByteFee,
@@ -24,7 +25,7 @@ use common::{
 use frame_election_provider_support::{SequentialPhragmen, Weight};
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
+	traits::{ConstU128, ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
 };
 use frame_system::EnsureRoot;
@@ -674,4 +675,30 @@ impl ternoa_marketplace::Config for Runtime {
 	type InitialMintFee = MarketplaceInitialMintFee;
 	type OffchainDataLimit = OffchainDataLimit;
 	type AccountSizeLimit = AccountSizeLimit;
+}
+
+parameter_types! {
+	pub const AssetDeposit: u128 = 10_000 * CAPS;
+	pub const AssetAccountDeposit: u32 = 10 * CAPS;
+	pub const ApprovalDeposit: u128 = 100 * CAPS;
+	pub const StringLimit: u32 = 50;
+	pub const MetadataDepositBase: u32 = 100 * CAPS;
+	pub const MetadataDepositPerByte: u32 = 10 * CAPS;
+}
+
+impl pallet_assets::Config for Runtime {
+	type Event = Event;
+	type Balance = Balance;
+	type Currency = Balances;
+	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
+	type AssetId = u32;
+	type AssetDeposit = AssetDeposit;
+	type AssetAccountDeposit = AssetAccountDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type ApprovalDeposit = ApprovalDeposit;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
 }
