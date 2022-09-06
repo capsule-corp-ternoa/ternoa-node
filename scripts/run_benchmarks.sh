@@ -1,7 +1,5 @@
 #!/bin/bash
 
-mkdir -p weights
-
 # Default vaules
 DURATION="short"
 CHAIN="alphanet-dev"
@@ -33,12 +31,16 @@ else
     exit 0;
 fi
 
+if [ "$OUTPUT" = "./weights/" ]; then
+    mkdir -p weights
+fi
+
 COMMAND="$COMMAND --pallet=$PALLET --chain $CHAIN --output=$OUTPUT"
 
 echo "Duration: $DURATION"
 echo "Chain: $CHAIN"
-echo "pallet: $PALLET"
-echo "output: $OUTPUT"
+echo "Pallet: $PALLET"
+echo "Output: $OUTPUT"
 echo "Command: $COMMAND"
 
 echo $(eval $COMMAND)
