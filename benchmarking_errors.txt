@@ -1,0 +1,8 @@
+2022-09-06 21:41:19 [0] 💸 generated 0 npos voters, 0 from validators and 0 nominators    
+Error: Input("InsufficientBond")
+2022-09-06 21:41:19 Starting benchmark: pallet_session::set_keys    
+2022-09-06 21:41:20 [0] 💸 generated 0 npos voters, 0 from validators and 0 nominators    
+Error: Input("InsufficientBond")
+2022-09-06 21:41:20 Starting benchmark: pallet_staking::bond    
+2022-09-06 21:41:20 Starting benchmark: pallet_staking::bond_extra    
+2022-09-06 21:41:20 Starting benchmark: pallet_staking::unbond    

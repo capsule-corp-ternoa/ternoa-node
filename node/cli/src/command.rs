@@ -64,11 +64,11 @@ impl SubstrateCli for Cli {
 		Ok(match id {
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
-			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
+			"alphanet-dev" | "a-dev" | "dev" => Box::new(chain_spec::alphanet::development_config()),
 
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "mainnet-native")]
-			"mainnet-dev" | "dev" => Box::new(chain_spec::mainnet::development_config()),
+			"mainnet-dev" | "m-dev" => Box::new(chain_spec::mainnet::development_config()),
 
 			"" => return Err("Please specify which chain you want to run!".into()),
 			path => {
