@@ -16,7 +16,7 @@
 
 use super::{get_account_id_from_seed, get_from_seed, AlphanetChainSpec as ChainSpec};
 use alphanet_runtime::{
-	constants::currency::UNITS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
+	constants::currency::CAPS, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
 	BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig, SessionConfig,
 	SessionKeys, StakingConfig, SystemConfig, TechnicalMembershipConfig, BABE_GENESIS_EPOCH_CONFIG,
 };
@@ -28,7 +28,7 @@ use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::sr25519;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::{BoundedVec, Perbill};
-use ternoa_core_primitives::{AccountId, Balance};
+use ternoa_core_primitives::AccountId;
 
 fn session_keys(
 	grandpa: GrandpaId,
@@ -60,43 +60,33 @@ pub fn authority_keys_from_seed(seed: &str) -> AuthorityKeys {
 
 pub struct GenesisInput {
 	pub initial_authorities: Vec<AuthorityKeys>,
-	pub endowed_accounts: Vec<(AccountId, Balance)>,
-	pub stake_bond_amount: Balance,
 	pub committee_members: Vec<AccountId>,
 	pub invulnerables: Vec<AccountId>,
 }
 
-fn development_accounts() -> Vec<(AccountId, Balance)> {
+fn development_accounts() -> Vec<AccountId> {
 	vec![
-		(sr25519_account_from_seed("Alice"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Bob"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Charlie"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Dave"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Eve"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Ferdie"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Alice//stash"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Bob//stash"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Charlie//stash"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Dave//stash"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Eve//stash"), 1_000_000 * UNITS),
-		(sr25519_account_from_seed("Ferdie//stash"), 1_000_000 * UNITS),
+		get_account_id_from_seed::<sr25519::Public>("Alice"),
+		get_account_id_from_seed::<sr25519::Public>("Bob"),
+		get_account_id_from_seed::<sr25519::Public>("Charlie"),
+		get_account_id_from_seed::<sr25519::Public>("Dave"),
+		get_account_id_from_seed::<sr25519::Public>("Eve"),
+		get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+		get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
+		get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+		get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
+		get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
+		get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
+		get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 	]
 }
 
 fn development_config_genesis() -> GenesisConfig {
 	let initial_authorities = vec![authority_keys_from_seed("Alice")];
-	let endowed_accounts = development_accounts();
 	let committee_members = vec![sr25519_account_from_seed("Alice")];
-	let stake_bond_amount: Balance = 150_000 * UNITS;
 	let invulnerables = vec![initial_authorities[0].0.clone()];
 
-	let input = GenesisInput {
-		initial_authorities,
-		endowed_accounts,
-		stake_bond_amount,
-		committee_members,
-		invulnerables,
-	};
+	let input = GenesisInput { initial_authorities, committee_members, invulnerables };
 
 	genesis(input)
 }
@@ -123,19 +113,18 @@ pub fn development_config() -> ChainSpec {
 
 /// Helper function to create GenesisConfig for dev testo
 pub fn genesis(input: GenesisInput) -> GenesisConfig {
-	let GenesisInput {
-		initial_authorities,
-		endowed_accounts,
-		stake_bond_amount,
-		committee_members,
-		invulnerables,
-	} = input;
+	let GenesisInput { initial_authorities, committee_members, invulnerables } = input;
+
+	let endowed_accounts: Vec<AccountId> = development_accounts();
+
+	const ENDOWMENT: u128 = 1_000_000 * CAPS;
+	const STASH: u128 = 100 * CAPS;
 
 	GenesisConfig {
 		// Core
 		system: SystemConfig { code: wasm_binary_unwrap().to_vec() },
 		balances: BalancesConfig {
-			balances: endowed_accounts.iter().cloned().map(|x| (x.0, x.1)).collect(),
+			balances: endowed_accounts.iter().cloned().map(|x| (x, ENDOWMENT)).collect(),
 		},
 
 		// Consensus
@@ -161,18 +150,12 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 			stakers: initial_authorities
 				.iter()
 				.map(|x| {
-					(
-						x.0.clone(),
-						x.1.clone(),
-						stake_bond_amount,
-						alphanet_runtime::StakerStatus::Validator,
-					)
+					(x.0.clone(), x.1.clone(), STASH, alphanet_runtime::StakerStatus::Validator)
 				})
 				.collect(),
 			invulnerables,
 			force_era: Forcing::NotForcing,
 			slash_reward_fraction: Perbill::from_percent(10),
-			min_validator_bond: 150_000 * UNITS,
 			..Default::default()
 		},
 		treasury: Default::default(),

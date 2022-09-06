@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default vaules
-DURATION="short"
+DURATION="long"
 CHAIN="alphanet-dev"
 PALLET="*"
 OUTPUT="./weights/"
@@ -18,20 +18,24 @@ do
 done
 
 # echo "Building the Ternoa client..."
-# cargo build --release --features runtime-benchmarks
+# cargo build --profile production --locked --features=runtime-benchmarks
 
 if [ "$DURATION" = "long" ]; then
-    COMMAND="./target/release/ternoa benchmark pallet --steps=50 --repeat=20 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096"
+    COMMAND="./target/production/ternoa benchmark pallet --steps=50 --repeat=20 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096"
 elif [ "$DURATION" = "medium" ]; then
-    COMMAND="./target/release/ternoa benchmark pallet --steps=10 --repeat=5 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096"
+    COMMAND="./target/production/ternoa benchmark pallet --steps=10 --repeat=5 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096"
 elif [ "$DURATION" = "short" ]; then
-    COMMAND="./target/release/ternoa benchmark pallet --steps=2 --repeat=1 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096"
+    COMMAND="./target/production/ternoa benchmark pallet --steps=2 --repeat=1 --extrinsic=* --execution=wasm --wasm-execution=compiled --heap-pages=4096"
 else 
     echo "Unknown duration. Supported value: long; medium; short"
     exit 0;
 fi
 
 if [ "$OUTPUT" = "./weights/" ]; then
+    mkdir -p weights
+fi
+
+if [ "$PALLET" = "*" ]; then
     mkdir -p weights
 fi
 
