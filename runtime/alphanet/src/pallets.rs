@@ -702,3 +702,21 @@ impl pallet_assets::Config for Runtime {
 	type Extra = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
 }
+
+parameter_types! {
+	pub const MaxEnclaveLimit: u32 = 100;
+	pub const APIURILegnthLimit: u32 = 100;
+	pub const EnclaveFee: u128 = 100 * CAPS;
+	pub const ClusterSize: u32 = 8;
+}
+
+impl ternoa_sgx::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = ();
+	type MaxEnclaveLimit = MaxEnclaveLimit;
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type EnclaveFee = EnclaveFee;
+	type ClusterSize = ClusterSize;
+	type APIURILegnthLimit = APIURILegnthLimit;
+}

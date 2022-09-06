@@ -152,6 +152,7 @@ dependencies = [
  "ternoa-marketplace",
  "ternoa-nft",
  "ternoa-runtime-common",
+ "ternoa-sgx",
  "ternoa-staking-rewards",
 ]
 
@@ -8215,6 +8216,26 @@ dependencies = [
  "substrate-state-trie-migration-rpc",
  "ternoa-client",
  "ternoa-core-primitives",
+]
+
+[[package]]
+name = "ternoa-sgx"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "ternoa-common",
+ "ternoa-nft",
+ "ternoa-pallets-primitives",
 ]
 
 [[package]]

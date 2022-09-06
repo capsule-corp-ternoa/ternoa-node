@@ -186,5 +186,6 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 		democracy: Default::default(),
 		phragmen_election: Default::default(),
 		assets: Default::default(),
+		sgx: Default::default(),
 	}
 }

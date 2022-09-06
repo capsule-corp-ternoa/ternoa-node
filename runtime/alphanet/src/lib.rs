@@ -144,6 +144,7 @@ construct_runtime!(
 		NFT: ternoa_nft = 29,
 		Marketplace: ternoa_marketplace = 30,
 		Assets: pallet_assets = 31,
+		SGX: ternoa_sgx = 32,
 	}
 );
 
