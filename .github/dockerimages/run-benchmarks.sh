@@ -5,4 +5,4 @@ $HOME/.cargo/bin/cargo build --profile production --locked --features=runtime-be
 mkdir -p output
 
 # Run our run_benchmark script
-./scripts/run_benchmarks.sh -o ./output -r "$runtime"
+./scripts/run_benchmarks.sh -o ./output -r "$runtime" -b
