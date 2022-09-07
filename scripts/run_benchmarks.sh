@@ -1,65 +1,38 @@
 #!/bin/bash
 
 # Default vaules
-DURATION="long"
+QUICK_EXECUTION=false
 RUNTIME="alphanet"
-PALLET="*"
-OUTPUT_FOLDER="./weights/"
 STEPS=50
 REPEAT=20
-DEV=false
-PROD=false
+OUTPUT_FOLDER="./weights"
+PALLET="*"
 
 # Read flags
-while getopts d:r:p:o:dev:prod: flag
+while getopts qr:p:o: flag
 do
     case "${flag}" in
-        d) DURATION=${OPTARG};;
+        q) QUICK_EXECUTION=true;;
         r) RUNTIME=${OPTARG};;
         p) PALLET=${OPTARG};;
         o) OUTPUT_FOLDER=${OPTARG};;
-        dev) DEV=true;;
-        prod) PROD=true;;
     esac
 done
 
-if $DEV; then
-    DURATION="short"
-fi
-
-if $PROD; then
-    DURATION="long"
-fi
-
-# echo "Building the Ternoa client..."
-# cargo build --profile production --locked --features=runtime-benchmarks
-
 CHAIN="$RUNTIME-dev"
-
-if [ "$DURATION" = "long" ]; then
-    STEPS=50
-    REPEAT=20
-elif [ "$DURATION" = "medium" ]; then
-    STEPS=10
-    REPEAT=5
-elif [ "$DURATION" = "short" ]; then
+if $QUICK_EXECUTION; then
     STEPS=2
     REPEAT=1
-else 
-    echo "Unknown duration. Supported value: long; medium; short"
-    exit 0;
 fi
 
-if [ "$OUTPUT" = "./weights/" ]; then
-    mkdir -p weights
-fi
-
-echo "Duration: $DURATION"
 echo "Chain: $CHAIN"
-echo "Pallet: $PALLET"
 echo "Output folder: $OUTPUT_FOLDER"
 echo "Steps: $STEPS"
 echo "Repeat: $REPEAT"
+echo "Pallet: $PALLET"
+
+echo "Building the Ternoa client..."
+cargo build --profile production --locked --features=runtime-benchmarks
 
 
 # Manually exclude some pallets.
@@ -79,11 +52,13 @@ else
     PALLETS=($PALLET)
 fi
 
-if [ "$OUTPUT_FOLDER" = "./weights/" ]; then
-    mkdir -p weights
+if [ "$OUTPUT_FOLDER" = "./weights" ]; then
+    kdir -p weights
 fi
 
-ERR_FILE="benchmarking_errors.txt"
+
+
+ERR_FILE="$OUTPUT_FOLDER/benchmarking_errors.txt"
 # Delete the error file before each run.
 rm -f $ERR_FILE
 

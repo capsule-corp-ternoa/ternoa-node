@@ -33,6 +33,7 @@ frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", 
 
 # Ternoa
 ternoa-service = { path = "../service", default-features = false, optional = true }
+ternoa-client = { path = "../client", default-features = false, optional = true }
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
@@ -48,6 +49,7 @@ cli = [
     "node-inspect",
     "try-runtime-cli",
     "sc-finality-grandpa",
+    "ternoa-client",
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]

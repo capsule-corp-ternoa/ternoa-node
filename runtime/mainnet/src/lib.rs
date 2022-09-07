@@ -30,6 +30,7 @@ mod version;
 mod weights;
 
 use frame_support::{construct_runtime, parameter_types, traits::KeyOwnerProofSystem};
+pub use frame_system::Call as SystemCall;
 pub use pallet_balances::Call as BalancesCall;
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,

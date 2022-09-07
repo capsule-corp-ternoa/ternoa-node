@@ -16,10 +16,6 @@ env:
   Runtime: ${{ github.event.inputs.runtime }}
 
 jobs:
-  call-start-new-build-machine:
-    uses: ./.github/workflows/start-new-build-machine.yml
-    secrets: inherit
-
   build:
     runs-on: GP1-M
     name: Run Benchmarks
@@ -35,7 +31,7 @@ jobs:
     - name: "Run Benchmarks"
       run: |
         export runtime=${{ github.event.inputs.runtime }}
-        podman run --rm -e runtime=$runtime -v ./output:/output -t tchain /bin/bash .github/dockerimages/run-benchmarks-combined.sh
+        podman run --rm -e runtime=$runtime -v ./output:/output -t tchain /bin/bash .github/dockerimages/run-benchmarks.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
 
+pub mod benchmarking;
+
 use sc_client_api::{
 	AuxStore, Backend as BackendT, BlockchainEvents, HeaderBackend, KeyIterator, UsageProvider,
 };
@@ -184,22 +186,38 @@ pub trait ClientHandle {
 	fn execute_with<T: ExecuteWithClient>(&self, t: T) -> T::Output;
 }
 
+/// Unwraps a [`Client`] into the concrete client type and
+/// provides the concrete runtime as `runtime`.
 macro_rules! with_client {
 	{
-		$self:ident,
+		// The client instance that should be unwrapped.
+		$self:expr,
+		// The name that the unwrapped client will have.
 		$client:ident,
-		{
-			$( $code:tt )*
-		}
+		// NOTE: Using an expression here is fine since blocks are also expressions.
+		$code:expr
 	} => {
 		match $self {
-			#[cfg(feature = "alphanet")]
-			Self::Alphanet($client) => { $( $code )* },
 			#[cfg(feature = "mainnet")]
-			Self::Mainnet($client) => { $( $code )* },
+			Client::Mainnet($client) => {
+				#[allow(unused_imports)]
+				use mainnet_runtime as runtime;
+
+				$code
+			},
+			#[cfg(feature = "alphanet")]
+			Client::Alphanet($client) => {
+				#[allow(unused_imports)]
+				use alphanet_runtime as runtime;
+
+				$code
+			},
 		}
 	}
 }
+
+// Make the macro available only within this crate.
+pub(crate) use with_client;
 
 /// A client instance of Polkadot.
 ///
