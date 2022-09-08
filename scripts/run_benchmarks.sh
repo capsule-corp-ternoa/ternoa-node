@@ -1,20 +1,5 @@
 #!/bin/bash
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Default vaules
 QUICK_EXECUTION=false
 DEV_EXECUTION=false
@@ -25,6 +10,8 @@ OUTPUT_FOLDER="./output"
 PALLET="*"
 START_TIMER_1=$(date +%s)
 BUILD_BINARY=false
+#MODE="production"
+MODE="release"
 
 # Read flags
 while getopts dqr:p:b flag
@@ -59,7 +46,9 @@ echo "Build Binary: $BUILD_BINARY"
 START_TIMER_2=$(date +%s)
 if "$BUILD_BINARY"; then
     echo "Building the Ternoa client in Production mode"
-    cargo build --profile production --locked --features=runtime-benchmarks
+    #cargo build --profile production --locked --features=runtime-benchmarks
+    # This is acctualy supposed to be production and not release
+    cargo build --release --locked --features=runtime-benchmarks
 fi
 END_TIMER_2=$(date +%s)
 
@@ -76,7 +65,7 @@ EXCLUDED_PALLETS=(
 )
 
 if [ "$PALLET" = "*" ]; then
-    PALLETS=($(./target/production/ternoa benchmark pallet --list --chain $CHAIN | tail -n+2 | cut -d',' -f1 | sort | uniq ))
+    PALLETS=($(./target/$MODE/ternoa benchmark pallet --list --chain $CHAIN | tail -n+2 | cut -d',' -f1 | sort | uniq ))
 else
     PALLETS=($PALLET)
 fi
@@ -109,7 +98,7 @@ for PALLET in "${PALLETS[@]}"; do
 
     echo "[+] Benchmarking $PALLET";
 
-    OUTPUT=$(./target/production/ternoa benchmark pallet --chain=$CHAIN --steps=$STEPS --repeat=$REPEAT --pallet="$PALLET" --extrinsic="*" --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output $OUTPUT_FOLDER 2>&1 )
+    OUTPUT=$(./target/$MODE/ternoa benchmark pallet --chain=$CHAIN --steps=$STEPS --repeat=$REPEAT --pallet="$PALLET" --extrinsic="*" --execution=wasm --wasm-execution=compiled --heap-pages=4096 --output $OUTPUT_FOLDER 2>&1 )
     if [ $? -ne 0 ]; then
         echo "$OUTPUT" >> "$ERR_FILE"
         echo "[-] Failed to benchmark $PALLET. Error written to $ERR_FILE; continuing..."
