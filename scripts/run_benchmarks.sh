@@ -1,29 +1,50 @@
 #!/bin/bash
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Default vaules
 QUICK_EXECUTION=false
+DEV_EXECUTION=false
 RUNTIME="alphanet"
 STEPS=50
 REPEAT=20
-OUTPUT_FOLDER="./weights"
+OUTPUT_FOLDER="./output"
 PALLET="*"
 START_TIMER_1=$(date +%s)
 BUILD_BINARY=false
 
 # Read flags
-while getopts qr:p:o:b flag
+while getopts dqr:p:b flag
 do
     case "${flag}" in
         q) QUICK_EXECUTION=true;;
+        d) DEV_EXECUTION=true;;
         r) RUNTIME=${OPTARG};;
         p) PALLET=${OPTARG};;
-        o) OUTPUT_FOLDER=${OPTARG};;
         b) BUILD_BINARY=true;;
     esac
 done
 
 CHAIN="$RUNTIME-dev"
 if $QUICK_EXECUTION; then
+    STEPS=20
+    REPEAT=5
+fi
+
+if $DEV_EXECUTION; then
     STEPS=2
     REPEAT=1
 fi
@@ -37,7 +58,7 @@ echo "Build Binary: $BUILD_BINARY"
 
 START_TIMER_2=$(date +%s)
 if "$BUILD_BINARY"; then
-    echo "Building the Ternoa client..."
+    echo "Building the Ternoa client in Production mode"
     cargo build --profile production --locked --features=runtime-benchmarks
 fi
 END_TIMER_2=$(date +%s)
@@ -60,8 +81,8 @@ else
     PALLETS=($PALLET)
 fi
 
-if [ "$OUTPUT_FOLDER" = "./weights" ]; then
-    mkdir -p weights
+if [ "$OUTPUT_FOLDER" = "./output" ]; then
+    mkdir -p output
 fi
 
 
