@@ -61,7 +61,7 @@ else
 fi
 
 if [ "$OUTPUT_FOLDER" = "./weights" ]; then
-    kdir -p weights
+    mkdir -p weights
 fi
 
 
