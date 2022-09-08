@@ -53,6 +53,8 @@ All the examples in this document assume that you use a Ubuntu like system. If t
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   # Starting a new bash environment so we have access to cargo and rust commands.
   exec bash
+  # Get repo and CD
+  git clone https://github.com/capsule-corp-ternoa/ternoa-node.git && cd ternoa-node
   # Get submodules
   git submodule update --init --recursive
   # Updating Rust to latest versions and installing the right Rust version.
