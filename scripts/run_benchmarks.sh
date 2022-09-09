@@ -10,11 +10,11 @@ OUTPUT_FOLDER="./output"
 PALLET="*"
 START_TIMER_1=$(date +%s)
 BUILD_BINARY=false
-#MODE="production"
-MODE="release"
+LIST_PALLETS=false
+MODE="production"
 
 # Read flags
-while getopts dqr:p:b flag
+while getopts dqr:p:bl flag
 do
     case "${flag}" in
         q) QUICK_EXECUTION=true;;
@@ -22,12 +22,13 @@ do
         r) RUNTIME=${OPTARG};;
         p) PALLET=${OPTARG};;
         b) BUILD_BINARY=true;;
+        l) LIST_PALLETS=true;;
     esac
 done
 
 CHAIN="$RUNTIME-dev"
 if $QUICK_EXECUTION; then
-    STEPS=20
+    STEPS=25
     REPEAT=5
 fi
 
@@ -46,9 +47,8 @@ echo "Build Binary: $BUILD_BINARY"
 START_TIMER_2=$(date +%s)
 if "$BUILD_BINARY"; then
     echo "Building the Ternoa client in Production mode"
-    #cargo build --profile production --locked --features=runtime-benchmarks
+    cargo build --profile production --locked --features=runtime-benchmarks
     # This is acctualy supposed to be production and not release
-    cargo build --release --locked --features=runtime-benchmarks
 fi
 END_TIMER_2=$(date +%s)
 
@@ -72,6 +72,22 @@ fi
 
 if [ "$OUTPUT_FOLDER" = "./output" ]; then
     mkdir -p output
+fi
+
+if $LIST_PALLETS; then
+    for PALLET in "${PALLETS[@]}"; do
+    NOT_SKIP=true
+        for EXCLUDED_PALLET in "${EXCLUDED_PALLETS[@]}"; do
+            if [ "$EXCLUDED_PALLET" == "$PALLET" ]; then
+                NOT_SKIP=false
+                break
+            fi
+        done
+    if $NOT_SKIP; then
+        echo "$PALLET";
+    fi
+    done
+    exit 0;
 fi
 
 
