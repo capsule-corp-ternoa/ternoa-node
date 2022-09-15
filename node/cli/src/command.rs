@@ -21,7 +21,8 @@ use sc_cli::{
 	BuildSpecCmd, ChainInfoCmd, ChainSpec, CheckBlockCmd, ExportBlocksCmd, ExportStateCmd,
 	ImportBlocksCmd, PurgeChainCmd, Result, RevertCmd, RuntimeVersion, SubstrateCli,
 };
-use sc_service::PartialComponents;
+use sc_service::{Arc, PartialComponents};
+use ternoa_client::benchmarking::{inherent_benchmark_data, RemarkBuilder};
 use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
 
 #[cfg(feature = "alphanet-native")]
@@ -64,11 +65,11 @@ impl SubstrateCli for Cli {
 		Ok(match id {
 			"alphanet" => Box::new(chain_spec::alphanet_config()?),
 			#[cfg(feature = "alphanet-native")]
-			"alphanet-dev" | "a-dev" => Box::new(chain_spec::alphanet::development_config()),
+			"alphanet-dev" | "a-dev" | "dev" => Box::new(chain_spec::alphanet::development_config()),
 
 			"mainnet" => Box::new(chain_spec::mainnet_config()?),
 			#[cfg(feature = "mainnet-native")]
-			"mainnet-dev" | "dev" => Box::new(chain_spec::mainnet::development_config()),
+			"mainnet-dev" | "m-dev" => Box::new(chain_spec::mainnet::development_config()),
 
 			"" => return Err("Please specify which chain you want to run!".into()),
 			path => {
@@ -297,7 +298,43 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 				})
 			});
 		},
-		BenchmarkCmd::Overhead(_) => todo!(),
+		BenchmarkCmd::Overhead(cmd) => {
+			#[cfg(feature = "alphanet-native")]
+			if chain_spec.is_alphanet() {
+				return runner.sync_run(|config| {
+					let PartialComponents { client, .. } = new_partial::<
+						alphanet_runtime::RuntimeApi,
+						AlphanetExecutorDispatch,
+					>(&config)?;
+
+					// We need to create Arc<Client> out of the raw client.
+
+					let new_client = ternoa_client::Client::Alphanet(client.clone());
+					let arc_client = Arc::new(new_client);
+
+					let builder = RemarkBuilder::new(arc_client.clone());
+					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), &builder)
+				})
+			}
+
+			#[cfg(feature = "mainnet-native")]
+			{
+				return runner.sync_run(|config| {
+					let PartialComponents { client, .. } = new_partial::<
+						mainnet_runtime::RuntimeApi,
+						MainnetExecutorDispatch,
+					>(&config)?;
+
+					// We need to create Arc<Client> out of the raw client.
+
+					let new_client = ternoa_client::Client::Mainnet(client.clone());
+					let arc_client = Arc::new(new_client);
+
+					let builder = RemarkBuilder::new(arc_client.clone());
+					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), &builder)
+				})
+			}
+		},
 		BenchmarkCmd::Block(cmd) => {
 			with_runtime!(chain_spec, {
 				runner.sync_run(|config| {

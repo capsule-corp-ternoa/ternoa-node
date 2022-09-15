@@ -24,11 +24,18 @@ sp-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate"
 sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
 sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
 sp-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+sp-keyring = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+sp-inherents = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+sp-timestamp = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
 
 # Substrate Client
 sc-client-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
 sc-executor = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
 sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
+sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
 
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
@@ -36,6 +43,7 @@ frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substra
 
 # Ternoa
 ternoa-core-primitives = { path = "../../core-primitives" }
+ternoa-runtime-common = { path = "../../runtime/common" }
 
 # Ternoa runtimes
 alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
