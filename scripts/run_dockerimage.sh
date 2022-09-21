@@ -11,23 +11,23 @@ do
 done
 
 if [ -z "$flavour" ]; then
-    select flavour in ubutnu_2004 ubuntu_2204 fedora_35 fedora_36 debian_11 arch
+    select flavour in ubuntu-2004 ubuntu-2204 fedora-35 fedora-36 debian-11 arch
     do
         break;
     done
 fi
 
 # Get Image name
-if [ "$flavour" = "ubutnu_2004" ]; then
+if [ "$flavour" = "ubutnu-2004" ]; then
     imageName="ubuntu-2004.Dockerfile"
-elif [ "$flavour" = "ubuntu_2204" ]; then
+elif [ "$flavour" = "ubuntu-2204" ]; then
     imageName="ubuntu-2204.Dockerfile"
-elif [ "$flavour" = "fedora_35" ]; then
+elif [ "$flavour" = "fedora-35" ]; then
     imageName="fedora-35.Dockerfile"
-elif [ "$flavour" = "fedora_36" ]; then
+elif [ "$flavour" = "fedora-36" ]; then
     imageName="fedora-36.Dockerfile"
-elif [ "$flavour" = "debian_11" ]; then
-    imageName="debian_11.Dockerfile"
+elif [ "$flavour" = "debian-11" ]; then
+    imageName="debian-11.Dockerfile"
 elif [ "$flavour" = "arch" ]; then
     imageName="arch.Dockerfile"
 else
