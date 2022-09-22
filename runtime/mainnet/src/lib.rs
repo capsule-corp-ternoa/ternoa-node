@@ -144,6 +144,7 @@ construct_runtime!(
 		Identity: pallet_identity = 28,
 		NFT: ternoa_nft = 29,
 		Marketplace: ternoa_marketplace = 30,
+		Assets: pallet_assets = 31,
 	}
 );
 

@@ -16,7 +16,6 @@
 
 use super::weights;
 use common::{
-	constants::currency::CAPS,
 	election_provider_multi_phase::BetterUnsignedThreshold,
 	staking::{BondingDuration, SessionsPerEra},
 	transaction_payment::TransactionByteFee,
@@ -677,27 +676,18 @@ impl ternoa_marketplace::Config for Runtime {
 	type AccountSizeLimit = AccountSizeLimit;
 }
 
-parameter_types! {
-	pub const AssetDeposit: u128 = 10_000 * CAPS;
-	pub const AssetAccountDeposit: u128 = 10 * CAPS;
-	pub const ApprovalDeposit: u128 = 100 * CAPS;
-	pub const StringLimit: u32 = 50;
-	pub const MetadataDepositBase: u128 = 100 * CAPS;
-	pub const MetadataDepositPerByte: u128 = 10 * CAPS;
-}
-
 impl pallet_assets::Config for Runtime {
 	type Event = Event;
 	type Balance = Balance;
 	type Currency = Balances;
 	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
 	type AssetId = u32;
-	type AssetDeposit = AssetDeposit;
-	type AssetAccountDeposit = AssetAccountDeposit;
-	type MetadataDepositBase = MetadataDepositBase;
-	type MetadataDepositPerByte = MetadataDepositPerByte;
-	type ApprovalDeposit = ApprovalDeposit;
-	type StringLimit = StringLimit;
+	type AssetDeposit = common::assets::AssetDeposit;
+	type AssetAccountDeposit = common::assets::AssetAccountDeposit;
+	type MetadataDepositBase = common::assets::MetadataDepositBase;
+	type MetadataDepositPerByte = common::assets::MetadataDepositPerByte;
+	type ApprovalDeposit = common::assets::ApprovalDeposit;
+	type StringLimit = common::assets::StringLimit;
 	type Freezer = ();
 	type Extra = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;

@@ -675,3 +675,20 @@ impl ternoa_marketplace::Config for Runtime {
 	type OffchainDataLimit = OffchainDataLimit;
 	type AccountSizeLimit = AccountSizeLimit;
 }
+
+impl pallet_assets::Config for Runtime {
+	type Event = Event;
+	type Balance = Balance;
+	type Currency = Balances;
+	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
+	type AssetId = u32;
+	type AssetDeposit = common::assets::AssetDeposit;
+	type AssetAccountDeposit = common::assets::AssetAccountDeposit;
+	type MetadataDepositBase = common::assets::MetadataDepositBase;
+	type MetadataDepositPerByte = common::assets::MetadataDepositPerByte;
+	type ApprovalDeposit = common::assets::ApprovalDeposit;
+	type StringLimit = common::assets::StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
+}
