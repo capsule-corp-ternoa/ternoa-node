@@ -1,7 +1,7 @@
 [package]
 name = "mainnet-runtime"
 authors = [ "Ternoa" ]
-version = "1.2.0"
+version = "1.2.1"
 edition = "2021"
 build = "build.rs"
 
@@ -37,6 +37,7 @@ pallet-democracy = { git = "https://github.com/capsule-corp-ternoa/substrate", t
 pallet-elections-phragmen = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
 pallet-multisig = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
 pallet-identity = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
+pallet-assets = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
 
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false, optional = true }
@@ -139,6 +140,7 @@ std = [
 	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"frame-try-runtime/std",
 	"pallet-collective/std",
 	"pallet-membership/std",
 	"pallet-scheduler/std",
@@ -146,8 +148,7 @@ std = [
 	"pallet-elections-phragmen/std",
 	"pallet-multisig/std",
 	"pallet-identity/std",
-	# Try Runtime
-	"frame-try-runtime/std",
+	"pallet-assets/std",
 ]
 
 runtime-benchmarks = [
@@ -179,6 +180,7 @@ runtime-benchmarks = [
 	"pallet-elections-phragmen/runtime-benchmarks",
 	"pallet-multisig/runtime-benchmarks",
 	"pallet-identity/runtime-benchmarks",
+	"pallet-assets/runtime-benchmarks",
 	# Ternoa
 	"ternoa-staking-rewards/runtime-benchmarks",
 	"ternoa-bridge/runtime-benchmarks",
@@ -215,6 +217,7 @@ try-runtime = [
 	"pallet-elections-phragmen/try-runtime",
 	"pallet-multisig/try-runtime",
 	"pallet-identity/try-runtime",
+	"pallet-assets/try-runtime",
 	# Ternoa
 	"ternoa-mandate/try-runtime",
 	"ternoa-staking-rewards/try-runtime",

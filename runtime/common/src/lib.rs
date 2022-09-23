@@ -24,6 +24,7 @@ use sp_runtime::{FixedPointNumber, Perbill, Perquintill};
 use static_assertions::const_assert;
 use ternoa_core_primitives::BlockNumber;
 
+pub mod assets;
 pub mod authorship;
 pub mod babe;
 pub mod bags_list;

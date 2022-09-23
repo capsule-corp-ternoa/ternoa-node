@@ -170,5 +170,6 @@ pub fn genesis(input: GenesisInput) -> GenesisConfig {
 		council: CouncilConfig { members: vec![], ..Default::default() },
 		democracy: Default::default(),
 		phragmen_election: Default::default(),
+		assets: Default::default(),
 	}
 }
