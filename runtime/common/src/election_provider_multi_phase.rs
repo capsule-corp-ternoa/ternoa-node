@@ -96,7 +96,6 @@ impl pallet_election_provider_multi_phase::BenchmarkingConfig for BenchmarkConfi
 	const MAXIMUM_TARGETS: u32 = 300;
 }
 
-pub type Fallback<R> = pallet_election_provider_multi_phase::NoFallback<R>;
 pub type Solver<R> = frame_election_provider_support::SequentialPhragmen<
 	AccountId,
 	pallet_election_provider_multi_phase::SolutionAccuracyOf<R>,

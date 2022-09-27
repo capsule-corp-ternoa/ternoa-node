@@ -408,7 +408,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type OffchainRepeat = OffchainRepeat;
 	type MinerTxPriority = common::election_provider_multi_phase::NposSolutionPriority;
 	type DataProvider = Staking;
-	type Fallback = common::election_provider_multi_phase::Fallback<Self>;
+	type Fallback = frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type GovernanceFallback =
 		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type Solver = common::election_provider_multi_phase::Solver<Self>;
