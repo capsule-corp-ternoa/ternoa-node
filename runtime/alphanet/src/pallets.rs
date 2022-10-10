@@ -26,6 +26,7 @@ use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
+	PalletId,
 };
 use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
@@ -51,7 +52,7 @@ use crate::{
 	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, Origin, OriginCaller,
 	PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload, Staking,
 	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, NFT, VERSION,
+	UncheckedExtrinsic, NFT, Marketplace, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -646,6 +647,8 @@ parameter_types! {
 	pub const NFTOffchainDataLimit: u32 = 150;
 	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
+	pub const InitialSecretMintFee: Balance = 75_000_000_000_000_000_000;
+	pub const ShardsNumber: u32 = 5;
 }
 
 impl ternoa_nft::Config for Runtime {
@@ -657,12 +660,15 @@ impl ternoa_nft::Config for Runtime {
 	type NFTOffchainDataLimit = NFTOffchainDataLimit;
 	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
 	type CollectionSizeLimit = CollectionSizeLimit;
+	type InitialSecretMintFee = InitialSecretMintFee;
+	type ShardsNumber = ShardsNumber;
 }
 
 parameter_types! {
 	pub const MarketplaceInitialMintFee: Balance = 1_000_000_000_000_000_000_000;
 	pub const OffchainDataLimit: u32 = 150;
 	pub const AccountSizeLimit: u32 = 100_000;
+	pub const CollectionListSizeLimit: u32 = 100_000;
 }
 
 impl ternoa_marketplace::Config for Runtime {
@@ -674,6 +680,7 @@ impl ternoa_marketplace::Config for Runtime {
 	type InitialMintFee = MarketplaceInitialMintFee;
 	type OffchainDataLimit = OffchainDataLimit;
 	type AccountSizeLimit = AccountSizeLimit;
+	type CollectionSizeLimit = CollectionSizeLimit;
 }
 
 impl pallet_assets::Config for Runtime {
@@ -691,4 +698,55 @@ impl pallet_assets::Config for Runtime {
 	type Freezer = ();
 	type Extra = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
+}
+
+parameter_types! {
+	pub const MinAuctionDuration: BlockNumber = 100;
+	pub const MaxAuctionDuration: BlockNumber = 2_592_000;
+	pub const MaxAuctionDelay: BlockNumber = 432_000;
+	pub const AuctionGracePeriod: BlockNumber = 50;
+	pub const AuctionEndingPeriod: BlockNumber = 100;
+	pub const AuctionsPalletId: PalletId = PalletId(*b"tauction");
+	pub const BidderListLengthLimit: u32 = 25;
+	pub const ParallelAuctionLimit: u32 = 1_000_000;
+	pub const AuctionActionsInBlockLimit: u32 = 1_000;
+}
+
+impl ternoa_auction::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type WeightInfo = weights::ternoa_auction::WeightInfo<Runtime>;
+	type NFTExt = NFT;
+	type MarketplaceExt = Marketplace;
+	type PalletId = AuctionsPalletId;
+	type MaxAuctionDelay = MaxAuctionDelay;
+	type MaxAuctionDuration = MaxAuctionDuration;
+	type MinAuctionDuration = MinAuctionDuration;
+	type AuctionGracePeriod = AuctionGracePeriod;
+	type AuctionEndingPeriod = AuctionEndingPeriod;
+	type BidderListLengthLimit = BidderListLengthLimit;
+	type ParallelAuctionLimit = ParallelAuctionLimit;
+	type ActionsInBlockLimit = AuctionActionsInBlockLimit;
+}
+
+parameter_types! {
+	pub const RentPalletId: PalletId = PalletId(*b"ter/rent");
+	pub const RentAccountSizeLimit: u32 = 10_000;
+	pub const SimultaneousContractLimit: u32 = 1_000_000;
+	pub const RentActionsInBlockLimit: u32 = 1_000;
+	pub const MaximumContractAvailabilityLimit: u32 = 864_000;
+	pub const MaximumContractDurationLimit: u32 = 5_184_000;
+}
+
+impl ternoa_rent::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type WeightInfo = weights::ternoa_rent::WeightInfo<Runtime>;
+	type NFTExt = NFT;
+	type PalletId = AuctionsPalletId;
+	type AccountSizeLimit = RentAccountSizeLimit;
+	type SimultaneousContractLimit = SimultaneousContractLimit;
+	type ActionsInBlockLimit = RentActionsInBlockLimit;
+	type MaximumContractAvailabilityLimit = MaximumContractAvailabilityLimit;
+	type MaximumContractDurationLimit = MaximumContractDurationLimit;
 }
