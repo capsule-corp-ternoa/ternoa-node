@@ -18,7 +18,7 @@ if [ -z "$flavour" ]; then
 fi
 
 # Get Image name
-if [ "$flavour" = "ubutnu-2004" ]; then
+if [ "$flavour" = "ubuntu-2004" ]; then
     imageName="ubuntu-2004.Dockerfile"
 elif [ "$flavour" = "ubuntu-2204" ]; then
     imageName="ubuntu-2204.Dockerfile"
