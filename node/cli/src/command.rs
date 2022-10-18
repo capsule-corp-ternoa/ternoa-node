@@ -286,19 +286,21 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 				runner.sync_run(|config| cmd.run::<Block, ExecutorDispatch>(config))
 			});
 		},
-		// BenchmarkCmd::Storage(cmd) => {
-		// 	with_runtime!(chain_spec, {
-		// 		runner.sync_run(|config| {
-		// 			let PartialComponents { client, backend, .. } =
-		// 				new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+		
+		BenchmarkCmd::Storage(cmd) => {
+			todo!()
+			// with_runtime!(chain_spec, {
+			// 	runner.sync_run(|config| {
+			// 		let PartialComponents { client, backend, .. } =
+			// 			new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
 
-		// 			let db = backend.expose_db();
-		// 			let storage = backend.expose_storage();
+			// 		let db = backend.expose_db();
+			// 		let storage = backend.expose_storage();
 
-		// 			cmd.run(config, client.clone(), db, storage)
-		// 		})
-		// 	});
-		// },
+			// 		cmd.run(config, client.clone(), db, storage)
+			// 	})
+			// });
+		},
 		BenchmarkCmd::Overhead(cmd) => {
 			#[cfg(feature = "alphanet-native")]
 			if chain_spec.is_alphanet() {
