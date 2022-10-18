@@ -22,8 +22,9 @@ use sc_cli::{
 	ImportBlocksCmd, PurgeChainCmd, Result, RevertCmd, RuntimeVersion, SubstrateCli,
 };
 use sc_service::{Arc, PartialComponents};
-use ternoa_client::FullBackend;
-use ternoa_client::benchmarking::{inherent_benchmark_data, RemarkBuilder};
+use ternoa_client::{
+	benchmarking::{inherent_benchmark_data, RemarkBuilder},
+};
 use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
 
 #[cfg(feature = "alphanet-native")]
@@ -286,18 +287,20 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 				runner.sync_run(|config| cmd.run::<Block, ExecutorDispatch>(config))
 			});
 		},
-		
-		BenchmarkCmd::Storage(cmd) => {
+		#[cfg(not(feature = "runtime-benchmarks"))]
+		BenchmarkCmd::Storage(_) =>
+			Err("Storage benchmarking can be enabled with `--features runtime-benchmarks`.".into()),
+		#[cfg(feature = "runtime-benchmarks")]
+		BenchmarkCmd::Storage(_) => {
 			todo!()
 			// with_runtime!(chain_spec, {
 			// 	runner.sync_run(|config| {
-			// 		let PartialComponents { client, backend, .. } =
-			// 			new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+			// 		// ensure that we keep the task manager alive
+			// 		let partial = new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+			// 		let db = partial.backend.expose_db();
+			// 		let storage = partial.backend.expose_storage();
 
-			// 		let db = backend.expose_db();
-			// 		let storage = backend.expose_storage();
-
-			// 		cmd.run(config, client.clone(), db, storage)
+			// 		cmd.run(config, partial.client, db, storage)
 			// 	})
 			// });
 		},
@@ -316,7 +319,13 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 					let arc_client = Arc::new(new_client);
 
 					let builder = RemarkBuilder::new(arc_client.clone());
-					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), Vec::new(), &builder)
+					cmd.run(
+						config,
+						client.clone(),
+						inherent_benchmark_data().unwrap(),
+						Vec::new(),
+						&builder,
+					)
 				})
 			}
 
@@ -334,21 +343,25 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 					let arc_client = Arc::new(new_client);
 
 					let builder = RemarkBuilder::new(arc_client.clone());
-					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), Vec::new(), &builder)
+					cmd.run(
+						config,
+						client.clone(),
+						inherent_benchmark_data().unwrap(),
+						Vec::new(),
+						&builder,
+					)
 				})
 			}
 		},
 		BenchmarkCmd::Block(cmd) => {
 			with_runtime!(chain_spec, {
 				runner.sync_run(|config| {
-					let PartialComponents { client, .. } =
-						new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
-
-					cmd.run(client.clone())
+					let partial = new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+					cmd.run(partial.client)
 				})
 			});
 		},
-		BenchmarkCmd::Extrinsic(_) => todo!(),
+		BenchmarkCmd::Extrinsic(_cmd) => todo!(),
 		_ => panic!("Benchmark Command not implement."),
 	}
 }

@@ -68,7 +68,6 @@ sp-version = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "
 
 # Rest
 parity-scale-codec = { default-features = false, features = ["derive", "max-encoded-len"], version = "3.1.5" }
-hex-literal = { version = "0.3.4", optional = true }
 scale-info = { version = "2.1.2", default-features = false, features = ["derive"] }
 serde = { version = "1.0.137", optional = true }
 static_assertions = { version = "1.1.0" }
@@ -109,6 +108,7 @@ std = [
 	"frame-support/std",
 	"frame-system-rpc-runtime-api/std",
 	"frame-system/std",
+	"frame-benchmarking?/std",
 	"pallet-authority-discovery/std",
 	"pallet-authorship/std",
 	"pallet-babe/std",
@@ -118,8 +118,10 @@ std = [
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
 	"pallet-offences/std",
+	"pallet-offences-benchmarking?/std",
 	"pallet-preimage/std",
 	"pallet-session/std",
+	"pallet-session-benchmarking?/std",
 	"pallet-staking/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
@@ -143,7 +145,7 @@ std = [
 	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
-	"frame-try-runtime/std",
+	"frame-try-runtime?/std",
 	"pallet-collective/std",
 	"pallet-membership/std",
 	"pallet-scheduler/std",
@@ -158,9 +160,8 @@ runtime-benchmarks = [
 	"frame-benchmarking",
 	"frame-election-provider-support/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
-	"frame-system-benchmarking",
+	"frame-system-benchmarking/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
-	"hex-literal",
 	"pallet-babe/runtime-benchmarks",
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
@@ -172,8 +173,8 @@ runtime-benchmarks = [
 	"pallet-offences/runtime-benchmarks",
 	"pallet-preimage/runtime-benchmarks",
 	"pallet-scheduler/runtime-benchmarks",
-	"pallet-session-benchmarking",
-	"pallet-offences-benchmarking",
+	"pallet-session-benchmarking/runtime-benchmarks",
+	"pallet-offences-benchmarking/runtime-benchmarks",
 	"pallet-staking/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-treasury/runtime-benchmarks",

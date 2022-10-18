@@ -187,7 +187,7 @@ macro_rules! impl_multiplier_tests {
 			pub BlockLength: frame_system::limits::BlockLength =
 				frame_system::limits::BlockLength::max(2 * 1024);
 			pub BlockWeights: frame_system::limits::BlockWeights =
-				frame_system::limits::BlockWeights::simple_max(1024);
+				frame_system::limits::BlockWeights::simple_max(frame_support::weights::Weight::from_ref_time(1024));
 		}
 
 		impl frame_system::Config for Runtime {
