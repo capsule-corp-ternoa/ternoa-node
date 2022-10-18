@@ -48,11 +48,11 @@ use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances,
-	BlockWeights, RuntimeCall, Council, ElectionProviderMultiPhase, RuntimeEvent, Grandpa, Historical, ImOnline,
-	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, RuntimeOrigin, OriginCaller,
-	PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload, Staking,
-	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, NFT, Marketplace, VERSION,
+	BlockWeights, Council, ElectionProviderMultiPhase, Grandpa, Historical, ImOnline, Marketplace,
+	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, OriginCaller, PalletInfo,
+	Preimage, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, Scheduler, Session, Signature,
+	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
+	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -101,7 +101,7 @@ impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
 	type PalletsOrigin = OriginCaller;
-	type WeightInfo = weights::pallet_utility::WeightInfo<Runtime>; // TODO Weights
+	type WeightInfo = weights::pallet_utility::WeightInfo<Runtime>;
 }
 
 impl pallet_transaction_payment::Config for Runtime {
@@ -216,7 +216,7 @@ impl pallet_session::Config for Runtime {
 	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
-	type WeightInfo = pallet_session::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
 }
 
 impl pallet_session::historical::Config for Runtime {
@@ -244,7 +244,10 @@ where
 		public: <Signature as sp_runtime::traits::Verify>::Signer,
 		account: AccountId,
 		nonce: Index,
-	) -> Option<(RuntimeCall, <UncheckedExtrinsic as sp_runtime::traits::Extrinsic>::SignaturePayload)> {
+	) -> Option<(
+		RuntimeCall,
+		<UncheckedExtrinsic as sp_runtime::traits::Extrinsic>::SignaturePayload,
+	)> {
 		let tip = 0;
 		// take the biggest period possible.
 		let period =
@@ -410,7 +413,8 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type OffchainRepeat = OffchainRepeat;
 	type MinerTxPriority = common::election_provider_multi_phase::NposSolutionPriority;
 	type DataProvider = Staking;
-	type Fallback = frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
+	type Fallback =
+		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type GovernanceFallback =
 		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type Solver = common::election_provider_multi_phase::Solver<Self>;

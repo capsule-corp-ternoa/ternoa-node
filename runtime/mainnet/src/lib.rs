@@ -173,7 +173,8 @@ pub type SignedExtra = (
 	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
+pub type UncheckedExtrinsic =
+	generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 /// The payload being signed in transactions.
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Extrinsic type that has already been checked.
@@ -494,7 +495,7 @@ mod tests {
 	use sp_runtime::UpperOf;
 	use std::collections::HashSet;
 	use ternoa_runtime_common::staking::MaxNominations;
-	
+
 	#[test]
 	fn check_whitelist() {
 		let whitelist: HashSet<String> = AllPalletsWithSystem::whitelisted_storage_keys()

@@ -22,9 +22,7 @@ use sc_cli::{
 	ImportBlocksCmd, PurgeChainCmd, Result, RevertCmd, RuntimeVersion, SubstrateCli,
 };
 use sc_service::{Arc, PartialComponents};
-use ternoa_client::{
-	benchmarking::{inherent_benchmark_data, RemarkBuilder},
-};
+use ternoa_client::benchmarking::{inherent_benchmark_data, RemarkBuilder};
 use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
 
 #[cfg(feature = "alphanet-native")]

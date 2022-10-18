@@ -108,7 +108,7 @@ const_assert!(NORMAL_DISPATCH_RATIO.deconstruct() >= AVERAGE_ON_INITIALIZE_RATIO
 #[macro_export]
 macro_rules! impl_runtime_weights {
 	($runtime:ident) => {
-		use frame_support::{weights::Weight, dispatch::DispatchClass};
+		use frame_support::{dispatch::DispatchClass, weights::Weight};
 		use frame_system::limits;
 		use pallet_transaction_payment::{Multiplier, TargetedFeeAdjustment};
 		use sp_runtime::{FixedPointNumber, Perquintill};
