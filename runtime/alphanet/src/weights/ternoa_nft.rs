@@ -25,7 +25,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{RefTimeWeight, Weight}};
+use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `ternoa_nft`.
@@ -38,80 +38,80 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 	// Storage: NFT Nfts (r:0 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn create_nft(s: u32, ) -> Weight {
-		Weight::from_ref_time(5_693_566_000 as RefTimeWeight)
+		Weight::from_ref_time(5_693_566_000 as u64)
 			// Standard Error: 20_000
-			.saturating_add(Weight::from_ref_time(43_000 as RefTimeWeight).scalar_saturating_mul(s as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().reads(4 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(4 as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(43_000 as u64).saturating_mul(s as u64))
+			.saturating_add(T::DbWeight::get().reads(4 as u64))
+			.saturating_add(T::DbWeight::get().writes(4 as u64))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT Collections (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn burn_nft(s: u32, ) -> Weight {
-		Weight::from_ref_time(4_155_510_000 as RefTimeWeight)
+		Weight::from_ref_time(4_155_510_000 as u64)
 			// Standard Error: 3_000
-			.saturating_add(Weight::from_ref_time(18_000 as RefTimeWeight).scalar_saturating_mul(s as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().reads(2 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(2 as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(18_000 as u64).saturating_mul(s as u64))
+			.saturating_add(T::DbWeight::get().reads(2 as u64))
+			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	fn transfer_nft() -> Weight {
-		Weight::from_ref_time(28_630_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(28_630_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT DelegatedNFTs (r:0 w:1)
 	fn delegate_nft() -> Weight {
-		Weight::from_ref_time(29_721_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(2 as RefTimeWeight))
+		Weight::from_ref_time(29_721_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	fn set_royalty() -> Weight {
-		Weight::from_ref_time(27_190_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(27_190_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT NftMintFee (r:0 w:1)
 	fn set_nft_mint_fee() -> Weight {
-		Weight::from_ref_time(20_700_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(20_700_000 as u64)
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT NextCollectionId (r:1 w:1)
 	// Storage: NFT Collections (r:0 w:1)
 	fn create_collection() -> Weight {
-		Weight::from_ref_time(29_551_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(2 as RefTimeWeight))
+		Weight::from_ref_time(29_551_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn burn_collection() -> Weight {
-		Weight::from_ref_time(29_080_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(29_080_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn close_collection() -> Weight {
-		Weight::from_ref_time(27_400_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(27_400_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn limit_collection() -> Weight {
-		Weight::from_ref_time(27_590_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(27_590_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	// Storage: NFT Nfts (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn add_nft_to_collection(s: u32, ) -> Weight {
-		Weight::from_ref_time(4_650_623_000 as RefTimeWeight)
+		Weight::from_ref_time(4_650_623_000 as u64)
 			// Standard Error: 3_000
-			.saturating_add(Weight::from_ref_time(17_000 as RefTimeWeight).scalar_saturating_mul(s as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().reads(2 as RefTimeWeight))
-			.saturating_add(T::DbWeight::get().writes(2 as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(17_000 as u64).saturating_mul(s as u64))
+			.saturating_add(T::DbWeight::get().reads(2 as u64))
+			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: NFT NftMintFee (r:1 w:0)
 	// Storage: NFT SecretNftMintFee (r:1 w:0)
@@ -121,22 +121,22 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
 	// Storage: NFT Nfts (r:0 w:1)
 	fn create_secret_nft(_s: u32) -> Weight {
-		Weight::from_ref_time(10_000_000 as RefTimeWeight)
+		Weight::from_ref_time(10_000_000 as u64)
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT SecretNftMintFee (r:1 w:0)
 	// Storage: System Account (r:1 w:1)
 	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
 	fn add_secret() -> Weight {
-		Weight::from_ref_time(10_000_000 as RefTimeWeight)
+		Weight::from_ref_time(10_000_000 as u64)
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT SecretNftsShardsCount (r:1 w:1)
 	fn add_secret_shard() -> Weight {
-		Weight::from_ref_time(10_000_000 as RefTimeWeight)
+		Weight::from_ref_time(10_000_000 as u64)
 	}
 	// Storage: NFT SecretNftMintFee (r:0 w:1)
 	fn set_secret_nft_mint_fee() -> Weight {
-		Weight::from_ref_time(10_000_000 as RefTimeWeight)
+		Weight::from_ref_time(10_000_000 as u64)
 	}
 }

@@ -19,7 +19,7 @@ mod rpc;
 
 use futures::StreamExt;
 use sc_chain_spec::ChainSpec;
-use sc_client_api::{BlockBackend, ExecutorProvider};
+use sc_client_api::BlockBackend;
 use sc_consensus_babe::{self, SlotProportion};
 use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
 use sc_network::{Event, NetworkService};
@@ -225,14 +225,12 @@ where
 	//
 	// BabeLink: State that must be shared between the import queue and the authoring logic.
 	let (block_import, babe_link) = sc_consensus_babe::block_import(
-		sc_consensus_babe::Config::get(&*client)?,
+		sc_consensus_babe::configuration(&*client)?,
 		grandpa_block_import,
 		client.clone(),
 	)?;
 
 	let slot_duration = babe_link.config().slot_duration();
-	// Checks if the node can author blocks.
-	let can_author_with = sp_consensus::CanAuthorWithNativeVersion::new(client.executor().clone());
 	// TODO? I think it's data that it's provided to the runtime from the native environment.
 	let create_inherent_data_providers = move |_, ()| async move {
 		let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
@@ -246,7 +244,7 @@ where
 		let uncles =
 			sp_authorship::InherentDataProvider::<<Block as BlockT>::Header>::check_inherents();
 
-		Ok((timestamp, slot, uncles))
+		Ok((slot, timestamp, uncles))
 	};
 	// Starts an import queue for the BABE consensus algorithm.
 	// Instantiate a new basic queue, with given verifier.
@@ -267,7 +265,6 @@ where
 		create_inherent_data_providers,
 		&task_manager.spawn_essential_handle(),
 		config.prometheus_registry(),
-		can_author_with,
 		telemetry.as_ref().map(|x| x.handle()),
 	)?;
 
@@ -416,7 +413,7 @@ where
 		Vec::default(),
 	));
 
-	let (network, system_rpc_tx, network_starter) =
+	let (network, system_rpc_tx, tx_handler_controller, network_starter) =
 		sc_service::build_network(sc_service::BuildNetworkParams {
 			config: &config,
 			client: client.clone(),
@@ -454,6 +451,7 @@ where
 		transaction_pool: transaction_pool.clone(),
 		task_manager: &mut task_manager,
 		system_rpc_tx,
+		tx_handler_controller,
 		telemetry: telemetry.as_mut(),
 	})?;
 
@@ -469,9 +467,6 @@ where
 			prometheus_registry.as_ref(),
 			telemetry.as_ref().map(|x| x.handle()),
 		);
-
-		let can_author_with =
-			sp_consensus::CanAuthorWithNativeVersion::new(client.executor().clone());
 
 		let client_clone = client.clone();
 		let slot_duration = babe_link.config().slot_duration();
@@ -505,13 +500,12 @@ where
 							&parent,
 						)?;
 
-					Ok((timestamp, slot, uncles, storage_proof))
+					Ok((slot, timestamp, uncles, storage_proof))
 				}
 			},
 			force_authoring,
 			backoff_authoring_blocks,
 			babe_link,
-			can_author_with,
 			block_proposal_slot_portion: SlotProportion::new(0.5),
 			max_block_proposal_slot_portion: None,
 			telemetry: telemetry.as_ref().map(|x| x.handle()),

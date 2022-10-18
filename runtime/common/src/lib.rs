@@ -97,7 +97,7 @@ pub const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(1);
 /// by  Operational  extrinsics.
 pub const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
 /// We allow for 2 seconds of compute with a 6 second average block time.
-pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND.scalar_saturating_mul(2);
+pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND.saturating_mul(2);
 
 const_assert!(NORMAL_DISPATCH_RATIO.deconstruct() >= AVERAGE_ON_INITIALIZE_RATIO.deconstruct());
 
@@ -108,7 +108,7 @@ const_assert!(NORMAL_DISPATCH_RATIO.deconstruct() >= AVERAGE_ON_INITIALIZE_RATIO
 #[macro_export]
 macro_rules! impl_runtime_weights {
 	($runtime:ident) => {
-		use frame_support::weights::{DispatchClass, Weight};
+		use frame_support::{weights::Weight, dispatch::DispatchClass};
 		use frame_system::limits;
 		use pallet_transaction_payment::{Multiplier, TargetedFeeAdjustment};
 		use sp_runtime::{FixedPointNumber, Perquintill};
@@ -195,16 +195,16 @@ macro_rules! impl_multiplier_tests {
 			type BlockWeights = BlockWeights;
 			type BlockLength = ();
 			type DbWeight = ();
-			type Origin = Origin;
+			type RuntimeOrigin = RuntimeOrigin;
 			type Index = u64;
 			type BlockNumber = u64;
-			type Call = Call;
+			type RuntimeCall = RuntimeCall;
 			type Hash = H256;
 			type Hashing = BlakeTwo256;
 			type AccountId = u64;
 			type Lookup = IdentityLookup<Self::AccountId>;
 			type Header = Header;
-			type Event = Event;
+			type RuntimeEvent = RuntimeEvent;
 			type BlockHashCount = BlockHashCount;
 			type Version = ();
 			type PalletInfo = PalletInfo;

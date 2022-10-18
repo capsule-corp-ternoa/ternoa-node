@@ -25,7 +25,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{RefTimeWeight, Weight}};
+use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `pallet_grandpa`.
@@ -33,11 +33,11 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_grandpa::WeightInfo for WeightInfo<T> {
 	/// The range of component `x` is `[0, 1]`.
 	fn check_equivocation_proof(_x: u32, ) -> Weight {
-		Weight::from_ref_time(86_280_000 as RefTimeWeight)
+		Weight::from_ref_time(86_280_000 as u64)
 	}
 	// Storage: Grandpa Stalled (r:0 w:1)
 	fn note_stalled() -> Weight {
-		Weight::from_ref_time(5_040_000 as RefTimeWeight)
-			.saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+		Weight::from_ref_time(5_040_000 as u64)
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 }

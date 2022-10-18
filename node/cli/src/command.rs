@@ -22,6 +22,7 @@ use sc_cli::{
 	ImportBlocksCmd, PurgeChainCmd, Result, RevertCmd, RuntimeVersion, SubstrateCli,
 };
 use sc_service::{Arc, PartialComponents};
+use ternoa_client::FullBackend;
 use ternoa_client::benchmarking::{inherent_benchmark_data, RemarkBuilder};
 use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
 
@@ -285,19 +286,19 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 				runner.sync_run(|config| cmd.run::<Block, ExecutorDispatch>(config))
 			});
 		},
-		BenchmarkCmd::Storage(cmd) => {
-			with_runtime!(chain_spec, {
-				runner.sync_run(|config| {
-					let PartialComponents { client, backend, .. } =
-						new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
+		// BenchmarkCmd::Storage(cmd) => {
+		// 	with_runtime!(chain_spec, {
+		// 		runner.sync_run(|config| {
+		// 			let PartialComponents { client, backend, .. } =
+		// 				new_partial::<RuntimeApi, ExecutorDispatch>(&config)?;
 
-					let db = backend.expose_db();
-					let storage = backend.expose_storage();
+		// 			let db = backend.expose_db();
+		// 			let storage = backend.expose_storage();
 
-					cmd.run(config, client.clone(), db, storage)
-				})
-			});
-		},
+		// 			cmd.run(config, client.clone(), db, storage)
+		// 		})
+		// 	});
+		// },
 		BenchmarkCmd::Overhead(cmd) => {
 			#[cfg(feature = "alphanet-native")]
 			if chain_spec.is_alphanet() {
@@ -313,7 +314,7 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 					let arc_client = Arc::new(new_client);
 
 					let builder = RemarkBuilder::new(arc_client.clone());
-					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), &builder)
+					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), Vec::new(), &builder)
 				})
 			}
 
@@ -331,7 +332,7 @@ fn benchmark(cli: &Cli, cmd: &BenchmarkCmd) -> Result<()> {
 					let arc_client = Arc::new(new_client);
 
 					let builder = RemarkBuilder::new(arc_client.clone());
-					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), &builder)
+					cmd.run(config, client.clone(), inherent_benchmark_data().unwrap(), Vec::new(), &builder)
 				})
 			}
 		},

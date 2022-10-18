@@ -25,7 +25,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{RefTimeWeight, Weight}};
+use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `pallet_utility`.
@@ -33,26 +33,26 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_utility::WeightInfo for WeightInfo<T> {
 	/// The range of component `c` is `[0, 1000]`.
 	fn batch(c: u32, ) -> Weight {
-		Weight::from_ref_time(38_285_000 as RefTimeWeight)
+		Weight::from_ref_time(38_285_000 as u64)
 			// Standard Error: 3_000
-			.saturating_add(Weight::from_ref_time(4_205_000 as RefTimeWeight).scalar_saturating_mul(c as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(4_205_000 as u64).saturating_mul(c as u64))
 	}
 	fn as_derivative() -> Weight {
-		Weight::from_ref_time(7_160_000 as RefTimeWeight)
+		Weight::from_ref_time(7_160_000 as u64)
 	}
 	/// The range of component `c` is `[0, 1000]`.
 	fn batch_all(c: u32, ) -> Weight {
-		Weight::from_ref_time(33_990_000 as RefTimeWeight)
+		Weight::from_ref_time(33_990_000 as u64)
 			// Standard Error: 2_000
-			.saturating_add(Weight::from_ref_time(4_372_000 as RefTimeWeight).scalar_saturating_mul(c as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(4_372_000 as u64).saturating_mul(c as u64))
 	}
 	fn dispatch_as() -> Weight {
-		Weight::from_ref_time(15_370_000 as RefTimeWeight)
+		Weight::from_ref_time(15_370_000 as u64)
 	}
 	/// The range of component `c` is `[0, 1000]`.
 	fn force_batch(c: u32, ) -> Weight {
-		Weight::from_ref_time(19_115_000 as RefTimeWeight)
+		Weight::from_ref_time(19_115_000 as u64)
 			// Standard Error: 1_000
-			.saturating_add(Weight::from_ref_time(4_260_000 as RefTimeWeight).scalar_saturating_mul(c as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(4_260_000 as u64).saturating_mul(c as u64))
 	}
 }

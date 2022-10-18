@@ -25,7 +25,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{RefTimeWeight, Weight}};
+use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `pallet_babe`.
@@ -33,8 +33,8 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_babe::WeightInfo for WeightInfo<T> {
 	/// The range of component `x` is `[0, 1]`.
 	fn check_equivocation_proof(x: u32, ) -> Weight {
-		Weight::from_ref_time(93_348_000 as RefTimeWeight)
+		Weight::from_ref_time(93_348_000 as u64)
 			// Standard Error: 100_000
-			.saturating_add(Weight::from_ref_time(1_114_000 as RefTimeWeight).scalar_saturating_mul(x as RefTimeWeight))
+			.saturating_add(Weight::from_ref_time(1_114_000 as u64).saturating_mul(x as u64))
 	}
 }

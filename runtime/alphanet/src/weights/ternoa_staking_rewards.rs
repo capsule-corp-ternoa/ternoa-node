@@ -24,7 +24,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{RefTimeWeight, Weight}};
+use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `ternoa_staking_rewards`.
@@ -32,8 +32,8 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> ternoa_staking_rewards::WeightInfo for WeightInfo<T> {
         // Storage: StakingRewards Data (r:1 w:1)
         fn set_session_extra_reward_payout() -> Weight {
-                Weight::from_ref_time(36_340_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(36_340_000 as u64)
+                        .saturating_add(T::DbWeight::get().reads(1 as u64))
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
 }

@@ -36,6 +36,7 @@ parameter_types! {
 	pub const MaxNominations: u32 = <NposCompactSolution24 as frame_election_provider_support::NposSolution>::LIMIT as u32;
 
 	pub const MaxUnlockingChunks: u32 = 32;
+	pub HistoryDepth: u32 = 84;
 }
 
 /// A reasonable benchmarking config for staking pallet.

@@ -35,9 +35,9 @@ impl frame_benchmarking_cli::ExtrinsicBuilder for RemarkBuilder {
 	fn build(&self, nonce: u32) -> std::result::Result<OpaqueExtrinsic, &'static str> {
 		with_client! {
 			self.client.as_ref(), client, {
-				use runtime::{Call, SystemCall};
+				use runtime::{RuntimeCall, SystemCall};
 
-				let call = Call::System(SystemCall::remark { remark: vec![] });
+				let call = RuntimeCall::System(SystemCall::remark { remark: vec![] });
 				let signer = Sr25519Keyring::Bob.pair();
 
 				let period = ternoa_runtime_common::BlockHashCount::get().checked_next_power_of_two().map(|c| c / 2).unwrap_or(2) as u64;
@@ -54,14 +54,14 @@ impl frame_benchmarking_cli::ExtrinsicBuilder for RemarkBuilder {
 ///
 /// Should only be used for benchmarking since it makes strong assumptions
 /// about the chain state that these calls will be valid for.
-trait BenchmarkCallSigner<Call: Encode + Clone, Signer: Pair> {
+trait BenchmarkCallSigner<RuntimeCall: Encode + Clone, Signer: Pair> {
 	/// Signs a call together with the signed extensions of the specific runtime.
 	///
 	/// Only works if the current block is the genesis block since the
 	/// `CheckMortality` check is mocked by using the genesis block.
 	fn sign_call(
 		&self,
-		call: Call,
+		call: RuntimeCall,
 		nonce: u32,
 		period: u64,
 		genesis: H256,
@@ -71,12 +71,12 @@ trait BenchmarkCallSigner<Call: Encode + Clone, Signer: Pair> {
 }
 
 #[cfg(feature = "mainnet")]
-impl BenchmarkCallSigner<mainnet_runtime::Call, sp_core::sr25519::Pair>
+impl BenchmarkCallSigner<mainnet_runtime::RuntimeCall, sp_core::sr25519::Pair>
 	for FullClient<mainnet_runtime::RuntimeApi, MainnetExecutorDispatch>
 {
 	fn sign_call(
 		&self,
-		call: mainnet_runtime::Call,
+		call: mainnet_runtime::RuntimeCall,
 		nonce: u32,
 		period: u64,
 		genesis: H256,
@@ -124,12 +124,12 @@ impl BenchmarkCallSigner<mainnet_runtime::Call, sp_core::sr25519::Pair>
 }
 
 #[cfg(feature = "alphanet")]
-impl BenchmarkCallSigner<alphanet_runtime::Call, sp_core::sr25519::Pair>
+impl BenchmarkCallSigner<alphanet_runtime::RuntimeCall, sp_core::sr25519::Pair>
 	for FullClient<alphanet_runtime::RuntimeApi, AlphanetExecutorDispatch>
 {
 	fn sign_call(
 		&self,
-		call: alphanet_runtime::Call,
+		call: alphanet_runtime::RuntimeCall,
 		nonce: u32,
 		period: u64,
 		genesis: H256,

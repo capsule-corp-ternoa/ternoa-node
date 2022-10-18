@@ -24,7 +24,7 @@
 #![allow(unused_parens)]
 #![allow(unused_imports)]
 
-use frame_support::{traits::Get, weights::{RefTimeWeight, Weight}};
+use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `ternoa_bridge`.
@@ -32,46 +32,46 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> ternoa_bridge::WeightInfo for WeightInfo<T> {
         // Storage: Bridge RelayerVoteThreshold (r:0 w:1)
         fn set_threshold() -> Weight {
-                Weight::from_ref_time(74_932_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(74_932_000 as u64)
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
         // Storage: Bridge ChainNonces (r:1 w:1)
         fn add_chain() -> Weight {
-                Weight::from_ref_time(84_929_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(84_929_000 as u64)
+                        .saturating_add(T::DbWeight::get().reads(1 as u64))
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
         // Storage: Bridge Relayers (r:0 w:1)
         fn set_relayers() -> Weight {
-                Weight::from_ref_time(66_385_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(66_385_000 as u64)
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
         // Storage: Bridge Relayers (r:1 w:0)
         // Storage: Bridge ChainNonces (r:1 w:0)
         // Storage: Bridge RelayerVoteThreshold (r:1 w:0)
         // Storage: Bridge Votes (r:1 w:1)
         fn vote_for_proposal() -> Weight {
-                Weight::from_ref_time(97_534_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().reads(4 as RefTimeWeight))
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(97_534_000 as u64)
+                        .saturating_add(T::DbWeight::get().reads(4 as u64))
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
         // Storage: Bridge BridgeFee (r:1 w:0)
         // Storage: Bridge ChainNonces (r:1 w:1)
         // Storage: System Account (r:1 w:1)
         fn deposit() -> Weight {
-                Weight::from_ref_time(229_662_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().reads(3 as RefTimeWeight))
-                        .saturating_add(T::DbWeight::get().writes(2 as RefTimeWeight))
+                Weight::from_ref_time(229_662_000 as u64)
+                        .saturating_add(T::DbWeight::get().reads(3 as u64))
+                        .saturating_add(T::DbWeight::get().writes(2 as u64))
         }
         // Storage: Bridge BridgeFee (r:0 w:1)
         fn set_bridge_fee() -> Weight {
-                Weight::from_ref_time(74_101_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(74_101_000 as u64)
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
         // Storage: Bridge ChainNonces (r:1 w:1)
         fn set_deposit_nonce() -> Weight {
-                Weight::from_ref_time(92_916_000 as RefTimeWeight)
-                        .saturating_add(T::DbWeight::get().reads(1 as RefTimeWeight))
-                        .saturating_add(T::DbWeight::get().writes(1 as RefTimeWeight))
+                Weight::from_ref_time(92_916_000 as u64)
+                        .saturating_add(T::DbWeight::get().reads(1 as u64))
+                        .saturating_add(T::DbWeight::get().writes(1 as u64))
         }
 }
