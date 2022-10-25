@@ -188,7 +188,7 @@ macro_rules! impl_multiplier_tests {
 			pub BlockLength: frame_system::limits::BlockLength =
 				frame_system::limits::BlockLength::max(2 * 1024);
 			pub BlockWeights: frame_system::limits::BlockWeights =
-				frame_system::limits::BlockWeights::simple_max(frame_support::weights::Weight::from_ref_time(1024));
+				frame_system::limits::BlockWeights::simple_max(frame_support::weights::Weight::from_ref_time(1024).set_proof_size(u64::MAX));
 		}
 
 		impl frame_system::Config for Runtime {
@@ -239,7 +239,7 @@ macro_rules! impl_multiplier_tests {
 				BlockWeights::get().get(DispatchClass::Normal).max_total.unwrap();
 			// if the min is too small, then this will not change, and we are doomed forever.
 			// the weight is 1/100th bigger than target.
-			run_with_system_weight(target * 101 / 100, || {
+			run_with_system_weight(target.set_ref_time(target.ref_time() * 101 / 100), || {
 				let next = SlowAdjustingFeeUpdate::<Runtime>::convert(minimum_multiplier);
 				assert!(next > minimum_multiplier, "{:?} !>= {:?}", next, minimum_multiplier);
 			})
