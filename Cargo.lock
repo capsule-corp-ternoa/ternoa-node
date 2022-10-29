@@ -3725,11 +3725,13 @@ dependencies = [
  "sp-version",
  "static_assertions",
  "substrate-wasm-builder",
+ "ternoa-auction",
  "ternoa-bridge",
  "ternoa-core-primitives",
  "ternoa-mandate",
  "ternoa-marketplace",
  "ternoa-nft",
+ "ternoa-rent",
  "ternoa-runtime-common",
  "ternoa-staking-rewards",
  "try-runtime-cli",
@@ -8256,7 +8258,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-cli"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "clap",
  "frame-benchmarking-cli",
@@ -8273,7 +8275,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-client"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "alphanet-runtime",
  "frame-benchmarking",
@@ -8414,7 +8416,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-runtime-common"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
  "frame-election-provider-support",
  "frame-support",
@@ -8437,7 +8439,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-service"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "alphanet-runtime",
  "alphanet-runtime-constants",

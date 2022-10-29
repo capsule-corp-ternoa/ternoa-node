@@ -748,7 +748,7 @@ impl ternoa_rent::Config for Runtime {
 	type Currency = Balances;
 	type WeightInfo = weights::ternoa_rent::WeightInfo<Runtime>;
 	type NFTExt = NFT;
-	type PalletId = AuctionsPalletId;
+	type PalletId = RentPalletId;
 	type AccountSizeLimit = RentAccountSizeLimit;
 	type SimultaneousContractLimit = SimultaneousContractLimit;
 	type ActionsInBlockLimit = RentActionsInBlockLimit;
