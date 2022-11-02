@@ -44,6 +44,8 @@ Table of Contents:
 All the examples in this document assume that you use a Ubuntu like system. If that's not the case, you need to change the commands so that it works for your system.
 
 ## Build Locally
+
+### Pre-requisites
 ```bash
   # Downloads the package lists and "updates" them.
   sudo apt update -y
@@ -53,6 +55,9 @@ All the examples in this document assume that you use a Ubuntu like system. If t
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   # Starting a new bash environment so we have access to cargo and rust commands.
   exec bash
+```
+### Build from source
+```
   # Get repo and CD
   git clone https://github.com/capsule-corp-ternoa/ternoa-node.git && cd ternoa-node
   # Get submodules
