@@ -96,8 +96,9 @@ pub const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(1);
 /// We allow `Normal` extrinsics to fill up the block up to 75%, the rest can be used
 /// by  Operational  extrinsics.
 pub const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
-/// We allow for 2 seconds of compute with a 6 second average block time.
-pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND.scalar_saturating_mul(2);
+/// We allow for 2 seconds of compute with a 6 second average block time, with maximum proof size.
+pub const MAXIMUM_BLOCK_WEIGHT: Weight =
+	WEIGHT_PER_SECOND.saturating_mul(2).set_proof_size(u64::MAX);
 
 const_assert!(NORMAL_DISPATCH_RATIO.deconstruct() >= AVERAGE_ON_INITIALIZE_RATIO.deconstruct());
 
@@ -108,7 +109,7 @@ const_assert!(NORMAL_DISPATCH_RATIO.deconstruct() >= AVERAGE_ON_INITIALIZE_RATIO
 #[macro_export]
 macro_rules! impl_runtime_weights {
 	($runtime:ident) => {
-		use frame_support::weights::{DispatchClass, Weight};
+		use frame_support::{dispatch::DispatchClass, weights::Weight};
 		use frame_system::limits;
 		use pallet_transaction_payment::{Multiplier, TargetedFeeAdjustment};
 		use sp_runtime::{FixedPointNumber, Perquintill};
@@ -187,7 +188,7 @@ macro_rules! impl_multiplier_tests {
 			pub BlockLength: frame_system::limits::BlockLength =
 				frame_system::limits::BlockLength::max(2 * 1024);
 			pub BlockWeights: frame_system::limits::BlockWeights =
-				frame_system::limits::BlockWeights::simple_max(1024);
+				frame_system::limits::BlockWeights::simple_max(frame_support::weights::Weight::from_ref_time(1024).set_proof_size(u64::MAX));
 		}
 
 		impl frame_system::Config for Runtime {
@@ -195,16 +196,16 @@ macro_rules! impl_multiplier_tests {
 			type BlockWeights = BlockWeights;
 			type BlockLength = ();
 			type DbWeight = ();
-			type Origin = Origin;
+			type RuntimeOrigin = RuntimeOrigin;
 			type Index = u64;
 			type BlockNumber = u64;
-			type Call = Call;
+			type RuntimeCall = RuntimeCall;
 			type Hash = H256;
 			type Hashing = BlakeTwo256;
 			type AccountId = u64;
 			type Lookup = IdentityLookup<Self::AccountId>;
 			type Header = Header;
-			type Event = Event;
+			type RuntimeEvent = RuntimeEvent;
 			type BlockHashCount = BlockHashCount;
 			type Version = ();
 			type PalletInfo = PalletInfo;
@@ -238,7 +239,7 @@ macro_rules! impl_multiplier_tests {
 				BlockWeights::get().get(DispatchClass::Normal).max_total.unwrap();
 			// if the min is too small, then this will not change, and we are doomed forever.
 			// the weight is 1/100th bigger than target.
-			run_with_system_weight(target * 101 / 100, || {
+			run_with_system_weight(target.set_ref_time(target.ref_time() * 101 / 100), || {
 				let next = SlowAdjustingFeeUpdate::<Runtime>::convert(minimum_multiplier);
 				assert!(next > minimum_multiplier, "{:?} !>= {:?}", next, minimum_multiplier);
 			})

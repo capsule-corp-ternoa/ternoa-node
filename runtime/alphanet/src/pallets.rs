@@ -26,6 +26,7 @@ use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
 	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
+	PalletId,
 };
 use frame_system::EnsureRoot;
 use pallet_grandpa::AuthorityId as GrandpaId;
@@ -47,11 +48,11 @@ use ternoa_runtime_common as common;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances,
-	BlockWeights, Call, Council, ElectionProviderMultiPhase, Event, Grandpa, Historical, ImOnline,
-	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, Origin, OriginCaller,
-	PalletInfo, Preimage, Runtime, Scheduler, Session, Signature, SignedPayload, Staking,
-	StakingRewards, System, TechnicalCommittee, Timestamp, TransactionPayment, Treasury,
-	UncheckedExtrinsic, NFT, VERSION,
+	BlockWeights, Council, ElectionProviderMultiPhase, Grandpa, Historical, ImOnline, Marketplace,
+	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, OriginCaller, PalletInfo,
+	Preimage, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, Scheduler, Session, Signature,
+	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
+	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -73,8 +74,8 @@ impl frame_system::Config for Runtime {
 	type BlockWeights = BlockWeights;
 	type BlockLength = BlockLength;
 	type DbWeight = RocksDbWeight;
-	type Origin = Origin;
-	type Call = Call;
+	type RuntimeOrigin = RuntimeOrigin;
+	type RuntimeCall = RuntimeCall;
 	type Index = Index;
 	type BlockNumber = BlockNumber;
 	type Hash = Hash;
@@ -82,7 +83,7 @@ impl frame_system::Config for Runtime {
 	type AccountId = AccountId;
 	type Lookup = AccountIdLookup<AccountId, ()>;
 	type Header = generic::Header<BlockNumber, BlakeTwo256>;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type BlockHashCount = BlockHashCount;
 	type Version = Version;
 	type PalletInfo = PalletInfo;
@@ -97,14 +98,14 @@ impl frame_system::Config for Runtime {
 
 // Utility
 impl pallet_utility::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type PalletsOrigin = OriginCaller;
-	type WeightInfo = weights::pallet_utility::WeightInfo<Runtime>; // TODO Weights
+	type WeightInfo = weights::pallet_utility::WeightInfo<Runtime>;
 }
 
 impl pallet_transaction_payment::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type OnChargeTransaction = CurrencyAdapter<Balances, StakingRewards>;
 	type OperationalFeeMultiplier = common::transaction_payment::OperationalFeeMultiplier;
 	type WeightToFee = IdentityFee<Balance>;
@@ -118,7 +119,7 @@ impl pallet_balances::Config for Runtime {
 	type MaxReserves = common::balances::MaxReserves;
 	type ReserveIdentifier = [u8; 8];
 	type DustRemoval = ();
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ExistentialDeposit = common::balances::ExistentialDeposit;
 	type AccountStore = frame_system::Pallet<Runtime>;
 	type WeightInfo = weights::pallet_balances::WeightInfo<Runtime>;
@@ -136,7 +137,7 @@ impl pallet_treasury::Config for Runtime {
 	type Currency = Balances;
 	type ApproveOrigin = RootOrAtLeastHalfOfCommittee;
 	type RejectOrigin = RootOrAtLeastHalfOfCommittee;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type OnSlash = Treasury;
 	type ProposalBond = common::treasury::ProposalBond;
 	type ProposalBondMinimum = common::treasury::ProposalBondMinimum;
@@ -180,8 +181,7 @@ impl pallet_babe::Config for Runtime {
 
 // Grandpa
 impl pallet_grandpa::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
 	type KeyOwnerProofSystem = Historical;
 	type KeyOwnerProof =
 		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
@@ -208,7 +208,7 @@ impl_opaque_keys! {
 }
 
 impl pallet_session::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ValidatorId = <Self as frame_system::Config>::AccountId;
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
@@ -216,7 +216,7 @@ impl pallet_session::Config for Runtime {
 	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
-	type WeightInfo = pallet_session::weights::SubstrateWeight<Runtime>;
+	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
 }
 
 impl pallet_session::historical::Config for Runtime {
@@ -237,14 +237,17 @@ impl pallet_authority_discovery::Config for Runtime {
 
 impl<LocalCall> frame_system::offchain::CreateSignedTransaction<LocalCall> for Runtime
 where
-	Call: From<LocalCall>,
+	RuntimeCall: From<LocalCall>,
 {
 	fn create_transaction<C: frame_system::offchain::AppCrypto<Self::Public, Self::Signature>>(
-		call: Call,
+		call: RuntimeCall,
 		public: <Signature as sp_runtime::traits::Verify>::Signer,
 		account: AccountId,
 		nonce: Index,
-	) -> Option<(Call, <UncheckedExtrinsic as sp_runtime::traits::Extrinsic>::SignaturePayload)> {
+	) -> Option<(
+		RuntimeCall,
+		<UncheckedExtrinsic as sp_runtime::traits::Extrinsic>::SignaturePayload,
+	)> {
 		let tip = 0;
 		// take the biggest period possible.
 		let period =
@@ -283,15 +286,15 @@ impl frame_system::offchain::SigningTypes for Runtime {
 
 impl<C> frame_system::offchain::SendTransactionTypes<C> for Runtime
 where
-	Call: From<C>,
+	RuntimeCall: From<C>,
 {
 	type Extrinsic = UncheckedExtrinsic;
-	type OverarchingCall = Call;
+	type OverarchingCall = RuntimeCall;
 }
 
 impl pallet_im_online::Config for Runtime {
 	type AuthorityId = ImOnlineId;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type NextSessionRotation = Babe;
 	type ValidatorSet = Historical;
 	type ReportUnresponsiveness = Offences;
@@ -303,7 +306,7 @@ impl pallet_im_online::Config for Runtime {
 }
 
 impl pallet_offences::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
 	type OnOffenceHandler = Staking;
 }
@@ -326,7 +329,7 @@ impl pallet_staking::Config for Runtime {
 	type GenesisElectionProvider =
 		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type RewardRemainder = Treasury;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Slash = Treasury; // send the slashed funds to the treasury.
 	type Reward = (); // rewards are minted from the void
 	type SessionsPerEra = common::staking::SessionsPerEra;
@@ -342,7 +345,9 @@ impl pallet_staking::Config for Runtime {
 	// Alternatively, use pallet_staking::UseNominatorsMap<Runtime> to just use the nominators map.
 	// Note that the aforementioned does not scale to a very large number of nominators.
 	type VoterList = BagsList;
+	type TargetList = pallet_staking::UseValidatorsMap<Self>;
 	type MaxUnlockingChunks = common::staking::MaxUnlockingChunks;
+	type HistoryDepth = common::staking::HistoryDepth;
 	type BenchmarkingConfig = common::staking::StakingBenchmarkingConfig;
 	type OnStakerSlash = (); // TODO To see NominationPools
 	type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
@@ -378,7 +383,7 @@ parameter_types! {
 }
 
 impl pallet_election_provider_multi_phase::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	/// What Currency to use to reward or slash miners.
 	type Currency = Balances;
 	/// Something that can predict the fee of a call. Used to sensibly distribute rewards.
@@ -408,7 +413,8 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type OffchainRepeat = OffchainRepeat;
 	type MinerTxPriority = common::election_provider_multi_phase::NposSolutionPriority;
 	type DataProvider = Staking;
-	type Fallback = frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
+	type Fallback =
+		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type GovernanceFallback =
 		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
 	type Solver = common::election_provider_multi_phase::Solver<Self>;
@@ -421,7 +427,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 
 // BagsList
 impl pallet_bags_list::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type ScoreProvider = Staking;
 	type WeightInfo = weights::pallet_bags_list::WeightInfo<Runtime>;
 	type BagThresholds = common::bags_list::BagThresholds;
@@ -430,7 +436,7 @@ impl pallet_bags_list::Config for Runtime {
 
 impl pallet_preimage::Config for Runtime {
 	type WeightInfo = weights::pallet_preimage::WeightInfo<Runtime>;
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type ManagerOrigin = RootOrAtLeastHalfOfCommittee;
 	type MaxSize = common::preimage::PreimageMaxSize;
@@ -441,9 +447,9 @@ impl pallet_preimage::Config for Runtime {
 // Technical collective
 type TechnicalCollective = pallet_collective::Instance1;
 impl pallet_collective::Config<TechnicalCollective> for Runtime {
-	type Origin = Origin;
-	type Proposal = Call;
-	type Event = Event;
+	type RuntimeOrigin = RuntimeOrigin;
+	type Proposal = RuntimeCall;
+	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = common::technical_collective::TechnicalMotionDuration;
 	type MaxProposals = common::technical_collective::TechnicalMaxProposals;
 	type MaxMembers = common::technical_collective::TechnicalMaxMembers;
@@ -453,7 +459,7 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 
 // Pallet Membership
 impl pallet_membership::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type AddOrigin = RootOrAtLeastHalfOfCommittee;
 	type RemoveOrigin = RootOrAtLeastHalfOfCommittee;
 	type SwapOrigin = RootOrAtLeastHalfOfCommittee;
@@ -467,8 +473,8 @@ impl pallet_membership::Config for Runtime {
 
 // Pallet Membership
 impl ternoa_mandate::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type ExternalOrigin =
 		pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 1, 2>;
 }
@@ -482,10 +488,10 @@ parameter_types! {
 }
 
 impl pallet_scheduler::Config for Runtime {
-	type Event = Event;
-	type Origin = Origin;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
 	type PalletsOrigin = OriginCaller;
-	type Call = Call;
+	type RuntimeCall = RuntimeCall;
 	type MaximumWeight = MaximumSchedulerWeight;
 	type ScheduleOrigin = RootOrAtLeastHalfOfCommittee;
 	type MaxScheduledPerBlock = MaxScheduledPerBlock;
@@ -497,7 +503,7 @@ impl pallet_scheduler::Config for Runtime {
 
 // Staking rewards
 impl ternoa_staking_rewards::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type PalletId = common::staking_rewards::PalletId;
 	type ExternalOrigin = RootOrAtLeastHalfOfCommittee;
@@ -510,7 +516,7 @@ parameter_types! {
 }
 
 impl ternoa_bridge::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = weights::ternoa_bridge::WeightInfo<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
@@ -526,9 +532,9 @@ impl ternoa_bridge::Config for Runtime {
 // Council
 type CouncilCollective = pallet_collective::Instance2;
 impl pallet_collective::Config<CouncilCollective> for Runtime {
-	type Origin = Origin;
-	type Proposal = Call;
-	type Event = Event;
+	type RuntimeOrigin = RuntimeOrigin;
+	type Proposal = RuntimeCall;
+	type RuntimeEvent = RuntimeEvent;
 	type MotionDuration = common::council::CouncilMotionDuration;
 	type MaxProposals = common::council::CouncilMaxProposals;
 	type MaxMembers = common::council::CouncilMaxMembers;
@@ -543,7 +549,7 @@ const_assert!(
 
 // Elections Phragmen
 impl pallet_elections_phragmen::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type ChangeMembers = Council;
 	type InitializeMembers = Council;
@@ -564,8 +570,8 @@ impl pallet_elections_phragmen::Config for Runtime {
 
 // Democracy
 impl pallet_democracy::Config for Runtime {
-	type Proposal = Call;
-	type Event = Event;
+	type Proposal = RuntimeCall;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type EnactmentPeriod = common::democracy::EnactmentPeriod;
 	type VoteLockingPeriod = common::democracy::VoteLockingPeriod;
@@ -617,8 +623,8 @@ impl pallet_democracy::Config for Runtime {
 }
 
 impl pallet_multisig::Config for Runtime {
-	type Event = Event;
-	type Call = Call;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
 	type Currency = Balances;
 	type DepositBase = common::multisig::DepositBase;
 	type DepositFactor = common::multisig::DepositFactor;
@@ -627,7 +633,7 @@ impl pallet_multisig::Config for Runtime {
 }
 
 impl pallet_identity::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type BasicDeposit = common::identity::BasicDeposit;
 	type FieldDeposit = common::identity::FieldDeposit;
@@ -646,10 +652,12 @@ parameter_types! {
 	pub const NFTOffchainDataLimit: u32 = 150;
 	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
+	pub const InitialSecretMintFee: Balance = 75_000_000_000_000_000_000;
+	pub const ShardsNumber: u32 = 5;
 }
 
 impl ternoa_nft::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = weights::ternoa_nft::WeightInfo<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
@@ -657,16 +665,19 @@ impl ternoa_nft::Config for Runtime {
 	type NFTOffchainDataLimit = NFTOffchainDataLimit;
 	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
 	type CollectionSizeLimit = CollectionSizeLimit;
+	type InitialSecretMintFee = InitialSecretMintFee;
+	type ShardsNumber = ShardsNumber;
 }
 
 parameter_types! {
 	pub const MarketplaceInitialMintFee: Balance = 1_000_000_000_000_000_000_000;
 	pub const OffchainDataLimit: u32 = 150;
 	pub const AccountSizeLimit: u32 = 100_000;
+	pub const CollectionListSizeLimit: u32 = 100_000;
 }
 
 impl ternoa_marketplace::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = weights::ternoa_marketplace::WeightInfo<Runtime>;
 	type Currency = Balances;
 	type FeesCollector = Treasury;
@@ -674,10 +685,11 @@ impl ternoa_marketplace::Config for Runtime {
 	type InitialMintFee = MarketplaceInitialMintFee;
 	type OffchainDataLimit = OffchainDataLimit;
 	type AccountSizeLimit = AccountSizeLimit;
+	type CollectionSizeLimit = CollectionSizeLimit;
 }
 
 impl pallet_assets::Config for Runtime {
-	type Event = Event;
+	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Currency = Balances;
 	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
@@ -691,4 +703,55 @@ impl pallet_assets::Config for Runtime {
 	type Freezer = ();
 	type Extra = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
+}
+
+parameter_types! {
+	pub const MinAuctionDuration: BlockNumber = 100;
+	pub const MaxAuctionDuration: BlockNumber = 2_592_000;
+	pub const MaxAuctionDelay: BlockNumber = 432_000;
+	pub const AuctionGracePeriod: BlockNumber = 50;
+	pub const AuctionEndingPeriod: BlockNumber = 100;
+	pub const AuctionsPalletId: PalletId = PalletId(*b"tauction");
+	pub const BidderListLengthLimit: u32 = 25;
+	pub const ParallelAuctionLimit: u32 = 1_000_000;
+	pub const AuctionActionsInBlockLimit: u32 = 1_000;
+}
+
+impl ternoa_auction::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type WeightInfo = weights::ternoa_auction::WeightInfo<Runtime>;
+	type NFTExt = NFT;
+	type MarketplaceExt = Marketplace;
+	type PalletId = AuctionsPalletId;
+	type MaxAuctionDelay = MaxAuctionDelay;
+	type MaxAuctionDuration = MaxAuctionDuration;
+	type MinAuctionDuration = MinAuctionDuration;
+	type AuctionGracePeriod = AuctionGracePeriod;
+	type AuctionEndingPeriod = AuctionEndingPeriod;
+	type BidderListLengthLimit = BidderListLengthLimit;
+	type ParallelAuctionLimit = ParallelAuctionLimit;
+	type ActionsInBlockLimit = AuctionActionsInBlockLimit;
+}
+
+parameter_types! {
+	pub const RentPalletId: PalletId = PalletId(*b"ter/rent");
+	pub const RentAccountSizeLimit: u32 = 10_000;
+	pub const SimultaneousContractLimit: u32 = 1_000_000;
+	pub const RentActionsInBlockLimit: u32 = 1_000;
+	pub const MaximumContractAvailabilityLimit: u32 = 864_000;
+	pub const MaximumContractDurationLimit: u32 = 5_184_000;
+}
+
+impl ternoa_rent::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type WeightInfo = weights::ternoa_rent::WeightInfo<Runtime>;
+	type NFTExt = NFT;
+	type PalletId = RentPalletId;
+	type AccountSizeLimit = RentAccountSizeLimit;
+	type SimultaneousContractLimit = SimultaneousContractLimit;
+	type ActionsInBlockLimit = RentActionsInBlockLimit;
+	type MaximumContractAvailabilityLimit = MaximumContractAvailabilityLimit;
+	type MaximumContractDurationLimit = MaximumContractDurationLimit;
 }

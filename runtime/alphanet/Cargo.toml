@@ -1,74 +1,73 @@
 [package]
 name = "alphanet-runtime"
 authors = [ "Ternoa" ]
-version = "1.2.3"
+version = "1.2.4"
 edition = "2021"
 build = "build.rs"
 
 [dependencies]
 # Frame
-frame-election-provider-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-frame-executive = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-frame-system-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-bags-list = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-election-provider-multi-phase = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-im-online = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-offences = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-preimage = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-session = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", features = ["historical"], default-features = false }
-pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-staking-reward-curve = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-timestamp = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-utility = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-collective = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-membership = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-scheduler = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-democracy = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-elections-phragmen = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-multisig = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-identity = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-pallet-assets = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
+frame-election-provider-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+frame-executive = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+frame-support = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+frame-system = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+frame-system-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-authorship = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-bags-list = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-balances = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-election-provider-multi-phase = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-im-online = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-offences = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-preimage = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-session = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", features = ["historical"], default-features = false }
+pallet-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-staking-reward-curve = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-timestamp = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-transaction-payment = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-treasury = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-utility = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-collective = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-membership = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-scheduler = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-democracy = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-elections-phragmen = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-multisig = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-identity = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+pallet-assets = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
 
 # Benchmarking
-frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false, optional = true }
-frame-system-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false, optional = true }
-pallet-session-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false, optional = true }
-pallet-offences-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false, optional = true }
+frame-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false, optional = true }
+frame-system-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false, optional = true }
+pallet-session-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false, optional = true }
+pallet-offences-benchmarking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false, optional = true }
 
 # Try Runtime
-frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false, optional = true }
+frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false, optional = true }
 
 # Substrate Primitives
-sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-inherents = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-io = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-npos-elections = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-offchain = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-session = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-tracing = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
-sp-version = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01", default-features = false }
+sp-api = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-authority-discovery = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-block-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-consensus-babe = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-core = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-inherents = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-io = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-npos-elections = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-offchain = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-session = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-staking = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-std = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-tracing = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-transaction-pool = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
+sp-version = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", default-features = false }
 
 # Rest
 parity-scale-codec = { default-features = false, features = ["derive", "max-encoded-len"], version = "3.1.5" }
-hex-literal = { version = "0.3.4", optional = true }
 scale-info = { version = "2.1.2", default-features = false, features = ["derive"] }
 serde = { version = "1.0.137", optional = true }
 static_assertions = { version = "1.1.0" }
@@ -83,9 +82,11 @@ ternoa-staking-rewards = { path = "../../ternoa-pallets/staking-rewards", defaul
 ternoa-bridge = { path = "../../ternoa-pallets/bridge", default-features = false }
 ternoa-nft = { path = "../../ternoa-pallets/nft", default-features = false }
 ternoa-marketplace = { path = "../../ternoa-pallets/marketplace", default-features = false }
+ternoa-auction = { path = "../../ternoa-pallets/auction", default-features = false }
+ternoa-rent = { path = "../../ternoa-pallets/rent", default-features = false }
 
 [build-dependencies]
-substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-09-01" }
+substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01" }
 
 [features]
 default = ["std"]
@@ -98,6 +99,8 @@ std = [
 	"ternoa-bridge/std",
 	"ternoa-nft/std",
 	"ternoa-marketplace/std",
+	"ternoa-auction/std",
+	"ternoa-rent/std",
 	# Substrate
 	"parity-scale-codec/std",
 	"frame-election-provider-support/std",
@@ -105,6 +108,7 @@ std = [
 	"frame-support/std",
 	"frame-system-rpc-runtime-api/std",
 	"frame-system/std",
+	"frame-benchmarking?/std",
 	"pallet-authority-discovery/std",
 	"pallet-authorship/std",
 	"pallet-babe/std",
@@ -114,8 +118,10 @@ std = [
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
 	"pallet-offences/std",
+	"pallet-offences-benchmarking?/std",
 	"pallet-preimage/std",
 	"pallet-session/std",
+	"pallet-session-benchmarking?/std",
 	"pallet-staking/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
@@ -139,7 +145,7 @@ std = [
 	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
-	"frame-try-runtime/std",
+	"frame-try-runtime?/std",
 	"pallet-collective/std",
 	"pallet-membership/std",
 	"pallet-scheduler/std",
@@ -154,9 +160,8 @@ runtime-benchmarks = [
 	"frame-benchmarking",
 	"frame-election-provider-support/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
-	"frame-system-benchmarking",
+	"frame-system-benchmarking/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
-	"hex-literal",
 	"pallet-babe/runtime-benchmarks",
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
@@ -168,8 +173,8 @@ runtime-benchmarks = [
 	"pallet-offences/runtime-benchmarks",
 	"pallet-preimage/runtime-benchmarks",
 	"pallet-scheduler/runtime-benchmarks",
-	"pallet-session-benchmarking",
-	"pallet-offences-benchmarking",
+	"pallet-session-benchmarking/runtime-benchmarks",
+	"pallet-offences-benchmarking/runtime-benchmarks",
 	"pallet-staking/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-treasury/runtime-benchmarks",
@@ -185,6 +190,8 @@ runtime-benchmarks = [
 	"ternoa-bridge/runtime-benchmarks",
 	"ternoa-nft/runtime-benchmarks",
 	"ternoa-marketplace/runtime-benchmarks",
+	"ternoa-auction/runtime-benchmarks",
+	"ternoa-rent/runtime-benchmarks",
 ]
 
 try-runtime = [
@@ -223,4 +230,6 @@ try-runtime = [
 	"ternoa-bridge/try-runtime",
 	"ternoa-nft/try-runtime",
 	"ternoa-marketplace/try-runtime",
+	"ternoa-auction/try-runtime",
+	"ternoa-rent/try-runtime",
 ]

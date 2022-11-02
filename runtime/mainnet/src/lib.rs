@@ -145,6 +145,8 @@ construct_runtime!(
 		NFT: ternoa_nft = 29,
 		Marketplace: ternoa_marketplace = 30,
 		Assets: pallet_assets = 31,
+		Auction: ternoa_auction = 32,
+		Rent: ternoa_rent = 33,
 	}
 );
 
@@ -173,11 +175,12 @@ pub type SignedExtra = (
 	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
+pub type UncheckedExtrinsic =
+	generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 /// The payload being signed in transactions.
-pub type SignedPayload = generic::SignedPayload<Call, SignedExtra>;
+pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Extrinsic type that has already been checked.
-pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, Call, SignedExtra>;
+pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra>;
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<
 	Runtime,
@@ -185,7 +188,6 @@ pub type Executive = frame_executive::Executive<
 	frame_system::ChainContext<Runtime>,
 	Runtime,
 	AllPalletsWithSystem,
-	pallet_bags_list::migrations::AddScore<Runtime>,
 >;
 
 impl_runtime_apis! {
@@ -280,19 +282,15 @@ impl_runtime_apis! {
 	}
 
 	impl sp_consensus_babe::BabeApi<Block> for Runtime {
-		fn configuration() -> sp_consensus_babe::BabeGenesisConfiguration {
-			// The choice of `c` parameter (where `1 - c` represents the
-			// probability of a slot being empty), is done in accordance to the
-			// slot duration and expected target block time, for safely
-			// resisting network delays of maximum two seconds.
-			// <https://research.web3.foundation/en/latest/polkadot/BABE/Babe/#6-practical-results>
-			sp_consensus_babe::BabeGenesisConfiguration {
+		fn configuration() -> sp_consensus_babe::BabeConfiguration {
+			let epoch_config = Babe::epoch_config().unwrap_or(BABE_GENESIS_EPOCH_CONFIG);
+			sp_consensus_babe::BabeConfiguration {
 				slot_duration: Babe::slot_duration(),
 				epoch_length: EpochDuration::get(),
-				c: BABE_GENESIS_EPOCH_CONFIG.c,
-				genesis_authorities: Babe::authorities().to_vec(),
+				c: epoch_config.c,
+				authorities: Babe::authorities().to_vec(),
 				randomness: Babe::randomness(),
-				allowed_slots: BABE_GENESIS_EPOCH_CONFIG.allowed_slots,
+				allowed_slots: epoch_config.allowed_slots,
 			}
 		}
 
@@ -383,8 +381,14 @@ impl_runtime_apis! {
 			(weight, BlockWeights::get().max_block)
 		}
 
-		fn execute_block_no_check(block: Block) -> Weight {
-			Executive::execute_block_no_check(block)
+		fn execute_block(
+			block: Block,
+			state_root_check: bool,
+			select: frame_try_runtime::TryStateSelect
+		) -> Weight {
+			// NOTE: intentional unwrap: we don't want to propagate the error backwards, and want to
+			// have a backtrace here.
+			Executive::try_execute_block(block, state_root_check, select).expect("execute-block failed")
 		}
 	}
 
@@ -428,20 +432,8 @@ impl_runtime_apis! {
 			impl frame_benchmarking::baseline::Config for Runtime {}
 
 			// We took this from the substrate examples as the configurations are pretty close.
-			let whitelist: Vec<TrackedStorageKey> = vec![
-				// Block Number
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef702a5c1b19ab7a04f536c519aca4983ac").to_vec().into(),
-				// Total Issuance
-				hex_literal::hex!("c2261276cc9d1f8598ea4b6a74b15c2f57c875e4cff74148e4628f264b974c80").to_vec().into(),
-				// Execution Phase
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef7ff553b5a9862a516939d82b3d3d8661a").to_vec().into(),
-				// Event Count
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef70a98fdbe9ce6c55837576c60c7af3850").to_vec().into(),
-				// System Events
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7").to_vec().into(),
-				// Treasury Account
-				hex_literal::hex!("26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da95ecffd7b6c0f78751baa9d281e0bfa3a6d6f646c70792f74727372790000000000000000000000000000000000000000").to_vec().into(),
-			];
+			use frame_support::traits::WhitelistedStorageKeys;
+			let whitelist: Vec<TrackedStorageKey> = AllPalletsWithSystem::whitelisted_storage_keys();
 
 			let mut batches = Vec::<BenchmarkBatch>::new();
 			let params = (&config, &whitelist);
@@ -466,6 +458,8 @@ mod benches {
 		[ternoa_bridge, Bridge]
 		[ternoa_nft, NFT]
 		[ternoa_marketplace, Marketplace]
+		[ternoa_auction, Auction]
+		[ternoa_rent, Rent]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]
@@ -489,4 +483,83 @@ mod benches {
 		[pallet_elections_phragmen, PhragmenElection]
 		[pallet_assets, Assets]
 	);
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use frame_election_provider_support::NposSolution;
+	use frame_support::traits::WhitelistedStorageKeys;
+	use frame_system::offchain::CreateSignedTransaction;
+	use sp_core::hexdisplay::HexDisplay;
+	use sp_runtime::UpperOf;
+	use std::collections::HashSet;
+	use ternoa_runtime_common::staking::MaxNominations;
+
+	#[test]
+	fn check_whitelist() {
+		let whitelist: HashSet<String> = AllPalletsWithSystem::whitelisted_storage_keys()
+			.iter()
+			.map(|e| HexDisplay::from(&e.key).to_string())
+			.collect();
+
+		// Block Number
+		assert!(
+			whitelist.contains("26aa394eea5630e07c48ae0c9558cef702a5c1b19ab7a04f536c519aca4983ac")
+		);
+		// Total Issuance
+		assert!(
+			whitelist.contains("c2261276cc9d1f8598ea4b6a74b15c2f57c875e4cff74148e4628f264b974c80")
+		);
+		// Execution Phase
+		assert!(
+			whitelist.contains("26aa394eea5630e07c48ae0c9558cef7ff553b5a9862a516939d82b3d3d8661a")
+		);
+		// Event Count
+		assert!(
+			whitelist.contains("26aa394eea5630e07c48ae0c9558cef70a98fdbe9ce6c55837576c60c7af3850")
+		);
+		// System Events
+		assert!(
+			whitelist.contains("26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7")
+		);
+		// System BlockWeight
+		assert!(
+			whitelist.contains("26aa394eea5630e07c48ae0c9558cef734abf5cb34d6244378cddbf18e849d96")
+		);
+	}
+
+	#[test]
+	fn validate_transaction_submitter_bounds() {
+		fn is_submit_signed_transaction<T>()
+		where
+			T: CreateSignedTransaction<RuntimeCall>,
+		{
+		}
+
+		is_submit_signed_transaction::<Runtime>();
+	}
+
+	#[test]
+	fn perbill_as_onchain_accuracy() {
+		type OnChainAccuracy =
+			<<Runtime as pallet_election_provider_multi_phase::MinerConfig>::Solution as NposSolution>::Accuracy;
+		let maximum_chain_accuracy: Vec<UpperOf<OnChainAccuracy>> = (0..MaxNominations::get())
+			.map(|_| <UpperOf<OnChainAccuracy>>::from(OnChainAccuracy::one().deconstruct()))
+			.collect();
+		let _: UpperOf<OnChainAccuracy> =
+			maximum_chain_accuracy.iter().fold(0, |acc, x| acc.checked_add(*x).unwrap());
+	}
+
+	#[test]
+	fn call_size() {
+		let size = core::mem::size_of::<RuntimeCall>();
+		assert!(
+			size <= 208,
+			"size of RuntimeCall {} is more than 208 bytes: some calls have too big arguments, use Box to reduce the
+			size of RuntimeCall.
+			If the limit is too strong, maybe consider increase the limit to 300.",
+			size,
+		);
+	}
 }
