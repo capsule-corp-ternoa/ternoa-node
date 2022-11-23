@@ -198,10 +198,6 @@ runtime-benchmarks = [
 	"ternoa-rent/try-runtime",
 ]
 
-
-
-
-
 try-runtime = [
 	"frame-try-runtime",
 	"frame-executive/try-runtime",
@@ -238,4 +234,6 @@ try-runtime = [
 	"ternoa-bridge/try-runtime",
 	"ternoa-nft/try-runtime",
 	"ternoa-marketplace/try-runtime",
+	"ternoa-auction/try-runtime",
+	"ternoa-rent/try-runtime",
 ]
