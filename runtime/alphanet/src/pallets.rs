@@ -687,6 +687,23 @@ impl ternoa_marketplace::Config for Runtime {
 	type AccountSizeLimit = AccountSizeLimit;
 	type CollectionSizeLimit = CollectionSizeLimit;
 }
+parameter_types! {
+	pub const EnclaveFee: u64 = 1;
+   	pub const ClusterSize: u32 = 5;
+   	pub const MinUriLen: u16 = 5;
+   	pub const MaxUriLen: u16 = 12;
+}
+
+impl ternoa_tee::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = weights::pallet_tee::WeightInfo<Runtime>;
+	type FeesCollector = Treasury;
+	type Currency = Balances;
+	type EnclaveFee = EnclaveFee;
+	type ClusterSize = ClusterSize;
+	type MinUriLen = MinUriLen;
+	type MaxUriLen = MaxUriLen;
+}
 
 impl pallet_assets::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;

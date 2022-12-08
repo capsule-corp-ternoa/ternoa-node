@@ -147,6 +147,7 @@ construct_runtime!(
 		Assets: pallet_assets = 31,
 		Auction: ternoa_auction = 32,
 		Rent: ternoa_rent = 33,
+		TEE: ternoa_tee = 34,
 	}
 );
 
@@ -460,6 +461,7 @@ mod benches {
 		[ternoa_marketplace, Marketplace]
 		[ternoa_auction, Auction]
 		[ternoa_rent, Rent]
+		[ternoa_tee, TEE]
 		// Substrate
 		[pallet_babe, Babe]
 		[pallet_bags_list, BagsList]
