@@ -696,9 +696,9 @@ parameter_types! {
 
 impl ternoa_tee::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type WeightInfo = weights::pallet_tee::WeightInfo<Runtime>;
-	type FeesCollector = Treasury;
+	type WeightInfo = weights::ternoa_tee::WeightInfo<Runtime>;
 	type Currency = Balances;
+	type FeesCollector = Treasury;
 	type EnclaveFee = EnclaveFee;
 	type ClusterSize = ClusterSize;
 	type MinUriLen = MinUriLen;
