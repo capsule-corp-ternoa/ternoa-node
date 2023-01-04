@@ -22,5 +22,6 @@ pub mod ternoa_marketplace;
 pub mod ternoa_nft;
 pub mod ternoa_rent;
 pub mod ternoa_staking_rewards;
+pub mod ternoa_tee;
 // pub mod pallet_session;
 // pub mod pallet_staking;

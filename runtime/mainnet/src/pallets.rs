@@ -52,7 +52,7 @@ use crate::{
 	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, OriginCaller, PalletInfo,
 	Preimage, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, Scheduler, Session, Signature,
 	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
-	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, VERSION,
+	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, TEE, VERSION,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -667,6 +667,7 @@ impl ternoa_nft::Config for Runtime {
 	type CollectionSizeLimit = CollectionSizeLimit;
 	type InitialSecretMintFee = InitialSecretMintFee;
 	type ShardsNumber = ShardsNumber;
+	type TEEExt = TEE;
 }
 
 parameter_types! {
@@ -732,6 +733,7 @@ impl ternoa_auction::Config for Runtime {
 	type BidderListLengthLimit = BidderListLengthLimit;
 	type ParallelAuctionLimit = ParallelAuctionLimit;
 	type ActionsInBlockLimit = AuctionActionsInBlockLimit;
+	type ExistentialDeposit = common::balances::ExistentialDeposit;
 }
 
 parameter_types! {
@@ -754,4 +756,20 @@ impl ternoa_rent::Config for Runtime {
 	type ActionsInBlockLimit = RentActionsInBlockLimit;
 	type MaximumContractAvailabilityLimit = MaximumContractAvailabilityLimit;
 	type MaximumContractDurationLimit = MaximumContractDurationLimit;
+	type ExistentialDeposit = common::balances::ExistentialDeposit;
+}
+
+parameter_types! {
+	pub const ClusterSize: u32 = 2;
+	pub const MaxUriLen: u32 = 150;
+	pub const ListSizeLimit: u32 = 10;
+}
+
+impl ternoa_tee::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type WeightInfo = weights::ternoa_tee::WeightInfo<Runtime>;
+	type ClusterSize = ClusterSize;
+	type MaxUriLen = MaxUriLen;
+	type ListSizeLimit = ListSizeLimit;
 }
