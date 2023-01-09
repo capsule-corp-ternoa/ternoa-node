@@ -653,7 +653,7 @@ parameter_types! {
 	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
 	pub const InitialSecretMintFee: Balance = 75_000_000_000_000_000_000;
-	pub const ShardsNumber: u32 = 2;
+	pub const ShardsNumber: u32 = 5;
 }
 
 impl ternoa_nft::Config for Runtime {
@@ -760,7 +760,7 @@ impl ternoa_rent::Config for Runtime {
 }
 
 parameter_types! {
-	pub const ClusterSize: u32 = 2;
+	pub const ClusterSize: u32 = 5;
 	pub const MaxUriLen: u32 = 150;
 	pub const ListSizeLimit: u32 = 10;
 }

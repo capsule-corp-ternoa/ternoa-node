@@ -47,6 +47,11 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
 	fn update_enclave() -> Weight {
 		Weight::from_ref_time(10_000_000 as u64)
 	}
+	
+	// Storage: Tee EnclaveUpdates (r:1 w:1)
+	fn cancel_update() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
 
 	// Storage: Tee EnclaveIndex (r:1 w:0)
 	// Storage: Tee ClusterIndex (r:1 w:1)
@@ -83,6 +88,11 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
 
 	// Storage: Tee ClusterRegistry (r:1 w:1)
 	fn remove_cluster() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+
+	// Storage: Tee EnclaveUpdates (r:1 w:1)
+	fn remove_update() -> Weight {
 		Weight::from_ref_time(10_000_000 as u64)
 	}
 }
