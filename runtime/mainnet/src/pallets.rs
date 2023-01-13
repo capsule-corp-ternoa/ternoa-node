@@ -762,7 +762,7 @@ impl ternoa_rent::Config for Runtime {
 parameter_types! {
 	pub const ClusterSize: u32 = 5;
 	pub const MaxUriLen: u32 = 150;
-	pub const ListSizeLimit: u32 = 10;
+	pub const ListSizeLimit: u32 = 1_000;
 }
 
 impl ternoa_tee::Config for Runtime {
