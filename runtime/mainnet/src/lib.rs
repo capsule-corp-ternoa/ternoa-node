@@ -183,13 +183,11 @@ pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra>;
 
 /// Custom runtime upgrade to execute unsafe_regenerate on the bagslist
-mod custom_migration{
+mod custom_migration {
 	use super::*;
-
-	use frame_support::{traits::OnRuntimeUpgrade, weights::Weight};
 	use frame_election_provider_support::SortedListProvider;
-	use pallet_staking::{Nominators, Pallet, };
-
+	use frame_support::{traits::OnRuntimeUpgrade, weights::Weight};
+	use pallet_staking::{Nominators, Pallet};
 
 	pub struct Upgrade;
 	impl OnRuntimeUpgrade for Upgrade {
@@ -214,8 +212,6 @@ mod custom_migration{
 			Ok(())
 		}
 	}
-
-	
 }
 
 /// Executive: handles dispatch to the various modules.
@@ -225,7 +221,7 @@ pub type Executive = frame_executive::Executive<
 	frame_system::ChainContext<Runtime>,
 	Runtime,
 	AllPalletsWithSystem,
-	custom_migration::Upgrade
+	custom_migration::Upgrade,
 >;
 
 impl_runtime_apis! {
