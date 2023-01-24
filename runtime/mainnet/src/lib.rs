@@ -182,6 +182,39 @@ pub type UncheckedExtrinsic =
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Extrinsic type that has already been checked.
 pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra>;
+
+/// Custom runtime upgrade to execute unsafe_regenerate on the bagslist
+mod custom_migration {
+	use super::*;
+	use frame_election_provider_support::SortedListProvider;
+	use frame_support::{traits::OnRuntimeUpgrade, weights::Weight};
+	use pallet_staking::{Nominators, Pallet};
+
+	pub struct Upgrade;
+	impl OnRuntimeUpgrade for Upgrade {
+		#[cfg(feature = "try-runtime")]
+		fn pre_upgrade() -> Result<Vec<u8>, &'static str> {
+			log::info!("Pre-upgrade for bagslist");
+			Ok(Vec::new())
+		}
+
+		fn on_runtime_upgrade() -> Weight {
+			<Runtime as pallet_staking::Config>::VoterList::unsafe_regenerate(
+				Nominators::<Runtime>::iter().map(|(id, _)| id),
+				Pallet::<Runtime>::weight_of_fn(),
+			);
+			debug_assert_eq!(<Runtime as pallet_staking::Config>::VoterList::try_state(), Ok(()));
+			Weight::MAX
+		}
+
+		#[cfg(feature = "try-runtime")]
+		fn post_upgrade(_: Vec<u8>) -> Result<(), &'static str> {
+			log::info!("Post-upgrade for bagslist");
+			Ok(())
+		}
+	}
+}
+
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<
 	Runtime,
@@ -189,6 +222,7 @@ pub type Executive = frame_executive::Executive<
 	frame_system::ChainContext<Runtime>,
 	Runtime,
 	AllPalletsWithSystem,
+	custom_migration::Upgrade,
 >;
 
 impl_runtime_apis! {
