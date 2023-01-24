@@ -93,7 +93,7 @@ dependencies = [
 
 [[package]]
 name = "alphanet-runtime"
-version = "1.2.5"
+version = "1.2.6"
 dependencies = [
  "alphanet-runtime-constants",
  "frame-benchmarking",
@@ -3721,7 +3721,7 @@ dependencies = [
 
 [[package]]
 name = "mainnet-runtime"
-version = "1.2.5"
+version = "1.2.6"
 dependencies = [
  "frame-benchmarking",
  "frame-election-provider-support",
@@ -8548,7 +8548,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-runtime-common"
-version = "1.2.5"
+version = "1.2.6"
 dependencies = [
  "frame-election-provider-support",
  "frame-support",
