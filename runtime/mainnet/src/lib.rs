@@ -187,7 +187,7 @@ mod custom_migration {
 	use super::*;
 	use frame_election_provider_support::SortedListProvider;
 	use frame_support::{traits::OnRuntimeUpgrade, weights::Weight};
-	use pallet_staking::{Nominators, Pallet};
+	use pallet_staking::{Pallet, Validators};
 
 	pub struct Upgrade;
 	impl OnRuntimeUpgrade for Upgrade {
@@ -198,9 +198,21 @@ mod custom_migration {
 		}
 
 		fn on_runtime_upgrade() -> Weight {
-			<Runtime as pallet_staking::Config>::VoterList::unsafe_regenerate(
-				Nominators::<Runtime>::iter().map(|(id, _)| id),
-				Pallet::<Runtime>::weight_of_fn(),
+			let prev_count = <Runtime as pallet_staking::Config>::VoterList::count();
+			let weight_of_cached = Pallet::<Runtime>::weight_of_fn();
+			for (v, _) in Validators::<Runtime>::iter() {
+				let weight = weight_of_cached(&v);
+				let _ =
+					<Runtime as pallet_staking::Config>::VoterList::on_insert(v.clone(), weight)
+						.map_err(|err| {
+							log::info!("failed to insert {:?} into VoterList: {:?}", v, err);
+						});
+			}
+			log::info!(
+				"injected a total of {} new voters, prev count: {} next count: {}, updating.",
+				Validators::<Runtime>::count(),
+				prev_count,
+				<Runtime as pallet_staking::Config>::VoterList::count(),
 			);
 			debug_assert_eq!(<Runtime as pallet_staking::Config>::VoterList::try_state(), Ok(()));
 			Weight::MAX
