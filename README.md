@@ -16,7 +16,7 @@
 </h3>
 
 Welcome to the Ternoa Blockchain repo which hosts the code used to build and run the Ternoa node.
-Ternoa supports the transfer of arbitrary data to your descendants, friends and loved ones even after your death or disappearence or a given timed period in a **non custodial**, cryptographically enforced manner.
+Ternoa supports the transfer of arbitrary data to your descendants, friends and loved ones even after your death or disappearance or a given timed period in a **non custodial**, cryptographically enforced manner.
 
 </br>
 
@@ -84,7 +84,7 @@ All the examples in this document assume that you use a Ubuntu like system. If t
 
 # Run
 Node flag explanation:
-- `--chain alphanet-dev`: There are a couple of chain configurations that we provide and each configuration have a drastic impact on how the chain behaves and what features it has. For testing purposes it's best to stick with alphanet-dev configuration.
+- `--chain alphanet-dev`: There are a couple of chain configurations that we provide and each configuration has a drastic impact on how the chain behaves and what features it has. For testing purposes it's best to stick with alphanet-dev configuration.
 - `--alice`: This sets a couple of flags for us. It sets the `--validator` flag so that the client is running in a validator mode, it makes Alice a validator and it inserts Alice's keys into the local keystore.
 - `--tmp`: Makes is so that the blockchain data is stored in a temporary location. Usually this data is deleted on reboot.
 - `--name MyLocalNode`: Sets the name of the name. This should be something unique.
@@ -142,12 +142,12 @@ Depending on what binary you downloaded certain features might not be available 
 ```
 
 # Running With Podman Tips
-In the next examples some useful Podman commands will be shown. It's important to note that most flags have been omitted in order to make the examples more concise. Before running anything make sure that the image was built from the the "Build With Podman" step.
+In the next examples some useful Podman commands will be shown. It's important to note that most flags have been omitted in order to make the examples more concise. Before running anything make sure that the image was built from the "Build With Podman" step.
 
 If no command arguments are given by default it will try run the Ternoa Node with default parameters. To cancel this add `bash` at the end of the command. Example: `podman run tsdk bash`;
 
 ### Remove Container After Exit
-A container that was run and it's job has been finished or the user has exited will not automatically be removed instead it will enter the Exit state.
+A container that was run and its job has been finished or the user has exited will not automatically be removed instead it will enter the Exit state.
 To make sure that the container is deleted and removed after it's being used the flag `--rm` should be used.
 
 ```bash
@@ -202,10 +202,10 @@ The predefined operation/command of the container when run is to run the Ternoa 
 ```
 
 ### Create A Development Environment
-The dockerfile is made in a way that it can be used to develope new applications with it.
+The dockerfile is made in a way that it can be used to develop new applications with it.
 Example of a typical workflows:
 - The host installs git, clones the repo and install a code editor like VS Code.
-- The host runs the container in a interactive mode with /workdir pointing to a workdir on host machine (can be your own project or chain repo).
+- The host runs the container in an interactive mode with /workdir pointing to a workdir on host machine (can be your own project or chain repo).
 - The host writes code via a code editor and uses the terminal (which is connected to the container) to run the `cargo build` and `cargo check` commands.
 - With that setup all the changes are done locally on the host machine while the container is only used to compile and run the chain.
 
@@ -213,7 +213,7 @@ Example of a typical workflows:
   mkdir ternoa-data 
   # Flag "--name" is used to name the container.
   podman run -it --name my_chain_env -v ./ternoa-data:/data -v ./.:/workdir tchain bash
-  # Do some activity and the exit the container
+  # Do some activity and exit the container
   [root@d4ad8ec11655:/workdir] nano -V
   [root@d4ad8ec11655:/workdir] apt install nano
   [root@d4ad8ec11655:/workdir] exit
