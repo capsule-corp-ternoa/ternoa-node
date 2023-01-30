@@ -168,13 +168,14 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 	fn convert_to_capsule() -> Weight {
 		Weight::from_ref_time(10_000_000 as u64)
 	}
-	// Storage: NFT Nfts (r:1 w:1)
-	// Storage: NFT SecretNftMintFee (r:1 w:0)
-	// Storage: System Account (r:1 w:1)
-	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
-	fn revert_capsule() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
-	}
+	// TODO
+	// // Storage: NFT Nfts (r:1 w:1)
+	// // Storage: NFT SecretNftMintFee (r:1 w:0)
+	// // Storage: System Account (r:1 w:1)
+	// // Storage: NFT SecretNftsOffchainData (r:0 w:1)
+	// fn revert_capsule() -> Weight {
+	// 	Weight::from_ref_time(10_000_000 as u64)
+	// }
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT SecretNftMintFee (r:1 w:0)
 	// Storage: System Account (r:1 w:1)
