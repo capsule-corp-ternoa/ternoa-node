@@ -316,7 +316,7 @@ impl frame_election_provider_support::onchain::Config for OnChainSeqPhragmen {
 	type System = Runtime;
 	type Solver = SequentialPhragmen<AccountId, common::election_provider_support::OnChainAccuracy>;
 	type DataProvider = Staking;
-	type WeightInfo = frame_election_provider_support::weights::SubstrateWeight<Runtime>; // TODO Weights
+	type WeightInfo = frame_election_provider_support::weights::SubstrateWeight<Runtime>;
 }
 
 impl pallet_staking::Config for Runtime {
@@ -653,6 +653,7 @@ parameter_types! {
 	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
 	pub const InitialSecretMintFee: Balance = 75_000_000_000_000_000_000;
+	pub const InitialCapsuleMintFee: Balance = 150_000_000_000_000_000_000;
 	pub const ShardsNumber: u32 = 5;
 }
 
@@ -666,6 +667,7 @@ impl ternoa_nft::Config for Runtime {
 	type CollectionOffchainDataLimit = CollectionOffchainDataLimit;
 	type CollectionSizeLimit = CollectionSizeLimit;
 	type InitialSecretMintFee = InitialSecretMintFee;
+	type InitialCapsuleMintFee = InitialCapsuleMintFee;
 	type ShardsNumber = ShardsNumber;
 	type TEEExt = TEE;
 }
@@ -772,4 +774,32 @@ impl ternoa_tee::Config for Runtime {
 	type ClusterSize = ClusterSize;
 	type MaxUriLen = MaxUriLen;
 	type ListSizeLimit = ListSizeLimit;
+}
+
+parameter_types! {
+	// TODO ADD REAL VALUES
+	pub const AtBlockFee: Balance = 10_000_000_000_000_000_000;
+	pub const AtBlockWithResetFee: Balance = 20_000_000_000_000_000_000;
+	pub const OnConsentFee: Balance = 30_000_000_000_000_000_000;
+	pub const OnConsentAtBlockFee: Balance = 40_000_000_000_000_000_000;
+	pub const MaxBlockDuration: u32 = 500;
+	pub const MaxConsentListSize: u32 = 10;
+	pub const SimultaneousTransmissionLimit: u32 = 50;
+	pub const ActionsInBlockLimit: u32 = 1_000;
+}
+
+impl ternoa_transmission_protocols::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = weights::ternoa_transmission_protocols::WeightInfo<Runtime>;
+	type Currency = Balances;
+	type FeesCollector = Treasury;
+	type NFTExt = NFT;
+	type InitialAtBlockFee = AtBlockFee;
+	type InitialAtBlockWithResetFee = AtBlockWithResetFee;
+	type InitialOnConsentFee = OnConsentFee;
+	type InitialOnConsentAtBlockFee = OnConsentAtBlockFee;
+	type MaxBlockDuration = MaxBlockDuration;
+	type MaxConsentListSize = MaxConsentListSize;
+	type SimultaneousTransmissionLimit = SimultaneousTransmissionLimit;
+	type ActionsInBlockLimit = ActionsInBlockLimit;
 }

@@ -149,4 +149,49 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 		Weight::from_ref_time(28_984_000 as u64)
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
+
+	//TODO CHANGE WITH REAL VALUES
+	// Storage: NFT NftMintFee (r:1 w:0)
+	// Storage: NFT SecretNftMintFee (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: NFT Collections (r:1 w:1)
+	// Storage: NFT NextNFTId (r:1 w:1)
+	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
+	// Storage: NFT Nfts (r:0 w:1)
+	fn create_capsule(_s: u32) -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+	// Storage: NFT Nfts (r:1 w:1)
+	// Storage: NFT SecretNftMintFee (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
+	fn convert_to_capsule() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+	// Storage: NFT Nfts (r:1 w:1)
+	// Storage: NFT SecretNftMintFee (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
+	fn revert_capsule() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+	// Storage: NFT Nfts (r:1 w:1)
+	// Storage: NFT SecretNftMintFee (r:1 w:0)
+	// Storage: System Account (r:1 w:1)
+	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
+	fn set_capsule_offchaindata() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+	// Storage: NFT CapsuleMintFee (r:0 w:1)
+	fn set_capsule_mint_fee() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+	// Storage: NFT CapsuleMintFee (r:0 w:1)
+	fn add_capsule_shard() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
+	// Storage: NFT CapsuleMintFee (r:0 w:1)
+	fn notify_enclave_key_update() -> Weight {
+		Weight::from_ref_time(10_000_000 as u64)
+	}
 }

@@ -87,6 +87,7 @@ ternoa-marketplace = { path = "../../ternoa-pallets/marketplace", default-featur
 ternoa-auction = { path = "../../ternoa-pallets/auction", default-features = false }
 ternoa-rent = { path = "../../ternoa-pallets/rent", default-features = false }
 ternoa-tee = { path = "../../ternoa-pallets/tee", default-features = false }
+ternoa-transmission-protocols = { path = "../../ternoa-pallets/transmission-protocols", default-features = false }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01" }
@@ -105,6 +106,7 @@ std = [
 	"ternoa-auction/std",
 	"ternoa-rent/std",
 	"ternoa-tee/std",
+	"ternoa-transmission-protocols/std",
 	# Substrate
 	"parity-scale-codec/std",
 	"frame-election-provider-support/std",
@@ -197,6 +199,7 @@ runtime-benchmarks = [
 	"ternoa-auction/runtime-benchmarks",
 	"ternoa-rent/runtime-benchmarks",
 	"ternoa-tee/runtime-benchmarks",
+	"ternoa-transmission-protocols/runtime-benchmarks",
 ]
 
 try-runtime = [
@@ -238,4 +241,5 @@ try-runtime = [
 	"ternoa-auction/try-runtime",
 	"ternoa-rent/try-runtime",
 	"ternoa-tee/try-runtime",
+	"ternoa-transmission-protocols/try-runtime",
 ]
