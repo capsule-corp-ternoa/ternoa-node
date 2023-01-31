@@ -31,68 +31,87 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `ternoa_tee`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
-	// Storage: Tee EnclaveIndex (r:1 w:1)
-	// Storage: Tee EnclaveIdGenerator (r:1 w:1)
-	// Storage: Tee EnclaveRegistry (r:0 w:1)
+	// Storage: TEE EnclaveRegistrations (r:1 w:1)
+	// Storage: TEE EnclaveData (r:1 w:0)
+	// Storage: TEE EnclaveAccountOperator (r:1 w:0)
 	fn register_enclave() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(98_184_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(3 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
-
+	// Storage: TEE EnclaveData (r:1 w:0)
+	// Storage: TEE EnclaveUnregistrations (r:1 w:1)
 	fn unregister_enclave() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(91_443_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(2 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
-
-	// Storage: Tee EnclaveIndex (r:1 w:0)
-	// Storage: Tee EnclaveRegistry (r:1 w:1)
+	// Storage: TEE EnclaveData (r:1 w:0)
+	// Storage: TEE EnclaveUpdates (r:1 w:1)
+	// Storage: TEE EnclaveAccountOperator (r:1 w:0)
 	fn update_enclave() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(133_793_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(3 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
-	
-	// Storage: Tee EnclaveUpdates (r:1 w:1)
+	// Storage: TEE EnclaveUpdates (r:1 w:1)
 	fn cancel_update() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(71_405_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
-
-	// Storage: Tee EnclaveIndex (r:1 w:0)
-	// Storage: Tee ClusterIndex (r:1 w:1)
-	// Storage: Tee ClusterRegistry (r:1 w:1)
+	// Storage: TEE EnclaveRegistrations (r:1 w:1)
+	// Storage: TEE ClusterData (r:1 w:1)
+	// Storage: TEE EnclaveAccountOperator (r:1 w:1)
+	// Storage: TEE EnclaveData (r:1 w:1)
+	// Storage: TEE EnclaveClusterId (r:0 w:1)
 	fn assign_enclave() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(141_175_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(4 as u64))
+			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
-
-	// Storage: Tee EnclaveIndex (r:1 w:0)
-	// Storage: Tee ClusterIndex (r:1 w:1)
-	// Storage: Tee ClusterRegistry (r:1 w:1)
-	fn remove_enclave() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
-	}
-
-	// TODO: Add number of storage reads when running benchmarks
-	fn force_update_enclave() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
-	}
-
-	// Storage: Tee EnclaveIndex (r:1 w:0)
-	// Storage: Tee ClusterIndex (r:1 w:1)
-	// Storage: Tee ClusterRegistry (r:1 w:1)
+	// Storage: TEE EnclaveRegistrations (r:1 w:1)
 	fn remove_registration() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(80_362_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
-
-	// Storage: Tee EnclaveIdGenerator (r:1 w:0)
-	// Storage: Tee ClusterIdGenerator (r:0 w:1)
-	// Storage: Tee ClusterRegistry (r:0 w:1)
-	fn create_cluster() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
-	}
-
-	// Storage: Tee ClusterRegistry (r:1 w:1)
-	fn remove_cluster() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
-	}
-
-	// Storage: Tee EnclaveUpdates (r:1 w:1)
+	// Storage: TEE EnclaveUpdates (r:1 w:1)
 	fn remove_update() -> Weight {
-		Weight::from_ref_time(10_000_000 as u64)
+		Weight::from_ref_time(151_134_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
+	}
+	// Storage: TEE EnclaveData (r:1 w:1)
+	// Storage: TEE EnclaveAccountOperator (r:1 w:1)
+	// Storage: TEE EnclaveClusterId (r:1 w:1)
+	// Storage: TEE ClusterData (r:1 w:1)
+	// Storage: TEE EnclaveUnregistrations (r:1 w:1)
+	// Storage: TEE EnclaveUpdates (r:1 w:1)
+	fn remove_enclave() -> Weight {
+		Weight::from_ref_time(161_545_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(6 as u64))
+			.saturating_add(T::DbWeight::get().writes(6 as u64))
+	}
+	// Storage: TEE EnclaveData (r:1 w:1)
+	// Storage: TEE EnclaveAccountOperator (r:1 w:1)
+	// Storage: TEE EnclaveUpdates (r:1 w:1)
+	fn force_update_enclave() -> Weight {
+		Weight::from_ref_time(175_701_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(3 as u64))
+			.saturating_add(T::DbWeight::get().writes(3 as u64))
+	}
+	// Storage: TEE NextClusterId (r:1 w:1)
+	// Storage: TEE ClusterData (r:0 w:1)
+	fn create_cluster() -> Weight {
+		Weight::from_ref_time(71_855_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(2 as u64))
+	}
+	// Storage: TEE ClusterData (r:1 w:1)
+	fn remove_cluster() -> Weight {
+		Weight::from_ref_time(71_444_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 }

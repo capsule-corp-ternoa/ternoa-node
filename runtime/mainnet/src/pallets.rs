@@ -784,7 +784,7 @@ parameter_types! {
 	pub const OnConsentAtBlockFee: Balance = 40_000_000_000_000_000_000;
 	pub const MaxBlockDuration: u32 = 525_948_766;
 	pub const MaxConsentListSize: u32 = 10;
-	pub const SimultaneousTransmissionLimit: u32 = 10_000_000;
+	pub const SimultaneousTransmissionLimit: u32 = 1_000_000;
 	pub const ActionsInBlockLimit: u32 = 1_000;
 }
 
