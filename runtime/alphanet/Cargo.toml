@@ -85,6 +85,19 @@ ternoa-marketplace = { path = "../../ternoa-pallets/marketplace", default-featur
 ternoa-auction = { path = "../../ternoa-pallets/auction", default-features = false }
 ternoa-rent = { path = "../../ternoa-pallets/rent", default-features = false }
 
+# Frontier
+fp-rpc = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+fp-self-contained = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-evm = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-base-fee = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-dynamic-fee = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-ethereum = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-evm-precompile-modexp = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-evm-precompile-sha3fips = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+pallet-evm-precompile-simple = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25", default-features = false }
+
+
+
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01" }
 
@@ -145,6 +158,7 @@ std = [
 	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"sp-io/std",
 	"frame-try-runtime?/std",
 	"pallet-collective/std",
 	"pallet-membership/std",
@@ -154,6 +168,16 @@ std = [
 	"pallet-multisig/std",
 	"pallet-identity/std",
 	"pallet-assets/std",
+	# Frontier
+	'fp-rpc/std',
+	'fp-self-contained/std',
+	#'pallet-evm/std',
+	'pallet-base-fee/std',
+	'pallet-dynamic-fee/std',
+	'pallet-ethereum/std',
+	'pallet-evm-precompile-modexp/std',
+	'pallet-evm-precompile-sha3fips/std',
+	'pallet-evm-precompile-simple/std',
 ]
 
 runtime-benchmarks = [
@@ -192,6 +216,10 @@ runtime-benchmarks = [
 	"ternoa-marketplace/runtime-benchmarks",
 	"ternoa-auction/runtime-benchmarks",
 	"ternoa-rent/runtime-benchmarks",
+	# Frontier
+	'pallet-evm/runtime-benchmarks',
+	'pallet-ethereum/runtime-benchmarks',
+
 ]
 
 try-runtime = [
