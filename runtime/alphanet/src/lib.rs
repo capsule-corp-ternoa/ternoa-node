@@ -29,6 +29,7 @@ mod pallets;
 mod version;
 mod weights;
 
+use parity_scale_codec::{Decode, Encode};
 use frame_support::{construct_runtime, parameter_types, traits::KeyOwnerProofSystem,
 	weights::{
 		constants::{WEIGHT_PER_SECOND},
@@ -54,7 +55,7 @@ use sp_core::{
 use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::{
 	generic,
-	traits::{BlakeTwo256, Block as BlockT, NumberFor, DispatchInfoOf, PostDispatchInfoOf},
+	traits::{BlakeTwo256, Block as BlockT, NumberFor, DispatchInfoOf, PostDispatchInfoOf, UniqueSaturatedInto, Dispatchable},
 	transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
 	ApplyExtrinsicResult, Perbill, Permill, impl_opaque_keys, 
 };

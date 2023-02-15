@@ -67,7 +67,7 @@ type RootOrAtLeastHalfOfCommittee = EitherOfDiverse<
 
 const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
 /// We allow for 2 seconds of compute with a 6 second average block time.
-pub const MAXIMUM_BLOCK_WEIGHT: Weight = 2 * WEIGHT_PER_SECOND;
+pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND.saturating_mul(2);
 const WEIGHT_PER_GAS: u64 = 20_000;
 
 parameter_types! {
@@ -762,15 +762,15 @@ impl ternoa_rent::Config for Runtime {
 }
 
 
-pub struct FixedGasWeightMapping;
-impl GasWeightMapping for FixedGasWeightMapping {
-	fn gas_to_weight(gas: u64) -> Weight {
-		gas.saturating_mul(WEIGHT_PER_GAS)
-	}
-	fn weight_to_gas(weight: Weight) -> u64 {
-		weight.wrapping_div(WEIGHT_PER_GAS)
-	}
-}
+// pub struct FixedGasWeightMapping;
+// impl GasWeightMapping for FixedGasWeightMapping {
+// 	fn gas_to_weight(gas: u64) -> Weight {
+// 		gas.saturating_mul(WEIGHT_PER_GAS)
+// 	}
+// 	fn weight_to_gas(weight: Weight) -> u64 {
+// 		weight.wrapping_div(WEIGHT_PER_GAS)
+// 	}
+// }
 
 // use frame_support::traits::FindAuthor;
 // //TODO It feels like this shold be able to work for any T: H160, but I tried for
@@ -794,19 +794,20 @@ impl GasWeightMapping for FixedGasWeightMapping {
 
 parameter_types! {
 	pub const ChainId: u64 = 42;
-	pub BlockGasLimit: U256 = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT / WEIGHT_PER_GAS);
+	pub BlockGasLimit: U256 = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT.ref_time() / WEIGHT_PER_GAS);
 	pub PrecompilesValue: FrontierPrecompiles<Runtime> = FrontierPrecompiles::<_>::new();
+	pub WeightPerGas: Weight = Weight::from_ref_time(WEIGHT_PER_GAS);
 }
 
 impl pallet_evm::Config for Runtime {
 	type FeeCalculator = BaseFee;
-	type GasWeightMapping = FixedGasWeightMapping;
+	type GasWeightMapping = pallet_evm::FixedGasWeightMapping<Self>;
 	type BlockHashMapping = pallet_ethereum::EthereumBlockHashMapping<Self>;
 	type CallOrigin = EnsureAddressTruncated;
 	type WithdrawOrigin = EnsureAddressTruncated;
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
 	type Currency = Balances;
-	type Event = RuntimeEvent;
+	type RuntimeEvent = RuntimeEvent;
 	type Runner = pallet_evm::runner::stack::Runner<Self>;
 	type PrecompilesType = FrontierPrecompiles<Self>;
 	type PrecompilesValue = PrecompilesValue;
@@ -814,12 +815,15 @@ impl pallet_evm::Config for Runtime {
 	type BlockGasLimit = BlockGasLimit;
 	type OnChargeTransaction = ();
 	type FindAuthor = ();
+	type WeightPerGas = WeightPerGas;
 }
 
 frame_support::parameter_types! {
 	pub IsActive: bool = true;
 	pub DefaultBaseFeePerGas: U256 = U256::from(1_000_000_000);
+	pub DefaultElasticity: Permill = Permill::from_parts(125_000);
 }
+
 
 pub struct BaseFeeThreshold;
 impl pallet_base_fee::BaseFeeThreshold for BaseFeeThreshold {
@@ -837,10 +841,10 @@ impl pallet_base_fee::BaseFeeThreshold for BaseFeeThreshold {
 
 
 impl pallet_base_fee::Config for Runtime {
-	type Event = RuntimeEvent;
+	type RuntimeEvent = RuntimeEvent;
 	type Threshold = BaseFeeThreshold;
-	type IsActive = IsActive;
 	type DefaultBaseFeePerGas = DefaultBaseFeePerGas;
+	type DefaultElasticity = DefaultElasticity;
 }
 
 frame_support::parameter_types! {
@@ -853,6 +857,6 @@ impl pallet_dynamic_fee::Config for Runtime {
 }
 
 impl pallet_ethereum::Config for Runtime {
-	type Event = RuntimeEvent;
+	type RuntimeEvent = RuntimeEvent;
 	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
 }

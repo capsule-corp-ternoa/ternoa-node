@@ -24,6 +24,7 @@ use sc_cli::{
 use sc_service::{Arc, PartialComponents};
 use ternoa_client::benchmarking::{inherent_benchmark_data, RemarkBuilder};
 use ternoa_service::{chain_spec, new_full, new_partial, IdentifyVariant};
+use fc_db::frontier_database_dir;
 
 #[cfg(feature = "alphanet-native")]
 use ternoa_service::alphanet_runtime;
@@ -247,7 +248,24 @@ fn import_blocks(cli: &Cli, cmd: &ImportBlocksCmd) -> Result<()> {
 
 fn purge_chain(cli: &Cli, cmd: &PurgeChainCmd) -> Result<()> {
 	let runner = cli.create_runner(cmd)?;
-	Ok(runner.sync_run(|config| cmd.run(config.database))?)
+	Ok(runner.sync_run(|config| {
+		// Remove Frontier offchain db
+		let db_config_dir = db_config_dir(&config);
+		let frontier_database_config = match config.database {
+			DatabaseSource::RocksDb { .. } => DatabaseSource::RocksDb {
+				path: frontier_database_dir(&db_config_dir, "db"),
+				cache_size: 0,
+			},
+			DatabaseSource::ParityDb { .. } => DatabaseSource::ParityDb {
+				path: frontier_database_dir(&db_config_dir, "paritydb"),
+			},
+			_ => {
+				return Err(format!("Cannot purge `{:?}` database", config.database).into())
+			}
+		};
+		cmd.run(frontier_database_config)?;
+		cmd.run(config.database)
+	})?)
 }
 
 fn revert(cli: &Cli, cmd: &RevertCmd) -> Result<()> {

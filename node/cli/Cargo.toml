@@ -14,29 +14,42 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 # Substrate Frame
-node-inspect = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
+node-inspect = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
 
 # Substrate Client
-sc-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
-sc-service = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
-sc-finality-grandpa = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
+sc-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
+sc-service = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
+sc-finality-grandpa = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
 
 # Rest
 clap = { version = "3.1", features = ["derive"], optional = true }
 
 # Benchmark
-frame-benchmarking-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
+frame-benchmarking-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
 
 # Try Runtime
-try-runtime-cli = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
-frame-try-runtime = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01", optional = true }
+try-runtime-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
+frame-try-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30", optional = true }
 
 # Ternoa
 ternoa-service = { path = "../service", default-features = false, optional = true }
 ternoa-client = { path = "../client", default-features = false, optional = true }
 
+# Frontier
+fc-cli = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fc-consensus = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fc-db = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fc-mapping-sync= { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fc-rpc = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fc-rpc-core = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fp-consensus = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fp-dynamic-core = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fp-evm = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fp-rpc = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+fp-storage = { git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.30", default-features = false }
+
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/capsule-corp-ternoa/substrate", tag = "ternoa-substrate-2022-10-01" }
+substrate-build-script-utils = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 
 [features]
 default = [ "wasmtime", "cli", "full-node", "mainnet-native" ]
