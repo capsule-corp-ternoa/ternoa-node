@@ -652,8 +652,8 @@ parameter_types! {
 	pub const NFTOffchainDataLimit: u32 = 150;
 	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
-	pub const InitialSecretMintFee: Balance = 75_000_000_000_000_000_000;
-	pub const InitialCapsuleMintFee: Balance = 150_000_000_000_000_000_000;
+	pub const InitialSecretMintFee: Balance = 50_000_000_000_000_000_000;
+	pub const InitialCapsuleMintFee: Balance = 100_000_000_000_000_000_000;
 	pub const ShardsNumber: u32 = 5;
 }
 
@@ -777,9 +777,8 @@ impl ternoa_tee::Config for Runtime {
 }
 
 parameter_types! {
-	// TODO ADD REAL VALUES
-	pub const AtBlockFee: Balance = 10_000_000_000_000_000_000;
-	pub const AtBlockWithResetFee: Balance = 20_000_000_000_000_000_000;
+	pub const AtBlockFee: Balance = 20_000_000_000_000_000_000;
+	pub const AtBlockWithResetFee: Balance = 40_000_000_000_000_000_000;
 	pub const OnConsentFee: Balance = 30_000_000_000_000_000_000;
 	pub const OnConsentAtBlockFee: Balance = 40_000_000_000_000_000_000;
 	pub const MaxBlockDuration: u32 = 525_948_766;
