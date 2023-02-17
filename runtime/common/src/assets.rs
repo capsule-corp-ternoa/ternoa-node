@@ -21,7 +21,7 @@ use crate::constants::currency::CAPS;
 parameter_types! {
 	pub const AssetDeposit: u128 = 10_000 * CAPS;
 	pub const AssetAccountDeposit: u128 = 10 * CAPS;
-	pub const ApprovalDeposit: u128 = 10 * CAPS;        //Remark: On Alphanet 1.2.1-rc1 this is set to 100 * CAPS.
+	pub const ApprovalDeposit: u128 = 10 * CAPS;        //Remark: On Alphanet this is set to 100 * CAPS.
 	pub const StringLimit: u32 = 50;
 	pub const MetadataDepositBase: u128 = 100 * CAPS;
 	pub const MetadataDepositPerByte: u128 = 10 * CAPS;
