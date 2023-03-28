@@ -202,4 +202,10 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
+	// Storage: NFT Collections (r:1 w:1)
+	fn set_collection_offchaindata() -> Weight {
+		Weight::from_ref_time(130_164_000 as u64)
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(2 as u64))
+	}
 }

@@ -1,5 +1,4 @@
 [submodule "ternoa-pallets"]
 	path = ternoa-pallets
 	url = https://github.com/capsule-corp-ternoa/ternoa-pallets
-    branch = upgrade-to-polkadot-tags
 
