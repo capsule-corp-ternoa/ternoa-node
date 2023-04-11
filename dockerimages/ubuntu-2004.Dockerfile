@@ -1,6 +1,9 @@
 # This is the first stage. Here we install all the dependencies that we need in order to build the Ternoa binary.
 FROM ubuntu:20.04 as builder
 
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 ADD . ./workdir
 WORKDIR "/workdir"
 
