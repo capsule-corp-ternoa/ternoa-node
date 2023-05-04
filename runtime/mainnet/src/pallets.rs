@@ -45,6 +45,7 @@ use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
 use ternoa_runtime_common as common;
+pub use ternoa_runtime_common::constants::currency::UNITS;
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances,
@@ -512,7 +513,7 @@ impl ternoa_staking_rewards::Config for Runtime {
 
 parameter_types! {
 	pub const ProposalLifetime: BlockNumber = 100800;
-	pub const InitialBridgeFee: Balance = 100_000_000_000_000_000_000_000;
+	pub const InitialBridgeFee: Balance = 100_000 * UNITS;
 }
 
 impl ternoa_bridge::Config for Runtime {
@@ -648,12 +649,12 @@ impl pallet_identity::Config for Runtime {
 }
 
 parameter_types! {
-	pub const InitialMintFee: Balance = 10_000_000_000_000_000_000;
+	pub const InitialMintFee: Balance = 10 * UNITS;
 	pub const NFTOffchainDataLimit: u32 = 150;
 	pub const CollectionOffchainDataLimit: u32 = 150;
 	pub const CollectionSizeLimit: u32 = 1_000_000;
-	pub const InitialSecretMintFee: Balance = 50_000_000_000_000_000_000;
-	pub const InitialCapsuleMintFee: Balance = 100_000_000_000_000_000_000;
+	pub const InitialSecretMintFee: Balance = 50 * UNITS;
+	pub const InitialCapsuleMintFee: Balance = 100 * UNITS;
 	pub const ShardsNumber: u32 = 5;
 }
 
@@ -673,7 +674,7 @@ impl ternoa_nft::Config for Runtime {
 }
 
 parameter_types! {
-	pub const MarketplaceInitialMintFee: Balance = 10_000_000_000_000_000_000_000;
+	pub const MarketplaceInitialMintFee: Balance = 10_000 * UNITS;
 	pub const OffchainDataLimit: u32 = 150;
 	pub const AccountSizeLimit: u32 = 100_000;
 	pub const CollectionListSizeLimit: u32 = 100_000;
@@ -777,10 +778,10 @@ impl ternoa_tee::Config for Runtime {
 }
 
 parameter_types! {
-	pub const AtBlockFee: Balance = 20_000_000_000_000_000_000;
-	pub const AtBlockWithResetFee: Balance = 40_000_000_000_000_000_000;
-	pub const OnConsentFee: Balance = 30_000_000_000_000_000_000;
-	pub const OnConsentAtBlockFee: Balance = 40_000_000_000_000_000_000;
+	pub const AtBlockFee: Balance = 20 * UNITS;
+	pub const AtBlockWithResetFee: Balance = 40 * UNITS;
+	pub const OnConsentFee: Balance = 30 * UNITS;
+	pub const OnConsentAtBlockFee: Balance = 40 * UNITS;
 	pub const MaxBlockDuration: u32 = 525_948_766;
 	pub const MaxConsentListSize: u32 = 10;
 	pub const SimultaneousTransmissionLimit: u32 = 1_000_000;
