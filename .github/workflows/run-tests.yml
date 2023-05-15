@@ -14,7 +14,7 @@ jobs:
     secrets: inherit
 
   build:
-    runs-on: GP1-M
+    runs-on: ubuntu-latest
     name: Run Tests
     steps:
     - uses: actions/checkout@v3
