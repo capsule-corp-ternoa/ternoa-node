@@ -2,6 +2,11 @@ name: Build Ubuntu 22.04 Binary
 
 on:
   workflow_dispatch:
+    inputs:
+      ubuntu_version:
+        description: 'Ubuntu Version'
+        required: true
+        default: '22.04'
 
 env:
   CARGO_TERM_COLOR: always
@@ -21,7 +26,11 @@ jobs:
       run: podman build -t tchain -f ./dockerimages/ubuntu-2204.Dockerfile .
 
     - name: "Create output folder."
-      run: mkdir output
+      # run: mkdir output
+      #     - name: Create Output Folder
+      run: |
+        mkdir output
+        sudo chown $USER output
 
     - name: "Run Build Binary Script"
       run: podman run --rm -v ./output:/output -t tchain
@@ -31,49 +40,6 @@ jobs:
       with:
         name: assets-for-download
         path: output
-        
-# name: Build Pipeline
-
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       ubuntu_version:
-#         description: 'Ubuntu Version'
-#         required: true
-#         default: '22.04'
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     name: Build Ubuntu 22.04 Binary
-#     steps:
-#       - name: Checkout Repository
-#         uses: actions/checkout@v3
-
-#       - name: Set up Podman
-#         run: sudo apt-get update && sudo apt-get install -y podman
-
-#       - name: Build Podman Image
-#         run: |
-#           podman build \
-#             --platform linux/amd64 \
-#             --tag tchain \
-#             -f ./dockerimages/ubuntu-2204.Dockerfile .
-
-#       - name: Create Output Folder
-#         run: mkdir output
-
-#       - name: Run Build Binary Script
-#         run: |
-#           podman run --rm \
-#             -v ${{ github.workspace }}/output:/output \
-#             -t tchain
-
-#       - name: Upload Artifacts
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: assets-for-download
-#           path: output
 
 # name: Build Ubuntu 22.04 Binary
 
