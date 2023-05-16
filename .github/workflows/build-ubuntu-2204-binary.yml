@@ -11,9 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Ubuntu 2204 Binary
-    container:
-      image: ubuntu:22.04
-
     steps:
     - uses: actions/checkout@v3
 
