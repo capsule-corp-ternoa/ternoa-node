@@ -92,22 +92,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker
+      - name: Set up Podman
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo groupadd docker || true
-          sudo usermod -aG docker $USER
+          sudo apt-get install -y podman
 
-      - name: Build Docker Image
+      - name: Build Podman Image
         run: |
-          docker build \
+          podman build \
             --platform linux/amd64 \
             --tag tchain \
             -f ./dockerimages/ubuntu-2204.Dockerfile \
-            --progress plain \
-            --no-cache \
-            --network=host .
+            --log-level debug \
+            --events-backend file
 
       - name: Create Output Folder
         run: |
@@ -116,7 +113,7 @@ jobs:
 
       - name: Run Build Binary Script
         run: |
-          docker run --rm \
+          podman run --rm \
             -v ${{ github.workspace }}/output:/output \
             -t tchain
 
