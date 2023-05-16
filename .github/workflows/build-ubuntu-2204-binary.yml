@@ -1,35 +1,76 @@
-name: Build Ubuntu 22.04 Binary
+# name: Build Ubuntu 22.04 Binary
+
+# on:
+#   workflow_dispatch:
+
+# env:
+#   CARGO_TERM_COLOR: always
+
+# jobs:
+#   call-start-new-build-machine:
+#     uses: ./.github/workflows/start-new-build-machine.yml
+#     secrets: inherit
+
+#   build:
+#     runs-on: ubuntu-latest
+#     name: Build Ubuntu 2204 Binary
+#     steps:
+#     - uses: actions/checkout@v3
+
+#     - name: "Build DockerImage"
+#       run: podman build -t tchain -f ./dockerimages/ubuntu-2204.Dockerfile .
+
+#     - name: "Create output folder."
+#       run: mkdir output
+
+#     - name: "Run Build Binary Script"
+#       run: podman run --rm -v ./output:/output -t tchain
+
+#     - name: Upload Artifacts
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: assets-for-download
+#         path: output
+name: Build Pipeline
 
 on:
   workflow_dispatch:
-
-env:
-  CARGO_TERM_COLOR: always
+    inputs:
+      ubuntu_version:
+        description: 'Ubuntu Version'
+        required: true
+        default: '22.04'
 
 jobs:
-  call-start-new-build-machine:
-    uses: ./.github/workflows/start-new-build-machine.yml
-    secrets: inherit
-
   build:
     runs-on: ubuntu-latest
-    name: Build Ubuntu 2204 Binary
+    name: Build Ubuntu 22.04 Binary
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: "Build DockerImage"
-      run: podman build -t tchain -f ./dockerimages/ubuntu-2204.Dockerfile .
+      - name: Set up Podman
+        run: sudo apt-get update && sudo apt-get install -y podman
 
-    - name: "Create output folder."
-      run: mkdir output
+      - name: Build Podman Image
+        run: |
+          podman build \
+            --platform linux/amd64 \
+            --tag tchain \
+            -f ./dockerimages/ubuntu-2204.Dockerfile .
 
-    - name: "Run Build Binary Script"
-      run: podman run --rm -v ./output:/output -t tchain
+      - name: Create Output Folder
+        run: mkdir output
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: assets-for-download
-        path: output
+      - name: Run Build Binary Script
+        run: |
+          podman run --rm \
+            -v ${{ github.workspace }}/output:/output \
+            -t tchain
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: assets-for-download
+          path: output
     
