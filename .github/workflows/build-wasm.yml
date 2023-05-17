@@ -21,7 +21,7 @@ jobs:
     secrets: inherit
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: GP1-M
     name: Build WASM
     steps:
     - uses: actions/checkout@v3

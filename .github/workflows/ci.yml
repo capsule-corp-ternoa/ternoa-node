@@ -42,7 +42,6 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Clean
-        if: ${{ github.event.inputs.CLEAN_BUILD == 'true' }}
         run: cargo clean
 
       - name: Check format
@@ -50,6 +49,9 @@ jobs:
 
       - name: Check release
         run: cargo check --release
+
+      - name: Tests
+        run: cargo test --all
 
       - name: Build
         run: cargo build --locked --release
