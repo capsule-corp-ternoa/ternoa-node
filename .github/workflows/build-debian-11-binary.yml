@@ -1,57 +1,92 @@
 name: Build Debian 11 Binary
+
 on:
-  workflow_dispatch
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
+  call-start-new-build-machine:
+    uses: ./.github/workflows/start-new-build-machine.yml
+    secrets: inherit
+
   build:
-    # no support for debian-11 yet
-    runs-on: ubuntu-22.04
-    # runs-on: debian-11
-
+    runs-on: GP1-M
+    name: Build Debian 11 Binary
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Get submodules
-        run: git submodule update --init --recursive
+    - name: "Build DockerImage"
+      run: podman build -t tchain -f ./dockerimages/debian-11.Dockerfile .
 
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly-2022-04-24
-          components: rustfmt, llvm-tools-preview
-          target: wasm32-unknown-unknown
-          default: true
+    - name: "Create output folder."
+      run: mkdir output
 
-      - name: Install protoc
-        run: |
-          sudo apt update
-          sudo apt install -y protobuf-compiler
+    - name: "Run Build Binary Script"
+      run: podman run --rm -v ./output:/output -t tchain
 
-      - name: Cache restore
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: assets-for-download
+        path: output
 
-      - name: Clean
-        if: ${{ github.event.inputs.CLEAN_BUILD == 'true' }}
-        run: cargo clean
 
-      - name: Check format
-        run: cargo fmt --all -- --check
+# name: Build Debian 11 Binary
+# on:
+#   workflow_dispatch
 
-      - name: Check release
-        run: cargo check --release
+# jobs:
+#   build:
+#     # no support for debian-11 yet
+#     runs-on: ubuntu-22.04
+#     # runs-on: debian-11
 
-      - name: Build
-        run: cargo build --locked --release
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Get submodules
+#         run: git submodule update --init --recursive
+
+#       - name: Install toolchain
+#         uses: actions-rs/toolchain@v1
+#         with:
+#           profile: minimal
+#           toolchain: nightly-2022-04-24
+#           components: rustfmt, llvm-tools-preview
+#           target: wasm32-unknown-unknown
+#           default: true
+
+#       - name: Install protoc
+#         run: |
+#           sudo apt update
+#           sudo apt install -y protobuf-compiler
+
+#       - name: Cache restore
+#         uses: actions/cache@v3
+#         with:
+#           path: |
+#             ~/.cargo/bin/
+#             ~/.cargo/registry/index/
+#             ~/.cargo/registry/cache/
+#             ~/.cargo/git/db/
+#             target/
+#           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+#       - name: Clean
+#         if: ${{ github.event.inputs.CLEAN_BUILD == 'true' }}
+#         run: cargo clean
+
+#       - name: Check format
+#         run: cargo fmt --all -- --check
+
+#       - name: Check release
+#         run: cargo check --release
+
+#       - name: Build
+#         run: cargo build --locked --release
 
 # name: Build Debian 11 Binary
 
