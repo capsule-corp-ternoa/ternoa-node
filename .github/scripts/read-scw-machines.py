@@ -26,10 +26,6 @@ scw_machines = [{"name": "Ternoa-Build-Machine-0",
 
 config = sys.argv[1]
 data = json.load(sys.stdin)
-print('--------------------')
-print('config: ' + config)
-print( data)
-print('--------------------')
 to_turn_off = []
 for runner in data["runners"]:
     if (not is_ok(config, runner)):
