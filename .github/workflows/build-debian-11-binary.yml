@@ -4,7 +4,9 @@ on:
 
 jobs:
   build:
-    runs-on: debian-11
+    # no support for debian-11 yet
+    runs-on: ubuntu-22.04
+    # runs-on: debian-11
 
     steps:
       - name: Checkout code
