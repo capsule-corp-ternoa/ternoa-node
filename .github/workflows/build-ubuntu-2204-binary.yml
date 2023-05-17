@@ -1,20 +1,15 @@
 name: Build Ubuntu 22.04 Binary
 on:
-    workflow_dispatch
+  workflow_dispatch
+
 jobs:
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # cancel concurrent builds on the same branch
-    concurrency:
-      group: ${{ github.head_ref || github.run_id }}
-      cancel-in-progress: true
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
+
       - name: Get submodules
         run: git submodule update --init --recursive
 
@@ -55,6 +50,65 @@ jobs:
 
       - name: Build
         run: cargo build --locked --release
+
+
+# name: Build Ubuntu 22.04 Binary
+# on:
+#     workflow_dispatch
+# jobs:
+#   build:
+#     # The type of runner that the job will run on
+#     runs-on: ubuntu-latest
+
+#     # cancel concurrent builds on the same branch
+#     concurrency:
+#       group: ${{ github.head_ref || github.run_id }}
+#       cancel-in-progress: true
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+        
+#       - name: Get submodules
+#         run: git submodule update --init --recursive
+
+#       - name: Install toolchain
+#         uses: actions-rs/toolchain@v1
+#         with:
+#           profile: minimal
+#           toolchain: nightly-2022-04-24
+#           components: rustfmt, llvm-tools-preview
+#           target: wasm32-unknown-unknown
+#           default: true
+
+#       - name: Install protoc
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y protobuf-compiler
+
+#       - name: Cache restore
+#         uses: actions/cache@v3
+#         with:
+#           path: |
+#             ~/.cargo/bin/
+#             ~/.cargo/registry/index/
+#             ~/.cargo/registry/cache/
+#             ~/.cargo/git/db/
+#             target/
+#           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+#       - name: Clean
+#         if: ${{ github.event.inputs.CLEAN_BUILD == 'true' }}
+#         run: cargo clean
+
+#       - name: Check format
+#         run: cargo fmt --all -- --check
+
+#       - name: Check release
+#         run: cargo check --release
+
+#       - name: Build
+#         run: cargo build --locked --release
 
 
 # name: Build Ubuntu 22.04 Binary

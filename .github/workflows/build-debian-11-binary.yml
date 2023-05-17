@@ -1,35 +1,88 @@
 name: Build Debian 11 Binary
-
 on:
-  workflow_dispatch:
-
-env:
-  CARGO_TERM_COLOR: always
+  workflow_dispatch
 
 jobs:
-  call-start-new-build-machine:
-    uses: ./.github/workflows/start-new-build-machine.yml
-    secrets: inherit
-
   build:
-    runs-on: ubuntu-latest
-    name: Build Debian 11 Binary
+    runs-on: debian-11
+
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: "Build DockerImage"
-      run: podman build -t tchain -f ./dockerimages/debian-11.Dockerfile .
+      - name: Get submodules
+        run: git submodule update --init --recursive
 
-    - name: "Create output folder."
-      run: mkdir output
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2022-04-24
+          components: rustfmt, llvm-tools-preview
+          target: wasm32-unknown-unknown
+          default: true
 
-    - name: "Run Build Binary Script"
-      run: podman run --rm -v ./output:/output -t tchain
+      - name: Install protoc
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: assets-for-download
-        path: output
+      - name: Cache restore
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Clean
+        if: ${{ github.event.inputs.CLEAN_BUILD == 'true' }}
+        run: cargo clean
+
+      - name: Check format
+        run: cargo fmt --all -- --check
+
+      - name: Check release
+        run: cargo check --release
+
+      - name: Build
+        run: cargo build --locked --release
+
+# name: Build Debian 11 Binary
+
+# on:
+#   workflow_dispatch:
+
+# env:
+#   CARGO_TERM_COLOR: always
+
+# jobs:
+#   call-start-new-build-machine:
+#     uses: ./.github/workflows/start-new-build-machine.yml
+#     secrets: inherit
+
+#   build:
+#     runs-on: ubuntu-latest
+#     name: Build Debian 11 Binary
+#     steps:
+#     - uses: actions/checkout@v3
+
+#     - name: "Build DockerImage"
+#       run: podman build -t tchain -f ./dockerimages/debian-11.Dockerfile .
+
+#     - name: "Create output folder."
+#       run: mkdir output
+
+#     - name: "Run Build Binary Script"
+#       run: podman run --rm -v ./output:/output -t tchain
+
+#     - name: Upload Artifacts
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: assets-for-download
+#         path: output
 
     
