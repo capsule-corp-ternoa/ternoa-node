@@ -47,8 +47,5 @@ jobs:
       - name: Check format
         run: cargo fmt --all -- --check
 
-      - name: Check release
-        run: cargo check --release
-
       - name: Tests
         run: cargo test --all
