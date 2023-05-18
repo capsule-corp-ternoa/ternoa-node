@@ -52,18 +52,3 @@ jobs:
 
       - name: Tests
         run: cargo test --all
-
-      - name: Build
-        run: cargo build --locked --release
-
-      - name: Upload Artifacts Alphanet
-        uses: actions/upload-artifact@v3
-        with:
-          name: assets-for-download-alphanet
-          path: target/release/wbuild/alphanet-runtime/alphanet_runtime.compact.compressed.wasm
-
-      - name: Upload Artifacts Mainnet
-        uses: actions/upload-artifact@v3
-        with:
-          name: assets-for-download-mainnet
-          path: target/release/wbuild/mainnet-runtime/mainnet_runtime.compact.compressed.wasm
