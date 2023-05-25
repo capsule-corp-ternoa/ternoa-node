@@ -25,10 +25,13 @@ use frame_election_provider_support::{SequentialPhragmen, Weight};
 use frame_support::{
 	parameter_types,
 	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
-	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
+	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee, DispatchClass},
 	PalletId,
+	dispatch,
 };
+
 use frame_system::EnsureRoot;
+use pallet_contracts::DefaultContractAccessWeight;
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
@@ -54,6 +57,10 @@ use crate::{
 	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
 	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, TEE, VERSION,
 };
+
+
+use crate::RandomnessCollectiveFlip;
+
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
 
@@ -801,4 +808,52 @@ impl ternoa_transmission_protocols::Config for Runtime {
 	type MaxConsentListSize = MaxConsentListSize;
 	type SimultaneousTransmissionLimit = SimultaneousTransmissionLimit;
 	type ActionsInBlockLimit = ActionsInBlockLimit;
+}
+const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(10);
+impl pallet_randomness_collective_flip::Config for Runtime {}
+parameter_types! {
+	pub const DepositPerItem: Balance = 1_000;
+	pub const DepositPerByte: Balance = 1_000;
+	pub const DeletionQueueDepth: u32 = 128;
+	// The lazy deletion runs inside on_initialize.
+	pub DeletionWeightLimit: Weight = Perbill::from_percent(80) *
+	BlockWeights::get().max_block;
+	pub Schedule: pallet_contracts::Schedule<Runtime> = Default::default();
+}
+
+impl pallet_contracts::Config for Runtime {
+	type Time = Timestamp;
+	type Randomness = RandomnessCollectiveFlip;
+	type Currency = Balances;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	/// The safest default is to allow no calls at all.
+	///
+	/// Runtimes should whitelist dispatchables that are allowed to be called from contracts
+	/// and make sure they are stable. Dispatchables exposed to contracts are not allowed to
+	/// change because that would break already deployed contracts. The `Call` structure itself
+	/// is not allowed to change the indices of existing pallets, too.
+	type CallFilter = frame_support::traits::Nothing;
+	type WeightPrice = pallet_transaction_payment::Pallet<Self>;
+	type WeightInfo = pallet_contracts::weights::SubstrateWeight<Self>;
+	type ChainExtension = ();
+	type Schedule = Schedule;
+	type CallStack = [pallet_contracts::Frame<Self>; 31];
+	type DeletionQueueDepth = DeletionQueueDepth;
+	type DeletionWeightLimit = DeletionWeightLimit;
+	type DepositPerByte = DepositPerByte;
+	type ContractAccessWeight = DefaultContractAccessWeight<BlockWeights>;
+	type DepositPerItem = DepositPerItem;
+	type AddressGenerator = pallet_contracts::DefaultAddressGenerator;
+	// This node is geared towards development and testing of contracts.
+	// We decided to increase the default allowed contract size for this
+	// reason (the default is `128 * 1024`).
+	//
+	// Our reasoning is that the error code `CodeTooLarge` is thrown
+	// if a too-large contract is uploaded. We noticed that it poses
+	// less friction during development when the requirement here is
+	// just more lax.
+	type MaxCodeLen = ConstU32<{ 256 * 1024 }>;
+
+	type MaxStorageKeyLen = ConstU32<128>;
 }

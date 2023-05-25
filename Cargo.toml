@@ -129,6 +129,10 @@ sc-sync-state-rpc = { git = "https://github.com/paritytech/substrate", branch = 
 sc-consensus-slots = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 sc-consensus-uncles = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 
+# ink (Wasm smart contracts)
+pallet-contracts = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts", default-features = false, features = ["unstable-interface"], branch = "polkadot-v0.9.30" }
+pallet-contracts-primitives = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts-primitives", default-features = false , branch = "polkadot-v0.9.30" }
+
 
 # Rest
 parity-scale-codec = { default-features = false, features = ["derive", "max-encoded-len"], version = "3.1.5" }
