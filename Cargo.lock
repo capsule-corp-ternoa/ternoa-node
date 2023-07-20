@@ -8664,18 +8664,21 @@ dependencies = [
 
 [[package]]
 name = "ternoa-tee"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
  "log",
  "pallet-balances",
+ "pallet-staking",
  "parity-scale-codec",
  "scale-info",
+ "sp-arithmetic",
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-staking",
  "sp-std",
  "ternoa-common",
  "ternoa-nft",

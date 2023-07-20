@@ -764,16 +764,22 @@ impl ternoa_rent::Config for Runtime {
 parameter_types! {
 	pub const ClusterSize: u32 = 5;
 	pub const MaxUriLen: u32 = 150;
-	pub const ListSizeLimit: u32 = 1_000;
+	pub const ListSizeLimit: u32 = 10;
+	pub const TeeBondingDuration: u32 = 10;
+	pub const InitialStakingAmount: Balance = 20;
+	pub const InitialDailyRewards: Balance = 2000;
 }
 
 impl ternoa_tee::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type Currency = Balances;
-	type WeightInfo = weights::ternoa_tee::WeightInfo<Runtime>;
+	type TeeWeightInfo = weights::ternoa_tee::WeightInfo<Runtime>;
 	type ClusterSize = ClusterSize;
 	type MaxUriLen = MaxUriLen;
 	type ListSizeLimit = ListSizeLimit;
+	type TeeBondingDuration = TeeBondingDuration;
+	type InitialStakingAmount = InitialStakingAmount;
+	type InitialDailyRewards = InitialDailyRewards;
+	
 }
 
 parameter_types! {
