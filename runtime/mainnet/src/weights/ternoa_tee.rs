@@ -114,4 +114,9 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
+	fn update_cluster() -> Weight { todo!() }
+	fn withdraw_unbonded() -> Weight { todo!() }
+    fn register_metrics_server() -> Weight { todo!() }
+    fn submit_metrics_server_report() -> Weight { todo!() }
+    fn set_report_params_weightage() -> Weight { todo!() }
 }
