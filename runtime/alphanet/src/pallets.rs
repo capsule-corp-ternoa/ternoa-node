@@ -767,7 +767,7 @@ parameter_types! {
 	pub const ListSizeLimit: u32 = 10;
 	pub const TeeBondingDuration: u32 = 10;
 	pub const InitialStakingAmount: Balance = 20;
-	pub const InitalDailyRewardAmountForOperator: Balance = 2000;
+	pub const InitalDailyRewardPool: Balance = 2000;
 	pub const TeePalletId: PalletId = PalletId(*b"teepalet");
 }
 
@@ -779,7 +779,7 @@ impl ternoa_tee::Config for Runtime {
 	type ListSizeLimit = ListSizeLimit;
 	type TeeBondingDuration = TeeBondingDuration;
 	type InitialStakingAmount = InitialStakingAmount;
-	type InitalDailyRewardAmountForOperator = InitalDailyRewardAmountForOperator;
+	type InitalDailyRewardPool = InitalDailyRewardPool;
 	type PalletId = TeePalletId;
 }
 
