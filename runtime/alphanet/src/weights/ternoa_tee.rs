@@ -154,4 +154,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
         Weight::from_ref_time(32_340_000 as u64)
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
+	fn set_staking_amount() -> Weight { todo!() }
+	fn set_daily_reward_pool() -> Weight { todo!() }
+	fn claim_rewards() -> Weight { todo!() }
 }
