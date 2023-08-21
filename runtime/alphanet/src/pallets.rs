@@ -766,9 +766,10 @@ parameter_types! {
 	pub const MaxUriLen: u32 = 150;
 	pub const ListSizeLimit: u32 = 10;
 	pub const TeeBondingDuration: u32 = 10;
-	pub const InitialStakingAmount: Balance = 20;
-	pub const InitalDailyRewardPool: Balance = 2000;
+	pub const InitialStakingAmount: Balance = 250_000_000_000_000_000_000_000;
+	pub const InitalDailyRewardPool: Balance = 3082_000_000_000_000_000_000;
 	pub const TeePalletId: PalletId = PalletId(*b"teepalet");
+	pub const TeeHistoryDepth: u32 = 84;
 }
 
 impl ternoa_tee::Config for Runtime {
@@ -781,6 +782,7 @@ impl ternoa_tee::Config for Runtime {
 	type InitialStakingAmount = InitialStakingAmount;
 	type InitalDailyRewardPool = InitalDailyRewardPool;
 	type PalletId = TeePalletId;
+	type TeeHistoryDepth = TeeHistoryDepth;
 }
 
 parameter_types! {

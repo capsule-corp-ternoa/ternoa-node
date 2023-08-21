@@ -769,6 +769,7 @@ parameter_types! {
 	pub const InitialStakingAmount: Balance = 20;
 	pub const InitalDailyRewardPool: Balance = 2000;
 	pub const TeePalletId: PalletId = PalletId(*b"teepalet");
+	pub const TeeHistoryDepth: u32 = 84;
 }
 
 impl ternoa_tee::Config for Runtime {
@@ -781,6 +782,7 @@ impl ternoa_tee::Config for Runtime {
 	type InitialStakingAmount = InitialStakingAmount;
 	type InitalDailyRewardPool = InitalDailyRewardPool;
 	type PalletId = TeePalletId;
+	type TeeHistoryDepth = TeeHistoryDepth;
 }
 
 parameter_types! {
