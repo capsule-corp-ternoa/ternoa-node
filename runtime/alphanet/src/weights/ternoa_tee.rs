@@ -173,5 +173,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
             .saturating_add(T::DbWeight::get().reads(7 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }
+	fn unregister_metrics_server() -> Weight { todo!() }
+	fn force_update_metrics_server_type() -> Weight { todo!() }
 }
 
