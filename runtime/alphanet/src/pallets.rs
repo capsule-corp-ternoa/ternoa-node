@@ -765,7 +765,7 @@ parameter_types! {
 	pub const ClusterSize: u32 = 5;
 	pub const MaxUriLen: u32 = 150;
 	pub const ListSizeLimit: u32 = 10;
-	pub const TeeBondingDuration: u32 = 100;
+	pub const TeeBondingDuration: u32 = 600;
 	pub const InitialStakingAmount: Balance = 250_000_000_000_000_000_000_000;
 	pub const InitalDailyRewardPool: Balance = 3082_000_000_000_000_000_000;
 	pub const TeePalletId: PalletId = PalletId(*b"teepalet");
