@@ -53,6 +53,7 @@ use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Index, Signature};
 use ternoa_runtime_common::{impl_runtime_weights, BlockLength};
+
 pub use version::VERSION;
 
 #[cfg(feature = "std")]
@@ -149,6 +150,8 @@ construct_runtime!(
 		Rent: ternoa_rent = 33,
 		TEE: ternoa_tee = 34,
 		TransmissionProtocols: ternoa_transmission_protocols = 35,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip = 36,
+		Contracts: pallet_contracts = 37,
 	}
 );
 

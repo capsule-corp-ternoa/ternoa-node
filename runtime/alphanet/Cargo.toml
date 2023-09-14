@@ -66,6 +66,10 @@ sp-tracing = { workspace = true, default-features = false }
 sp-transaction-pool = { workspace = true, default-features = false }
 sp-version = { workspace = true, default-features = false }
 
+pallet-contracts = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts", default-features = false, features = ["unstable-interface"], branch = "polkadot-v0.9.30" }
+pallet-contracts-primitives = { git = "https://github.com/paritytech/substrate", package = "pallet-contracts-primitives", default-features = false , branch = "polkadot-v0.9.30" }
+pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", package = "pallet-randomness-collective-flip", default-features = false , branch = "polkadot-v0.9.30" }
+
 # Rest
 parity-scale-codec = { default-features = false, features = ["derive", "max-encoded-len"], workspace = true }
 scale-info = { workspace = true, default-features = false, features = ["derive"] }
@@ -158,6 +162,9 @@ std = [
 	"pallet-multisig/std",
 	"pallet-identity/std",
 	"pallet-assets/std",
+	"pallet-contracts/std",
+	"pallet-contracts-primitives/std",
+	"pallet-randomness-collective-flip/std",
 ]
 
 runtime-benchmarks = [
