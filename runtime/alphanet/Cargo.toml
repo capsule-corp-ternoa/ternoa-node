@@ -39,6 +39,12 @@ pallet-multisig = { workspace = true, default-features = false }
 pallet-identity = { workspace = true, default-features = false }
 pallet-assets = { workspace = true, default-features = false }
 
+pallet-contracts = { workspace = true, default-features = false }
+pallet-contracts-primitives = { workspace = true, default-features = false }
+pallet-contracts-rpc-runtime-api = { workspace = true, default-features = false }
+
+pallet-randomness-collective-flip = { workspace = true, default-features = false }
+
 # Benchmarking
 frame-benchmarking = { workspace = true, default-features = false, optional = true }
 frame-system-benchmarking = { workspace = true, default-features = false, optional = true }
@@ -158,6 +164,9 @@ std = [
 	"pallet-multisig/std",
 	"pallet-identity/std",
 	"pallet-assets/std",
+	"pallet-contracts/std",
+	"pallet-contracts-primitives/std",
+	"pallet-randomness-collective-flip/std",
 ]
 
 runtime-benchmarks = [
@@ -198,6 +207,7 @@ runtime-benchmarks = [
 	"ternoa-rent/runtime-benchmarks",
 	"ternoa-tee/runtime-benchmarks",
 	"ternoa-transmission-protocols/runtime-benchmarks",
+	"pallet-contracts/runtime-benchmarks",
 ]
 
 try-runtime = [

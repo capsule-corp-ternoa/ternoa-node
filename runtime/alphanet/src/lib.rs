@@ -149,6 +149,9 @@ construct_runtime!(
 		Rent: ternoa_rent = 33,
 		TEE: ternoa_tee = 34,
 		TransmissionProtocols: ternoa_transmission_protocols = 35,
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage} = 36,
+		Contracts: pallet_contracts::{Pallet, Call, Storage, Event<T>} = 37,
+
 	}
 );
 
@@ -447,6 +450,8 @@ impl_runtime_apis! {
 		}
 	}
 }
+
+
 
 #[cfg(feature = "runtime-benchmarks")]
 #[macro_use]

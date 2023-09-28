@@ -11,6 +11,9 @@ pallet-transaction-payment-rpc = { workspace = true }
 pallet-im-online = { workspace = true }
 pallet-staking = { workspace = true }
 
+pallet-contracts = { workspace = true }
+pallet-contracts-rpc = { workspace = true }
+
 # Substrate
 substrate-frame-rpc-system = { workspace = true }
 substrate-state-trie-migration-rpc = { workspace = true }

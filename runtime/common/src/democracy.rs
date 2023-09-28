@@ -26,13 +26,13 @@ use crate::{
 };
 
 parameter_types! {
-	pub const LaunchPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES);
-	pub const VotingPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES);
-	pub const FastTrackVotingPeriod: BlockNumber = prod_or_fast!(3 * HOURS, 1 * MINUTES);
+	pub const LaunchPeriod: BlockNumber = prod_or_fast!(1 * HOURS, 1 * MINUTES);
+	pub const VotingPeriod: BlockNumber = prod_or_fast!(1 * HOURS, 1 * MINUTES);
+	pub const FastTrackVotingPeriod: BlockNumber = prod_or_fast!(30 * MINUTES, 1 * MINUTES);
 	pub const MinimumDeposit: Balance = 100 * UNITS;
-	pub const EnactmentPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES);
-	pub const VoteLockingPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES); // Should be same as EnactmentPeriod
-	pub const CooloffPeriod: BlockNumber = prod_or_fast!(7 * DAYS, 1 * MINUTES);
+	pub const EnactmentPeriod: BlockNumber = prod_or_fast!(1 * HOURS, 1 * MINUTES);
+	pub const VoteLockingPeriod: BlockNumber = prod_or_fast!(1 * HOURS, 1 * MINUTES); // Should be same as EnactmentPeriod
+	pub const CooloffPeriod: BlockNumber = prod_or_fast!(30 * MINUTES, 1 * MINUTES);
 	pub const InstantAllowed: bool = true;
 	pub const MaxVotes: u32 = 100;
 	pub const MaxProposals: u32 = 100;
