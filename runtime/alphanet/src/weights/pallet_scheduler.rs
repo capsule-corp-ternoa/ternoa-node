@@ -31,164 +31,86 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `pallet_scheduler`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_scheduler::WeightInfo for WeightInfo<T> {
-	// Storage: Scheduler Agenda (r:2 w:2)
-	// Storage: Preimage PreimageFor (r:1 w:1)
-	// Storage: Preimage StatusFor (r:1 w:1)
-	// Storage: Scheduler Lookup (r:0 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_periodic_named_resolved(s: u32, ) -> Weight {
-		Weight::from_ref_time(26_954_000 as u64)
-			// Standard Error: 21_000
-			.saturating_add(Weight::from_ref_time(21_215_000 as u64).saturating_mul(s as u64))
+	// Storage: Scheduler IncompleteSince (r:1 w:1)
+	fn service_agendas_base() -> Weight {
+		Weight::from_ref_time(4_992_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().reads((3 as u64).saturating_mul(s as u64)))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((4 as u64).saturating_mul(s as u64)))
 	}
 	// Storage: Scheduler Agenda (r:1 w:1)
+	/// The range of component `s` is `[0, 512]`.
+	fn service_agenda_base(s: u32, ) -> Weight {
+		Weight::from_ref_time(4_320_000 as u64)
+			// Standard Error: 619
+			.saturating_add(Weight::from_ref_time(336_713 as u64).saturating_mul(s as u64))
+			.saturating_add(T::DbWeight::get().reads(1 as u64))
+			.saturating_add(T::DbWeight::get().writes(1 as u64))
+	}
+	fn service_task_base() -> Weight {
+		Weight::from_ref_time(10_864_000 as u64)
+	}
 	// Storage: Preimage PreimageFor (r:1 w:1)
 	// Storage: Preimage StatusFor (r:1 w:1)
-	// Storage: Scheduler Lookup (r:0 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_named_resolved(s: u32, ) -> Weight {
-		Weight::from_ref_time(8_318_000 as u64)
-			// Standard Error: 32_000
-			.saturating_add(Weight::from_ref_time(17_630_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().reads((2 as u64).saturating_mul(s as u64)))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((3 as u64).saturating_mul(s as u64)))
-	}
-	// Storage: Scheduler Agenda (r:2 w:2)
-	// Storage: Preimage PreimageFor (r:1 w:1)
-	// Storage: Preimage StatusFor (r:1 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_periodic_resolved(s: u32, ) -> Weight {
-		Weight::from_ref_time(11_104_000 as u64)
-			// Standard Error: 23_000
-			.saturating_add(Weight::from_ref_time(17_946_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().reads((3 as u64).saturating_mul(s as u64)))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((3 as u64).saturating_mul(s as u64)))
-	}
-	// Storage: Scheduler Agenda (r:1 w:1)
-	// Storage: Preimage PreimageFor (r:1 w:1)
-	// Storage: Preimage StatusFor (r:1 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_resolved(s: u32, ) -> Weight {
-		Weight::from_ref_time(16_759_000 as u64)
-			// Standard Error: 6_000
-			.saturating_add(Weight::from_ref_time(16_069_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().reads((2 as u64).saturating_mul(s as u64)))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((2 as u64).saturating_mul(s as u64)))
-	}
-	// Storage: Scheduler Agenda (r:2 w:2)
-	// Storage: Preimage PreimageFor (r:1 w:0)
-	// Storage: Scheduler Lookup (r:0 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_named_aborted(s: u32, ) -> Weight {
-		Weight::from_ref_time(9_199_000 as u64)
-			// Standard Error: 3_000
-			.saturating_add(Weight::from_ref_time(6_385_000 as u64).saturating_mul(s as u64))
+	/// The range of component `s` is `[128, 4194304]`.
+	fn service_task_fetched(s: u32, ) -> Weight {
+		Weight::from_ref_time(24_586_000 as u64)
+			// Standard Error: 1
+			.saturating_add(Weight::from_ref_time(1_138 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(s as u64)))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(s as u64)))
-	}
-	// Storage: Scheduler Agenda (r:2 w:2)
-	// Storage: Preimage PreimageFor (r:1 w:0)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_aborted(s: u32, ) -> Weight {
-		Weight::from_ref_time(10_902_000 as u64)
-			// Standard Error: 1_000
-			.saturating_add(Weight::from_ref_time(2_924_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(s as u64)))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
-	// Storage: Scheduler Agenda (r:2 w:2)
 	// Storage: Scheduler Lookup (r:0 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_periodic_named(s: u32, ) -> Weight {
-		Weight::from_ref_time(20_876_000 as u64)
-			// Standard Error: 34_000
-			.saturating_add(Weight::from_ref_time(10_611_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(s as u64)))
+	fn service_task_named() -> Weight {
+		Weight::from_ref_time(13_127_000 as u64)
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((2 as u64).saturating_mul(s as u64)))
 	}
-	// Storage: Scheduler Agenda (r:2 w:2)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_periodic(s: u32, ) -> Weight {
-		Weight::from_ref_time(15_117_000 as u64)
-			// Standard Error: 3_000
-			.saturating_add(Weight::from_ref_time(7_190_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(s as u64)))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(s as u64)))
+	fn service_task_periodic() -> Weight {
+		Weight::from_ref_time(11_053_000 as u64)
+	}
+	fn execute_dispatch_signed() -> Weight {
+		Weight::from_ref_time(4_158_000 as u64)
+	}
+	fn execute_dispatch_unsigned() -> Weight {
+		Weight::from_ref_time(4_104_000 as u64)
 	}
 	// Storage: Scheduler Agenda (r:1 w:1)
-	// Storage: Scheduler Lookup (r:0 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize_named(s: u32, ) -> Weight {
-		Weight::from_ref_time(15_241_000 as u64)
-			// Standard Error: 62_000
-			.saturating_add(Weight::from_ref_time(6_983_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(s as u64)))
-	}
-	// Storage: Scheduler Agenda (r:1 w:1)
-	/// The range of component `s` is `[1, 50]`.
-	fn on_initialize(s: u32, ) -> Weight {
-		Weight::from_ref_time(19_451_000 as u64)
-			// Standard Error: 21_000
-			.saturating_add(Weight::from_ref_time(5_344_000 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-	}
-	// Storage: Scheduler Agenda (r:1 w:1)
-	/// The range of component `s` is `[0, 50]`.
+	/// The range of component `s` is `[0, 511]`.
 	fn schedule(s: u32, ) -> Weight {
-		Weight::from_ref_time(21_293_000 as u64)
-			// Standard Error: 1_000
-			.saturating_add(Weight::from_ref_time(83_000 as u64).saturating_mul(s as u64))
+		Weight::from_ref_time(20_074_000 as u64)
+			// Standard Error: 765
+			.saturating_add(Weight::from_ref_time(343_285 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Scheduler Agenda (r:1 w:1)
 	// Storage: Scheduler Lookup (r:0 w:1)
-	/// The range of component `s` is `[1, 50]`.
+	/// The range of component `s` is `[1, 512]`.
 	fn cancel(s: u32, ) -> Weight {
-		Weight::from_ref_time(20_754_000 as u64)
-			// Standard Error: 2_000
-			.saturating_add(Weight::from_ref_time(540_000 as u64).saturating_mul(s as u64))
+		Weight::from_ref_time(21_509_000 as u64)
+			// Standard Error: 708
+			.saturating_add(Weight::from_ref_time(323_013 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: Scheduler Lookup (r:1 w:1)
 	// Storage: Scheduler Agenda (r:1 w:1)
-	/// The range of component `s` is `[0, 50]`.
+	/// The range of component `s` is `[0, 511]`.
 	fn schedule_named(s: u32, ) -> Weight {
-		Weight::from_ref_time(24_816_000 as u64)
-			// Standard Error: 2_000
-			.saturating_add(Weight::from_ref_time(132_000 as u64).saturating_mul(s as u64))
+		Weight::from_ref_time(22_427_000 as u64)
+			// Standard Error: 850
+			.saturating_add(Weight::from_ref_time(357_265 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(2 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: Scheduler Lookup (r:1 w:1)
 	// Storage: Scheduler Agenda (r:1 w:1)
-	/// The range of component `s` is `[1, 50]`.
+	/// The range of component `s` is `[1, 512]`.
 	fn cancel_named(s: u32, ) -> Weight {
-		Weight::from_ref_time(23_588_000 as u64)
-			// Standard Error: 2_000
-			.saturating_add(Weight::from_ref_time(590_000 as u64).saturating_mul(s as u64))
+		Weight::from_ref_time(22_875_000 as u64)
+			// Standard Error: 693
+			.saturating_add(Weight::from_ref_time(336_643 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(2 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 }
+

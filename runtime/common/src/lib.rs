@@ -20,7 +20,7 @@ use frame_election_provider_support::Weight;
 use frame_support::{parameter_types, weights::constants::WEIGHT_PER_SECOND};
 use frame_system::limits;
 use pallet_transaction_payment::{Multiplier, TargetedFeeAdjustment};
-use sp_runtime::{FixedPointNumber, Perbill, Perquintill};
+use sp_runtime::{FixedPointNumber, Perbill, Perquintill, traits::{Bounded}};
 use static_assertions::const_assert;
 use ternoa_core_primitives::BlockNumber;
 
@@ -79,6 +79,8 @@ parameter_types! {
 	/// that combined with `AdjustmentVariable`, we can recover from the minimum.
 	/// See `multiplier_can_grow_from_zero`.
 	pub MinimumMultiplier: Multiplier = Multiplier::saturating_from_rational(1, 1_000_000_000u128); // TODO!
+	pub MaximumMultiplier: Multiplier = Bounded::max_value();
+
 	pub BlockLength: limits::BlockLength =
 	limits::BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
 
@@ -88,7 +90,7 @@ parameter_types! {
 /// Parameterized slow adjusting fee updated based on
 /// https://research.web3.foundation/en/latest/polkadot/overview/2-token-economics.html#-2.-slow-adjusting-mechanism
 pub type SlowAdjustingFeeUpdate<R> =
-	TargetedFeeAdjustment<R, TargetBlockFullness, AdjustmentVariable, MinimumMultiplier>;
+	TargetedFeeAdjustment<R, TargetBlockFullness, AdjustmentVariable, MinimumMultiplier, MaximumMultiplier>;
 
 /// We assume that an on-initialize consumes 1% of the weight on average, hence a single extrinsic
 /// will not be allowed to consume more than `AvailableBlockRatio - 1%`.
