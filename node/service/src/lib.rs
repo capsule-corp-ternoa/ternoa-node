@@ -32,7 +32,7 @@ use sp_api::ConstructRuntimeApi;
 use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
 use ternoa_client::RuntimeApiCollection;
-use ternoa_core_primitives::Block;
+use ternoa_core_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Index};
 
 use rpc::RpcExtension;
 
@@ -47,6 +47,7 @@ pub use alphanet_runtime;
 
 #[cfg(feature = "mainnet-native")]
 pub use mainnet_runtime;
+
 
 //pub use client::*;
 
@@ -131,6 +132,7 @@ where
 		+ 'static,
 	RuntimeApi::RuntimeApi:
 		RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+		// + pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber, Hash>,
 	ExecutorDispatch: NativeExecutionDispatch + 'static,
 {
 	// First we will initialize some basic node objects and tasks.
@@ -348,6 +350,7 @@ where
 		+ 'static,
 	RuntimeApi::RuntimeApi:
 		RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+		// + pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber, Hash>,
 	ExecutorDispatch: NativeExecutionDispatch + 'static,
 {
 	/// The task manager of the node.
@@ -381,6 +384,7 @@ where
 		+ 'static,
 	RuntimeApi::RuntimeApi:
 		RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+		// + pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber, Hash>,
 	ExecutorDispatch: NativeExecutionDispatch + 'static,
 {
 	// Initialize the core part of the node
@@ -608,6 +612,7 @@ where
 		+ 'static,
 	RuntimeApi::RuntimeApi:
 		RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+		// + pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber, Hash>,
 	ExecutorDispatch: NativeExecutionDispatch + 'static,
 {
 	new_full_base(config, |_, _| ())

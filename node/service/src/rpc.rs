@@ -29,7 +29,7 @@ use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_keystore::SyncCryptoStorePtr;
 use ternoa_core_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Index};
 
-//For ink! contracts
+// For ink! contracts
 // use pallet_contracts_rpc::{Contracts, ContractsApiServer};
 
 /// A type representing all RPC extensions.
@@ -94,11 +94,11 @@ where
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
 	C::Api: sp_consensus_babe::BabeApi<Block>,
 	C::Api: sp_block_builder::BlockBuilder<Block>,
+	// C::Api: pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber, Hash>,
 	P: sc_transaction_pool_api::TransactionPool + Sync + Send + 'static,
 	SC: sp_consensus::SelectChain<Block> + 'static,
 	B: sc_client_api::Backend<Block> + Send + Sync + 'static,
 	B::State: sc_client_api::backend::StateBackend<sp_runtime::traits::HashFor<Block>>,
-	// C::Api: pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber, Hash>,
 {
 	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
 	use sc_consensus_babe_rpc::{Babe, BabeApiServer};
@@ -144,7 +144,7 @@ where
 		.into_rpc(),
 	)?;
 	io.merge(
-		SyncState::new(chain_spec, client, shared_authority_set, shared_epoch_changes)?.into_rpc(),
+		SyncState::new(chain_spec, client.clone(), shared_authority_set, shared_epoch_changes)?.into_rpc(),
 	)?;
 	// Contracts RPC API extension
 	// io.merge(Contracts::new(Arc::clone(&client)).into_rpc())?;

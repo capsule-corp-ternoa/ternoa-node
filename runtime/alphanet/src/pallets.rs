@@ -867,51 +867,51 @@ impl pallet_contracts::Config for Runtime {
 	type MaxStorageKeyLen = ConstU32<128>;
 }
 
-pub const CONTRACTS_DEBUG_OUTPUT: bool = true;
+// pub const CONTRACTS_DEBUG_OUTPUT: bool = true;
 
 
-impl pallet_contracts_rpc_runtime_api::runtime_decl_for_ContractsApi::ContractsApi<Block, AccountId, Balance, BlockNumber, Hash>
-		for Runtime
-	{
-		fn call(
-			origin: AccountId,
-			dest: AccountId,
-			value: Balance,
-			gas_limit: u64,
-			storage_deposit_limit: Option<Balance>,
-			input_data: Vec<u8>,
-		) -> pallet_contracts_primitives::ContractExecResult<Balance> {
-			Contracts::bare_call(origin, dest, value, Weight::from_ref_time(gas_limit),
-				storage_deposit_limit, input_data, true)
-		}
+// impl pallet_contracts_rpc_runtime_api::runtime_decl_for_ContractsApi::ContractsApi<Block, AccountId, Balance, BlockNumber, Hash>
+// 		for Runtime
+// 	{
+// 		fn call(
+// 			origin: AccountId,
+// 			dest: AccountId,
+// 			value: Balance,
+// 			gas_limit: u64,
+// 			storage_deposit_limit: Option<Balance>,
+// 			input_data: Vec<u8>,
+// 		) -> pallet_contracts_primitives::ContractExecResult<Balance> {
+// 			Contracts::bare_call(origin, dest, value, Weight::from_ref_time(gas_limit),
+// 				storage_deposit_limit, input_data, true)
+// 		}
 
-		fn instantiate(
-			origin: AccountId,
-			value: Balance,
-			gas_limit: u64,
-			storage_deposit_limit: Option<Balance>,
-			code: pallet_contracts_primitives::Code<Hash>,
-			data: Vec<u8>,
-			salt: Vec<u8>,
-		) -> pallet_contracts_primitives::ContractInstantiateResult<AccountId, Balance>
-		{
-			Contracts::bare_instantiate(origin, value, Weight::from_ref_time(gas_limit),
-				storage_deposit_limit, code, data, salt, true)
-		}
+// 		fn instantiate(
+// 			origin: AccountId,
+// 			value: Balance,
+// 			gas_limit: u64,
+// 			storage_deposit_limit: Option<Balance>,
+// 			code: pallet_contracts_primitives::Code<Hash>,
+// 			data: Vec<u8>,
+// 			salt: Vec<u8>,
+// 		) -> pallet_contracts_primitives::ContractInstantiateResult<AccountId, Balance>
+// 		{
+// 			Contracts::bare_instantiate(origin, value, Weight::from_ref_time(gas_limit),
+// 				storage_deposit_limit, code, data, salt, true)
+// 		}
 
-		fn upload_code(
-			origin: AccountId,
-			code: Vec<u8>,
-			storage_deposit_limit: Option<Balance>,
-		) -> pallet_contracts_primitives::CodeUploadResult<Hash, Balance>
-		{
-			Contracts::bare_upload_code(origin, code, storage_deposit_limit)
-		}
+// 		fn upload_code(
+// 			origin: AccountId,
+// 			code: Vec<u8>,
+// 			storage_deposit_limit: Option<Balance>,
+// 		) -> pallet_contracts_primitives::CodeUploadResult<Hash, Balance>
+// 		{
+// 			Contracts::bare_upload_code(origin, code, storage_deposit_limit)
+// 		}
 
-		fn get_storage(
-			address: AccountId,
-			key: Vec<u8>,
-		) -> pallet_contracts_primitives::GetStorageResult {
-			Contracts::get_storage(address, key)
-		}
-	}
+// 		fn get_storage(
+// 			address: AccountId,
+// 			key: Vec<u8>,
+// 		) -> pallet_contracts_primitives::GetStorageResult {
+// 			Contracts::get_storage(address, key)
+// 		}
+// 	}
