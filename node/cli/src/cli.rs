@@ -17,7 +17,7 @@
 #[derive(Debug, clap::Parser)]
 pub struct Cli {
 	/// Possible subcommand with parameters.
-	#[clap(subcommand)]
+	#[command(subcommand)]
 	pub subcommand: Option<Subcommand>,
 
 	#[allow(missing_docs)]
@@ -51,11 +51,11 @@ pub enum Subcommand {
 
 	/// Sub-commands concerned with benchmarking.
 	/// The pallet benchmarking moved to the `pallet` sub-command.
-	#[clap(subcommand)]
+	#[command(subcommand)]
 	Benchmark(frame_benchmarking_cli::BenchmarkCmd),
 
 	/// The custom inspect subcommmand for decoding blocks and extrinsics.
-	#[clap(
+	#[command(
 		name = "inspect",
 		about = "Decode given block or extrinsic using current native runtime."
 	)]
@@ -70,7 +70,7 @@ pub enum Subcommand {
 	TryRuntime,
 
 	/// Key management cli utilities
-	#[clap(subcommand)]
+	#[command(subcommand)]
 	Key(sc_cli::KeySubcommand),
 
 	/// Verify a signature for a message, provided on STDIN, with a given (public or secret) key.
