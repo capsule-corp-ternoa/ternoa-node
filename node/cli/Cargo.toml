@@ -1,8 +1,9 @@
 [package]
 name = "ternoa-cli"
-authors = [ "Ternoa" ]
-edition = "2021"
-version = "1.1.1"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [package.metadata.wasm-pack.profile.release]
 # `wasm-opt` has some problems on Linux, see
