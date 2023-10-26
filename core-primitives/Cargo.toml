@@ -1,8 +1,9 @@
 [package]
 name = "ternoa-core-primitives"
-version = "0.1.0"
-edition = "2021"
-license = "Apache 2.0"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
 # Sp
