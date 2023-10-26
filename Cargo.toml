@@ -12,7 +12,7 @@ version.workspace = true
 readme = "README.md"
 
 [workspace.package]
-authors = ["Parity Technologies <admin@parity.io>"]
+authors = ["Ternoa"]
 edition = "2021"
 license = "GPL-3.0-only"
 version = "1.4.0"
