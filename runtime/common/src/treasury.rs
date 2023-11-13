@@ -28,5 +28,6 @@ parameter_types! {
 	pub const MaxApprovals: u32 = 100;
 	pub const ProposalBondMinimum: Balance = 1 * UNITS;
 	pub const ProposalBondMaximum: Balance = 1000 * UNITS;
+	pub const MaxBalance: Balance = Balance::max_value();
 
 }
