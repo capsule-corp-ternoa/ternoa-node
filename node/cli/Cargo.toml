@@ -40,8 +40,8 @@ ternoa-client = { path = "../client", default-features = false, optional = true 
 substrate-build-script-utils = { workspace = true }
 
 [features]
-default = [ "wasmtime", "cli", "full-node", "mainnet-native" ]
-wasmtime = [ "sc-cli/wasmtime" ]
+default = [ "cli", "full-node", "mainnet-native" ]
+#wasmtime = [ "sc-cli/wasmtime" ]
 cli = [
     "clap",
     "sc-cli",
@@ -54,7 +54,7 @@ cli = [
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]
 full-node = ["ternoa-service/full-node"]
-try-runtime = ["ternoa-service/try-runtime", "try-runtime-cli"]
+try-runtime = ["ternoa-service/try-runtime", "try-runtime-cli/try-runtime"]
 
 # Configure the native runtimes to use. Mainnet is enabled by default.
 #
