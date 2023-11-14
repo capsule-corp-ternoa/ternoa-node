@@ -34,7 +34,7 @@ use ternoa_service::AlphanetExecutorDispatch;
 use ternoa_service::mainnet_runtime;
 #[cfg(feature = "mainnet-native")]
 use ternoa_service::MainnetExecutorDispatch;
-use try_runtime_cli::TryRuntimeCmd;
+// use try_runtime_cli::TryRuntimeCmd;
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
@@ -123,7 +123,22 @@ pub fn run() -> Result<()> {
 		Some(Subcommand::Benchmark(cmd)) => benchmark(&cli, cmd),
 		Some(Subcommand::Inspect(cmd)) => inspect(&cli, cmd),
 		#[cfg(feature = "try-runtime")]
-		Some(Subcommand::TryRuntime(cmd)) => try_runtime(&cli, cmd),
+		Some(Subcommand::TryRuntime(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
+	let chain_spec = &runner.config().chain_spec.cloned_box();
+	ensure_dev(chain_spec)?;
+
+	with_runtime!(chain_spec, {
+		runner.async_run(|config| {
+			// only need a runtime or a task manager to do `async_run`.
+			let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
+			let task_manager = sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
+				.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
+
+			Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
+		})
+	});
+		},
 		#[cfg(not(feature = "try-runtime"))]
 		Some(Subcommand::TryRuntime) => Err("TryRuntime wasn't enabled when building the node. \
 							 You can enable it with `--features try-runtime`."
@@ -373,23 +388,23 @@ fn inspect(cli: &Cli, cmd: &InspectCmd) -> Result<()> {
 	});
 }
 
-#[allow(dead_code)]
-fn try_runtime(cli: &Cli, cmd: &TryRuntimeCmd) -> Result<()> {
-	let runner = cli.create_runner(cmd)?;
-	let chain_spec = &runner.config().chain_spec.cloned_box();
-	ensure_dev(chain_spec)?;
+// #[allow(dead_code)]
+// fn try_runtime(cli: &Cli, cmd: &TryRuntimeCmd) -> Result<()> {
+// 	let runner = cli.create_runner(cmd)?;
+// 	let chain_spec = &runner.config().chain_spec.cloned_box();
+// 	ensure_dev(chain_spec)?;
 
-	with_runtime!(chain_spec, {
-		runner.async_run(|config| {
-			// only need a runtime or a task manager to do `async_run`.
-			let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
-			let task_manager = sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
-				.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
+// 	with_runtime!(chain_spec, {
+// 		runner.async_run(|config| {
+// 			// only need a runtime or a task manager to do `async_run`.
+// 			let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
+// 			let task_manager = sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
+// 				.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
 
-			Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
-		})
-	});
-}
+// 			Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
+// 		})
+// 	});
+// }
 
 fn chain_info(cli: &Cli, cmd: &ChainInfoCmd) -> Result<()> {
 	let runner = cli.create_runner(cmd)?;

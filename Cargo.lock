@@ -8333,6 +8333,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "frame-system",
+ "futures 0.3.29",
  "mainnet-runtime",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
