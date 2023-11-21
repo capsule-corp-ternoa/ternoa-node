@@ -24,11 +24,11 @@ use common::{
 use frame_election_provider_support::{SequentialPhragmen, Weight};
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote},
+	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote, AsEnsureOriginWithArg},
 	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
 	PalletId,
 };
-use frame_system::EnsureRoot;
+use frame_system::{EnsureRoot, EnsureWithSuccess, EnsureSigned};
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
@@ -149,7 +149,7 @@ impl pallet_treasury::Config for Runtime {
 	type MaxApprovals = common::treasury::MaxApprovals;
 	type WeightInfo = weights::pallet_treasury::WeightInfo<Runtime>;
 	type SpendFunds = ();
-	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<Balance>;
+	type SpendOrigin = EnsureWithSuccess<EnsureRoot<AccountId>, AccountId, common::treasury:: MaxBalance>;
 }
 
 parameter_types! {
@@ -318,6 +318,9 @@ impl frame_election_provider_support::onchain::Config for OnChainSeqPhragmen {
 	type Solver = SequentialPhragmen<AccountId, common::election_provider_support::OnChainAccuracy>;
 	type DataProvider = Staking;
 	type WeightInfo = frame_election_provider_support::weights::SubstrateWeight<Runtime>;
+	type MaxWinners = <Runtime as pallet_election_provider_multi_phase::Config>::MaxWinners;
+	type VotersBound = common::election_provider_multi_phase::MaxOnChainElectingVoters;
+	type TargetsBound = common::election_provider_multi_phase::MaxOnChainElectableTargets;
 }
 
 impl pallet_staking::Config for Runtime {
@@ -328,7 +331,7 @@ impl pallet_staking::Config for Runtime {
 	type CurrencyToVote = U128CurrencyToVote;
 	type ElectionProvider = ElectionProviderMultiPhase;
 	type GenesisElectionProvider =
-		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
+		frame_election_provider_support::onchain::OnChainExecution<OnChainSeqPhragmen>;
 	type RewardRemainder = Treasury;
 	type RuntimeEvent = RuntimeEvent;
 	type Slash = Treasury; // send the slashed funds to the treasury.
@@ -415,15 +418,16 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type MinerTxPriority = common::election_provider_multi_phase::NposSolutionPriority;
 	type DataProvider = Staking;
 	type Fallback =
-		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
+		frame_election_provider_support::onchain::OnChainExecution<OnChainSeqPhragmen>;
 	type GovernanceFallback =
-		frame_election_provider_support::onchain::UnboundedExecution<OnChainSeqPhragmen>;
+		frame_election_provider_support::onchain::OnChainExecution<OnChainSeqPhragmen>;
 	type Solver = common::election_provider_multi_phase::Solver<Self>;
 	type BenchmarkingConfig = common::election_provider_multi_phase::BenchmarkConfig;
 	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
 	type WeightInfo = weights::pallet_election_provider_multi_phase::WeightInfo<Runtime>;
 	type MaxElectingVoters = common::election_provider_multi_phase::MaxElectingVoters;
 	type MaxElectableTargets = common::election_provider_multi_phase::MaxElectableTargets;
+	type MaxWinners = common::election_provider_multi_phase::MaxActiveValidators;
 }
 
 // BagsList
@@ -694,8 +698,10 @@ impl pallet_assets::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type Currency = Balances;
+	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
 	type ForceOrigin = RootOrAtLeastHalfOfCommittee;
 	type AssetId = u32;
+	type AssetIdParameter = parity_scale_codec::Compact<u32>;
 	type AssetDeposit = common::assets::AssetDeposit;
 	type AssetAccountDeposit = common::assets::AssetAccountDeposit;
 	type MetadataDepositBase = common::assets::MetadataDepositBase;
@@ -705,6 +711,9 @@ impl pallet_assets::Config for Runtime {
 	type Freezer = ();
 	type Extra = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
+	type RemoveItemsLimit = ConstU32<1000>;
+	#[cfg(feature = "runtime-benchmarks")]
+	type BenchmarkHelper = ();
 }
 
 parameter_types! {

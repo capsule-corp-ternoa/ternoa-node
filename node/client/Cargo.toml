@@ -38,6 +38,8 @@ sc-executor = { workspace = true }
 sc-service = { workspace = true, default-features = false }
 sc-cli = { workspace = true, default-features = false }
 
+futures = { workspace = true }
+
 # Benchmarking
 frame-benchmarking = { workspace = true }
 frame-benchmarking-cli = { workspace = true }

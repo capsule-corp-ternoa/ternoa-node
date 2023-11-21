@@ -64,11 +64,14 @@ parameter_types! {
 
 	pub NposSolutionPriority: TransactionPriority =
 		Perbill::from_percent(90) * TransactionPriority::max_value();
-	/// We take the top 12500 nominators as electing voters..
-	pub const MaxElectingVoters: u32 = 12_500;
-	/// ... and all of the validators as electable targets. Whilst this is the case, we cannot and
-	/// shall not increase the size of the validator intentions.
-	pub const MaxElectableTargets: u16 = u16::MAX;
+		pub MaxElectingVoters: u32 = 40_000;
+		pub MaxElectableTargets: u16 = 10_000;
+		// OnChain values are lower.
+		pub MaxOnChainElectingVoters: u32 = 5000;
+		pub MaxOnChainElectableTargets: u16 = 1250;
+		// The maximum winners that can be elected by the Election pallet which is equivalent to the
+		// maximum active validators the staking pallet can have.
+		pub MaxActiveValidators: u32 = 1000;
 
 	pub BetterUnsignedThreshold: Perbill = Perbill::from_rational(5u32, 10_000);
 }
