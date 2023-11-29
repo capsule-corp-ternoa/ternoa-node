@@ -1,0 +1,51 @@
+name: Ternoa Node CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get submodules
+        run: git submodule update --init --recursive
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2022-04-24
+          components: rustfmt, llvm-tools-preview
+          target: wasm32-unknown-unknown
+          default: true
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
+      - name: Cache restore
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Clean
+        run: cargo clean
+
+      - name: Check format
+        run: cargo fmt --all -- --check
+
+      - name: Tests
+        run: cargo test --all
