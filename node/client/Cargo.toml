@@ -24,7 +24,7 @@ sp-storage = { workspace = true }
 sp-transaction-pool = { workspace = true }
 sp-consensus-babe = { workspace = true }
 sp-authority-discovery = { workspace = true }
-sp-finality-grandpa = { workspace = true }
+sp-consensus-grandpa = { workspace = true }
 sp-core = { workspace = true }
 sp-keyring = { workspace = true }
 sp-inherents = { workspace = true }

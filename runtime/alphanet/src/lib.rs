@@ -41,6 +41,7 @@ use pallets::EpochDuration;
 pub use pallets::{SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
 use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+use sp_consensus_grandpa::AuthorityId as GrandpaId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::{
@@ -64,6 +65,11 @@ pub use pallets::StakerStatus;
 // Make the WASM binary available.
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+
+/// Max size for serialized extrinsic params for this testing runtime.
+/// This is a quite arbitrary but empirically battle tested value.
+#[cfg(test)]
+pub const CALL_PARAMS_MAX_SIZE: usize = 208;
 
 /// Wasm binary unwrapped. If built with `SKIP_WASM_BUILD`, the function panics.
 #[cfg(feature = "std")]
@@ -149,6 +155,7 @@ construct_runtime!(
 		Rent: ternoa_rent = 33,
 		TEE: ternoa_tee = 34,
 		TransmissionProtocols: ternoa_transmission_protocols = 35,
+		Pov: frame_benchmarking_pallet_pov = 36,
 	}
 );
 
@@ -254,21 +261,21 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl fg_primitives::GrandpaApi<Block> for Runtime {
-		fn grandpa_authorities() -> GrandpaAuthorityList {
+	impl sp_consensus_grandpa::GrandpaApi<Block> for Runtime {
+		fn grandpa_authorities() -> sp_consensus_grandpa::AuthorityList {
 			Grandpa::grandpa_authorities()
 		}
 
-		fn current_set_id() -> fg_primitives::SetId {
+		fn current_set_id() -> sp_consensus_grandpa::SetId {
 			Grandpa::current_set_id()
 		}
 
 		fn submit_report_equivocation_unsigned_extrinsic(
-			equivocation_proof: fg_primitives::EquivocationProof<
+			equivocation_proof: sp_consensus_grandpa::EquivocationProof<
 				<Block as BlockT>::Hash,
 				NumberFor<Block>,
 			>,
-			key_owner_proof: fg_primitives::OpaqueKeyOwnershipProof,
+			key_owner_proof: sp_consensus_grandpa::OpaqueKeyOwnershipProof,
 		) -> Option<()> {
 			let key_owner_proof = key_owner_proof.decode()?;
 
@@ -279,16 +286,29 @@ impl_runtime_apis! {
 		}
 
 		fn generate_key_ownership_proof(
-			_set_id: fg_primitives::SetId,
+			_set_id: sp_consensus_grandpa::SetId,
 			authority_id: GrandpaId,
-		) -> Option<fg_primitives::OpaqueKeyOwnershipProof> {
+		) -> Option<sp_consensus_grandpa::OpaqueKeyOwnershipProof> {
 			use parity_scale_codec::Encode;
 
-			Historical::prove((fg_primitives::KEY_TYPE, authority_id))
+			Historical::prove((sp_consensus_grandpa::KEY_TYPE, authority_id))
 				.map(|p| p.encode())
-				.map(fg_primitives::OpaqueKeyOwnershipProof::new)
+				.map(sp_consensus_grandpa::OpaqueKeyOwnershipProof::new)
 		}
 	}
+
+	impl assets_api::AssetsApi<
+		Block,
+		AccountId,
+		Balance,
+		u32,
+	> for Runtime
+	{
+		fn account_balances(account: AccountId) -> Vec<(u32, Balance)> {
+			Assets::account_balances(account)
+		}
+	}
+
 
 	impl sp_consensus_babe::BabeApi<Block> for Runtime {
 		fn configuration() -> sp_consensus_babe::BabeConfiguration {
@@ -378,26 +398,23 @@ impl_runtime_apis! {
 
 	#[cfg(feature = "try-runtime")]
 	impl frame_try_runtime::TryRuntime<Block> for Runtime {
-		fn on_runtime_upgrade() -> (Weight, Weight) {
-			log::info!("try-runtime::on_runtime_upgrade.");
+		fn on_runtime_upgrade(checks: frame_try_runtime::UpgradeCheckSelect) -> (Weight, Weight) {
 			// NOTE: intentional unwrap: we don't want to propagate the error backwards, and want to
 			// have a backtrace here. If any of the pre/post migration checks fail, we shall stop
 			// right here and right now.
-			let weight = Executive::try_runtime_upgrade().map_err(|err|{
-				log::info!("try-runtime::on_runtime_upgrade failed with: {:?}", err);
-				err
-			}).unwrap();
-			(weight, BlockWeights::get().max_block)
+			let weight = Executive::try_runtime_upgrade(checks).unwrap();
+			(weight, RuntimeBlockWeights::get().max_block)
 		}
 
 		fn execute_block(
 			block: Block,
 			state_root_check: bool,
+			signature_check: bool,
 			select: frame_try_runtime::TryStateSelect
 		) -> Weight {
 			// NOTE: intentional unwrap: we don't want to propagate the error backwards, and want to
 			// have a backtrace here.
-			Executive::try_execute_block(block, state_root_check, select).expect("execute-block failed")
+			Executive::try_execute_block(block, state_root_check, signature_check, select).unwrap()
 		}
 	}
 
@@ -461,7 +478,7 @@ extern crate frame_benchmarking;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benches {
-	define_benchmarks!(
+	frame_benchmarking::define_benchmarks!(
 		// Ternoa
 		[ternoa_staking_rewards, StakingRewards]
 		[ternoa_bridge, Bridge]
@@ -476,6 +493,7 @@ mod benches {
 		[pallet_bags_list, BagsList]
 		[pallet_balances, Balances]
 		[frame_benchmarking::baseline, Baseline::<Runtime>]
+		[frame_benchmarking_pallet_pov, Pov]
 		[pallet_collective, TechnicalCommittee]
 		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
 		[pallet_grandpa, Grandpa]
@@ -568,10 +586,10 @@ mod tests {
 	fn call_size() {
 		let size = core::mem::size_of::<RuntimeCall>();
 		assert!(
-			size <= 208,
-			"size of RuntimeCall {} is more than 208 bytes: some calls have too big arguments, use Box to reduce the
-			size of RuntimeCall.
-			If the limit is too strong, maybe consider increase the limit to 300.",
+			size <= CALL_PARAMS_MAX_SIZE,
+			"size of RuntimeCall {} is more than {CALL_PARAMS_MAX_SIZE} bytes.
+			 Some calls have too big arguments, use Box to reduce the size of RuntimeCall.
+			 If the limit is too strong, maybe consider increase the limit.",
 			size,
 		);
 	}

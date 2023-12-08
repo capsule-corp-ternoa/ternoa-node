@@ -33,47 +33,47 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> frame_system::WeightInfo for WeightInfo<T> {
 	/// The range of component `b` is `[0, 3932160]`.
 	fn remark(b: u32, ) -> Weight {
-		Weight::from_ref_time(13_095_000 as u64)
+		Weight::from_parts(13_095_000 as u64)
 			// Standard Error: 3
-			.saturating_add(Weight::from_ref_time(1_169 as u64).saturating_mul(b as u64))
+			.saturating_add(Weight::from_parts(1_169 as u64).saturating_mul(b as u64))
 	}
 	/// The range of component `b` is `[0, 3932160]`.
 	fn remark_with_event(b: u32, ) -> Weight {
-		Weight::from_ref_time(30_297_000 as u64)
+		Weight::from_parts(30_297_000 as u64)
 			// Standard Error: 17
-			.saturating_add(Weight::from_ref_time(3_801 as u64).saturating_mul(b as u64))
+			.saturating_add(Weight::from_parts(3_801 as u64).saturating_mul(b as u64))
 	}
 	// Storage: System Digest (r:1 w:1)
 	// Storage: unknown [0x3a686561707061676573] (r:0 w:1)
 	fn set_heap_pages() -> Weight {
-		Weight::from_ref_time(25_318_000 as u64)
+		Weight::from_parts(25_318_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: Skipped Metadata (r:0 w:0)
 	/// The range of component `i` is `[1, 1000]`.
 	fn set_storage(i: u32, ) -> Weight {
-		Weight::from_ref_time(11_472_000 as u64)
+		Weight::from_parts(11_472_000 as u64)
 			// Standard Error: 11_093
-			.saturating_add(Weight::from_ref_time(1_934_247 as u64).saturating_mul(i as u64))
+			.saturating_add(Weight::from_parts(1_934_247 as u64).saturating_mul(i as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(i as u64)))
 	}
 	// Storage: Skipped Metadata (r:0 w:0)
 	/// The range of component `i` is `[1, 1000]`.
 	fn kill_storage(i: u32, ) -> Weight {
-		Weight::from_ref_time(11_882_000 as u64)
+		Weight::from_parts(11_882_000 as u64)
 			// Standard Error: 15_760
-			.saturating_add(Weight::from_ref_time(1_931_656 as u64).saturating_mul(i as u64))
+			.saturating_add(Weight::from_parts(1_931_656 as u64).saturating_mul(i as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(i as u64)))
 	}
 	// Storage: Skipped Metadata (r:0 w:0)
 	/// The range of component `p` is `[1, 1000]`.
 	fn kill_prefix(p: u32, ) -> Weight {
-		Weight::from_ref_time(31_419_000 as u64)
+		Weight::from_parts(31_419_000 as u64)
 			// Standard Error: 30_041
-			.saturating_add(Weight::from_ref_time(4_162_627 as u64).saturating_mul(p as u64))
+			.saturating_add(Weight::from_parts(4_162_627 as u64).saturating_mul(p as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(p as u64)))
 	}

@@ -38,9 +38,9 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	// Storage: Balances Locks (r:1 w:1)
 	/// The range of component `v` is `[1, 16]`.
 	fn vote_equal(v: u32, ) -> Weight {
-		Weight::from_ref_time(36_912_000 as u64)
+		Weight::from_parts(36_912_000 as u64)
 			// Standard Error: 16_000
-			.saturating_add(Weight::from_ref_time(179_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(179_000 as u64).saturating_mul(v as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
@@ -51,9 +51,9 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	// Storage: Balances Locks (r:1 w:1)
 	/// The range of component `v` is `[2, 16]`.
 	fn vote_more(v: u32, ) -> Weight {
-		Weight::from_ref_time(46_265_000 as u64)
+		Weight::from_parts(46_265_000 as u64)
 			// Standard Error: 223_000
-			.saturating_add(Weight::from_ref_time(743_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(743_000 as u64).saturating_mul(v as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
@@ -64,16 +64,16 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	// Storage: Balances Locks (r:1 w:1)
 	/// The range of component `v` is `[2, 16]`.
 	fn vote_less(v: u32, ) -> Weight {
-		Weight::from_ref_time(49_651_000 as u64)
+		Weight::from_parts(49_651_000 as u64)
 			// Standard Error: 37_000
-			.saturating_add(Weight::from_ref_time(154_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(154_000 as u64).saturating_mul(v as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: PhragmenElection Voting (r:1 w:1)
 	// Storage: Balances Locks (r:1 w:1)
 	fn remove_voter() -> Weight {
-		Weight::from_ref_time(47_030_000 as u64)
+		Weight::from_parts(47_030_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(2 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
@@ -82,18 +82,18 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	// Storage: PhragmenElection RunnersUp (r:1 w:0)
 	/// The range of component `c` is `[1, 1000]`.
 	fn submit_candidacy(c: u32, ) -> Weight {
-		Weight::from_ref_time(48_816_000 as u64)
+		Weight::from_parts(48_816_000 as u64)
 			// Standard Error: 3_000
-			.saturating_add(Weight::from_ref_time(62_000 as u64).saturating_mul(c as u64))
+			.saturating_add(Weight::from_parts(62_000 as u64).saturating_mul(c as u64))
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: PhragmenElection Candidates (r:1 w:1)
 	/// The range of component `c` is `[1, 1000]`.
 	fn renounce_candidacy_candidate(c: u32, ) -> Weight {
-		Weight::from_ref_time(44_736_000 as u64)
+		Weight::from_parts(44_736_000 as u64)
 			// Standard Error: 5_000
-			.saturating_add(Weight::from_ref_time(57_000 as u64).saturating_mul(c as u64))
+			.saturating_add(Weight::from_parts(57_000 as u64).saturating_mul(c as u64))
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
@@ -103,19 +103,19 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	// Storage: Council Proposals (r:1 w:0)
 	// Storage: Council Members (r:0 w:1)
 	fn renounce_candidacy_members() -> Weight {
-		Weight::from_ref_time(49_251_000 as u64)
+		Weight::from_parts(49_251_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 			.saturating_add(T::DbWeight::get().writes(4 as u64))
 	}
 	// Storage: PhragmenElection RunnersUp (r:1 w:1)
 	fn renounce_candidacy_runners_up() -> Weight {
-		Weight::from_ref_time(37_941_000 as u64)
+		Weight::from_parts(37_941_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Benchmark Override (r:0 w:0)
 	fn remove_member_without_replacement() -> Weight {
-		Weight::from_ref_time(2_000_000_000_000 as u64)
+		Weight::from_parts(2_000_000_000_000 as u64)
 	}
 	// Storage: PhragmenElection Members (r:1 w:1)
 	// Storage: System Account (r:1 w:1)
@@ -124,7 +124,7 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	// Storage: Council Proposals (r:1 w:0)
 	// Storage: Council Members (r:0 w:1)
 	fn remove_member_with_replacement() -> Weight {
-		Weight::from_ref_time(65_640_000 as u64)
+		Weight::from_parts(65_640_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
@@ -137,9 +137,9 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	/// The range of component `v` is `[5000, 10000]`.
 	/// The range of component `d` is `[1, 5000]`.
 	fn clean_defunct_voters(v: u32, _d: u32, ) -> Weight {
-		Weight::from_ref_time(0 as u64)
+		Weight::from_parts(0 as u64)
 			// Standard Error: 711_000
-			.saturating_add(Weight::from_ref_time(77_039_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(77_039_000 as u64).saturating_mul(v as u64))
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 			.saturating_add(T::DbWeight::get().reads((3 as u64).saturating_mul(v as u64)))
 			.saturating_add(T::DbWeight::get().writes((3 as u64).saturating_mul(v as u64)))
@@ -157,13 +157,13 @@ impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightIn
 	/// The range of component `v` is `[1, 10000]`.
 	/// The range of component `e` is `[10000, 160000]`.
 	fn election_phragmen(c: u32, v: u32, e: u32, ) -> Weight {
-		Weight::from_ref_time(0 as u64)
+		Weight::from_parts(0 as u64)
 			// Standard Error: 21_257_000
-			.saturating_add(Weight::from_ref_time(45_937_000 as u64).saturating_mul(c as u64))
+			.saturating_add(Weight::from_parts(45_937_000 as u64).saturating_mul(c as u64))
 			// Standard Error: 2_123_000
-			.saturating_add(Weight::from_ref_time(35_966_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(35_966_000 as u64).saturating_mul(v as u64))
 			// Standard Error: 141_000
-			.saturating_add(Weight::from_ref_time(1_610_000 as u64).saturating_mul(e as u64))
+			.saturating_add(Weight::from_parts(1_610_000 as u64).saturating_mul(e as u64))
 			.saturating_add(T::DbWeight::get().reads(444 as u64))
 			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(c as u64)))
 			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(v as u64)))

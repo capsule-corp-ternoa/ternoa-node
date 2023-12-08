@@ -37,9 +37,9 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Contracts (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn create_contract(s: u32, ) -> Weight {
-		Weight::from_ref_time(96_762_000 as u64)
+		Weight::from_parts(96_762_000 as u64)
 			// Standard Error: 97
-			.saturating_add(Weight::from_ref_time(35_803 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(35_803 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
@@ -49,9 +49,9 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: NFT Nfts (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn revoke_contract(s: u32, ) -> Weight {
-		Weight::from_ref_time(177_685_000 as u64)
+		Weight::from_parts(177_685_000 as u64)
 			// Standard Error: 58
-			.saturating_add(Weight::from_ref_time(29_833 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(29_833 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
@@ -62,9 +62,9 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Offers (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn cancel_contract(s: u32, ) -> Weight {
-		Weight::from_ref_time(117_100_000 as u64)
+		Weight::from_parts(117_100_000 as u64)
 			// Standard Error: 81
-			.saturating_add(Weight::from_ref_time(33_946 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(33_946 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(6 as u64))
 	}
@@ -74,9 +74,9 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Offers (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn rent(s: u32, ) -> Weight {
-		Weight::from_ref_time(135_855_000 as u64)
+		Weight::from_parts(135_855_000 as u64)
 			// Standard Error: 80
-			.saturating_add(Weight::from_ref_time(34_145 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(34_145 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(6 as u64))
 	}
@@ -85,9 +85,9 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Offers (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn make_rent_offer(s: u32, ) -> Weight {
-		Weight::from_ref_time(76_494_000 as u64)
+		Weight::from_parts(76_494_000 as u64)
 			// Standard Error: 3
-			.saturating_add(Weight::from_ref_time(130 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(130 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
@@ -97,18 +97,18 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Queues (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn accept_rent_offer(s: u32, ) -> Weight {
-		Weight::from_ref_time(100_100_000 as u64)
+		Weight::from_parts(100_100_000 as u64)
 			// Standard Error: 64
-			.saturating_add(Weight::from_ref_time(33_343 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(33_343 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
 	// Storage: Rent Offers (r:1 w:1)
 	/// The range of component `s` is `[0, 10000]`.
 	fn retract_rent_offer(s: u32, ) -> Weight {
-		Weight::from_ref_time(56_746_000 as u64)
+		Weight::from_parts(56_746_000 as u64)
 			// Standard Error: 433
-			.saturating_add(Weight::from_ref_time(72_355 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(72_355 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
@@ -116,18 +116,18 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Offers (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn change_subscription_terms(s: u32, ) -> Weight {
-		Weight::from_ref_time(56_276_000 as u64)
+		Weight::from_parts(56_276_000 as u64)
 			// Standard Error: 2
-			.saturating_add(Weight::from_ref_time(108 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(108 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn accept_subscription_terms(s: u32, ) -> Weight {
-		Weight::from_ref_time(46_427_000 as u64)
+		Weight::from_parts(46_427_000 as u64)
 			// Standard Error: 2
-			.saturating_add(Weight::from_ref_time(116 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(116 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}

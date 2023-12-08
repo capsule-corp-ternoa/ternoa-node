@@ -37,9 +37,9 @@ impl<T: frame_system::Config> ternoa_auction::WeightInfo for WeightInfo<T> {
 	// Storage: Auction Auctions (r:0 w:1)
 	/// The range of component `s` is `[0, 999998]`.
 	fn create_auction(s: u32, ) -> Weight {
-		Weight::from_ref_time(107_323_000 as u64)
+		Weight::from_parts(107_323_000 as u64)
 			// Standard Error: 109
-			.saturating_add(Weight::from_ref_time(34_273 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(34_273 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
@@ -48,9 +48,9 @@ impl<T: frame_system::Config> ternoa_auction::WeightInfo for WeightInfo<T> {
 	// Storage: Auction Deadlines (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn cancel_auction(s: u32, ) -> Weight {
-		Weight::from_ref_time(69_049_000 as u64)
+		Weight::from_parts(69_049_000 as u64)
 			// Standard Error: 64
-			.saturating_add(Weight::from_ref_time(31_779 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(31_779 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
@@ -62,9 +62,9 @@ impl<T: frame_system::Config> ternoa_auction::WeightInfo for WeightInfo<T> {
 	// Storage: Auction Deadlines (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn end_auction(s: u32, ) -> Weight {
-		Weight::from_ref_time(138_922_000 as u64)
+		Weight::from_parts(138_922_000 as u64)
 			// Standard Error: 65
-			.saturating_add(Weight::from_ref_time(30_873 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(30_873 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(8 as u64))
 			.saturating_add(T::DbWeight::get().writes(7 as u64))
 	}
@@ -72,9 +72,9 @@ impl<T: frame_system::Config> ternoa_auction::WeightInfo for WeightInfo<T> {
 	// Storage: System Account (r:2 w:2)
 	/// The range of component `s` is `[0, 24]`.
 	fn add_bid(s: u32, ) -> Weight {
-		Weight::from_ref_time(91_723_000 as u64)
+		Weight::from_parts(91_723_000 as u64)
 			// Standard Error: 72_254
-			.saturating_add(Weight::from_ref_time(2_031_189 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(2_031_189 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
@@ -82,9 +82,9 @@ impl<T: frame_system::Config> ternoa_auction::WeightInfo for WeightInfo<T> {
 	// Storage: System Account (r:2 w:2)
 	/// The range of component `s` is `[0, 24]`.
 	fn remove_bid(s: u32, ) -> Weight {
-		Weight::from_ref_time(88_275_000 as u64)
+		Weight::from_parts(88_275_000 as u64)
 			// Standard Error: 65_530
-			.saturating_add(Weight::from_ref_time(1_283_005 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(1_283_005 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
@@ -95,16 +95,16 @@ impl<T: frame_system::Config> ternoa_auction::WeightInfo for WeightInfo<T> {
 	// Storage: Auction Deadlines (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn buy_it_now(s: u32, ) -> Weight {
-		Weight::from_ref_time(152_217_000 as u64)
+		Weight::from_parts(152_217_000 as u64)
 			// Standard Error: 86
-			.saturating_add(Weight::from_ref_time(32_130 as u64).saturating_mul(s as u64))
+			.saturating_add(Weight::from_parts(32_130 as u64).saturating_mul(s as u64))
 			.saturating_add(T::DbWeight::get().reads(7 as u64))
 			.saturating_add(T::DbWeight::get().writes(6 as u64))
 	}
 	// Storage: Auction Claims (r:1 w:1)
 	// Storage: System Account (r:2 w:2)
 	fn claim() -> Weight {
-		Weight::from_ref_time(123_441_000 as u64)
+		Weight::from_parts(123_441_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(3 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}

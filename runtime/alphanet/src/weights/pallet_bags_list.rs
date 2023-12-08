@@ -36,7 +36,7 @@ impl<T: frame_system::Config> pallet_bags_list::WeightInfo for WeightInfo<T> {
 	// Storage: BagsList ListNodes (r:4 w:4)
 	// Storage: BagsList ListBags (r:1 w:1)
 	fn rebag_non_terminal() -> Weight {
-		Weight::from_ref_time(180_480_000 as u64)
+		Weight::from_parts(180_480_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(7 as u64))
 			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
@@ -45,7 +45,7 @@ impl<T: frame_system::Config> pallet_bags_list::WeightInfo for WeightInfo<T> {
 	// Storage: BagsList ListNodes (r:3 w:3)
 	// Storage: BagsList ListBags (r:2 w:2)
 	fn rebag_terminal() -> Weight {
-		Weight::from_ref_time(178_796_000 as u64)
+		Weight::from_parts(178_796_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(7 as u64))
 			.saturating_add(T::DbWeight::get().writes(5 as u64))
 	}
@@ -55,7 +55,7 @@ impl<T: frame_system::Config> pallet_bags_list::WeightInfo for WeightInfo<T> {
 	// Storage: BagsList CounterForListNodes (r:1 w:1)
 	// Storage: BagsList ListBags (r:1 w:1)
 	fn put_in_front_of() -> Weight {
-		Weight::from_ref_time(176_361_000 as u64)
+		Weight::from_parts(176_361_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(10 as u64))
 			.saturating_add(T::DbWeight::get().writes(6 as u64))
 	}

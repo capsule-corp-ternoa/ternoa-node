@@ -36,45 +36,45 @@ impl<T: frame_system::Config> ternoa_marketplace::WeightInfo for WeightInfo<T> {
 	// Storage: Marketplace NextMarketplaceId (r:1 w:1)
 	// Storage: Marketplace Marketplaces (r:0 w:1)
 	fn create_marketplace() -> Weight {
-		Weight::from_ref_time(125_957_000 as u64)
+		Weight::from_parts(125_957_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 			.saturating_add(T::DbWeight::get().writes(4 as u64))
 	}
 	// Storage: Marketplace Marketplaces (r:1 w:1)
 	fn set_marketplace_owner() -> Weight {
-		Weight::from_ref_time(82_786_000 as u64)
+		Weight::from_parts(82_786_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Marketplace Marketplaces (r:1 w:1)
 	fn set_marketplace_kind() -> Weight {
-		Weight::from_ref_time(81_393_000 as u64)
+		Weight::from_parts(81_393_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Marketplace Marketplaces (r:1 w:1)
 	fn set_marketplace_configuration() -> Weight {
-		Weight::from_ref_time(139_403_000 as u64)
+		Weight::from_parts(139_403_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Marketplace MarketplaceMintFee (r:0 w:1)
 	fn set_marketplace_mint_fee() -> Weight {
-		Weight::from_ref_time(29_094_000 as u64)
+		Weight::from_parts(29_094_000 as u64)
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: Marketplace Marketplaces (r:1 w:0)
 	// Storage: Marketplace ListedNfts (r:0 w:1)
 	fn list_nft() -> Weight {
-		Weight::from_ref_time(68_008_000 as u64)
+		Weight::from_parts(68_008_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(2 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: Marketplace ListedNfts (r:1 w:1)
 	fn unlist_nft() -> Weight {
-		Weight::from_ref_time(76_744_000 as u64)
+		Weight::from_parts(76_744_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(2 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
@@ -83,7 +83,7 @@ impl<T: frame_system::Config> ternoa_marketplace::WeightInfo for WeightInfo<T> {
 	// Storage: Marketplace Marketplaces (r:1 w:0)
 	// Storage: System Account (r:2 w:2)
 	fn buy_nft() -> Weight {
-		Weight::from_ref_time(166_253_000 as u64)
+		Weight::from_parts(166_253_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(4 as u64))
 	}

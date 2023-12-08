@@ -40,33 +40,33 @@ impl<T: frame_system::Config> pallet_election_provider_multi_phase::WeightInfo f
 	// Storage: Staking ForceEra (r:1 w:0)
 	// Storage: ElectionProviderMultiPhase CurrentPhase (r:1 w:0)
 	fn on_initialize_nothing() -> Weight {
-		Weight::from_ref_time(23_070_000 as u64)
+		Weight::from_parts(23_070_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(8 as u64))
 	}
 	// Storage: ElectionProviderMultiPhase Round (r:1 w:0)
 	// Storage: ElectionProviderMultiPhase CurrentPhase (r:0 w:1)
 	fn on_initialize_open_signed() -> Weight {
-		Weight::from_ref_time(27_530_000 as u64)
+		Weight::from_parts(27_530_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: ElectionProviderMultiPhase Round (r:1 w:0)
 	// Storage: ElectionProviderMultiPhase CurrentPhase (r:0 w:1)
 	fn on_initialize_open_unsigned() -> Weight {
-		Weight::from_ref_time(26_270_000 as u64)
+		Weight::from_parts(26_270_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: System Account (r:1 w:1)
 	// Storage: ElectionProviderMultiPhase QueuedSolution (r:0 w:1)
 	fn finalize_signed_phase_accept_solution() -> Weight {
-		Weight::from_ref_time(37_820_000 as u64)
+		Weight::from_parts(37_820_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(2 as u64))
 	}
 	// Storage: System Account (r:1 w:1)
 	fn finalize_signed_phase_reject_solution() -> Weight {
-		Weight::from_ref_time(37_301_000 as u64)
+		Weight::from_parts(37_301_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
@@ -76,11 +76,11 @@ impl<T: frame_system::Config> pallet_election_provider_multi_phase::WeightInfo f
 	/// The range of component `v` is `[1000, 2000]`.
 	/// The range of component `t` is `[500, 1000]`.
 	fn create_snapshot_internal(v: u32, t: u32, ) -> Weight {
-		Weight::from_ref_time(0 as u64)
+		Weight::from_parts(0 as u64)
 			// Standard Error: 81_000
-			.saturating_add(Weight::from_ref_time(591_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(591_000 as u64).saturating_mul(v as u64))
 			// Standard Error: 163_000
-			.saturating_add(Weight::from_ref_time(377_000 as u64).saturating_mul(t as u64))
+			.saturating_add(Weight::from_parts(377_000 as u64).saturating_mul(t as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
 	// Storage: ElectionProviderMultiPhase SignedSubmissionIndices (r:1 w:1)
@@ -96,9 +96,9 @@ impl<T: frame_system::Config> pallet_election_provider_multi_phase::WeightInfo f
 	/// The range of component `a` is `[500, 800]`.
 	/// The range of component `d` is `[200, 400]`.
 	fn elect_queued(a: u32, _d: u32, ) -> Weight {
-		Weight::from_ref_time(664_418_000 as u64)
+		Weight::from_parts(664_418_000 as u64)
 			// Standard Error: 398_000
-			.saturating_add(Weight::from_ref_time(1_147_000 as u64).saturating_mul(a as u64))
+			.saturating_add(Weight::from_parts(1_147_000 as u64).saturating_mul(a as u64))
 			.saturating_add(T::DbWeight::get().reads(7 as u64))
 			.saturating_add(T::DbWeight::get().writes(9 as u64))
 	}
@@ -109,7 +109,7 @@ impl<T: frame_system::Config> pallet_election_provider_multi_phase::WeightInfo f
 	// Storage: ElectionProviderMultiPhase SignedSubmissionNextIndex (r:1 w:1)
 	// Storage: ElectionProviderMultiPhase SignedSubmissionsMap (r:0 w:1)
 	fn submit() -> Weight {
-		Weight::from_ref_time(65_721_000 as u64)
+		Weight::from_parts(65_721_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(5 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
@@ -125,13 +125,13 @@ impl<T: frame_system::Config> pallet_election_provider_multi_phase::WeightInfo f
 	/// The range of component `a` is `[500, 800]`.
 	/// The range of component `d` is `[200, 400]`.
 	fn submit_unsigned(v: u32, _t: u32, a: u32, d: u32, ) -> Weight {
-		Weight::from_ref_time(794_070_000 as u64)
+		Weight::from_parts(794_070_000 as u64)
 			// Standard Error: 286_000
-			.saturating_add(Weight::from_ref_time(992_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(992_000 as u64).saturating_mul(v as u64))
 			// Standard Error: 953_000
-			.saturating_add(Weight::from_ref_time(9_026_000 as u64).saturating_mul(a as u64))
+			.saturating_add(Weight::from_parts(9_026_000 as u64).saturating_mul(a as u64))
 			// Standard Error: 1_430_000
-			.saturating_add(Weight::from_ref_time(2_144_000 as u64).saturating_mul(d as u64))
+			.saturating_add(Weight::from_parts(2_144_000 as u64).saturating_mul(d as u64))
 			.saturating_add(T::DbWeight::get().reads(7 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
@@ -144,13 +144,13 @@ impl<T: frame_system::Config> pallet_election_provider_multi_phase::WeightInfo f
 	/// The range of component `a` is `[500, 800]`.
 	/// The range of component `d` is `[200, 400]`.
 	fn feasibility_check(v: u32, _t: u32, a: u32, d: u32, ) -> Weight {
-		Weight::from_ref_time(0 as u64)
+		Weight::from_parts(0 as u64)
 			// Standard Error: 439_000
-			.saturating_add(Weight::from_ref_time(1_236_000 as u64).saturating_mul(v as u64))
+			.saturating_add(Weight::from_parts(1_236_000 as u64).saturating_mul(v as u64))
 			// Standard Error: 1_463_000
-			.saturating_add(Weight::from_ref_time(8_868_000 as u64).saturating_mul(a as u64))
+			.saturating_add(Weight::from_parts(8_868_000 as u64).saturating_mul(a as u64))
 			// Standard Error: 2_195_000
-			.saturating_add(Weight::from_ref_time(584_000 as u64).saturating_mul(d as u64))
+			.saturating_add(Weight::from_parts(584_000 as u64).saturating_mul(d as u64))
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 	}
 }

@@ -20,7 +20,7 @@ node-inspect = { workspace = true, optional = true }
 # Substrate Client
 sc-cli = { workspace = true, optional = true }
 sc-service = { workspace = true, optional = true }
-sc-finality-grandpa = { workspace = true, optional = true }
+sc-consensus-grandpa = { workspace = true, optional = true }
 
 # Rest
 clap = { workspace = true, features = ["derive"], optional = true }
@@ -49,7 +49,7 @@ cli = [
     "frame-benchmarking-cli",
     "node-inspect",
     "try-runtime-cli",
-    "sc-finality-grandpa",
+    "sc-consensus-grandpa",
     "ternoa-client",
 ]
 runtime-benchmarks = ["ternoa-service/runtime-benchmarks"]

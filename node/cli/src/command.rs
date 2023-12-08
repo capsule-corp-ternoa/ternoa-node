@@ -34,8 +34,11 @@ use ternoa_service::AlphanetExecutorDispatch;
 use ternoa_service::mainnet_runtime;
 #[cfg(feature = "mainnet-native")]
 use ternoa_service::MainnetExecutorDispatch;
-// use try_runtime_cli::TryRuntimeCmd;
-
+#[cfg(feature = "try-runtime")]
+use {
+	kitchensink_runtime::constants::time::SLOT_DURATION,
+	try_runtime_cli::block_building_info::substrate_info,
+};
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
 		"Ternoa Node".into()
@@ -124,6 +127,7 @@ pub fn run() -> Result<()> {
 		Some(Subcommand::Inspect(cmd)) => inspect(&cli, cmd),
 		#[cfg(feature = "try-runtime")]
 		Some(Subcommand::TryRuntime(cmd)) => {
+			use sc_executor::{sp_wasm_interface::ExtendedHostFunctions, NativeExecutionDispatch};	
 			let runner = cli.create_runner(cmd)?;
 	let chain_spec = &runner.config().chain_spec.cloned_box();
 	ensure_dev(chain_spec)?;
@@ -135,7 +139,15 @@ pub fn run() -> Result<()> {
 			let task_manager = sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
 				.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
 
-			Ok((cmd.run::<Block, ExecutorDispatch>(config), task_manager))
+				let info_provider = substrate_info(SLOT_DURATION);
+
+				Ok((
+					cmd.run::<Block, ExtendedHostFunctions<
+						sp_io::SubstrateHostFunctions,
+						<ExecutorDispatch as NativeExecutionDispatch>::ExtendHostFunctions,
+					>, _>(Some(info_provider)),
+					task_manager,
+				))
 		})
 	});
 		},

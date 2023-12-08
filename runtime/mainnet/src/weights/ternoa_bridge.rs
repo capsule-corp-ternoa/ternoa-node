@@ -33,18 +33,18 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> ternoa_bridge::WeightInfo for WeightInfo<T> {
 	// Storage: Bridge RelayerVoteThreshold (r:0 w:1)
 	fn set_threshold() -> Weight {
-		Weight::from_ref_time(34_063_000 as u64)
+		Weight::from_parts(34_063_000 as u64)
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Bridge ChainNonces (r:1 w:1)
 	fn add_chain() -> Weight {
-		Weight::from_ref_time(52_018_000 as u64)
+		Weight::from_parts(52_018_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Bridge Relayers (r:0 w:1)
 	fn set_relayers() -> Weight {
-		Weight::from_ref_time(44_643_000 as u64)
+		Weight::from_parts(44_643_000 as u64)
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Bridge Relayers (r:1 w:0)
@@ -52,7 +52,7 @@ impl<T: frame_system::Config> ternoa_bridge::WeightInfo for WeightInfo<T> {
 	// Storage: Bridge RelayerVoteThreshold (r:1 w:0)
 	// Storage: Bridge Votes (r:1 w:1)
 	fn vote_for_proposal() -> Weight {
-		Weight::from_ref_time(57_488_000 as u64)
+		Weight::from_parts(57_488_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
@@ -60,18 +60,18 @@ impl<T: frame_system::Config> ternoa_bridge::WeightInfo for WeightInfo<T> {
 	// Storage: Bridge ChainNonces (r:1 w:1)
 	// Storage: System Account (r:2 w:2)
 	fn deposit() -> Weight {
-		Weight::from_ref_time(178_516_000 as u64)
+		Weight::from_parts(178_516_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(4 as u64))
 			.saturating_add(T::DbWeight::get().writes(3 as u64))
 	}
 	// Storage: Bridge BridgeFee (r:0 w:1)
 	fn set_bridge_fee() -> Weight {
-		Weight::from_ref_time(34_004_000 as u64)
+		Weight::from_parts(34_004_000 as u64)
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}
 	// Storage: Bridge ChainNonces (r:1 w:1)
 	fn set_deposit_nonce() -> Weight {
-		Weight::from_ref_time(66_546_000 as u64)
+		Weight::from_parts(66_546_000 as u64)
 			.saturating_add(T::DbWeight::get().reads(1 as u64))
 			.saturating_add(T::DbWeight::get().writes(1 as u64))
 	}

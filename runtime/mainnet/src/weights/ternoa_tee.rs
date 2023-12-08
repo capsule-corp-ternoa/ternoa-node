@@ -39,7 +39,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: System Account (r:1 w:1)
     // Storage: TEE StakingLedger (r:0 w:1)
 	fn register_enclave() -> Weight {
-        Weight::from_ref_time(86_901_000 as u64)
+        Weight::from_parts(86_901_000 as u64)
             .saturating_add(T::DbWeight::get().reads(6 as u64))
             .saturating_add(T::DbWeight::get().writes(4 as u64))
     }
@@ -48,7 +48,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: TEE EnclaveUnregistrations (r:1 w:1)
     // Storage: TEE StakingLedger (r:1 w:1)
     fn unregister_enclave() -> Weight {
-        Weight::from_ref_time(57_690_000 as u64)
+        Weight::from_parts(57_690_000 as u64)
             .saturating_add(T::DbWeight::get().reads(4 as u64))
             .saturating_add(T::DbWeight::get().writes(2 as u64))
     }
@@ -56,13 +56,13 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: TEE EnclaveUpdates (r:1 w:1)
     // Storage: TEE EnclaveAccountOperator (r:1 w:0)
     fn update_enclave() -> Weight {
-        Weight::from_ref_time(50_160_000 as u64)
+        Weight::from_parts(50_160_000 as u64)
             .saturating_add(T::DbWeight::get().reads(3 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE EnclaveUpdates (r:1 w:1)
     fn cancel_update() -> Weight {
-        Weight::from_ref_time(38_901_000 as u64)
+        Weight::from_parts(38_901_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
@@ -74,7 +74,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: TEE OperatorAssignedEra (r:0 w:1)
     // Storage: TEE EnclaveClusterId (r:0 w:1)
     fn assign_enclave() -> Weight {
-        Weight::from_ref_time(67_690_000 as u64)
+        Weight::from_parts(67_690_000 as u64)
             .saturating_add(T::DbWeight::get().reads(5 as u64))
             .saturating_add(T::DbWeight::get().writes(6 as u64))
     }
@@ -82,13 +82,13 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: Balances Locks (r:1 w:1)
     // Storage: System Account (r:1 w:1)
     fn remove_registration() -> Weight {
-        Weight::from_ref_time(64_001_000 as u64)
+        Weight::from_parts(64_001_000 as u64)
             .saturating_add(T::DbWeight::get().reads(3 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }
     // Storage: TEE EnclaveUpdates (r:1 w:1)
     fn reject_update() -> Weight {
-        Weight::from_ref_time(37_450_000 as u64)
+        Weight::from_parts(37_450_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
@@ -98,7 +98,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
 	// Storage: TEE ClusterData (r:1 w:1)
 	// Storage: TEE EnclaveUpdates (r:1 w:1)
 	fn force_remove_enclave() -> Weight {
-        Weight::from_ref_time(183_441_000 as u64)
+        Weight::from_parts(183_441_000 as u64)
             .saturating_add(T::DbWeight::get().reads(7 as u64))
             .saturating_add(T::DbWeight::get().writes(8 as u64))
     }
@@ -106,26 +106,26 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: TEE EnclaveAccountOperator (r:1 w:1)
     // Storage: TEE EnclaveUpdates (r:1 w:1)
     fn force_update_enclave() -> Weight {
-        Weight::from_ref_time(75_411_000 as u64)
+        Weight::from_parts(75_411_000 as u64)
             .saturating_add(T::DbWeight::get().reads(3 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }
     // Storage: TEE NextClusterId (r:1 w:1)
     // Storage: TEE ClusterData (r:0 w:1)
     fn create_cluster() -> Weight {
-        Weight::from_ref_time(41_310_000 as u64)
+        Weight::from_parts(41_310_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(2 as u64))
     }
     // Storage: TEE ClusterData (r:1 w:1)
     fn update_cluster() -> Weight {
-        Weight::from_ref_time(30_350_000 as u64)
+        Weight::from_parts(30_350_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE ClusterData (r:1 w:1)
     fn remove_cluster() -> Weight {
-        Weight::from_ref_time(29_691_000 as u64)
+        Weight::from_parts(29_691_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
@@ -134,25 +134,25 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: System Account (r:1 w:1)
     // Storage: TEE StakingAmount (r:1 w:0)
     fn withdraw_unbonded() -> Weight {
-        Weight::from_ref_time(59_530_000 as u64)
+        Weight::from_parts(59_530_000 as u64)
             .saturating_add(T::DbWeight::get().reads(4 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }
     // Storage: TEE MetricsServers (r:1 w:1)
     fn register_metrics_server() -> Weight {
-        Weight::from_ref_time(30_801_000 as u64)
+        Weight::from_parts(30_801_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE MetricsServers (r:1 w:1)
     fn unregister_metrics_server() -> Weight {
-        Weight::from_ref_time(36_381_000 as u64)
+        Weight::from_parts(36_381_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE MetricsServers (r:1 w:1)
     fn force_update_metrics_server_type() -> Weight {
-        Weight::from_ref_time(36_470_000 as u64)
+        Weight::from_parts(36_470_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
@@ -161,23 +161,23 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: Staking ActiveEra (r:1 w:0)
     // Storage: TEE MetricsReports (r:1 w:1)
     fn submit_metrics_server_report() -> Weight {
-        Weight::from_ref_time(58_101_000 as u64)
+        Weight::from_parts(58_101_000 as u64)
             .saturating_add(T::DbWeight::get().reads(4 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE ReportParamsWeightages (r:0 w:1)
     fn set_report_params_weightage() -> Weight {
-        Weight::from_ref_time(32_190_000 as u64)
+        Weight::from_parts(32_190_000 as u64)
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE StakingAmount (r:0 w:1)
     fn set_staking_amount() -> Weight {
-        Weight::from_ref_time(32_220_000 as u64)
+        Weight::from_parts(32_220_000 as u64)
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE DailyRewardPool (r:0 w:1)
     fn set_daily_reward_pool() -> Weight {
-        Weight::from_ref_time(32_201_000 as u64)
+        Weight::from_parts(32_201_000 as u64)
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
     // Storage: TEE ClaimedRewards (r:1 w:1)
@@ -188,13 +188,13 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: TEE MetricsReports (r:1 w:0)
     // Storage: System Account (r:2 w:2)
     fn claim_rewards() -> Weight {
-        Weight::from_ref_time(154_782_000 as u64)
+        Weight::from_parts(154_782_000 as u64)
             .saturating_add(T::DbWeight::get().reads(9 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }
     // Storage: TEE OperatorAssignedEra (r:1 w:1)
     fn update_operator_assigned_era() -> Weight {
-        Weight::from_ref_time(37_040_000 as u64)
+        Weight::from_parts(37_040_000 as u64)
             .saturating_add(T::DbWeight::get().reads(1 as u64))
             .saturating_add(T::DbWeight::get().writes(1 as u64))
     }
@@ -203,7 +203,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: System Account (r:1 w:1)
     // Storage: Balances Locks (r:1 w:1)
     fn bond_extra() -> Weight {
-        Weight::from_ref_time(73_730_000 as u64)
+        Weight::from_parts(73_730_000 as u64)
             .saturating_add(T::DbWeight::get().reads(4 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }
@@ -212,7 +212,7 @@ impl<T: frame_system::Config> ternoa_tee::WeightInfo for WeightInfo<T> {
     // Storage: Balances Locks (r:1 w:1)
     // Storage: System Account (r:1 w:1)
     fn refund_excess() -> Weight {
-        Weight::from_ref_time(68_810_000 as u64)
+        Weight::from_parts(68_810_000 as u64)
             .saturating_add(T::DbWeight::get().reads(4 as u64))
             .saturating_add(T::DbWeight::get().writes(3 as u64))
     }

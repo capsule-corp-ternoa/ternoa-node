@@ -165,36 +165,24 @@ impl pallet_babe::Config for Runtime {
 	// session module is the trigger
 	type EpochChangeTrigger = common::babe::EpochChangeTrigger;
 	type DisabledValidators = Session;
-	type KeyOwnerProofSystem = Historical;
-	type KeyOwnerProof = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
-		KeyTypeId,
-		pallet_babe::AuthorityId,
-	)>>::Proof;
-	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
-		KeyTypeId,
-		pallet_babe::AuthorityId,
-	)>>::IdentificationTuple;
-	type HandleEquivocation =
-		pallet_babe::EquivocationHandler<Self::KeyOwnerIdentification, Offences, ReportLongevity>;
+	type KeyOwnerProof =
+		<Historical as KeyOwnerProofSystem<(KeyTypeId, pallet_babe::AuthorityId)>>::Proof;
+	type EquivocationReportSystem =
+		pallet_babe::EquivocationReportSystem<Self, Offences, Historical, ReportLongevity>;
 	type WeightInfo = ();
 	type MaxAuthorities = common::shared::MaxAuthorities;
+}
+parameter_types! {
+	pub const MaxSetIdSessionEntries: u32 = BondingDuration::get() * SessionsPerEra::get();
 }
 
 // Grandpa
 impl pallet_grandpa::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type KeyOwnerProofSystem = Historical;
-	type KeyOwnerProof =
-		<Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
-	type KeyOwnerIdentification = <Self::KeyOwnerProofSystem as KeyOwnerProofSystem<(
-		KeyTypeId,
-		GrandpaId,
-	)>>::IdentificationTuple;
-	type HandleEquivocation = pallet_grandpa::EquivocationHandler<
-		Self::KeyOwnerIdentification,
-		Offences,
-		ReportLongevity,
-	>;
+	type MaxSetIdSessionEntries = MaxSetIdSessionEntries;
+	type KeyOwnerProof = <Historical as KeyOwnerProofSystem<(KeyTypeId, GrandpaId)>>::Proof;
+	type EquivocationReportSystem =
+		pallet_grandpa::EquivocationReportSystem<Self, Offences, Historical, ReportLongevity>;
 	type WeightInfo = ();
 	type MaxAuthorities = common::shared::MaxAuthorities;
 }
@@ -340,7 +328,7 @@ impl pallet_staking::Config for Runtime {
 	type BondingDuration = common::staking::BondingDuration;
 	type SlashDeferDuration = common::staking::SlashDeferDuration;
 	/// A super-majority of the council can cancel the slash.
-	type SlashCancelOrigin = RootOrAtLeastHalfOfCommittee;
+	type AdminOrigin = RootOrAtLeastHalfOfCommittee;
 	type SessionInterface = Self;
 	type EraPayout = StakingRewards;
 	type NextNewSession = Session;
@@ -367,6 +355,7 @@ impl pallet_election_provider_multi_phase::MinerConfig for Runtime {
 		as
 		frame_election_provider_support::ElectionDataProvider
 	>::MaxVotesPerVoter;
+	type MaxWinners = MaxActiveValidators;
 
 	// The unsigned submissions have to respect the weight of the submit_unsigned call, thus their
 	// weight estimate function is wired to this call's weight.
@@ -459,6 +448,7 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 	type MaxMembers = common::technical_collective::TechnicalMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = weights::pallet_collective::WeightInfo<Runtime>;
+	type SetMembersOrigin = EnsureRoot<Self::AccountId>;
 }
 
 // Pallet Membership
@@ -568,6 +558,7 @@ impl pallet_elections_phragmen::Config for Runtime {
 	type WeightInfo = weights::pallet_elections_phragmen::WeightInfo<Runtime>;
 	type MaxCandidates = common::phragmen_election::MaxCandidates;
 	type MaxVoters = common::phragmen_election::MaxVoters;
+	type MaxVotesPerVoter = common::phragmen_election::MaxVotesPerVoter;
 }
 
 // Democracy
@@ -589,6 +580,7 @@ impl pallet_democracy::Config for Runtime {
 	/// (NTB) vote.
 	type ExternalDefaultOrigin =
 		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 1>;
+	type SubmitOrigin = EnsureSigned<AccountId>;
 	/// Two thirds of the technical committee can have an `ExternalMajority/ExternalDefault` vote
 	/// be tabled immediately and with a shorter voting/enactment period.
 	type FastTrackOrigin =
@@ -709,6 +701,7 @@ impl pallet_assets::Config for Runtime {
 	type StringLimit = common::assets::StringLimit;
 	type Freezer = ();
 	type Extra = ();
+	type CallbackHandle = ();
 	type WeightInfo = weights::pallet_assets::WeightInfo<Runtime>;
 	type RemoveItemsLimit = ConstU32<1000>;
 	#[cfg(feature = "runtime-benchmarks")]

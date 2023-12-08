@@ -1,3 +1,4 @@
 [submodule "ternoa-pallets"]
 	path = ternoa-pallets
 	url = https://github.com/capsule-corp-ternoa/ternoa-pallets
+	branch = polkadot-v0.9.40
