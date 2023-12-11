@@ -33,48 +33,83 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> frame_system::WeightInfo for WeightInfo<T> {
 	/// The range of component `b` is `[0, 3932160]`.
 	fn remark(b: u32, ) -> Weight {
-		Weight::from_parts(13_095_000 as u64)
-			// Standard Error: 3
-			.saturating_add(Weight::from_parts(1_169 as u64).saturating_mul(b as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `0`
+		// Minimum execution time: 2_184_000 picoseconds.
+		Weight::from_parts(2_232_000, 0)
+			.saturating_add(Weight::from_parts(0, 0))
+			// Standard Error: 0
+			.saturating_add(Weight::from_parts(374, 0).saturating_mul(b.into()))
 	}
 	/// The range of component `b` is `[0, 3932160]`.
 	fn remark_with_event(b: u32, ) -> Weight {
-		Weight::from_parts(30_297_000 as u64)
-			// Standard Error: 17
-			.saturating_add(Weight::from_parts(3_801 as u64).saturating_mul(b as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `0`
+		// Minimum execution time: 7_626_000 picoseconds.
+		Weight::from_parts(7_777_000, 0)
+			.saturating_add(Weight::from_parts(0, 0))
+			// Standard Error: 0
+			.saturating_add(Weight::from_parts(1_410, 0).saturating_mul(b.into()))
 	}
-	// Storage: System Digest (r:1 w:1)
-	// Storage: unknown [0x3a686561707061676573] (r:0 w:1)
+	/// Storage: System Digest (r:1 w:1)
+	/// Proof Skipped: System Digest (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: unknown `0x3a686561707061676573` (r:0 w:1)
+	/// Proof Skipped: unknown `0x3a686561707061676573` (r:0 w:1)
 	fn set_heap_pages() -> Weight {
-		Weight::from_parts(25_318_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `1485`
+		// Minimum execution time: 4_094_000 picoseconds.
+		Weight::from_parts(4_332_000, 0)
+			.saturating_add(Weight::from_parts(0, 1485))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Skipped Metadata (r:0 w:0)
-	/// The range of component `i` is `[1, 1000]`.
+	/// Storage: Skipped Metadata (r:0 w:0)
+	/// Proof Skipped: Skipped Metadata (max_values: None, max_size: None, mode: Measured)
+	/// The range of component `i` is `[0, 1000]`.
 	fn set_storage(i: u32, ) -> Weight {
-		Weight::from_parts(11_472_000 as u64)
-			// Standard Error: 11_093
-			.saturating_add(Weight::from_parts(1_934_247 as u64).saturating_mul(i as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(i as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `0`
+		// Minimum execution time: 2_142_000 picoseconds.
+		Weight::from_parts(2_256_000, 0)
+			.saturating_add(Weight::from_parts(0, 0))
+			// Standard Error: 1_736
+			.saturating_add(Weight::from_parts(658_559, 0).saturating_mul(i.into()))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(i.into())))
 	}
-	// Storage: Skipped Metadata (r:0 w:0)
-	/// The range of component `i` is `[1, 1000]`.
+	/// Storage: Skipped Metadata (r:0 w:0)
+	/// Proof Skipped: Skipped Metadata (max_values: None, max_size: None, mode: Measured)
+	/// The range of component `i` is `[0, 1000]`.
 	fn kill_storage(i: u32, ) -> Weight {
-		Weight::from_parts(11_882_000 as u64)
-			// Standard Error: 15_760
-			.saturating_add(Weight::from_parts(1_931_656 as u64).saturating_mul(i as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(i as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `0`
+		// Minimum execution time: 2_179_000 picoseconds.
+		Weight::from_parts(2_226_000, 0)
+			.saturating_add(Weight::from_parts(0, 0))
+			// Standard Error: 817
+			.saturating_add(Weight::from_parts(485_258, 0).saturating_mul(i.into()))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(i.into())))
 	}
-	// Storage: Skipped Metadata (r:0 w:0)
-	/// The range of component `p` is `[1, 1000]`.
+	/// Storage: Skipped Metadata (r:0 w:0)
+	/// Proof Skipped: Skipped Metadata (max_values: None, max_size: None, mode: Measured)
+	/// The range of component `p` is `[0, 1000]`.
 	fn kill_prefix(p: u32, ) -> Weight {
-		Weight::from_parts(31_419_000 as u64)
-			// Standard Error: 30_041
-			.saturating_add(Weight::from_parts(4_162_627 as u64).saturating_mul(p as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(p as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `120 + p * (69 ±0)`
+		//  Estimated: `121 + p * (70 ±0)`
+		// Minimum execution time: 4_109_000 picoseconds.
+		Weight::from_parts(4_255_000, 0)
+			.saturating_add(Weight::from_parts(0, 121))
+			// Standard Error: 1_259
+			.saturating_add(Weight::from_parts(1_043_188, 0).saturating_mul(p.into()))
+			.saturating_add(T::DbWeight::get().reads((1_u64).saturating_mul(p.into())))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(p.into())))
+			.saturating_add(Weight::from_parts(0, 70).saturating_mul(p.into()))
 	}
 }
+

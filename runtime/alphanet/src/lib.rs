@@ -41,7 +41,6 @@ use pallets::EpochDuration;
 pub use pallets::{SessionKeys, BABE_GENESIS_EPOCH_CONFIG};
 use sp_api::impl_runtime_apis;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
-use sp_consensus_grandpa::AuthorityId as GrandpaId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::{
@@ -155,7 +154,6 @@ construct_runtime!(
 		Rent: ternoa_rent = 33,
 		TEE: ternoa_tee = 34,
 		TransmissionProtocols: ternoa_transmission_protocols = 35,
-		Pov: frame_benchmarking_pallet_pov = 36,
 	}
 );
 
@@ -297,18 +295,6 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl assets_api::AssetsApi<
-		Block,
-		AccountId,
-		Balance,
-		u32,
-	> for Runtime
-	{
-		fn account_balances(account: AccountId) -> Vec<(u32, Balance)> {
-			Assets::account_balances(account)
-		}
-	}
-
 
 	impl sp_consensus_babe::BabeApi<Block> for Runtime {
 		fn configuration() -> sp_consensus_babe::BabeConfiguration {
@@ -381,6 +367,12 @@ impl_runtime_apis! {
 
 		fn query_fee_details(uxt: <Block as BlockT>::Extrinsic, len: u32) -> FeeDetails<Balance> {
 			TransactionPayment::query_fee_details(uxt, len)
+		}
+		fn query_weight_to_fee(weight: Weight) -> Balance {
+			TransactionPayment::weight_to_fee(weight)
+		}
+		fn query_length_to_fee(length: u32) -> Balance {
+			TransactionPayment::length_to_fee(length)
 		}
 	}
 
@@ -493,7 +485,6 @@ mod benches {
 		[pallet_bags_list, BagsList]
 		[pallet_balances, Balances]
 		[frame_benchmarking::baseline, Baseline::<Runtime>]
-		[frame_benchmarking_pallet_pov, Pov]
 		[pallet_collective, TechnicalCommittee]
 		[pallet_election_provider_multi_phase, ElectionProviderMultiPhase]
 		[pallet_grandpa, Grandpa]

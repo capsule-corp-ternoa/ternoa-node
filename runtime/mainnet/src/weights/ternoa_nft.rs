@@ -38,80 +38,80 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 	// Storage: NFT Nfts (r:0 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn create_nft(s: u32, ) -> Weight {
-		Weight::from_parts(115_467_000 as u64)
+		Weight::from_parts(115_467_000 , 0)
 			// Standard Error: 74
-			.saturating_add(Weight::from_parts(18_063 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+			.saturating_add(Weight::from_parts(18_063 , 0).saturating_mul(s .into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT Collections (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn burn_nft(s: u32, ) -> Weight {
-		Weight::from_parts(83_528_000 as u64)
+		Weight::from_parts(83_528_000 , 0)
 			// Standard Error: 89
-			.saturating_add(Weight::from_parts(19_906 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+			.saturating_add(Weight::from_parts(19_906 , 0).saturating_mul(s .into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	fn transfer_nft() -> Weight {
-		Weight::from_parts(83_436_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(83_436_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT DelegatedNFTs (r:0 w:1)
 	fn delegate_nft() -> Weight {
-		Weight::from_parts(87_534_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		Weight::from_parts(87_534_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	fn set_royalty() -> Weight {
-		Weight::from_parts(91_223_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(91_223_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT NftMintFee (r:0 w:1)
 	fn set_nft_mint_fee() -> Weight {
-		Weight::from_parts(65_472_000 as u64)
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(65_472_000 , 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT NextCollectionId (r:1 w:1)
 	// Storage: NFT Collections (r:0 w:1)
 	fn create_collection() -> Weight {
-		Weight::from_parts(130_164_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		Weight::from_parts(130_164_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn burn_collection() -> Weight {
-		Weight::from_parts(101_370_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(101_370_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn close_collection() -> Weight {
-		Weight::from_parts(70_933_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(70_933_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn limit_collection() -> Weight {
-		Weight::from_parts(87_805_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(87_805_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	// Storage: NFT Nfts (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn add_nft_to_collection(s: u32, ) -> Weight {
-		Weight::from_parts(61_635_000 as u64)
+		Weight::from_parts(61_635_000 , 0)
 			// Standard Error: 58
-			.saturating_add(Weight::from_parts(17_429 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+			.saturating_add(Weight::from_parts(17_429 , 0).saturating_mul(s .into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT NftMintFee (r:1 w:0)
 	// Storage: NFT SecretNftMintFee (r:1 w:0)
@@ -122,43 +122,43 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 	// Storage: NFT Nfts (r:0 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn create_secret_nft(s: u32, ) -> Weight {
-		Weight::from_parts(267_193_000 as u64)
+		Weight::from_parts(267_193_000 , 0)
 			// Standard Error: 60
-			.saturating_add(Weight::from_parts(17_859 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(6 as u64))
-			.saturating_add(T::DbWeight::get().writes(6 as u64))
+			.saturating_add(Weight::from_parts(17_859 , 0).saturating_mul(s .into()))
+			.saturating_add(T::DbWeight::get().reads(6))
+			.saturating_add(T::DbWeight::get().writes(6))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT SecretNftMintFee (r:1 w:0)
 	// Storage: System Account (r:2 w:2)
 	// Storage: NFT SecretNftsOffchainData (r:0 w:1)
 	fn add_secret() -> Weight {
-		Weight::from_parts(209_585_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(4 as u64))
+		Weight::from_parts(209_585_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(4))
 	}
 	// Storage: TEE EnclaveAccountOperator (r:1 w:0)
 	// Storage: TEE EnclaveClusterId (r:1 w:0)
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT SecretNftsShardsCount (r:1 w:1)
 	fn add_secret_shard() -> Weight {
-		Weight::from_parts(147_668_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		Weight::from_parts(147_668_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT SecretNftMintFee (r:0 w:1)
 	fn set_secret_nft_mint_fee() -> Weight {
-		Weight::from_parts(38_874_000 as u64)
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(38_874_000 , 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT CapsuleMintFee (r:1 w:0)
 	// Storage: System Account (r:2 w:2)
 	// Storage: NFT CapsuleOffchainData (r:0 w:1)
 	fn convert_to_capsule() -> Weight {
-		Weight::from_parts(185_901_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(4 as u64))
+		Weight::from_parts(185_901_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(4))
 	}
 	// Storage: NFT NftMintFee (r:1 w:0)
 	// Storage: NFT CapsuleMintFee (r:1 w:0)
@@ -169,43 +169,43 @@ impl<T: frame_system::Config> ternoa_nft::WeightInfo for WeightInfo<T> {
 	// Storage: NFT Nfts (r:0 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn create_capsule(s: u32, ) -> Weight {
-		Weight::from_parts(287_011_000 as u64)
+		Weight::from_parts(287_011_000 , 0)
 			// Standard Error: 81
-			.saturating_add(Weight::from_parts(18_083 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(6 as u64))
-			.saturating_add(T::DbWeight::get().writes(6 as u64))
+			.saturating_add(Weight::from_parts(18_083 , 0).saturating_mul(s .into()))
+			.saturating_add(T::DbWeight::get().reads(6))
+			.saturating_add(T::DbWeight::get().writes(6))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT CapsuleOffchainData (r:0 w:1)
 	fn set_capsule_offchaindata() -> Weight {
-		Weight::from_parts(118_724_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		Weight::from_parts(118_724_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT CapsuleMintFee (r:0 w:1)
 	fn set_capsule_mint_fee() -> Weight {
-		Weight::from_parts(53_340_000 as u64)
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(53_340_000 , 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: TEE EnclaveAccountOperator (r:1 w:0)
 	// Storage: TEE EnclaveClusterId (r:1 w:0)
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: NFT CapsulesShardsCount (r:1 w:1)
 	fn add_capsule_shard() -> Weight {
-		Weight::from_parts(159_811_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		Weight::from_parts(159_811_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	fn notify_enclave_key_update() -> Weight {
-		Weight::from_parts(140_375_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(140_375_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: NFT Collections (r:1 w:1)
 	fn set_collection_offchaindata() -> Weight {
-		Weight::from_parts(114_467_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(114_467_000 , 0)
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }

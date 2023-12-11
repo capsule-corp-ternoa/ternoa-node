@@ -38,11 +38,11 @@ impl<T: frame_system::Config> ternoa_transmission_protocols::WeightInfo for Weig
 	// Storage: TransmissionProtocols Transmissions (r:0 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn set_transmission_protocol(s: u32, ) -> Weight {
-		Weight::from_parts(162_275_000 as u64)
+		Weight::from_parts(162_275_000 , 0)
 			// Standard Error: 124
-			.saturating_add(Weight::from_parts(40_798 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+			.saturating_add(Weight::from_parts(40_798 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	// Storage: NFT Nfts (r:1 w:1)
 	// Storage: TransmissionProtocols Transmissions (r:1 w:1)
@@ -50,22 +50,22 @@ impl<T: frame_system::Config> ternoa_transmission_protocols::WeightInfo for Weig
 	// Storage: TransmissionProtocols OnConsentData (r:0 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn remove_transmission_protocol(s: u32, ) -> Weight {
-		Weight::from_parts(92_565_000 as u64)
+		Weight::from_parts(92_565_000 , 0)
 			// Standard Error: 310
-			.saturating_add(Weight::from_parts(41_764 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(4 as u64))
+			.saturating_add(Weight::from_parts(41_764 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(4))
 	}
 	// Storage: NFT Nfts (r:1 w:0)
 	// Storage: TransmissionProtocols Transmissions (r:1 w:1)
 	// Storage: TransmissionProtocols AtBlockQueue (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn reset_timer(s: u32, ) -> Weight {
-		Weight::from_parts(111_330_000 as u64)
+		Weight::from_parts(111_330_000 , 0)
 			// Standard Error: 288
-			.saturating_add(Weight::from_parts(43_663 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+			.saturating_add(Weight::from_parts(43_663 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: NFT Nfts (r:1 w:0)
 	// Storage: TransmissionProtocols Transmissions (r:1 w:0)
@@ -73,15 +73,15 @@ impl<T: frame_system::Config> ternoa_transmission_protocols::WeightInfo for Weig
 	// Storage: TransmissionProtocols OnConsentData (r:1 w:1)
 	/// The range of component `s` is `[0, 999999]`.
 	fn add_consent(s: u32, ) -> Weight {
-		Weight::from_parts(113_495_000 as u64)
+		Weight::from_parts(113_495_000 , 0)
 			// Standard Error: 252
-			.saturating_add(Weight::from_parts(65_782 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+			.saturating_add(Weight::from_parts(65_782 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: TransmissionProtocols AtBlockFee (r:0 w:1)
 	fn set_protocol_fee() -> Weight {
-		Weight::from_parts(47_570_000 as u64)
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		Weight::from_parts(47_570_000 , 0)
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }

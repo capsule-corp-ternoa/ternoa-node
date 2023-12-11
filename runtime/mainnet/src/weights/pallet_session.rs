@@ -31,20 +31,36 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `pallet_session`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_session::WeightInfo for WeightInfo<T> {
-	// Storage: Staking Ledger (r:1 w:0)
-	// Storage: Session NextKeys (r:1 w:1)
-	// Storage: Session KeyOwner (r:4 w:4)
+	/// Storage: Staking Ledger (r:1 w:0)
+	/// Proof: Staking Ledger (max_values: None, max_size: Some(1091), added: 3566, mode: MaxEncodedLen)
+	/// Storage: Session NextKeys (r:1 w:1)
+	/// Proof Skipped: Session NextKeys (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Session KeyOwner (r:6 w:6)
+	/// Proof Skipped: Session KeyOwner (max_values: None, max_size: None, mode: Measured)
 	fn set_keys() -> Weight {
-		Weight::from_parts(172_626_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(6 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `2083`
+		//  Estimated: `28027`
+		// Minimum execution time: 51_544_000 picoseconds.
+		Weight::from_parts(52_127_000, 0)
+			.saturating_add(Weight::from_parts(0, 28027))
+			.saturating_add(T::DbWeight::get().reads(8))
+			.saturating_add(T::DbWeight::get().writes(7))
 	}
-	// Storage: Staking Ledger (r:1 w:0)
-	// Storage: Session NextKeys (r:1 w:1)
-	// Storage: Session KeyOwner (r:0 w:4)
+	/// Storage: Staking Ledger (r:1 w:0)
+	/// Proof: Staking Ledger (max_values: None, max_size: Some(1091), added: 3566, mode: MaxEncodedLen)
+	/// Storage: Session NextKeys (r:1 w:1)
+	/// Proof Skipped: Session NextKeys (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Session KeyOwner (r:0 w:6)
+	/// Proof Skipped: Session KeyOwner (max_values: None, max_size: None, mode: Measured)
 	fn purge_keys() -> Weight {
-		Weight::from_parts(192_632_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `1947`
+		//  Estimated: `11915`
+		// Minimum execution time: 37_019_000 picoseconds.
+		Weight::from_parts(37_594_000, 0)
+			.saturating_add(Weight::from_parts(0, 11915))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(7))
 	}
 }

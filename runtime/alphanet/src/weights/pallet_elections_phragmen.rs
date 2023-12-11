@@ -31,142 +31,259 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `pallet_elections_phragmen`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_elections_phragmen::WeightInfo for WeightInfo<T> {
-	// Storage: PhragmenElection Candidates (r:1 w:0)
-	// Storage: PhragmenElection Members (r:1 w:0)
-	// Storage: PhragmenElection RunnersUp (r:1 w:0)
-	// Storage: PhragmenElection Voting (r:1 w:1)
-	// Storage: Balances Locks (r:1 w:1)
+	/// Storage: PhragmenElection Candidates (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Members (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:0)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Voting (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Voting (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Balances Locks (r:1 w:1)
+	/// Proof: Balances Locks (max_values: None, max_size: Some(1299), added: 3774, mode: MaxEncodedLen)
 	/// The range of component `v` is `[1, 16]`.
 	fn vote_equal(v: u32, ) -> Weight {
-		Weight::from_parts(36_912_000 as u64)
-			// Standard Error: 16_000
-			.saturating_add(Weight::from_parts(179_000 as u64).saturating_mul(v as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `403 + v * (80 ±0)`
+		//  Estimated: `14292 + v * (320 ±0)`
+		// Minimum execution time: 27_353_000 picoseconds.
+		Weight::from_parts(28_103_445, 0)
+			.saturating_add(Weight::from_parts(0, 14292))
+			// Standard Error: 4_556
+			.saturating_add(Weight::from_parts(117_766, 0).saturating_mul(v.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(2))
+			.saturating_add(Weight::from_parts(0, 320).saturating_mul(v.into()))
 	}
-	// Storage: PhragmenElection Candidates (r:1 w:0)
-	// Storage: PhragmenElection Members (r:1 w:0)
-	// Storage: PhragmenElection RunnersUp (r:1 w:0)
-	// Storage: PhragmenElection Voting (r:1 w:1)
-	// Storage: Balances Locks (r:1 w:1)
+	/// Storage: PhragmenElection Candidates (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Members (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:0)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Voting (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Voting (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Balances Locks (r:1 w:1)
+	/// Proof: Balances Locks (max_values: None, max_size: Some(1299), added: 3774, mode: MaxEncodedLen)
 	/// The range of component `v` is `[2, 16]`.
 	fn vote_more(v: u32, ) -> Weight {
-		Weight::from_parts(46_265_000 as u64)
-			// Standard Error: 223_000
-			.saturating_add(Weight::from_parts(743_000 as u64).saturating_mul(v as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `371 + v * (80 ±0)`
+		//  Estimated: `14164 + v * (320 ±0)`
+		// Minimum execution time: 36_885_000 picoseconds.
+		Weight::from_parts(37_769_975, 0)
+			.saturating_add(Weight::from_parts(0, 14164))
+			// Standard Error: 6_586
+			.saturating_add(Weight::from_parts(123_567, 0).saturating_mul(v.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(2))
+			.saturating_add(Weight::from_parts(0, 320).saturating_mul(v.into()))
 	}
-	// Storage: PhragmenElection Candidates (r:1 w:0)
-	// Storage: PhragmenElection Members (r:1 w:0)
-	// Storage: PhragmenElection RunnersUp (r:1 w:0)
-	// Storage: PhragmenElection Voting (r:1 w:1)
-	// Storage: Balances Locks (r:1 w:1)
+	/// Storage: PhragmenElection Candidates (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Members (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:0)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Voting (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Voting (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Balances Locks (r:1 w:1)
+	/// Proof: Balances Locks (max_values: None, max_size: Some(1299), added: 3774, mode: MaxEncodedLen)
 	/// The range of component `v` is `[2, 16]`.
 	fn vote_less(v: u32, ) -> Weight {
-		Weight::from_parts(49_651_000 as u64)
-			// Standard Error: 37_000
-			.saturating_add(Weight::from_parts(154_000 as u64).saturating_mul(v as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `403 + v * (80 ±0)`
+		//  Estimated: `14292 + v * (320 ±0)`
+		// Minimum execution time: 36_610_000 picoseconds.
+		Weight::from_parts(37_524_808, 0)
+			.saturating_add(Weight::from_parts(0, 14292))
+			// Standard Error: 6_164
+			.saturating_add(Weight::from_parts(147_944, 0).saturating_mul(v.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(2))
+			.saturating_add(Weight::from_parts(0, 320).saturating_mul(v.into()))
 	}
-	// Storage: PhragmenElection Voting (r:1 w:1)
-	// Storage: Balances Locks (r:1 w:1)
+	/// Storage: PhragmenElection Voting (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Voting (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Balances Locks (r:1 w:1)
+	/// Proof: Balances Locks (max_values: None, max_size: Some(1299), added: 3774, mode: MaxEncodedLen)
 	fn remove_voter() -> Weight {
-		Weight::from_parts(47_030_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `925`
+		//  Estimated: `9154`
+		// Minimum execution time: 33_052_000 picoseconds.
+		Weight::from_parts(33_677_000, 0)
+			.saturating_add(Weight::from_parts(0, 9154))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: PhragmenElection Candidates (r:1 w:1)
-	// Storage: PhragmenElection Members (r:1 w:0)
-	// Storage: PhragmenElection RunnersUp (r:1 w:0)
+	/// Storage: PhragmenElection Candidates (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Members (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:0)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `c` is `[1, 1000]`.
 	fn submit_candidacy(c: u32, ) -> Weight {
-		Weight::from_parts(48_816_000 as u64)
-			// Standard Error: 3_000
-			.saturating_add(Weight::from_parts(62_000 as u64).saturating_mul(c as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `2712 + c * (48 ±0)`
+		//  Estimated: `12585 + c * (144 ±0)`
+		// Minimum execution time: 32_163_000 picoseconds.
+		Weight::from_parts(24_757_419, 0)
+			.saturating_add(Weight::from_parts(0, 12585))
+			// Standard Error: 902
+			.saturating_add(Weight::from_parts(79_765, 0).saturating_mul(c.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(1))
+			.saturating_add(Weight::from_parts(0, 144).saturating_mul(c.into()))
 	}
-	// Storage: PhragmenElection Candidates (r:1 w:1)
+	/// Storage: PhragmenElection Candidates (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `c` is `[1, 1000]`.
 	fn renounce_candidacy_candidate(c: u32, ) -> Weight {
-		Weight::from_parts(44_736_000 as u64)
-			// Standard Error: 5_000
-			.saturating_add(Weight::from_parts(57_000 as u64).saturating_mul(c as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `284 + c * (48 ±0)`
+		//  Estimated: `1756 + c * (48 ±0)`
+		// Minimum execution time: 24_805_000 picoseconds.
+		Weight::from_parts(17_940_635, 0)
+			.saturating_add(Weight::from_parts(0, 1756))
+			// Standard Error: 888
+			.saturating_add(Weight::from_parts(59_369, 0).saturating_mul(c.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
+			.saturating_add(Weight::from_parts(0, 48).saturating_mul(c.into()))
 	}
-	// Storage: PhragmenElection Members (r:1 w:1)
-	// Storage: PhragmenElection RunnersUp (r:1 w:1)
-	// Storage: Council Prime (r:1 w:1)
-	// Storage: Council Proposals (r:1 w:0)
-	// Storage: Council Members (r:0 w:1)
+	/// Storage: PhragmenElection Members (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:1)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Prime (r:1 w:1)
+	/// Proof Skipped: Council Prime (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Proposals (r:1 w:0)
+	/// Proof Skipped: Council Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Members (r:0 w:1)
+	/// Proof Skipped: Council Members (max_values: Some(1), max_size: None, mode: Measured)
 	fn renounce_candidacy_members() -> Weight {
-		Weight::from_parts(49_251_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(4 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `2986`
+		//  Estimated: `20870`
+		// Minimum execution time: 42_908_000 picoseconds.
+		Weight::from_parts(43_409_000, 0)
+			.saturating_add(Weight::from_parts(0, 20870))
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(4))
 	}
-	// Storage: PhragmenElection RunnersUp (r:1 w:1)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:1)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
 	fn renounce_candidacy_runners_up() -> Weight {
-		Weight::from_parts(37_941_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `1681`
+		//  Estimated: `3166`
+		// Minimum execution time: 27_419_000 picoseconds.
+		Weight::from_parts(27_912_000, 0)
+			.saturating_add(Weight::from_parts(0, 3166))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Benchmark Override (r:0 w:0)
+	/// Storage: Benchmark Override (r:0 w:0)
+	/// Proof Skipped: Benchmark Override (max_values: None, max_size: None, mode: Measured)
 	fn remove_member_without_replacement() -> Weight {
-		Weight::from_parts(2_000_000_000_000 as u64)
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `0`
+		// Minimum execution time: 2_000_000_000_000 picoseconds.
+		Weight::from_parts(2_000_000_000_000, 0)
+			.saturating_add(Weight::from_parts(0, 0))
 	}
-	// Storage: PhragmenElection Members (r:1 w:1)
-	// Storage: System Account (r:1 w:1)
-	// Storage: PhragmenElection RunnersUp (r:1 w:1)
-	// Storage: Council Prime (r:1 w:1)
-	// Storage: Council Proposals (r:1 w:0)
-	// Storage: Council Members (r:0 w:1)
+	/// Storage: PhragmenElection Members (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: System Account (r:1 w:1)
+	/// Proof: System Account (max_values: None, max_size: Some(128), added: 2603, mode: MaxEncodedLen)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:1)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Prime (r:1 w:1)
+	/// Proof Skipped: Council Prime (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Proposals (r:1 w:0)
+	/// Proof Skipped: Council Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Members (r:0 w:1)
+	/// Proof Skipped: Council Members (max_values: Some(1), max_size: None, mode: Measured)
 	fn remove_member_with_replacement() -> Weight {
-		Weight::from_parts(65_640_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `2986`
+		//  Estimated: `24463`
+		// Minimum execution time: 57_465_000 picoseconds.
+		Weight::from_parts(58_107_000, 0)
+			.saturating_add(Weight::from_parts(0, 24463))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
-	// Storage: PhragmenElection Voting (r:5001 w:5000)
-	// Storage: PhragmenElection Members (r:1 w:0)
-	// Storage: PhragmenElection RunnersUp (r:1 w:0)
-	// Storage: PhragmenElection Candidates (r:1 w:0)
-	// Storage: Balances Locks (r:5000 w:5000)
-	// Storage: System Account (r:5000 w:5000)
+	/// Storage: PhragmenElection Voting (r:10001 w:10000)
+	/// Proof Skipped: PhragmenElection Voting (max_values: None, max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Members (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:0)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Candidates (r:1 w:0)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Balances Locks (r:10000 w:10000)
+	/// Proof: Balances Locks (max_values: None, max_size: Some(1299), added: 3774, mode: MaxEncodedLen)
+	/// Storage: System Account (r:10000 w:10000)
+	/// Proof: System Account (max_values: None, max_size: Some(128), added: 2603, mode: MaxEncodedLen)
 	/// The range of component `v` is `[5000, 10000]`.
-	/// The range of component `d` is `[1, 5000]`.
+	/// The range of component `d` is `[0, 5000]`.
 	fn clean_defunct_voters(v: u32, _d: u32, ) -> Weight {
-		Weight::from_parts(0 as u64)
-			// Standard Error: 711_000
-			.saturating_add(Weight::from_parts(77_039_000 as u64).saturating_mul(v as u64))
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().reads((3 as u64).saturating_mul(v as u64)))
-			.saturating_add(T::DbWeight::get().writes((3 as u64).saturating_mul(v as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `35989 + v * (808 ±0)`
+		//  Estimated: `154956 + v * (12084 ±0)`
+		// Minimum execution time: 319_677_473_000 picoseconds.
+		Weight::from_parts(320_382_361_000, 0)
+			.saturating_add(Weight::from_parts(0, 154956))
+			// Standard Error: 270_292
+			.saturating_add(Weight::from_parts(38_671_603, 0).saturating_mul(v.into()))
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().reads((3_u64).saturating_mul(v.into())))
+			.saturating_add(T::DbWeight::get().writes((3_u64).saturating_mul(v.into())))
+			.saturating_add(Weight::from_parts(0, 12084).saturating_mul(v.into()))
 	}
-	// Storage: PhragmenElection Candidates (r:1 w:1)
-	// Storage: PhragmenElection Members (r:1 w:1)
-	// Storage: PhragmenElection RunnersUp (r:1 w:1)
-	// Storage: PhragmenElection Voting (r:10001 w:0)
-	// Storage: Council Proposals (r:1 w:0)
-	// Storage: PhragmenElection ElectionRounds (r:1 w:1)
-	// Storage: Council Members (r:0 w:1)
-	// Storage: Council Prime (r:0 w:1)
-	// Storage: System Account (r:98 w:98)
+	/// Storage: PhragmenElection Candidates (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Candidates (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Members (r:1 w:1)
+	/// Proof Skipped: PhragmenElection Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection RunnersUp (r:1 w:1)
+	/// Proof Skipped: PhragmenElection RunnersUp (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: PhragmenElection Voting (r:10001 w:0)
+	/// Proof Skipped: PhragmenElection Voting (max_values: None, max_size: None, mode: Measured)
+	/// Storage: Council Proposals (r:1 w:0)
+	/// Proof Skipped: Council Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: System Account (r:962 w:962)
+	/// Proof: System Account (max_values: None, max_size: Some(128), added: 2603, mode: MaxEncodedLen)
+	/// Storage: PhragmenElection ElectionRounds (r:1 w:1)
+	/// Proof Skipped: PhragmenElection ElectionRounds (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Members (r:0 w:1)
+	/// Proof Skipped: Council Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: Council Prime (r:0 w:1)
+	/// Proof Skipped: Council Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `c` is `[1, 1000]`.
 	/// The range of component `v` is `[1, 10000]`.
 	/// The range of component `e` is `[10000, 160000]`.
 	fn election_phragmen(c: u32, v: u32, e: u32, ) -> Weight {
-		Weight::from_parts(0 as u64)
-			// Standard Error: 21_257_000
-			.saturating_add(Weight::from_parts(45_937_000 as u64).saturating_mul(c as u64))
-			// Standard Error: 2_123_000
-			.saturating_add(Weight::from_parts(35_966_000 as u64).saturating_mul(v as u64))
-			// Standard Error: 141_000
-			.saturating_add(Weight::from_parts(1_610_000 as u64).saturating_mul(e as u64))
-			.saturating_add(T::DbWeight::get().reads(444 as u64))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(c as u64)))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(v as u64)))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(c as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `0 + v * (607 ±0) + e * (28 ±0)`
+		//  Estimated: `4839313 + v * (5481 ±4) + e * (123 ±0) + c * (2560 ±0)`
+		// Minimum execution time: 30_795_431_000 picoseconds.
+		Weight::from_parts(30_861_700_000, 0)
+			.saturating_add(Weight::from_parts(0, 4839313))
+			// Standard Error: 482_348
+			.saturating_add(Weight::from_parts(37_626_560, 0).saturating_mul(v.into()))
+			// Standard Error: 30_954
+			.saturating_add(Weight::from_parts(2_016_889, 0).saturating_mul(e.into()))
+			.saturating_add(T::DbWeight::get().reads(265))
+			.saturating_add(T::DbWeight::get().reads((1_u64).saturating_mul(c.into())))
+			.saturating_add(T::DbWeight::get().reads((1_u64).saturating_mul(v.into())))
+			.saturating_add(T::DbWeight::get().writes(6))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(c.into())))
+			.saturating_add(Weight::from_parts(0, 5481).saturating_mul(v.into()))
+			.saturating_add(Weight::from_parts(0, 123).saturating_mul(e.into()))
+			.saturating_add(Weight::from_parts(0, 2560).saturating_mul(c.into()))
 	}
 }

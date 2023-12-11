@@ -106,12 +106,12 @@ sp-version = { git = "https://github.com/paritytech/substrate", branch = "polkad
 sp-blockchain = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-storage = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-consensus = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
-sp-consensus-grandpa = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sp-consensus-grandpa = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
 sp-keyring = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-keystore = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-transaction-storage-proof = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
-sp-weights = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sp-weights = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
 
 # Substrate Client
 sc-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }

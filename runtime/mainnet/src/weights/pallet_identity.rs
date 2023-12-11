@@ -31,192 +31,308 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `pallet_identity`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_identity::WeightInfo for WeightInfo<T> {
-	// Storage: Identity Registrars (r:1 w:1)
+	/// Storage: Identity Registrars (r:1 w:1)
+	/// Proof: Identity Registrars (max_values: Some(1), max_size: Some(1141), added: 1636, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 19]`.
 	fn add_registrar(r: u32, ) -> Weight {
-		Weight::from_parts(50_144_000 as u64)
-			// Standard Error: 97_672
-			.saturating_add(Weight::from_parts(2_150_717 as u64).saturating_mul(r as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `32 + r * (57 ±0)`
+		//  Estimated: `2626`
+		// Minimum execution time: 11_971_000 picoseconds.
+		Weight::from_parts(12_647_916, 0)
+			.saturating_add(Weight::from_parts(0, 2626))
+			// Standard Error: 1_923
+			.saturating_add(Weight::from_parts(117_079, 0).saturating_mul(r.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity IdentityOf (r:1 w:1)
+	/// Storage: Identity IdentityOf (r:1 w:1)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 20]`.
-	/// The range of component `x` is `[1, 100]`.
+	/// The range of component `x` is `[0, 100]`.
 	fn set_identity(r: u32, x: u32, ) -> Weight {
-		Weight::from_parts(74_830_000 as u64)
-			// Standard Error: 74_361
-			.saturating_add(Weight::from_parts(1_623_229 as u64).saturating_mul(r as u64))
-			// Standard Error: 14_849
-			.saturating_add(Weight::from_parts(996_020 as u64).saturating_mul(x as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `442 + r * (5 ±0)`
+		//  Estimated: `11003`
+		// Minimum execution time: 29_280_000 picoseconds.
+		Weight::from_parts(30_187_924, 0)
+			.saturating_add(Weight::from_parts(0, 11003))
+			// Standard Error: 4_084
+			.saturating_add(Weight::from_parts(6_401, 0).saturating_mul(r.into()))
+			// Standard Error: 796
+			.saturating_add(Weight::from_parts(440_407, 0).saturating_mul(x.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity IdentityOf (r:1 w:0)
-	// Storage: Identity SubsOf (r:1 w:1)
-	// Storage: Identity SuperOf (r:1 w:1)
-	/// The range of component `s` is `[1, 100]`.
+	/// Storage: Identity IdentityOf (r:1 w:0)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:100 w:100)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
+	/// The range of component `s` is `[0, 100]`.
 	fn set_subs_new(s: u32, ) -> Weight {
-		Weight::from_parts(65_363_000 as u64)
-			// Standard Error: 46_262
-			.saturating_add(Weight::from_parts(6_501_901 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().reads((1 as u64).saturating_mul(s as u64)))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(s as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `101`
+		//  Estimated: `18716 + s * (2589 ±0)`
+		// Minimum execution time: 9_217_000 picoseconds.
+		Weight::from_parts(22_366_407, 0)
+			.saturating_add(Weight::from_parts(0, 18716))
+			// Standard Error: 5_217
+			.saturating_add(Weight::from_parts(2_681_153, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().reads((1_u64).saturating_mul(s.into())))
+			.saturating_add(T::DbWeight::get().writes(1))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(s.into())))
+			.saturating_add(Weight::from_parts(0, 2589).saturating_mul(s.into()))
 	}
-	// Storage: Identity IdentityOf (r:1 w:0)
-	// Storage: Identity SubsOf (r:1 w:1)
-	// Storage: Identity SuperOf (r:0 w:1)
-	/// The range of component `p` is `[1, 100]`.
+	/// Storage: Identity IdentityOf (r:1 w:0)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:0 w:100)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
+	/// The range of component `p` is `[0, 100]`.
 	fn set_subs_old(p: u32, ) -> Weight {
-		Weight::from_parts(62_777_000 as u64)
-			// Standard Error: 38_848
-			.saturating_add(Weight::from_parts(3_435_862 as u64).saturating_mul(p as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(p as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `194 + p * (32 ±0)`
+		//  Estimated: `17726`
+		// Minimum execution time: 9_562_000 picoseconds.
+		Weight::from_parts(22_267_810, 0)
+			.saturating_add(Weight::from_parts(0, 17726))
+			// Standard Error: 3_161
+			.saturating_add(Weight::from_parts(1_068_419, 0).saturating_mul(p.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(p.into())))
 	}
-	// Storage: Identity SubsOf (r:1 w:1)
-	// Storage: Identity IdentityOf (r:1 w:1)
-	// Storage: Identity SuperOf (r:0 w:100)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
+	/// Storage: Identity IdentityOf (r:1 w:1)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:0 w:100)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 20]`.
-	/// The range of component `s` is `[1, 100]`.
-	/// The range of component `x` is `[1, 100]`.
+	/// The range of component `s` is `[0, 100]`.
+	/// The range of component `x` is `[0, 100]`.
 	fn clear_identity(r: u32, s: u32, x: u32, ) -> Weight {
-		Weight::from_parts(134_734_000 as u64)
-			// Standard Error: 181_488
-			.saturating_add(Weight::from_parts(17_549 as u64).saturating_mul(r as u64))
-			// Standard Error: 36_138
-			.saturating_add(Weight::from_parts(3_066_219 as u64).saturating_mul(s as u64))
-			// Standard Error: 36_138
-			.saturating_add(Weight::from_parts(357_494 as u64).saturating_mul(x as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(3 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(s as u64)))
+		// Proof Size summary in bytes:
+		//  Measured:  `469 + r * (5 ±0) + s * (32 ±0) + x * (66 ±0)`
+		//  Estimated: `17726`
+		// Minimum execution time: 49_724_000 picoseconds.
+		Weight::from_parts(28_433_827, 0)
+			.saturating_add(Weight::from_parts(0, 17726))
+			// Standard Error: 7_197
+			.saturating_add(Weight::from_parts(45_635, 0).saturating_mul(r.into()))
+			// Standard Error: 1_405
+			.saturating_add(Weight::from_parts(1_055_850, 0).saturating_mul(s.into()))
+			// Standard Error: 1_405
+			.saturating_add(Weight::from_parts(236_616, 0).saturating_mul(x.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(2))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(s.into())))
 	}
-	// Storage: Identity Registrars (r:1 w:0)
-	// Storage: Identity IdentityOf (r:1 w:1)
+	/// Storage: Identity Registrars (r:1 w:0)
+	/// Proof: Identity Registrars (max_values: Some(1), max_size: Some(1141), added: 1636, mode: MaxEncodedLen)
+	/// Storage: Identity IdentityOf (r:1 w:1)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 20]`.
-	/// The range of component `x` is `[1, 100]`.
+	/// The range of component `x` is `[0, 100]`.
 	fn request_judgement(r: u32, x: u32, ) -> Weight {
-		Weight::from_parts(100_248_000 as u64)
-			// Standard Error: 72_059
-			.saturating_add(Weight::from_parts(1_092_731 as u64).saturating_mul(r as u64))
-			// Standard Error: 14_389
-			.saturating_add(Weight::from_parts(794_417 as u64).saturating_mul(x as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `367 + r * (57 ±0) + x * (66 ±0)`
+		//  Estimated: `13629`
+		// Minimum execution time: 30_181_000 picoseconds.
+		Weight::from_parts(30_036_356, 0)
+			.saturating_add(Weight::from_parts(0, 13629))
+			// Standard Error: 3_733
+			.saturating_add(Weight::from_parts(61_015, 0).saturating_mul(r.into()))
+			// Standard Error: 728
+			.saturating_add(Weight::from_parts(464_610, 0).saturating_mul(x.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity IdentityOf (r:1 w:1)
+	/// Storage: Identity IdentityOf (r:1 w:1)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 20]`.
-	/// The range of component `x` is `[1, 100]`.
+	/// The range of component `x` is `[0, 100]`.
 	fn cancel_request(r: u32, x: u32, ) -> Weight {
-		Weight::from_parts(90_971_000 as u64)
-			// Standard Error: 96_191
-			.saturating_add(Weight::from_parts(930_067 as u64).saturating_mul(r as u64))
-			// Standard Error: 19_209
-			.saturating_add(Weight::from_parts(964_040 as u64).saturating_mul(x as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `398 + x * (66 ±0)`
+		//  Estimated: `11003`
+		// Minimum execution time: 27_256_000 picoseconds.
+		Weight::from_parts(27_361_959, 0)
+			.saturating_add(Weight::from_parts(0, 11003))
+			// Standard Error: 4_547
+			.saturating_add(Weight::from_parts(40_254, 0).saturating_mul(r.into()))
+			// Standard Error: 887
+			.saturating_add(Weight::from_parts(464_938, 0).saturating_mul(x.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity Registrars (r:1 w:1)
+	/// Storage: Identity Registrars (r:1 w:1)
+	/// Proof: Identity Registrars (max_values: Some(1), max_size: Some(1141), added: 1636, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 19]`.
 	fn set_fee(r: u32, ) -> Weight {
-		Weight::from_parts(22_241_000 as u64)
-			// Standard Error: 32_562
-			.saturating_add(Weight::from_parts(1_178_749 as u64).saturating_mul(r as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `89 + r * (57 ±0)`
+		//  Estimated: `2626`
+		// Minimum execution time: 7_479_000 picoseconds.
+		Weight::from_parts(7_959_876, 0)
+			.saturating_add(Weight::from_parts(0, 2626))
+			// Standard Error: 1_565
+			.saturating_add(Weight::from_parts(91_853, 0).saturating_mul(r.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity Registrars (r:1 w:1)
+	/// Storage: Identity Registrars (r:1 w:1)
+	/// Proof: Identity Registrars (max_values: Some(1), max_size: Some(1141), added: 1636, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 19]`.
 	fn set_account_id(r: u32, ) -> Weight {
-		Weight::from_parts(21_981_000 as u64)
-			// Standard Error: 39_161
-			.saturating_add(Weight::from_parts(1_564_656 as u64).saturating_mul(r as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `89 + r * (57 ±0)`
+		//  Estimated: `2626`
+		// Minimum execution time: 7_750_000 picoseconds.
+		Weight::from_parts(8_097_434, 0)
+			.saturating_add(Weight::from_parts(0, 2626))
+			// Standard Error: 1_227
+			.saturating_add(Weight::from_parts(88_314, 0).saturating_mul(r.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity Registrars (r:1 w:1)
+	/// Storage: Identity Registrars (r:1 w:1)
+	/// Proof: Identity Registrars (max_values: Some(1), max_size: Some(1141), added: 1636, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 19]`.
 	fn set_fields(r: u32, ) -> Weight {
-		Weight::from_parts(21_030_000 as u64)
-			// Standard Error: 36_678
-			.saturating_add(Weight::from_parts(1_318_767 as u64).saturating_mul(r as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `89 + r * (57 ±0)`
+		//  Estimated: `2626`
+		// Minimum execution time: 7_686_000 picoseconds.
+		Weight::from_parts(8_176_717, 0)
+			.saturating_add(Weight::from_parts(0, 2626))
+			// Standard Error: 1_152
+			.saturating_add(Weight::from_parts(80_559, 0).saturating_mul(r.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity Registrars (r:1 w:0)
-	// Storage: Identity IdentityOf (r:1 w:1)
+	/// Storage: Identity Registrars (r:1 w:0)
+	/// Proof: Identity Registrars (max_values: Some(1), max_size: Some(1141), added: 1636, mode: MaxEncodedLen)
+	/// Storage: Identity IdentityOf (r:1 w:1)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 19]`.
-	/// The range of component `x` is `[1, 100]`.
+	/// The range of component `x` is `[0, 100]`.
 	fn provide_judgement(r: u32, x: u32, ) -> Weight {
-		Weight::from_parts(79_019_000 as u64)
-			// Standard Error: 105_407
-			.saturating_add(Weight::from_parts(723_064 as u64).saturating_mul(r as u64))
-			// Standard Error: 19_991
-			.saturating_add(Weight::from_parts(1_503_360 as u64).saturating_mul(x as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `445 + r * (57 ±0) + x * (66 ±0)`
+		//  Estimated: `13629`
+		// Minimum execution time: 22_923_000 picoseconds.
+		Weight::from_parts(22_446_926, 0)
+			.saturating_add(Weight::from_parts(0, 13629))
+			// Standard Error: 6_242
+			.saturating_add(Weight::from_parts(93_223, 0).saturating_mul(r.into()))
+			// Standard Error: 1_155
+			.saturating_add(Weight::from_parts(734_993, 0).saturating_mul(x.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity SubsOf (r:1 w:1)
-	// Storage: Identity IdentityOf (r:1 w:1)
-	// Storage: System Account (r:2 w:2)
-	// Storage: Identity SuperOf (r:0 w:100)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
+	/// Storage: Identity IdentityOf (r:1 w:1)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: System Account (r:1 w:1)
+	/// Proof: System Account (max_values: None, max_size: Some(128), added: 2603, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:0 w:100)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
 	/// The range of component `r` is `[1, 20]`.
-	/// The range of component `s` is `[1, 100]`.
-	/// The range of component `x` is `[1, 100]`.
-	fn kill_identity(_r: u32, s: u32, x: u32, ) -> Weight {
-		Weight::from_parts(168_517_000 as u64)
-			// Standard Error: 33_697
-			.saturating_add(Weight::from_parts(3_084_439 as u64).saturating_mul(s as u64))
-			// Standard Error: 33_697
-			.saturating_add(Weight::from_parts(406_067 as u64).saturating_mul(x as u64))
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
-			.saturating_add(T::DbWeight::get().writes((1 as u64).saturating_mul(s as u64)))
+	/// The range of component `s` is `[0, 100]`.
+	/// The range of component `x` is `[0, 100]`.
+	fn kill_identity(r: u32, s: u32, x: u32, ) -> Weight {
+		// Proof Size summary in bytes:
+		//  Measured:  `676 + r * (5 ±0) + s * (32 ±0) + x * (66 ±0)`
+		//  Estimated: `21319`
+		// Minimum execution time: 63_424_000 picoseconds.
+		Weight::from_parts(43_509_592, 0)
+			.saturating_add(Weight::from_parts(0, 21319))
+			// Standard Error: 6_118
+			.saturating_add(Weight::from_parts(34_163, 0).saturating_mul(r.into()))
+			// Standard Error: 1_194
+			.saturating_add(Weight::from_parts(1_058_669, 0).saturating_mul(s.into()))
+			// Standard Error: 1_194
+			.saturating_add(Weight::from_parts(226_324, 0).saturating_mul(x.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
+			.saturating_add(T::DbWeight::get().writes((1_u64).saturating_mul(s.into())))
 	}
-	// Storage: Identity IdentityOf (r:1 w:0)
-	// Storage: Identity SuperOf (r:1 w:1)
-	// Storage: Identity SubsOf (r:1 w:1)
-	/// The range of component `s` is `[1, 99]`.
+	/// Storage: Identity IdentityOf (r:1 w:0)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:1 w:1)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
+	/// The range of component `s` is `[0, 99]`.
 	fn add_sub(s: u32, ) -> Weight {
-		Weight::from_parts(82_505_000 as u64)
-			// Standard Error: 19_144
-			.saturating_add(Weight::from_parts(986_721 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `475 + s * (36 ±0)`
+		//  Estimated: `21305`
+		// Minimum execution time: 27_057_000 picoseconds.
+		Weight::from_parts(31_676_569, 0)
+			.saturating_add(Weight::from_parts(0, 21305))
+			// Standard Error: 1_426
+			.saturating_add(Weight::from_parts(59_355, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Identity IdentityOf (r:1 w:0)
-	// Storage: Identity SuperOf (r:1 w:1)
+	/// Storage: Identity IdentityOf (r:1 w:0)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:1 w:1)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
 	/// The range of component `s` is `[1, 100]`.
 	fn rename_sub(s: u32, ) -> Weight {
-		Weight::from_parts(32_521_000 as u64)
-			// Standard Error: 14_067
-			.saturating_add(Weight::from_parts(597_418 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `591 + s * (3 ±0)`
+		//  Estimated: `14582`
+		// Minimum execution time: 12_795_000 picoseconds.
+		Weight::from_parts(15_135_109, 0)
+			.saturating_add(Weight::from_parts(0, 14582))
+			// Standard Error: 629
+			.saturating_add(Weight::from_parts(16_556, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Identity IdentityOf (r:1 w:0)
-	// Storage: Identity SuperOf (r:1 w:1)
-	// Storage: Identity SubsOf (r:1 w:1)
+	/// Storage: Identity IdentityOf (r:1 w:0)
+	/// Proof: Identity IdentityOf (max_values: None, max_size: Some(7538), added: 10013, mode: MaxEncodedLen)
+	/// Storage: Identity SuperOf (r:1 w:1)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
 	/// The range of component `s` is `[1, 100]`.
 	fn remove_sub(s: u32, ) -> Weight {
-		Weight::from_parts(81_283_000 as u64)
-			// Standard Error: 22_844
-			.saturating_add(Weight::from_parts(1_024_883 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `638 + s * (35 ±0)`
+		//  Estimated: `21305`
+		// Minimum execution time: 30_174_000 picoseconds.
+		Weight::from_parts(36_094_454, 0)
+			.saturating_add(Weight::from_parts(0, 21305))
+			// Standard Error: 1_570
+			.saturating_add(Weight::from_parts(50_442, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Identity SuperOf (r:1 w:1)
-	// Storage: Identity SubsOf (r:1 w:1)
-	/// The range of component `s` is `[1, 99]`.
+	/// Storage: Identity SuperOf (r:1 w:1)
+	/// Proof: Identity SuperOf (max_values: None, max_size: Some(114), added: 2589, mode: MaxEncodedLen)
+	/// Storage: Identity SubsOf (r:1 w:1)
+	/// Proof: Identity SubsOf (max_values: None, max_size: Some(3258), added: 5733, mode: MaxEncodedLen)
+	/// The range of component `s` is `[0, 99]`.
 	fn quit_sub(s: u32, ) -> Weight {
-		Weight::from_parts(61_896_000 as u64)
-			// Standard Error: 19_817
-			.saturating_add(Weight::from_parts(850_170 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `564 + s * (37 ±0)`
+		//  Estimated: `10302`
+		// Minimum execution time: 19_729_000 picoseconds.
+		Weight::from_parts(22_325_410, 0)
+			.saturating_add(Weight::from_parts(0, 10302))
+			// Standard Error: 975
+			.saturating_add(Weight::from_parts(52_068, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 }

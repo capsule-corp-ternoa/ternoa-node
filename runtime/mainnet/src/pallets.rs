@@ -215,8 +215,6 @@ impl pallet_session::historical::Config for Runtime {
 
 impl pallet_authorship::Config for Runtime {
 	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Babe>;
-	type UncleGenerations = common::authorship::UncleGenerations;
-	type FilterUncle = ();
 	type EventHandler = (Staking, ImOnline);
 }
 
@@ -355,7 +353,7 @@ impl pallet_election_provider_multi_phase::MinerConfig for Runtime {
 		as
 		frame_election_provider_support::ElectionDataProvider
 	>::MaxVotesPerVoter;
-	type MaxWinners = MaxActiveValidators;
+	type MaxWinners = common::election_provider_multi_phase::MaxActiveValidators;
 
 	// The unsigned submissions have to respect the weight of the submit_unsigned call, thus their
 	// weight estimate function is wired to this call's weight.
@@ -532,6 +530,7 @@ impl pallet_collective::Config<CouncilCollective> for Runtime {
 	type MaxMembers = common::council::CouncilMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = weights::pallet_collective::WeightInfo<Runtime>;
+	type SetMembersOrigin = EnsureRoot<Self::AccountId>;
 }
 // Make sure that there are no more than MaxMembers members elected via phragmen.
 const_assert!(

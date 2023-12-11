@@ -31,88 +31,158 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `pallet_membership`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_membership::WeightInfo for WeightInfo<T> {
-	// Storage: TechnicalMembership Members (r:1 w:1)
-	// Storage: TechnicalCommittee Proposals (r:1 w:0)
-	// Storage: TechnicalCommittee Members (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Members (r:1 w:1)
+	/// Proof: TechnicalMembership Members (max_values: Some(1), max_size: Some(3202), added: 3697, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Proposals (r:1 w:0)
+	/// Proof Skipped: TechnicalCommittee Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalCommittee Members (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[1, 99]`.
 	fn add_member(m: u32, ) -> Weight {
-		Weight::from_parts(46_387_000 as u64)
-			// Standard Error: 14_163
-			.saturating_add(Weight::from_parts(531_530 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(3 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `208 + m * (64 ±0)`
+		//  Estimated: `6793 + m * (192 ±0)`
+		// Minimum execution time: 15_847_000 picoseconds.
+		Weight::from_parts(16_597_325, 0)
+			.saturating_add(Weight::from_parts(0, 6793))
+			// Standard Error: 411
+			.saturating_add(Weight::from_parts(35_801, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(3))
+			.saturating_add(Weight::from_parts(0, 192).saturating_mul(m.into()))
 	}
-	// Storage: TechnicalMembership Members (r:1 w:1)
-	// Storage: TechnicalCommittee Proposals (r:1 w:0)
-	// Storage: TechnicalMembership Prime (r:1 w:0)
-	// Storage: TechnicalCommittee Members (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Members (r:1 w:1)
+	/// Proof: TechnicalMembership Members (max_values: Some(1), max_size: Some(3202), added: 3697, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Proposals (r:1 w:0)
+	/// Proof Skipped: TechnicalCommittee Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalMembership Prime (r:1 w:0)
+	/// Proof: TechnicalMembership Prime (max_values: Some(1), max_size: Some(32), added: 527, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Members (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[2, 100]`.
 	fn remove_member(m: u32, ) -> Weight {
-		Weight::from_parts(50_124_000 as u64)
-			// Standard Error: 20_678
-			.saturating_add(Weight::from_parts(431_643 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(3 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `312 + m * (64 ±0)`
+		//  Estimated: `8622 + m * (192 ±0)`
+		// Minimum execution time: 18_412_000 picoseconds.
+		Weight::from_parts(19_251_698, 0)
+			.saturating_add(Weight::from_parts(0, 8622))
+			// Standard Error: 474
+			.saturating_add(Weight::from_parts(32_206, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
+			.saturating_add(Weight::from_parts(0, 192).saturating_mul(m.into()))
 	}
-	// Storage: TechnicalMembership Members (r:1 w:1)
-	// Storage: TechnicalCommittee Proposals (r:1 w:0)
-	// Storage: TechnicalMembership Prime (r:1 w:0)
-	// Storage: TechnicalCommittee Members (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Members (r:1 w:1)
+	/// Proof: TechnicalMembership Members (max_values: Some(1), max_size: Some(3202), added: 3697, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Proposals (r:1 w:0)
+	/// Proof Skipped: TechnicalCommittee Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalMembership Prime (r:1 w:0)
+	/// Proof: TechnicalMembership Prime (max_values: Some(1), max_size: Some(32), added: 527, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Members (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[2, 100]`.
 	fn swap_member(m: u32, ) -> Weight {
-		Weight::from_parts(49_763_000 as u64)
-			// Standard Error: 18_354
-			.saturating_add(Weight::from_parts(378_642 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(3 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `312 + m * (64 ±0)`
+		//  Estimated: `8622 + m * (192 ±0)`
+		// Minimum execution time: 18_502_000 picoseconds.
+		Weight::from_parts(19_583_888, 0)
+			.saturating_add(Weight::from_parts(0, 8622))
+			// Standard Error: 619
+			.saturating_add(Weight::from_parts(44_408, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
+			.saturating_add(Weight::from_parts(0, 192).saturating_mul(m.into()))
 	}
-	// Storage: TechnicalMembership Members (r:1 w:1)
-	// Storage: TechnicalCommittee Proposals (r:1 w:0)
-	// Storage: TechnicalMembership Prime (r:1 w:0)
-	// Storage: TechnicalCommittee Members (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Members (r:1 w:1)
+	/// Proof: TechnicalMembership Members (max_values: Some(1), max_size: Some(3202), added: 3697, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Proposals (r:1 w:0)
+	/// Proof Skipped: TechnicalCommittee Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalMembership Prime (r:1 w:0)
+	/// Proof: TechnicalMembership Prime (max_values: Some(1), max_size: Some(32), added: 527, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Members (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[1, 100]`.
 	fn reset_member(m: u32, ) -> Weight {
-		Weight::from_parts(52_138_000 as u64)
-			// Standard Error: 18_079
-			.saturating_add(Weight::from_parts(627_791 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(3 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `312 + m * (64 ±0)`
+		//  Estimated: `8622 + m * (192 ±0)`
+		// Minimum execution time: 18_088_000 picoseconds.
+		Weight::from_parts(19_292_324, 0)
+			.saturating_add(Weight::from_parts(0, 8622))
+			// Standard Error: 759
+			.saturating_add(Weight::from_parts(162_348, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(3))
+			.saturating_add(Weight::from_parts(0, 192).saturating_mul(m.into()))
 	}
-	// Storage: TechnicalMembership Members (r:1 w:1)
-	// Storage: TechnicalCommittee Proposals (r:1 w:0)
-	// Storage: TechnicalMembership Prime (r:1 w:1)
-	// Storage: TechnicalCommittee Members (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Members (r:1 w:1)
+	/// Proof: TechnicalMembership Members (max_values: Some(1), max_size: Some(3202), added: 3697, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Proposals (r:1 w:0)
+	/// Proof Skipped: TechnicalCommittee Proposals (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalMembership Prime (r:1 w:1)
+	/// Proof: TechnicalMembership Prime (max_values: Some(1), max_size: Some(32), added: 527, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Members (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Members (max_values: Some(1), max_size: None, mode: Measured)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[1, 100]`.
 	fn change_key(m: u32, ) -> Weight {
-		Weight::from_parts(54_302_000 as u64)
-			// Standard Error: 13_173
-			.saturating_add(Weight::from_parts(319_372 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(4 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `312 + m * (64 ±0)`
+		//  Estimated: `8622 + m * (192 ±0)`
+		// Minimum execution time: 19_134_000 picoseconds.
+		Weight::from_parts(20_242_466, 0)
+			.saturating_add(Weight::from_parts(0, 8622))
+			// Standard Error: 962
+			.saturating_add(Weight::from_parts(47_779, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(4))
+			.saturating_add(Weight::from_parts(0, 192).saturating_mul(m.into()))
 	}
-	// Storage: TechnicalMembership Members (r:1 w:0)
-	// Storage: TechnicalMembership Prime (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Members (r:1 w:0)
+	/// Proof: TechnicalMembership Members (max_values: Some(1), max_size: Some(3202), added: 3697, mode: MaxEncodedLen)
+	/// Storage: TechnicalMembership Prime (r:0 w:1)
+	/// Proof: TechnicalMembership Prime (max_values: Some(1), max_size: Some(32), added: 527, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[1, 100]`.
 	fn set_prime(m: u32, ) -> Weight {
-		Weight::from_parts(19_036_000 as u64)
-			// Standard Error: 4_846
-			.saturating_add(Weight::from_parts(133_389 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `32 + m * (32 ±0)`
+		//  Estimated: `4719 + m * (32 ±0)`
+		// Minimum execution time: 6_726_000 picoseconds.
+		Weight::from_parts(6_966_055, 0)
+			.saturating_add(Weight::from_parts(0, 4719))
+			// Standard Error: 255
+			.saturating_add(Weight::from_parts(13_950, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
+			.saturating_add(Weight::from_parts(0, 32).saturating_mul(m.into()))
 	}
-	// Storage: TechnicalMembership Prime (r:0 w:1)
-	// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Storage: TechnicalMembership Prime (r:0 w:1)
+	/// Proof: TechnicalMembership Prime (max_values: Some(1), max_size: Some(32), added: 527, mode: MaxEncodedLen)
+	/// Storage: TechnicalCommittee Prime (r:0 w:1)
+	/// Proof Skipped: TechnicalCommittee Prime (max_values: Some(1), max_size: None, mode: Measured)
 	/// The range of component `m` is `[1, 100]`.
 	fn clear_prime(m: u32, ) -> Weight {
-		Weight::from_parts(11_531_000 as u64)
-			// Standard Error: 3_962
-			.saturating_add(Weight::from_parts(124_828 as u64).saturating_mul(m as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `0`
+		//  Estimated: `0`
+		// Minimum execution time: 3_010_000 picoseconds.
+		Weight::from_parts(3_196_429, 0)
+			.saturating_add(Weight::from_parts(0, 0))
+			// Standard Error: 78
+			.saturating_add(Weight::from_parts(471, 0).saturating_mul(m.into()))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 }

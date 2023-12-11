@@ -37,11 +37,11 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Contracts (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn create_contract(s: u32, ) -> Weight {
-		Weight::from_parts(96_762_000 as u64)
+		Weight::from_parts(96_762_000 , 0)
 			// Standard Error: 97
-			.saturating_add(Weight::from_parts(35_803 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(4 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+			.saturating_add(Weight::from_parts(35_803 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(4))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	// Storage: System Account (r:2 w:2)
@@ -49,11 +49,11 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: NFT Nfts (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn revoke_contract(s: u32, ) -> Weight {
-		Weight::from_parts(177_685_000 as u64)
+		Weight::from_parts(177_685_000 , 0)
 			// Standard Error: 58
-			.saturating_add(Weight::from_parts(29_833 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+			.saturating_add(Weight::from_parts(29_833 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	// Storage: Rent Queues (r:1 w:1)
@@ -62,11 +62,11 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Offers (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn cancel_contract(s: u32, ) -> Weight {
-		Weight::from_parts(117_100_000 as u64)
+		Weight::from_parts(117_100_000 , 0)
 			// Standard Error: 81
-			.saturating_add(Weight::from_parts(33_946 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(6 as u64))
+			.saturating_add(Weight::from_parts(33_946 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(6))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	// Storage: System Account (r:3 w:3)
@@ -74,22 +74,22 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Offers (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn rent(s: u32, ) -> Weight {
-		Weight::from_parts(135_855_000 as u64)
+		Weight::from_parts(135_855_000 , 0)
 			// Standard Error: 80
-			.saturating_add(Weight::from_parts(34_145 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(6 as u64))
+			.saturating_add(Weight::from_parts(34_145 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(6))
 	}
 	// Storage: Rent Contracts (r:1 w:0)
 	// Storage: System Account (r:1 w:0)
 	// Storage: Rent Offers (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn make_rent_offer(s: u32, ) -> Weight {
-		Weight::from_parts(76_494_000 as u64)
+		Weight::from_parts(76_494_000 , 0)
 			// Standard Error: 3
-			.saturating_add(Weight::from_parts(130 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(3 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+			.saturating_add(Weight::from_parts(130 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(3))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	// Storage: Rent Offers (r:1 w:1)
@@ -97,38 +97,38 @@ impl<T: frame_system::Config> ternoa_rent::WeightInfo for WeightInfo<T> {
 	// Storage: Rent Queues (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn accept_rent_offer(s: u32, ) -> Weight {
-		Weight::from_parts(100_100_000 as u64)
+		Weight::from_parts(100_100_000 , 0)
 			// Standard Error: 64
-			.saturating_add(Weight::from_parts(33_343 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(5 as u64))
-			.saturating_add(T::DbWeight::get().writes(5 as u64))
+			.saturating_add(Weight::from_parts(33_343 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(5))
+			.saturating_add(T::DbWeight::get().writes(5))
 	}
 	// Storage: Rent Offers (r:1 w:1)
 	/// The range of component `s` is `[0, 10000]`.
 	fn retract_rent_offer(s: u32, ) -> Weight {
-		Weight::from_parts(56_746_000 as u64)
+		Weight::from_parts(56_746_000 , 0)
 			// Standard Error: 433
-			.saturating_add(Weight::from_parts(72_355 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+			.saturating_add(Weight::from_parts(72_355 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	// Storage: Rent Offers (r:0 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn change_subscription_terms(s: u32, ) -> Weight {
-		Weight::from_parts(56_276_000 as u64)
+		Weight::from_parts(56_276_000 , 0)
 			// Standard Error: 2
-			.saturating_add(Weight::from_parts(108 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+			.saturating_add(Weight::from_parts(108 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
 	// Storage: Rent Contracts (r:1 w:1)
 	/// The range of component `s` is `[0, 1000000]`.
 	fn accept_subscription_terms(s: u32, ) -> Weight {
-		Weight::from_parts(46_427_000 as u64)
+		Weight::from_parts(46_427_000 , 0)
 			// Standard Error: 2
-			.saturating_add(Weight::from_parts(116 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+			.saturating_add(Weight::from_parts(116 , 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }
