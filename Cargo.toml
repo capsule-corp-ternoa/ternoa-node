@@ -67,7 +67,7 @@ pallet-elections-phragmen = { git = "https://github.com/paritytech/substrate", b
 pallet-multisig = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
 pallet-identity = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
 pallet-assets = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
-substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", optional = true }
+substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 node-inspect = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 substrate-frame-rpc-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
@@ -111,6 +111,7 @@ sp-keyring = { git = "https://github.com/paritytech/substrate", branch = "polkad
 sp-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-keystore = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-transaction-storage-proof = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sp-weights = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 
 # Substrate Client
 sc-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }

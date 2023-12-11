@@ -11,9 +11,15 @@ frame-support = { workspace = true, default-features = false }
 ternoa-core-primitives = { path = "../../../core-primitives",  default-features = false }
 ternoa-runtime-common = { package = "ternoa-runtime-common", path = "../../common", default-features = false }
 sp-runtime = { workspace = true, default-features = false }
+sp-weights = { workspace = true, default-features = false }
+sp-core = { workspace = true, default-features = false }
 
 [features]
 default = ["std"]
 std = [
-	"sp-runtime/std"
+	"frame-support/std",
+	"sp-core/std",
+	"sp-runtime/std",
+	"sp-weights/std"
 ]
+

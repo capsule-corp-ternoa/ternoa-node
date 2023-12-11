@@ -42,8 +42,8 @@ pallet-identity = { workspace = true, default-features = false }
 pallet-assets = { workspace = true, default-features = false }
 
 # Benchmarking
-frame-benchmarking = { workspace = true, default-features = false }
-frame-benchmarking-pallet-pov = { workspace = true, default-features = false }
+frame-benchmarking = { workspace = true, default-features = false, optional = true }
+#frame-benchmarking-pallet-pov = { workspace = true, default-features = false }
 frame-system-benchmarking = { workspace = true, default-features = false, optional = true }
 pallet-session-benchmarking = { workspace = true, default-features = false, optional = true }
 pallet-offences-benchmarking = { workspace = true, default-features = false, optional = true }
@@ -94,7 +94,7 @@ ternoa-tee = { path = "../../ternoa-pallets/tee", default-features = false }
 ternoa-transmission-protocols = { path = "../../ternoa-pallets/transmission-protocols", default-features = false }
 
 [build-dependencies]
-substrate-wasm-builder = { workspace = true }
+substrate-wasm-builder = { workspace = true, optional = true }
 
 [features]
 default = ["std"]
@@ -119,7 +119,7 @@ std = [
 	"frame-system-rpc-runtime-api/std",
 	"frame-system/std",
     "frame-benchmarking/std",
-	"frame-benchmarking-pallet-pov/std",
+	#"frame-benchmarking-pallet-pov/std",
 	"pallet-authority-discovery/std",
 	"pallet-authorship/std",
 	"pallet-babe/std",
@@ -158,6 +158,7 @@ std = [
 	"sp-transaction-pool/std",
 	"sp-version/std",
 	"sp-consensus-grandpa/std",
+	"sp-io/std",
 	"frame-try-runtime?/std",
 	"pallet-collective/std",
 	"pallet-membership/std",
@@ -171,8 +172,8 @@ std = [
 ]
 
 runtime-benchmarks = [
-	"frame-benchmarking",
-	"frame-benchmarking-pallet-pov/runtime-benchmarks",
+	"frame-benchmarking/runtime-benchmarks",
+	#"frame-benchmarking-pallet-pov/runtime-benchmarks",
 	"frame-election-provider-support/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
 	"frame-system-benchmarking/runtime-benchmarks",
@@ -213,7 +214,7 @@ runtime-benchmarks = [
 
 try-runtime = [
 	"frame-try-runtime",
-	"frame-benchmarking-pallet-pov/try-runtime",
+	#"frame-benchmarking-pallet-pov/try-runtime",
 	"frame-executive/try-runtime",
 	"frame-support/try-runtime",
 	"frame-system/try-runtime",
