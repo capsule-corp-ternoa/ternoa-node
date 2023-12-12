@@ -1,15 +1,4 @@
-[[bin]]
-name = "ternoa"
-path = "src/main.rs"
 
-[package]
-name = "ternoa"
-description = "Implementation of a `https://www.ternoa.com` node in Rust based on the Substrate framework."
-authors.workspace = true
-edition.workspace = true
-license.workspace = true
-version.workspace = true
-readme = "README.md"
 
 [workspace.package]
 authors = ["Ternoa"]
@@ -17,16 +6,10 @@ edition = "2021"
 license = "GPL-3.0-only"
 version = "1.4.2"
 
-
-[dependencies]
-# Mainnet is enabled by default
-ternoa-cli = { path = "node/cli", features = [ "alphanet-native" ] }
-
 [workspace]
 members = [
-    'node/cli',
-    'node/client',
-    "node/service",
+    'node',
+    'client',
     'runtime/alphanet',
     'runtime/mainnet',
     "core-primitives"
@@ -73,6 +56,10 @@ substrate-build-script-utils = { git = "https://github.com/paritytech/substrate"
 substrate-frame-rpc-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 substrate-state-trie-migration-rpc = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 
+#contracts
+pallet-contracts = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
+pallet-contracts-primitives = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
+pallet-insecure-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
 # Benchmarking
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
 frame-benchmarking-pallet-pov = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
@@ -112,6 +99,8 @@ sp-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polk
 sp-keystore = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-transaction-storage-proof = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sp-weights = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
+sp-statement-store = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+
 
 # Substrate Client
 sc-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
@@ -123,7 +112,9 @@ sc-basic-authorship = { git = "https://github.com/paritytech/substrate", branch 
 sc-chain-spec = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-consensus = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-network = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sc-offchain = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-network-common = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+#sc-network-statement = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-rpc = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-rpc-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-telemetry = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
@@ -138,6 +129,10 @@ sc-sync-state-rpc = { git = "https://github.com/paritytech/substrate", branch = 
 sc-consensus-slots = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-network-sync = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 sc-storage-monitor = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sc-statement-store = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sc-sysinfo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sc-keystore = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sc-service-test = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 
 
 # Rest
@@ -226,7 +221,3 @@ inherits = "release"
 debug = 1 # debug symbols are useful for profilers
 debug-assertions = true
 overflow-checks = true
-
-[features]
-runtime-benchmarks= [ "ternoa-cli/runtime-benchmarks" ]
-try-runtime = [ "ternoa-cli/try-runtime" ]

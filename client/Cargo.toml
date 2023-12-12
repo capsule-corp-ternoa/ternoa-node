@@ -45,12 +45,12 @@ frame-benchmarking = { workspace = true }
 frame-benchmarking-cli = { workspace = true }
 
 # Ternoa
-ternoa-core-primitives = { path = "../../core-primitives" }
-ternoa-runtime-common = { path = "../../runtime/common" }
+ternoa-core-primitives = { path = "../core-primitives" }
+ternoa-runtime-common = { path = "../runtime/common" }
 
 # Ternoa runtimes
-alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
-mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
+alphanet-runtime = { path = "../runtime/alphanet", optional = true }
+mainnet-runtime = { path = "../runtime/mainnet", optional = true }
 
 [features]
 default = ["mainnet"]

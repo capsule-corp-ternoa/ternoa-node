@@ -40,6 +40,9 @@ pallet-elections-phragmen = { workspace = true, default-features = false }
 pallet-multisig = { workspace = true, default-features = false }
 pallet-identity = { workspace = true, default-features = false }
 pallet-assets = { workspace = true, default-features = false }
+pallet-contracts = { workspace = true, default-features = false }
+pallet-contracts-primitives = { workspace = true, default-features = false }
+pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
 
 # Benchmarking
 frame-benchmarking = { workspace = true, default-features = false }
@@ -123,6 +126,9 @@ std = [
 	"pallet-babe/std",
 	"pallet-bags-list/std",
 	"pallet-balances/std",
+	"pallet-contracts/std",
+	"pallet-contracts-primitives/std",
+	"pallet-insecure-randomness-collective-flip/std",
 	"pallet-election-provider-multi-phase/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
@@ -181,6 +187,8 @@ runtime-benchmarks = [
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
 	"pallet-collective/runtime-benchmarks",
+	"pallet-contracts/runtime-benchmarks",
+	"pallet-insecure-randomness-collective-flip/try-runtime",
 	"pallet-election-provider-multi-phase/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
@@ -222,6 +230,7 @@ try-runtime = [
 	"pallet-babe/try-runtime",
 	"pallet-bags-list/try-runtime",
 	"pallet-balances/try-runtime",
+	"pallet-contracts/try-runtime",
 	"pallet-election-provider-multi-phase/try-runtime",
 	"pallet-grandpa/try-runtime",
 	"pallet-im-online/try-runtime",
