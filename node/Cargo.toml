@@ -1,13 +1,11 @@
 [package]
 name = "ternoa-node"
-version = "5.4.1"
-authors = ["Polkadex OÜ <https://polkadex.trade>"]
-description = "Polkadex main blockchain"
+version = "1.4.3"
+description = "Ternoa node"
 edition = "2021"
 license = "GNU GPL v3"
 build = "build.rs"
-homepage = "https://polkadex.trade"
-repository = "https://github.com/Polkadex-Substrate/Polkadex/"
+
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

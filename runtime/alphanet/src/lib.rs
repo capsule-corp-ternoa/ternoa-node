@@ -191,9 +191,7 @@ pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Extrinsic type that has already been checked.
 pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra>;
 pub type Migrations = (
-	pallet_election_provider_multi_phase::migrations::v1::MigrateToV1<Runtime>,
-	// pallet_balances::migration::MigrateToTrackInactive<Runtime, CheckAccount>,
-	pallet_assets::migration::v1::MigrateToV1<Runtime>,
+	
 );
 
 /// Executive: handles dispatch to the various modules.
