@@ -24,7 +24,7 @@ sp-storage = { workspace = true }
 sp-transaction-pool = { workspace = true }
 sp-consensus-babe = { workspace = true }
 sp-authority-discovery = { workspace = true }
-sp-finality-grandpa = { workspace = true }
+sp-consensus-grandpa = { workspace = true }
 sp-core = { workspace = true }
 sp-keyring = { workspace = true }
 sp-inherents = { workspace = true }
@@ -45,12 +45,12 @@ frame-benchmarking = { workspace = true }
 frame-benchmarking-cli = { workspace = true }
 
 # Ternoa
-ternoa-core-primitives = { path = "../../core-primitives" }
-ternoa-runtime-common = { path = "../../runtime/common" }
+ternoa-core-primitives = { path = "../core-primitives" }
+ternoa-runtime-common = { path = "../runtime/common" }
 
 # Ternoa runtimes
-alphanet-runtime = { path = "../../runtime/alphanet", optional = true }
-mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
+alphanet-runtime = { path = "../runtime/alphanet", optional = true }
+mainnet-runtime = { path = "../runtime/mainnet", optional = true }
 
 [features]
 default = ["mainnet"]

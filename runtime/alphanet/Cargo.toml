@@ -25,6 +25,7 @@ pallet-offences = { workspace = true, default-features = false }
 pallet-preimage = { workspace = true, default-features = false }
 pallet-session = { workspace = true, features = ["historical"], default-features = false }
 pallet-staking = { workspace = true, default-features = false }
+pallet-staking-runtime-api = { workspace = true, default-features = false }
 pallet-staking-reward-curve = { workspace = true, default-features = false }
 pallet-timestamp = { workspace = true, default-features = false }
 pallet-transaction-payment = { workspace = true, default-features = false }
@@ -39,9 +40,13 @@ pallet-elections-phragmen = { workspace = true, default-features = false }
 pallet-multisig = { workspace = true, default-features = false }
 pallet-identity = { workspace = true, default-features = false }
 pallet-assets = { workspace = true, default-features = false }
+pallet-contracts = { workspace = true, default-features = false }
+pallet-contracts-primitives = { workspace = true, default-features = false }
+pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
 
 # Benchmarking
-frame-benchmarking = { workspace = true, default-features = false, optional = true }
+frame-benchmarking = { workspace = true, default-features = false }
+frame-benchmarking-pallet-pov = { workspace = true, default-features = false }
 frame-system-benchmarking = { workspace = true, default-features = false, optional = true }
 pallet-session-benchmarking = { workspace = true, default-features = false, optional = true }
 pallet-offences-benchmarking = { workspace = true, default-features = false, optional = true }
@@ -54,6 +59,7 @@ sp-api = { workspace = true, default-features = false }
 sp-authority-discovery = { workspace = true, default-features = false }
 sp-block-builder = { workspace = true, default-features = false }
 sp-consensus-babe = { workspace = true, default-features = false }
+sp-consensus-grandpa = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 sp-inherents = { workspace = true, default-features = false }
 sp-io = { workspace = true, default-features = false }
@@ -113,12 +119,16 @@ std = [
 	"frame-support/std",
 	"frame-system-rpc-runtime-api/std",
 	"frame-system/std",
-	"frame-benchmarking?/std",
+    "frame-benchmarking/std",
+	"frame-benchmarking-pallet-pov/std",
 	"pallet-authority-discovery/std",
 	"pallet-authorship/std",
 	"pallet-babe/std",
 	"pallet-bags-list/std",
 	"pallet-balances/std",
+	"pallet-contracts/std",
+	"pallet-contracts-primitives/std",
+	"pallet-insecure-randomness-collective-flip/std",
 	"pallet-election-provider-multi-phase/std",
 	"pallet-grandpa/std",
 	"pallet-im-online/std",
@@ -128,6 +138,7 @@ std = [
 	"pallet-session/std",
 	"pallet-session-benchmarking?/std",
 	"pallet-staking/std",
+	"pallet-staking-runtime-api/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
@@ -150,6 +161,8 @@ std = [
 	"sp-tracing/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"sp-consensus-grandpa/std",
+	"sp-io/std",
 	"frame-try-runtime?/std",
 	"pallet-collective/std",
 	"pallet-membership/std",
@@ -159,10 +172,13 @@ std = [
 	"pallet-multisig/std",
 	"pallet-identity/std",
 	"pallet-assets/std",
+	#"substrate-wasm-builder",
 ]
 
+
 runtime-benchmarks = [
-	"frame-benchmarking",
+	"frame-benchmarking/runtime-benchmarks",
+	"frame-benchmarking-pallet-pov/runtime-benchmarks",
 	"frame-election-provider-support/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
 	"frame-system-benchmarking/runtime-benchmarks",
@@ -171,6 +187,8 @@ runtime-benchmarks = [
 	"pallet-bags-list/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
 	"pallet-collective/runtime-benchmarks",
+	"pallet-contracts/runtime-benchmarks",
+	"pallet-insecure-randomness-collective-flip/try-runtime",
 	"pallet-election-provider-multi-phase/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
@@ -203,6 +221,7 @@ runtime-benchmarks = [
 
 try-runtime = [
 	"frame-try-runtime",
+	"frame-benchmarking-pallet-pov/try-runtime",
 	"frame-executive/try-runtime",
 	"frame-support/try-runtime",
 	"frame-system/try-runtime",
@@ -211,6 +230,7 @@ try-runtime = [
 	"pallet-babe/try-runtime",
 	"pallet-bags-list/try-runtime",
 	"pallet-balances/try-runtime",
+	"pallet-contracts/try-runtime",
 	"pallet-election-provider-multi-phase/try-runtime",
 	"pallet-grandpa/try-runtime",
 	"pallet-im-online/try-runtime",
@@ -218,7 +238,7 @@ try-runtime = [
 	"pallet-preimage/try-runtime",
 	"pallet-session/try-runtime",
 	"pallet-staking/try-runtime",
-	# "pallet-staking-reward-curve/try-runtime",
+	#"pallet-staking-reward-curve/try-runtime",
 	"pallet-timestamp/try-runtime",
 	"pallet-transaction-payment/try-runtime",
 	"pallet-treasury/try-runtime",

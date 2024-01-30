@@ -31,92 +31,169 @@ use sp_std::marker::PhantomData;
 /// Weight functions for `pallet_preimage`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_preimage::WeightInfo for WeightInfo<T> {
-	// Storage: Preimage PreimageFor (r:1 w:1)
-	// Storage: Preimage StatusFor (r:1 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
+	/// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Proof: Preimage PreimageFor (max_values: None, max_size: Some(4194344), added: 4196819, mode: MaxEncodedLen)
 	/// The range of component `s` is `[0, 4194304]`.
 	fn note_preimage(s: u32, ) -> Weight {
-		Weight::from_ref_time(65_062_000 as u64)
-			// Standard Error: 16
-			.saturating_add(Weight::from_ref_time(4_599 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `143`
+		//  Estimated: `3556`
+		// Minimum execution time: 24_877_000 picoseconds.
+		Weight::from_parts(25_117_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			// Standard Error: 1
+			.saturating_add(Weight::from_parts(1_971, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Preimage PreimageFor (r:1 w:1)
-	// Storage: Preimage StatusFor (r:1 w:0)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
+	/// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Proof: Preimage PreimageFor (max_values: None, max_size: Some(4194344), added: 4196819, mode: MaxEncodedLen)
 	/// The range of component `s` is `[0, 4194304]`.
 	fn note_requested_preimage(s: u32, ) -> Weight {
-		Weight::from_ref_time(44_613_000 as u64)
-			// Standard Error: 13
-			.saturating_add(Weight::from_ref_time(4_542 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `106`
+		//  Estimated: `3556`
+		// Minimum execution time: 15_956_000 picoseconds.
+		Weight::from_parts(16_228_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			// Standard Error: 1
+			.saturating_add(Weight::from_parts(1_971, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Preimage PreimageFor (r:1 w:1)
-	// Storage: Preimage StatusFor (r:1 w:0)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
+	/// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Proof: Preimage PreimageFor (max_values: None, max_size: Some(4194344), added: 4196819, mode: MaxEncodedLen)
 	/// The range of component `s` is `[0, 4194304]`.
 	fn note_no_deposit_preimage(s: u32, ) -> Weight {
-		Weight::from_ref_time(63_439_000 as u64)
-			// Standard Error: 14
-			.saturating_add(Weight::from_ref_time(4_610 as u64).saturating_mul(s as u64))
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `106`
+		//  Estimated: `3556`
+		// Minimum execution time: 15_423_000 picoseconds.
+		Weight::from_parts(15_623_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			// Standard Error: 1
+			.saturating_add(Weight::from_parts(1_971, 0).saturating_mul(s.into()))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
-	// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
+	/// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Proof: Preimage PreimageFor (max_values: None, max_size: Some(4194344), added: 4196819, mode: MaxEncodedLen)
 	fn unnote_preimage() -> Weight {
-		Weight::from_ref_time(167_656_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `289`
+		//  Estimated: `3556`
+		// Minimum execution time: 32_025_000 picoseconds.
+		Weight::from_parts(33_010_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
-	// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
+	/// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Proof: Preimage PreimageFor (max_values: None, max_size: Some(4194344), added: 4196819, mode: MaxEncodedLen)
 	fn unnote_no_deposit_preimage() -> Weight {
-		Weight::from_ref_time(129_424_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `144`
+		//  Estimated: `3556`
+		// Minimum execution time: 20_745_000 picoseconds.
+		Weight::from_parts(22_025_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
 	fn request_preimage() -> Weight {
-		Weight::from_ref_time(159_789_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `188`
+		//  Estimated: `3556`
+		// Minimum execution time: 18_566_000 picoseconds.
+		Weight::from_parts(19_645_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
 	fn request_no_deposit_preimage() -> Weight {
-		Weight::from_ref_time(123_092_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `144`
+		//  Estimated: `3556`
+		// Minimum execution time: 11_425_000 picoseconds.
+		Weight::from_parts(11_921_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
 	fn request_unnoted_preimage() -> Weight {
-		Weight::from_ref_time(74_920_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `42`
+		//  Estimated: `3556`
+		// Minimum execution time: 12_917_000 picoseconds.
+		Weight::from_parts(13_742_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
 	fn request_requested_preimage() -> Weight {
-		Weight::from_ref_time(25_368_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `106`
+		//  Estimated: `3556`
+		// Minimum execution time: 7_930_000 picoseconds.
+		Weight::from_parts(8_153_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
-	// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
+	/// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Proof: Preimage PreimageFor (max_values: None, max_size: Some(4194344), added: 4196819, mode: MaxEncodedLen)
 	fn unrequest_preimage() -> Weight {
-		Weight::from_ref_time(132_460_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `144`
+		//  Estimated: `3556`
+		// Minimum execution time: 19_533_000 picoseconds.
+		Weight::from_parts(20_256_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
-	// Storage: Preimage PreimageFor (r:0 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
 	fn unrequest_unnoted_preimage() -> Weight {
-		Weight::from_ref_time(76_764_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(2 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `106`
+		//  Estimated: `3556`
+		// Minimum execution time: 7_840_000 picoseconds.
+		Weight::from_parts(8_014_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
-	// Storage: Preimage StatusFor (r:1 w:1)
+	/// Storage: Preimage StatusFor (r:1 w:1)
+	/// Proof: Preimage StatusFor (max_values: None, max_size: Some(91), added: 2566, mode: MaxEncodedLen)
 	fn unrequest_multi_referenced_preimage() -> Weight {
-		Weight::from_ref_time(28_915_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(1 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `106`
+		//  Estimated: `3556`
+		// Minimum execution time: 7_650_000 picoseconds.
+		Weight::from_parts(8_032_000, 0)
+			.saturating_add(Weight::from_parts(0, 3556))
+			.saturating_add(T::DbWeight::get().reads(1))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }

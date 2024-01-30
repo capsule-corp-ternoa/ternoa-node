@@ -33,8 +33,8 @@ pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_babe::WeightInfo for WeightInfo<T> {
 	/// The range of component `x` is `[0, 1]`.
 	fn check_equivocation_proof(x: u32, ) -> Weight {
-		Weight::from_ref_time(93_348_000 as u64)
+		Weight::from_parts(93_348_000 as u64)
 			// Standard Error: 100_000
-			.saturating_add(Weight::from_ref_time(1_114_000 as u64).saturating_mul(x as u64))
+			.saturating_add(Weight::from_parts(1_114_000 as u64).saturating_mul(x as u64))
 	}
 }

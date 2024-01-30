@@ -25,31 +25,30 @@
 //   --warmup=10
 //   --repeat=100
 
-use frame_support::{
-	parameter_types,
-	weights::{constants::WEIGHT_PER_NANOS, Weight},
-};
+use sp_core::parameter_types;
+use sp_weights::{constants::WEIGHT_REF_TIME_PER_NANOS, Weight};
 
 parameter_types! {
 	/// Time to execute an empty block.
-	/// Calculated by multiplying the *Average* with `1` and adding `0`.
+	/// Calculated by multiplying the *Average* with `1.0` and adding `0`.
 	///
 	/// Stats nanoseconds:
-	///   Min, Max: 6_070_338, 6_380_029
-	///   Average:  6_124_337
-	///   Median:   6_110_461
-	///   Std-Dev:  52095.81
+	///   Min, Max: 6_708_387, 7_042_534
+	///   Average:  6_818_965
+	///   Median:   6_826_464
+	///   Std-Dev:  66350.7
 	///
 	/// Percentiles nanoseconds:
-	///   99th: 6_274_637
-	///   95th: 6_222_840
-	///   75th: 6_141_364
-	pub const BlockExecutionWeight: Weight = WEIGHT_PER_NANOS.saturating_mul(6_124_337);
+	///   99th: 6_991_352
+	///   95th: 6_933_543
+	///   75th: 6_854_332
+	pub const BlockExecutionWeight: Weight =
+		Weight::from_parts(WEIGHT_REF_TIME_PER_NANOS.saturating_mul(6_818_965), 0);
 }
 
 #[cfg(test)]
 mod test_weights {
-	use frame_support::weights::constants;
+	use sp_weights::constants;
 
 	/// Checks that the weight exists and is sane.
 	// NOTE: If this test fails but you are sure that the generated values are fine,
@@ -60,12 +59,12 @@ mod test_weights {
 
 		// At least 100 µs.
 		assert!(
-			w.ref_time() >= 100u64 * constants::WEIGHT_PER_MICROS.ref_time(),
+			w.ref_time() >= 100u64 * constants::WEIGHT_REF_TIME_PER_MICROS,
 			"Weight should be at least 100 µs."
 		);
 		// At most 50 ms.
 		assert!(
-			w.ref_time() <= 50u64 * constants::WEIGHT_PER_MILLIS.ref_time(),
+			w.ref_time() <= 50u64 * constants::WEIGHT_REF_TIME_PER_MILLIS,
 			"Weight should be at most 50 ms."
 		);
 	}

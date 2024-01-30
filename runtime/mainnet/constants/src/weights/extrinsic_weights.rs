@@ -33,31 +33,30 @@
 //   --warmup=10
 //   --repeat=100
 
-use frame_support::{
-	parameter_types,
-	weights::{constants::WEIGHT_PER_NANOS, Weight},
-};
+use sp_core::parameter_types;
+use sp_weights::{constants::WEIGHT_REF_TIME_PER_NANOS, Weight};
 
 parameter_types! {
 	/// Time to execute a NO-OP extrinsic, for example `System::remark`.
-	/// Calculated by multiplying the *Average* with `1` and adding `0`.
+	/// Calculated by multiplying the *Average* with `1.0` and adding `0`.
 	///
-	/// Stats [NS]:
-	///   Min, Max: 85_946, 88_408
-	///   Average:  86_309
-	///   Median:   86_213
-	///   Std-Dev:  345.03
+	/// Stats nanoseconds:
+	///   Min, Max: 105_285, 107_713
+	///   Average:  106_013
+	///   Median:   105_990
+	///   Std-Dev:  441.55
 	///
-	/// Percentiles [NS]:
-	///   99th: 87_527
-	///   95th: 86_901
-	///   75th: 86_308
-	pub const ExtrinsicBaseWeight: Weight = WEIGHT_PER_NANOS.saturating_mul(86_298);
+	/// Percentiles nanoseconds:
+	///   99th: 107_324
+	///   95th: 106_820
+	///   75th: 106_178
+	pub const ExtrinsicBaseWeight: Weight =
+		Weight::from_parts(WEIGHT_REF_TIME_PER_NANOS.saturating_mul(106_013), 0);
 }
 
 #[cfg(test)]
 mod test_weights {
-	use frame_support::weights::constants;
+	use sp_weights::constants;
 
 	/// Checks that the weight exists and is sane.
 	// NOTE: If this test fails but you are sure that the generated values are fine,
@@ -68,12 +67,12 @@ mod test_weights {
 
 		// At least 10 µs.
 		assert!(
-			w.ref_time() >= 10u64 * constants::WEIGHT_PER_MICROS.ref_time(),
+			w.ref_time() >= 10u64 * constants::WEIGHT_REF_TIME_PER_MICROS,
 			"Weight should be at least 10 µs."
 		);
 		// At most 1 ms.
 		assert!(
-			w.ref_time() <= constants::WEIGHT_PER_MILLIS.ref_time(),
+			w.ref_time() <= constants::WEIGHT_REF_TIME_PER_MILLIS,
 			"Weight should be at most 1 ms."
 		);
 	}

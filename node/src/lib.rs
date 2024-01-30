@@ -13,7 +13,7 @@
 
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
-
-fn main() -> ternoa_cli::Result<()> {
-	ternoa_cli::run()
-}
+pub mod chain_spec;
+pub mod rpc;
+pub mod service;
+mod cli;

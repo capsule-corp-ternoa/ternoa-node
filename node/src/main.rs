@@ -13,16 +13,17 @@
 
 // You should have received a copy of the GNU General Public License
 // along with Ternoa.  If not, see <http://www.gnu.org/licenses/>.
+//! Substrate Node Template CLI library.
+#![warn(missing_docs)]
 
-#[cfg(feature = "cli")]
+mod chain_spec;
+#[macro_use]
+mod service;
+mod benchmarking;
 mod cli;
-#[cfg(feature = "cli")]
 mod command;
+mod rpc;
 
-#[cfg(feature = "cli")]
-pub use cli::*;
-#[cfg(feature = "cli")]
-pub use command::*;
-
-#[cfg(feature = "cli")]
-pub use sc_cli::Result;
+fn main() -> sc_cli::Result<()> {
+	command::run()
+}

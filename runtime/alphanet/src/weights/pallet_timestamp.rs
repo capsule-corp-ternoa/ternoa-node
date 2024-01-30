@@ -24,21 +24,32 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]
 #![allow(unused_parens)]
 #![allow(unused_imports)]
-
 use frame_support::{traits::Get, weights::Weight};
 use sp_std::marker::PhantomData;
 
 /// Weight functions for `pallet_timestamp`.
 pub struct WeightInfo<T>(PhantomData<T>);
 impl<T: frame_system::Config> pallet_timestamp::WeightInfo for WeightInfo<T> {
-	// Storage: Timestamp Now (r:1 w:1)
-	// Storage: Babe CurrentSlot (r:1 w:0)
+	/// Storage: Timestamp Now (r:1 w:1)
+	/// Proof: Timestamp Now (max_values: Some(1), max_size: Some(8), added: 503, mode: MaxEncodedLen)
+	/// Storage: Babe CurrentSlot (r:1 w:0)
+	/// Proof: Babe CurrentSlot (max_values: Some(1), max_size: Some(8), added: 503, mode: MaxEncodedLen)
 	fn set() -> Weight {
-		Weight::from_ref_time(23_405_000 as u64)
-			.saturating_add(T::DbWeight::get().reads(2 as u64))
-			.saturating_add(T::DbWeight::get().writes(1 as u64))
+		// Proof Size summary in bytes:
+		//  Measured:  `345`
+		//  Estimated: `2986`
+		// Minimum execution time: 9_159_000 picoseconds.
+		Weight::from_parts(9_663_000, 0)
+			.saturating_add(Weight::from_parts(0, 2986))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 	fn on_finalize() -> Weight {
-		Weight::from_ref_time(10_480_000 as u64)
+		// Proof Size summary in bytes:
+		//  Measured:  `128`
+		//  Estimated: `0`
+		// Minimum execution time: 3_803_000 picoseconds.
+		Weight::from_parts(4_007_000, 0)
+			.saturating_add(Weight::from_parts(0, 0))
 	}
 }
