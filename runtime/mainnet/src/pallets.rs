@@ -24,7 +24,8 @@ use common::{
 use frame_election_provider_support::{SequentialPhragmen, Weight};
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote, AsEnsureOriginWithArg},
+	dispatch::DispatchClass,
+	traits::{ConstU32, EitherOfDiverse, KeyOwnerProofSystem, U128CurrencyToVote, AsEnsureOriginWithArg, Nothing, ConstBool},
 	weights::{constants::RocksDbWeight, ConstantMultiplier, IdentityFee},
 	PalletId,
 };
@@ -45,7 +46,7 @@ use sp_version::RuntimeVersion;
 use static_assertions::const_assert;
 use ternoa_core_primitives::{AccountId, Balance, BlockNumber, Hash, Index, Moment};
 use ternoa_runtime_common as common;
-pub use ternoa_runtime_common::constants::currency::UNITS;
+pub use ternoa_runtime_common::constants::currency::{ UNITS, deposit };
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances,
@@ -53,7 +54,7 @@ use crate::{
 	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, OriginCaller, PalletInfo,
 	Preimage, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, Scheduler, Session, Signature,
 	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
-	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, TEE, VERSION,
+	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, TEE, VERSION, RandomnessCollectiveFlip,
 };
 
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
@@ -809,4 +810,48 @@ impl ternoa_transmission_protocols::Config for Runtime {
 	type MaxConsentListSize = MaxConsentListSize;
 	type SimultaneousTransmissionLimit = SimultaneousTransmissionLimit;
 	type ActionsInBlockLimit = ActionsInBlockLimit;
+}
+
+impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
+
+parameter_types! {
+	pub const DepositPerItem: Balance = deposit(1, 0);
+	pub const DepositPerByte: Balance = deposit(0, 1);
+	pub const DeletionQueueDepth: u32 = 128;
+	// The lazy deletion runs inside on_initialize.
+	pub DeletionWeightLimit: Weight = BlockWeights::get()
+		.per_class
+		.get(DispatchClass::Normal)
+		.max_total
+		.unwrap_or(BlockWeights::get().max_block);
+	pub Schedule: pallet_contracts::Schedule<Runtime> = Default::default();
+}
+
+impl pallet_contracts::Config for Runtime {
+	type Time = Timestamp;
+	type Randomness = RandomnessCollectiveFlip;
+	type Currency = Balances;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	/// The safest default is to allow no calls at all.
+	///
+	/// Runtimes should whitelist dispatchables that are allowed to be called from contracts
+	/// and make sure they are stable. Dispatchables exposed to contracts are not allowed to
+	/// change because that would break already deployed contracts. The `Call` structure itself
+	/// is not allowed to change the indices of existing pallets, too.
+	type CallFilter = Nothing;
+	type DepositPerItem = DepositPerItem;
+	type DepositPerByte = DepositPerByte;
+	type CallStack = [pallet_contracts::Frame<Self>; 5];
+	type WeightPrice = pallet_transaction_payment::Pallet<Self>;
+	type WeightInfo = pallet_contracts::weights::SubstrateWeight<Self>;
+	type ChainExtension = ();
+	type DeletionQueueDepth = DeletionQueueDepth;
+	type DeletionWeightLimit = DeletionWeightLimit;
+	type Schedule = Schedule;
+	type AddressGenerator = pallet_contracts::DefaultAddressGenerator;
+	type MaxCodeLen = ConstU32<{ 123 * 1024 }>;
+	type MaxStorageKeyLen = ConstU32<128>;
+	type UnsafeUnstableInterface = ConstBool<false>;
+	type MaxDebugBufferLen = ConstU32<{ 2 * 1024 * 1024 }>;
 }

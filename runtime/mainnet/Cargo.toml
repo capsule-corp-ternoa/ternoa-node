@@ -40,10 +40,13 @@ pallet-elections-phragmen = { workspace = true, default-features = false }
 pallet-multisig = { workspace = true, default-features = false }
 pallet-identity = { workspace = true, default-features = false }
 pallet-assets = { workspace = true, default-features = false }
+pallet-contracts = { workspace = true, default-features = false }
+pallet-contracts-primitives = { workspace = true, default-features = false }
+pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
 
 # Benchmarking
 frame-benchmarking = { workspace = true, default-features = false, optional = true }
-#frame-benchmarking-pallet-pov = { workspace = true, default-features = false }
+frame-benchmarking-pallet-pov = { workspace = true, default-features = false }
 frame-system-benchmarking = { workspace = true, default-features = false, optional = true }
 pallet-session-benchmarking = { workspace = true, default-features = false, optional = true }
 pallet-offences-benchmarking = { workspace = true, default-features = false, optional = true }
@@ -119,7 +122,7 @@ std = [
 	"frame-system-rpc-runtime-api/std",
 	"frame-system/std",
     "frame-benchmarking/std",
-	#"frame-benchmarking-pallet-pov/std",
+	"frame-benchmarking-pallet-pov/std",
 	"pallet-authority-discovery/std",
 	"pallet-authorship/std",
 	"pallet-babe/std",
@@ -168,12 +171,15 @@ std = [
 	"pallet-multisig/std",
 	"pallet-identity/std",
 	"pallet-assets/std",
+	"pallet-contracts/std",
+	"pallet-contracts-primitives/std",
+	"pallet-insecure-randomness-collective-flip/std",
 	#"substrate-wasm-builder",
 ]
 
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",
-	#"frame-benchmarking-pallet-pov/runtime-benchmarks",
+	"frame-benchmarking-pallet-pov/runtime-benchmarks",
 	"frame-election-provider-support/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
 	"frame-system-benchmarking/runtime-benchmarks",
@@ -214,7 +220,7 @@ runtime-benchmarks = [
 
 try-runtime = [
 	"frame-try-runtime",
-	#"frame-benchmarking-pallet-pov/try-runtime",
+	"frame-benchmarking-pallet-pov/try-runtime",
 	"frame-executive/try-runtime",
 	"frame-support/try-runtime",
 	"frame-system/try-runtime",
@@ -243,6 +249,8 @@ try-runtime = [
 	"pallet-multisig/try-runtime",
 	"pallet-identity/try-runtime",
 	"pallet-assets/try-runtime",
+	"pallet-contracts/runtime-benchmarks",
+	"pallet-insecure-randomness-collective-flip/try-runtime",
 	# Ternoa
 	"ternoa-mandate/try-runtime",
 	"ternoa-staking-rewards/try-runtime",

@@ -182,7 +182,7 @@ dependencies = [
 
 [[package]]
 name = "alphanet-runtime"
-version = "1.4.2"
+version = "1.4.3"
 dependencies = [
  "alphanet-runtime-constants",
  "frame-benchmarking",
@@ -4055,9 +4055,10 @@ dependencies = [
 
 [[package]]
 name = "mainnet-runtime"
-version = "1.4.2"
+version = "1.4.3"
 dependencies = [
  "frame-benchmarking",
+ "frame-benchmarking-pallet-pov",
  "frame-election-provider-support",
  "frame-executive",
  "frame-support",
@@ -4075,12 +4076,15 @@ dependencies = [
  "pallet-bags-list",
  "pallet-balances",
  "pallet-collective",
+ "pallet-contracts",
+ "pallet-contracts-primitives",
  "pallet-democracy",
  "pallet-election-provider-multi-phase",
  "pallet-elections-phragmen",
  "pallet-grandpa",
  "pallet-identity",
  "pallet-im-online",
+ "pallet-insecure-randomness-collective-flip",
  "pallet-membership",
  "pallet-multisig",
  "pallet-offences",
@@ -9036,7 +9040,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-client"
-version = "1.4.2"
+version = "1.4.3"
 dependencies = [
  "alphanet-runtime",
  "frame-benchmarking",
@@ -9084,7 +9088,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-core-primitives"
-version = "1.4.2"
+version = "1.4.3"
 dependencies = [
  "sp-core",
  "sp-runtime",
@@ -9266,7 +9270,7 @@ dependencies = [
 
 [[package]]
 name = "ternoa-runtime-common"
-version = "1.4.2"
+version = "1.4.3"
 dependencies = [
  "frame-election-provider-support",
  "frame-support",
