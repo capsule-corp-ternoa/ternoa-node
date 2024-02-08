@@ -159,6 +159,7 @@ macro_rules! impl_runtime_weights {
 				})
 				.avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
 				.build_or_panic();
+			pub MaxCollectivesProposalWeight: Weight = Perbill::from_percent(50) * BlockWeights::get().max_block;
 		}
 	};
 }
