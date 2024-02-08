@@ -120,6 +120,11 @@ Depending on what binary you downloaded certain features might not be available 
   # Runs the chain
   ./ternoa --chain alphanet-dev --alice --tmp --name MyLocalNode --rpc-external --ws-external --rpc-cors all --telemetry-url "wss://telemetry.polkadot.io/submit/ 0"
 ```
+### With Provided Binary If You Want To Run An Archive Node With Telemetry
+```bash
+  # Runs the chain
+  ./ternoa --name MyFirstNode  --chain mainnet --base-path /block/chain/node-data --ws-max-connections 1000 --prometheus-port 9615 --validator --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" --state-pruning archive
+```
 
 # Running Benchmarks
 ```bash
