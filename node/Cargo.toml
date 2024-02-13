@@ -1,6 +1,6 @@
 [package]
 name = "ternoa-node"
-version = "1.4.3"
+version = "1.4.4"
 description = "Ternoa node"
 edition = "2021"
 license = "GNU GPL v3"

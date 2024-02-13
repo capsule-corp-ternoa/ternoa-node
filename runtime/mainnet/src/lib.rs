@@ -192,7 +192,7 @@ pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra>;
 
 pub type Migrations = (
-	
+	pallet_offences::migration::v1::MigrateToV1<Runtime>,
 );
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<

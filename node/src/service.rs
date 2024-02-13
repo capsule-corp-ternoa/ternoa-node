@@ -157,7 +157,7 @@ pub fn new_full_base(
 		config,
 		backend,
 		client: client.clone(),
-		keystore: keystore_container.sync_keystore(),
+		keystore: keystore_container.keystore(),
 		network: network.clone(),
 		rpc_builder: Box::new(rpc_builder),
 		transaction_pool: transaction_pool.clone(),
@@ -202,7 +202,7 @@ pub fn new_full_base(
 		let client_clone = client.clone();
 		let slot_duration = babe_link.config().slot_duration();
 		let babe_config = sc_consensus_babe::BabeParams {
-			keystore: keystore_container.sync_keystore(),
+			keystore: keystore_container.keystore(),
 			client: client.clone(),
 			select_chain,
 			env: proposer,
@@ -248,7 +248,7 @@ pub fn new_full_base(
 	// if the node isn't actively participating in consensus then it doesn't
 	// need a keystore, regardless of which protocol we use below.
 	let keystore =
-		if role.is_authority() { Some(keystore_container.sync_keystore()) } else { None };
+		if role.is_authority() { Some(keystore_container.keystore()) } else { None };
 
 	let config = sc_consensus_grandpa::Config {
 		// FIXME #1578 make this available through chainspec
@@ -382,7 +382,7 @@ pub fn new_partial(
 	)?;
 
 	let slot_duration = babe_link.config().slot_duration();
-	let import_queue = sc_consensus_babe::import_queue(
+	let (import_queue, babe_worker_handle) = sc_consensus_babe::import_queue(
 		babe_link.clone(),
 		block_import.clone(),
 		Some(Box::new(justification_import)),
@@ -425,7 +425,7 @@ pub fn new_partial(
 		let client = client.clone();
 		let pool = transaction_pool.clone();
 		let select_chain = select_chain.clone();
-		let keystore = keystore_container.sync_keystore();
+		let keystore = keystore_container.keystore();
 		let chain_spec = config.chain_spec.cloned_box();
 
 		let rpc_extensions_builder = move |deny_unsafe, subscription_executor| {
@@ -436,9 +436,8 @@ pub fn new_partial(
 				chain_spec: chain_spec.cloned_box(),
 				deny_unsafe,
 				babe: BabeDeps {
-					babe_config: babe_config.clone(),
-					shared_epoch_changes: shared_epoch_changes.clone(),
 					keystore: keystore.clone(),
+					babe_worker_handle: babe_worker_handle.clone(),
 				},
 				grandpa: GrandpaDeps {
 					shared_voter_state: shared_voter_state.clone(),
