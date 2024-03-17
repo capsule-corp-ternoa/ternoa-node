@@ -17,7 +17,7 @@
 pub mod benchmarking;
 
 use sc_client_api::{
-	AuxStore, Backend as BackendT, BlockchainEvents, HeaderBackend, KeysIter, UsageProvider, PairsIter,
+	AuxStore, Backend as BackendT, BlockchainEvents, KeysIter, UsageProvider, PairsIter,
 };
 use sc_executor::NativeElseWasmExecutor;
 use sc_service::Arc;
@@ -30,6 +30,8 @@ use sp_runtime::{
 };
 use sp_storage::{ChildInfo, StorageData, StorageKey};
 pub use ternoa_core_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Header, Index};
+use sp_blockchain::{HeaderBackend, HeaderMetadata};
+
 
 pub type FullBackend = sc_service::TFullBackend<Block>;
 
@@ -113,29 +115,30 @@ where
 ///
 /// For a concrete type there exists [`Client`].
 pub trait AbstractClient<Block, Backend>:
-	BlockchainEvents<Block>
-	+ Sized
-	+ Send
-	+ Sync
-	+ ProvideRuntimeApi<Block>
-	+ HeaderBackend<Block>
-	+ CallApiAt<Block, StateBackend = Backend::State>
-	+ AuxStore
-	+ UsageProvider<Block>
-where
-	Block: BlockT,
-	Backend: BackendT<Block>,
-	Backend::State: sp_api::StateBackend<BlakeTwo256>,
-	Self::Api: RuntimeApiCollection<StateBackend = Backend::State>,
+BlockchainEvents<Block>
++ Sized
++ Send
++ Sync
++ ProvideRuntimeApi<Block>
++ HeaderBackend<Block>
++ CallApiAt<Block, StateBackend = Backend::State>
++ AuxStore
++ UsageProvider<Block>
++ HeaderMetadata<Block, Error = sp_blockchain::Error>
+	where
+		Block: BlockT,
+		Backend: BackendT<Block>,
+		Backend::State: sp_api::StateBackend<BlakeTwo256>,
+		Self::Api: RuntimeApiCollection<StateBackend = Backend::State>,
 {
 }
 
 impl<Block, Backend, Client> AbstractClient<Block, Backend> for Client
-where
-	Block: BlockT,
-	Backend: BackendT<Block>,
-	Backend::State: sp_api::StateBackend<BlakeTwo256>,
-	Client: BlockchainEvents<Block>
+	where
+		Block: BlockT,
+		Backend: BackendT<Block>,
+		Backend::State: sp_api::StateBackend<BlakeTwo256>,
+		Client: BlockchainEvents<Block>
 		+ ProvideRuntimeApi<Block>
 		+ HeaderBackend<Block>
 		+ AuxStore
@@ -143,8 +146,9 @@ where
 		+ Sized
 		+ Send
 		+ Sync
-		+ CallApiAt<Block, StateBackend = Backend::State>,
-	Client::Api: RuntimeApiCollection<StateBackend = Backend::State>,
+		+ CallApiAt<Block, StateBackend = Backend::State>
+		+ HeaderMetadata<Block, Error = sp_blockchain::Error>,
+		Client::Api: RuntimeApiCollection<StateBackend = Backend::State>,
 {
 }
 

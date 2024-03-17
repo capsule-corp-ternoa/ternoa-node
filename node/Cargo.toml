@@ -53,6 +53,7 @@ sp-keyring = { version = "7.0.0", git = "https://github.com/paritytech/substrate
 sp-keystore = { version = "0.13.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 sp-transaction-storage-proof = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 sp-authority-discovery = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40", default-features = false }
+
 frame-system = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 pallet-transaction-payment = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 pallet-im-online = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
@@ -72,26 +73,41 @@ sc-consensus-babe-rpc = { version = "0.10.0-dev", git = "https://github.com/pari
 sc-consensus-epochs = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 sc-consensus-grandpa-rpc = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 sc-rpc-spec-v2 = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
-
+sc-authority-discovery = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
+substrate-state-trie-migration-rpc = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
+sp-trie = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.40" }
 # These dependencies are used for runtime benchmarking
 frame-benchmarking = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 
 # Local Dependencies
-alphanet-runtime = { version = "1.4.2", path = "../runtime/alphanet" }
+alphanet-runtime = { path = "../runtime/alphanet", optional = true }
+mainnet-runtime = { path = "../runtime/mainnet", optional = true }
 ternoa-runtime-common = { version = "1.4.2", path = "../runtime/common" }
 
 # Common types
 ternoa-core-primitives = { version = "1.4.2", default-features = false, path = "../core-primitives" }
+ternoa-client = { path = "../client", default-features = false, optional = true }
+
+alphanet-runtime-constants = { path = "../runtime/alphanet/constants", optional = true }
+mainnet-runtime-constants = { path = "../runtime/mainnet/constants", optional = true }
 
 # CLI-specific dependencies
 try-runtime-cli = { version = "0.10.0-dev", optional = true, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
+config = "0.14.0"
 
 [build-dependencies]
 substrate-build-script-utils = { version = "3.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }
 
 [features]
-default = []
+default = [ "db", "full-node", "mainnet-native", "alphanet-native"]
+full-node = [ "ternoa-client" ]
+db = [
+	"sc-service/rocksdb"
+]
+
+alphanet-native = [ "alphanet-runtime", "alphanet-runtime-constants", "ternoa-client/alphanet" ]
+mainnet-native = [ "mainnet-runtime", "mainnet-runtime-constants", "ternoa-client/mainnet" ]
 # Dependencies that are only required if runtime benchmarking should be build.
 runtime-benchmarks = [
 	"alphanet-runtime/runtime-benchmarks",
