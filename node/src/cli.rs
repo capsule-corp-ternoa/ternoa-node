@@ -1,12 +1,22 @@
-use sc_cli::RunCmd;
-
+#[allow(missing_docs)]
 #[derive(Debug, clap::Parser)]
 pub struct Cli {
 	#[command(subcommand)]
 	pub subcommand: Option<Subcommand>,
-
 	#[clap(flatten)]
 	pub run: RunCmd,
+}
+
+#[allow(missing_docs)]
+#[derive(Debug, clap::Parser)]
+#[group(skip)]
+pub struct RunCmd {
+	#[clap(flatten)]
+	pub base: sc_cli::RunCmd,
+
+	/// Force using Cere Dev runtime.
+	#[arg(long = "force-cere-dev")]
+	pub force_cere_dev: bool,
 
 	/// Disable automatic hardware benchmarks.
 	///
@@ -17,11 +27,8 @@ pub struct Cli {
 	/// telemetry, if telemetry is enabled.
 	#[arg(long)]
 	pub no_hardware_benchmarks: bool,
-
-	#[allow(missing_docs)]
-	#[clap(flatten)]
-	pub storage_monitor: sc_storage_monitor::StorageMonitorParams,
 }
+
 
 #[derive(Debug, clap::Subcommand)]
 pub enum Subcommand {
