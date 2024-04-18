@@ -10,7 +10,7 @@ build = "build.rs"
 # Frame
 frame-election-provider-support = { workspace = true, default-features = false }
 frame-executive = { workspace = true, default-features = false }
-frame-support = { workspace = true, default-features = false }
+frame-support = { workspace = true, default-features = false, features = ["tuples-96"] }
 frame-system = { workspace = true, default-features = false }
 frame-system-rpc-runtime-api = { workspace = true, default-features = false }
 pallet-authority-discovery = { workspace = true, default-features = false }

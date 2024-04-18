@@ -19,7 +19,7 @@ use common::{
 	election_provider_multi_phase::BetterUnsignedThreshold,
 	staking::{BondingDuration, SessionsPerEra},
 	transaction_payment::TransactionByteFee,
-	BlockHashCount, BlockLength,
+	BlockHashCount, BlockLength, 
 };
 use frame_election_provider_support::{SequentialPhragmen, Weight};
 use frame_support::{
@@ -33,7 +33,7 @@ use frame_system::{EnsureRoot, EnsureWithSuccess, EnsureSigned};
 use pallet_grandpa::AuthorityId as GrandpaId;
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_transaction_payment::CurrencyAdapter;
-use parity_scale_codec::Encode;
+use parity_scale_codec::{Encode, Decode, MaxEncodedLen};
 use sp_core::crypto::KeyTypeId;
 use sp_runtime::{
 	generic::{self, Era},
@@ -50,13 +50,13 @@ pub use ternoa_runtime_common::constants::currency::{ UNITS, deposit };
 
 use crate::{
 	constants::time::EPOCH_DURATION_IN_SLOTS, AuthorityDiscovery, Babe, BagsList, Balances,
-	BlockWeights, Council, ElectionProviderMultiPhase, Grandpa, Historical, ImOnline, Marketplace,
+	BlockWeights, MaxCollectivesProposalWeight, Council, ElectionProviderMultiPhase, Grandpa, Historical, ImOnline, Marketplace,
 	OffchainSolutionLengthLimit, OffchainSolutionWeightLimit, Offences, OriginCaller, PalletInfo,
 	Preimage, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, Scheduler, Session, Signature,
 	SignedPayload, Staking, StakingRewards, System, TechnicalCommittee, Timestamp,
-	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, TEE, VERSION, RandomnessCollectiveFlip,
+	TransactionPayment, Treasury, UncheckedExtrinsic, NFT, TEE, VERSION, RandomnessCollectiveFlip, 
 };
-
+use scale_info::TypeInfo;
 pub use common::babe::BABE_GENESIS_EPOCH_CONFIG;
 
 #[cfg(any(feature = "std", test))]
@@ -115,6 +115,15 @@ impl pallet_transaction_payment::Config for Runtime {
 	type FeeMultiplierUpdate = common::SlowAdjustingFeeUpdate<Self>;
 }
 
+/// A reason for placing a hold on funds.
+#[derive(
+	Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, MaxEncodedLen, Debug, TypeInfo,
+)]
+pub enum HoldReason {
+	/// The NIS Pallet has reserved it for a non-fungible receipt.
+	Nis,
+}
+
 impl pallet_balances::Config for Runtime {
 	type MaxLocks = common::balances::MaxLocks;
 	type Balance = Balance;
@@ -125,6 +134,10 @@ impl pallet_balances::Config for Runtime {
 	type ExistentialDeposit = common::balances::ExistentialDeposit;
 	type AccountStore = frame_system::Pallet<Runtime>;
 	type WeightInfo = weights::pallet_balances::WeightInfo<Runtime>;
+	type FreezeIdentifier = ();
+	type MaxFreezes = ();
+	type HoldIdentifier = HoldReason;
+	type MaxHolds = ConstU32<1>;
 }
 
 impl pallet_timestamp::Config for Runtime {
@@ -448,6 +461,7 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = weights::pallet_collective::WeightInfo<Runtime>;
 	type SetMembersOrigin = EnsureRoot<Self::AccountId>;
+	type MaxProposalWeight = MaxCollectivesProposalWeight;
 }
 
 // Pallet Membership
@@ -487,7 +501,10 @@ impl pallet_scheduler::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 	type MaximumWeight = MaximumSchedulerWeight;
 	type ScheduleOrigin = RootOrAtLeastHalfOfCommittee;
-	type MaxScheduledPerBlock = MaxScheduledPerBlock;
+	#[cfg(feature = "runtime-benchmarks")]
+	type MaxScheduledPerBlock = ConstU32<512>;
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	type MaxScheduledPerBlock = ConstU32<50>;
 	type WeightInfo = weights::pallet_scheduler::WeightInfo<Runtime>;
 	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
 	type Preimages = Preimage;
@@ -533,6 +550,8 @@ impl pallet_collective::Config<CouncilCollective> for Runtime {
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
 	type WeightInfo = weights::pallet_collective::WeightInfo<Runtime>;
 	type SetMembersOrigin = EnsureRoot<Self::AccountId>;
+	type MaxProposalWeight = MaxCollectivesProposalWeight;
+
 }
 // Make sure that there are no more than MaxMembers members elected via phragmen.
 const_assert!(
@@ -818,13 +837,7 @@ impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 parameter_types! {
 	pub const DepositPerItem: Balance = deposit(1, 0);
 	pub const DepositPerByte: Balance = deposit(0, 1);
-	pub const DeletionQueueDepth: u32 = 128;
-	// The lazy deletion runs inside on_initialize.
-	pub DeletionWeightLimit: Weight = BlockWeights::get()
-		.per_class
-		.get(DispatchClass::Normal)
-		.max_total
-		.unwrap_or(BlockWeights::get().max_block);
+	pub const DefaultDepositLimit: Balance = deposit(1024, 1024 * 1024);
 	pub Schedule: pallet_contracts::Schedule<Runtime> = Default::default();
 }
 
@@ -843,12 +856,11 @@ impl pallet_contracts::Config for Runtime {
 	type CallFilter = Nothing;
 	type DepositPerItem = DepositPerItem;
 	type DepositPerByte = DepositPerByte;
+	type DefaultDepositLimit = DefaultDepositLimit;
 	type CallStack = [pallet_contracts::Frame<Self>; 5];
 	type WeightPrice = pallet_transaction_payment::Pallet<Self>;
 	type WeightInfo = pallet_contracts::weights::SubstrateWeight<Self>;
 	type ChainExtension = ();
-	type DeletionQueueDepth = DeletionQueueDepth;
-	type DeletionWeightLimit = DeletionWeightLimit;
 	type Schedule = Schedule;
 	type AddressGenerator = pallet_contracts::DefaultAddressGenerator;
 	type MaxCodeLen = ConstU32<{ 123 * 1024 }>;
