@@ -1,0 +1,79 @@
+name: Ternoa Node CI
+
+on:
+    workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get submodules
+        run: git submodule update --init --recursive
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2022-04-24
+          components: rustfmt, llvm-tools-preview
+          target: wasm32-unknown-unknown
+          default: true
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
+      - name: Cache restore
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Clean
+        run: cargo clean
+
+      - name: Check format
+        run: cargo fmt --all -- --check
+
+      - name: Check release
+        run: cargo check --release
+
+      - name: Tests
+        run: cargo test --all
+
+      - name: Build
+        run: cargo build --locked --release
+
+      - name: Upload WASM Alphanet
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets-for-download-alphanet
+          path: target/release/wbuild/alphanet-runtime/alphanet_runtime.compact.compressed.wasm
+
+      - name: Upload WASM Mainnet
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets-for-download-mainnet
+          path: target/release/wbuild/mainnet-runtime/mainnet_runtime.compact.compressed.wasm
+       
+      - name: Upload Binary Alphanet
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets-for-download-alphanet
+          path: target/release/wbuild/alphanet-runtime/alphanet_runtime.compact.compressed.wasm
+
+      - name: Upload Binary Mainnet
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets-for-download-mainnet
+          path: target/release/wbuild/mainnet-runtime/mainnet_runtime.compact.compressed.wasm
