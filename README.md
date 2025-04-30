@@ -59,7 +59,7 @@ All the examples in this document assume that you use a Ubuntu like system. If t
 ### Build from source
 ```
   # Get repo and CD
-  git clone https://github.com/capsule-corp-ternoa/ternoa-node.git && cd ternoa-node
+  git clone https://github.com/capsule-corp-ternoa/ternoa-node && cd ternoa-node
   # Get submodules
   git submodule update --init --recursive
   # Updating Rust to latest versions and installing the right Rust version.
